@@ -196,8 +196,10 @@ native colliders or prove live placement.
 
 ## Park build items
 
-The existing item scenario also compiles the production `SkateHeld.cs` adapter
-against the selected actual shared/plugin DLL. Scalar observation objects supply
+The existing item scenario also compiles the production `SkateHeld.cs` inventory
+reader against the selected actual shared/plugin DLL, without Unity or game
+references. The client manifest also includes its `SkateHeldNative.cs` partial
+for Planner, wheel, cursor and holster integration. Scalar observation objects supply
 current main/belt membership, positions and active item; its logging boundary is
 silent. All twelve kinds are selected across all six belt slots, then invalid
 carrier/skin/quantity/name/marker/slot and unequip states are refused. These are
@@ -214,9 +216,9 @@ refusals, determinism and warmed allocation. It invokes the actual helper in eac
 separately selected compiled shared and plugin DLL; it does not copy the helper.
 
 ```sh
-dotnet build crates/approved_tests/skate/SkateParkBuildItemScenarios.csproj -p:RustManagedPath=/absolute/path/to/managed -p:ActualLibraryPath=/absolute/path/to/SkateMotion.dll
+dotnet build crates/approved_tests/skate/SkateParkBuildItemScenarios.csproj -p:ActualLibraryPath=/absolute/path/to/SkateMotion.dll
 dotnet context/skate-approved-park-build-items/bin/SkateMotion/net8.0/SkateParkBuildItemScenarios.dll EXPECTED_SHA256
-dotnet build crates/approved_tests/skate/SkateParkBuildItemScenarios.csproj -p:RustManagedPath=/absolute/path/to/managed -p:ActualLibraryPath=/absolute/path/to/ShortcutSkate.dll
+dotnet build crates/approved_tests/skate/SkateParkBuildItemScenarios.csproj -p:ActualLibraryPath=/absolute/path/to/ShortcutSkate.dll
 dotnet context/skate-approved-park-build-items/bin/ShortcutSkate/net8.0/SkateParkBuildItemScenarios.dll EXPECTED_SHA256
 ```
 
