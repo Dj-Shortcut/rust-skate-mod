@@ -402,6 +402,62 @@ namespace Shortcut.RustMod
             return Riding(rig, input, out pose, out error);
         }
 
+        public static bool TryCreateGroundGrab(SkateRiderRig rig, SkateRiderInput input, SkateGroundGrabState ground,
+            out SkateRiderPose pose, out string error)
+        {
+            pose = default(SkateRiderPose); error = null;
+            if (!SkateGroundGrabs.Valid(ground) || input.Bailed || input.Pushing || input.Handplant > 0)
+            { error = "Ground grab presentation cannot overlap push, plant or bail."; return false; }
+            SkateRiderPose free, held;
+            if (!TryCreate(rig, input, out free, out error)) return false;
+            if (!ground.Active) { pose = free; return true; }
+            if (ground.Kind == SkateGroundGrabKind.Coffin)
+            { if (!Coffin(rig, input, out held, out error)) return false; }
+            else
+            {
+                var kind = ground.Kind == SkateGroundGrabKind.Frontside ? SkateGrabKind.Frontside :
+                    ground.Kind == SkateGroundGrabKind.Backside ? SkateGrabKind.Backside : SkateGrabKind.Double;
+                var i = input;
+                // Only the shared contact solver uses its grab branch; native movement stays grounded.
+                var grab = new SkateRiderInput(i.BoardPosition, i.BoardForward, i.BoardUp, i.Stance, i.Switch,
+                    i.Speed, i.LeanDegrees, Math.Max(0.85, i.Crouch), true, false, 0, 0, kind, false, i.LookYawDegrees,
+                    i.DeckOffset, i.GroundDrop, 0, false, 0, GrabIn, 0, i.DeckPitch, 0, 0, 0, 0,
+                    default(SkateRiderContactState), i.PushSeconds, i.DeckForward, i.DeckPitchFrame, i.DeckRoll, i.DeckSupport, i.DeckFrame, default(SkateBoardPathSample));
+                if (!TryCreate(rig, grab, out held, out error)) return false;
+            }
+            if (ground.Weight >= 1) { pose = held; return true; }
+            return BlendContact(rig, input, free, held, Smooth(ground.Weight), out pose, out error);
+        }
+
+        private static bool Coffin(SkateRiderRig r, SkateRiderInput i, out SkateRiderPose pose, out string error)
+        {
+            pose = default(SkateRiderPose); error = null;
+            var up = i.BoardUp; var travel = i.BoardForward * (i.Switch ? -1 : 1); var right = Cross(up, travel);
+            var deck = i.DeckFrame.Initialized ? i.DeckFrame : new SkateBoardPose(i.BoardPosition + up * i.DeckOffset, travel, up);
+            var centre = deck.Origin; var floor = centre - up * i.GroundDrop;
+            var pu = travel * -1; var pf = up; var pr = Cross(pu, pf);
+            var pelvis = centre + up * 0.2 + travel * 0.06;
+            var chest = pelvis + pu * r.SpineLength; var neck = chest + pu * (r.SpineLength * 0.12);
+            var lh = pelvis - pr * (r.HipWidth * 0.5); var rh = pelvis + pr * (r.HipWidth * 0.5);
+            double ankle = SkatePose.FootLift - i.DeckOffset;
+            var la = centre + travel * 0.34 - right * 0.07 + up * ankle;
+            var ra = centre + travel * 0.34 + right * 0.07 + up * ankle;
+            var ls = chest - pr * (r.ShoulderWidth * 0.5); var rs = chest + pr * (r.ShoulderWidth * 0.5);
+            var lt = centre - right * 0.1 - travel * 0.1; var rt = centre + right * 0.1 - travel * 0.1;
+            SkateVector lk, rk, le, re, lhand, rhand;
+            if (!Limb(lh, la, r.ThighLength, r.ShinLength, up, floor, up, out lk) ||
+                !Limb(rh, ra, r.ThighLength, r.ShinLength, up, floor, up, out rk) ||
+                !Arm(ls, lt, r, -1, pr, pf, floor, up, out le, out lhand) ||
+                !Arm(rs, rt, r, 1, pr, pf, floor, up, out re, out rhand))
+            { error = "Coffin contacts exceed the measured rig."; return false; }
+            if ((lhand - lt).Length > 0.015 || (rhand - rt).Length > 0.015)
+            { error = "Coffin hands cannot reach the deck."; return false; }
+            pose = new SkateRiderPose(pelvis, lh, rh, lk, rk, la, ra, la + travel * r.FootLength, ra + travel * r.FootLength,
+                chest, neck, neck + pu * r.NeckToHeadLength, ls, rs, le, re, lhand, rhand, pf, pu, pf, pu, travel);
+            if (!Finite(pose) || !AboveGround(pose, floor, up)) { error = "Coffin pose is outside its support."; return false; }
+            return true;
+        }
+
         private static SkateRiderInput WithGrab(SkateRiderInput i, SkateGrabKind grab, double seconds)
         {
             return new SkateRiderInput(i.BoardPosition, i.BoardForward, i.BoardUp, i.Stance, i.Switch, i.Speed,

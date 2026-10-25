@@ -40,6 +40,17 @@ Per rit controleren: controller, eerste/derde persoon, kompas, hand-item, pose, 
 - **Speciale flips:** Impossible, Front Foot Impossible, nollie-voetvarianten en Underflip met eigen boardbaan, voetvrijgave en catch: bron aanwezig in 0.18.53. Voortgang, scoring en poses headless gecontroleerd; uitvoering in game open.
 - **Overgangen en invoerherstel:** push/pomp/pop/grab/catch/landing gekoppeld, grabwissels en herstel na menu, readerwissel of afstappen: bron aanwezig in 0.18.54. Headless gecontroleerd; controller te voet, camera en volledige rit op Shadow open.
 
+## Zes resterende trickblokken (Andy, 25 okt)
+
+- **Grondgrabs en Coffin:** bron aanwezig in 0.18.55, inclusief invoerprioriteit, gemeten poses, loslaten en scoring; native beeld, contact en botsingsruimte open.
+- **Handplantvarianten:** tweaks, one-foot, Judo, Frigid en Gymnast met geplante hand en boardcontact. In uitvoering.
+- **Extra ollies en Finger Flip:** Boned Ollie, front/back-foot One-Foot Ollie en bewuste handflip met release/catch. Open.
+- **Oldschool:** Caveman en Hippie Jump, inclusief flip/spin en afzonderlijke board-/rijderbeweging. Open.
+- **Walltricks:** Wallie en FS/BS Wallride met werkelijk muurcontact, instap en uitstap. Open.
+- **Transitiontricks:** Drop-in en Front/Back Flip met grab, gekoppeld aan contact en voltooide landing. Open.
+
+Deze blokken worden samen op Shadow getest. Bron gereed telt niet als gameplayacceptatie; de overige TODO-punten blijven afzonderlijk open. Claude bouwt het park in Unity; parkassets en parkbouw vallen buiten deze trickwijzigingen.
+
 ## Skate 3-tricks (bij punt 24)
 
 Doellijst voor punt 24: elke trick krijgt eigen board- en lichaamsbeweging, catch en landing. Namen zoals in de Skate-serie; controleer de uiteindelijke set tegen de Trick Guide in Skate 3 zelf.

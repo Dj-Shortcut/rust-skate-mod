@@ -174,7 +174,7 @@ public static class SkatePad
         if (seconds <= 0) return;
         if (seconds > MostCatchUp) seconds = MostCatchUp;
         var air = SkateRide.Mode == RideMode.Air;
-        var grabbing = air && (LeftTrigger > Pulled || RightTrigger > Pulled);
+        var grabbing = (air || SkateRide.On && SkateRide.Mode == RideMode.Ground && (Buttons & LeftBumper) != 0) && (LeftTrigger > Pulled || RightTrigger > Pulled);
         var rightFar = RightX * RightX + RightY * RightY;
         // The right stick picked the grab; let go of the trigger with it still out, it is no flick:
         // it must come back to the middle before it moves the board again.
