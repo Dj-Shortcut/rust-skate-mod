@@ -1,26 +1,15 @@
-Workflow, artifacts and the glossary: `CONTEXT.md`. Do not touch other agents'
-`context/mrs/*` without being asked.
-
 Standing project authorization and agent coordination: [docs/AUTONOMY.md](docs/AUTONOMY.md).
+Open work, in the owner's order: [TODO.md](TODO.md). One line per item; details go in issues and PRs.
 
 All player-facing game text must be English. Keep HUDs, menus, item names,
 controls, interaction feedback and displayed errors in English in every change.
 Use readable glyphs supported by the shipped UI font. This is a user requirement.
 
-What is published is the runtime and the documentation needed to use and
-develop it. The local research base, dumps, third-party checkouts and the work
-journal are not. That is a rule about *what* ships, not about what may be said:
-the use of reverse engineering, the names of the games studied and the credit
-owed to the projects that were read are not hidden — they are in `README.md`
-and `NOTICE`, and belong there.
+What is published is the mod source and the documentation needed to use and
+develop it. Game files, server data, logs, credentials, research dumps and
+third-party checkouts are not; keep them in the ignored `context/` folder.
+Credits for projects that were studied belong in `README.md` and `NOTICE`.
 
-Retail offsets stay out of the code for their own reason: a standalone runtime
-resolves nothing against a retail image, so a hardcoded address or a decompiler
-placeholder name (`FUN_…`, `DAT_…`) is dead weight wherever it appears.
-
-`make publish-check` walks the tracked tree for both. It is a grep over a fixed
-set of shapes — it proves no claim about origin or licensing, and passing it is
-not an argument for anything beyond the absence of those shapes.
-
-A push of unpushed work is a pass of its own — history, tests, comments, names —
-in `CONTEXT.md` under Making a public push.
+`make publish-check` walks the tracked tree for leaks (`context/`, `.env`,
+keys, game files) and tests outside `crates/approved_tests`. It is a grep over
+a fixed set of shapes, not a proof of origin or licensing.

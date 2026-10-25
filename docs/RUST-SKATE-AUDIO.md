@@ -44,10 +44,6 @@ Metal has an additional low-pass stage to reduce the high-frequency tail when pi
 One-shots have silent endpoints, damped fixed-frequency modes and endpoint-zero DC removal.
 Peak normalization retains existing limits; combined sources still require mix-level checks.
 
-`scripts/generate_authored_audio.py` regenerates [the seven-file WAV pack](../assets/authored/audio/README.md).
-That generator, its manifest and all WAVs remain unchanged: this pack serves the
-parked standalone runtime and is separate from the existing-Rust client synthesis.
-
 The [existing approved audio scenario](../crates/approved_tests/skate/README.md#authored-audio)
 checks the actual shared DLL and actual Foley source: 4,516 checks / 588 generated clips.
 Genuine-reference C#7.3/net48 shared and approved runner: zero warnings/errors.
