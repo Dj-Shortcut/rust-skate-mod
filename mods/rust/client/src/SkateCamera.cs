@@ -19,8 +19,24 @@ public static class SkateCamera
     public const float OutRate = 5f;
     private static float shownLen = -1f, shownAt = -99f;
     private static bool failed, ahead = true;
-    // Apply threw once: the camera is the game's own from then on, and FollowYaw stands still.
     public static bool Failed { get { return failed; } }
+
+    public static float TravelYaw
+    {
+        get
+        {
+            if (SkateRide.Speed > 1f) ahead = true; else if (SkateRide.Speed < -1f) ahead = false;
+            return SkateRide.Yaw + (ahead ? 0f : 180f);
+        }
+    }
+
+    public static void BeginRide()
+    {
+        ahead = SkateRide.Speed >= -1f;
+        FollowYaw = TravelYaw;
+        followAt = pullAt = Time.realtimeSinceStartup;
+        pullNow = 0f; shownLen = -1f; shownAt = -99f; failed = false;
+    }
 
     public static void Sample()
     {
@@ -55,9 +71,9 @@ public static class SkateCamera
                 {
                     // With a controller the right stick is the board, so the camera finds its own
                     // way: it swings in behind the way the board goes.
-                    if (SkateRide.Speed > 1f) ahead = true; else if (SkateRide.Speed < -1f) ahead = false;
+                    var travelYaw = TravelYaw;
                     var seconds = SkateRide.Clamp(now - followAt, 0f, 0.1f);
-                    FollowYaw += SkateRide.Delta(FollowYaw, SkateRide.Yaw + (ahead ? 0f : 180f)) * (1f - (float)Math.Exp(-seconds * FollowRate));
+                    FollowYaw += SkateRide.Delta(FollowYaw, travelYaw) * (1f - (float)Math.Exp(-seconds * FollowRate));
                     yaw = FollowYaw; pitch = FollowPitch;
                 }
                 else { FollowYaw = LookYaw; ahead = true; }

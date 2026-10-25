@@ -398,7 +398,7 @@ public class SkateRig : MonoBehaviour
 
     public static void LevelView()
     {
-        SetView(SkateRide.Yaw + (SkateRide.Speed < -0.5f ? 180f : 0f), "level");
+        SetView(SkateCamera.TravelYaw, "level");
     }
 
     // With a controller the game's own view is not the steering: Steam's layout sends the right
@@ -412,13 +412,12 @@ public class SkateRig : MonoBehaviour
     // show before it is put back. Whether the compass follows is for the game to show.
     // A route that is missing or threw stops it for the rest of the ride; the next mount tries
     // again, since the player's input object is replaced on a respawn or reconnect.
-    private static bool viewAhead = true, steadyFailed;
+    private static bool steadyFailed;
     private static void SteadyView()
     {
         if (steadyFailed || !SkateRide.On || !SkateKeys.Pad || SkateKeys.Scripted) return;
-        if (SkateRide.Speed > 1f) viewAhead = true; else if (SkateRide.Speed < -1f) viewAhead = false;
         // A chase camera that threw no longer moves FollowYaw: the board's heading then.
-        var yaw = SkateCamera.Chase && !SkateCamera.Fixed && !SkateCamera.Failed ? SkateCamera.FollowYaw : SkateRide.Yaw + (viewAhead ? 0f : 180f);
+        var yaw = SkateCamera.Chase && !SkateCamera.Fixed && !SkateCamera.Failed ? SkateCamera.FollowYaw : SkateCamera.TravelYaw;
         if (!SetView(yaw, "steady")) steadyFailed = true;
     }
 
@@ -469,7 +468,7 @@ public class SkateRig : MonoBehaviour
         if (Body == null || SkateRide.On || !MountPrepared || !AcquireRootProxy()) return;
         try
         {
-            SkateRide.Mount(Body, yaw); viewAhead = true; steadyFailed = false;
+            SkateRide.Mount(Body, yaw); SkateCamera.BeginRide(); steadyFailed = false;
             SkateHud.MountedAt = Time.realtimeSinceStartup;
             Say("MOUNT yaw=" + SkateRide.Yaw.ToString("F0") + " speed=" + SkateRide.Speed.ToString("F1") + " rider=" + RiderRig.Bound + " audio=" + SkateSfx.State);
         }
