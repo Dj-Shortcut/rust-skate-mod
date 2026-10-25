@@ -31,7 +31,7 @@ private test server as `ip:port`; it is read by `ping` and `session` and is neve
 In a PowerShell window on the PC, once per window:
 
 ```powershell
-iex (irm https://raw.githubusercontent.com/Dj-Shortcut/mw2-rust-skate-rewrite/main/mods/rust/client/tools/remote.ps1)
+iex (irm https://raw.githubusercontent.com/Dj-Shortcut/rust-skate-mod/main/mods/rust/client/tools/remote.ps1)
 ```
 
 After that `zz name` runs `name.ps1` from this folder and `zg file` returns a file from it. Both
@@ -45,7 +45,6 @@ PC reliably from a distance.
 | `zz` | What it does |
 | --- | --- |
 | `setup` | Once: copies the SDK and the interop generator into the staging folder. |
-| `status` | Whether the window has administrator rights, Steam, the installed Rust build, whether an interop set exists for it, leftovers in the Rust folder, what is built and installed. Starts Steam when it is not running, except from an administrator's window. |
 | `interop` | Generates the interop set for the installed Rust build in the background. Needed once after every Rust update. |
 | `progress` | Progress of that generation; done when the log ends with `GEN DONE`. |
 | `runtime` | Builds the changed `Il2CppInterop.Runtime.dll` from the pinned upstream source and [`rt/`](rt/README.md). Needed once. |
@@ -118,11 +117,24 @@ listed in the [client's README](../README.md#steps). A scripted check ends the s
 
 ## After a Rust update
 
-1. `zz status` shows the new build and `interop for this build=False`.
-2. `zz interop`, then `zz progress` until `GEN DONE` (about ten minutes).
-3. `zz ride` in a world. If the plugin no longer compiles or the check fails, the game changed
-   something the client relies on; `survey` shows what the new build offers.
-4. `zz launcher`, so that the owner's plugin is rebuilt against the new set.
+Read the installed build without starting Rust:
+
+```powershell
+$manifest = 'C:\Program Files (x86)\Steam\steamapps\appmanifest_252490.acf'
+Select-String -Path $manifest -Pattern '"buildid"'
+```
+
+`zz status` is a scripted ride that builds and starts the client; it is not a readiness check.
+
+1. If the installed build changed, run `zz interop`, then `zz progress` until `GEN DONE`.
+   `build` and `session` both refuse an absent or incomplete interop set for that installed build.
+2. `zz build` compiles without starting a session. For a development candidate, set `$pcommit`
+   and `$pref` to the same full candidate commit before building, so its source and tools agree.
+3. When ready to play, `zz play` uses the Steam shortcut and controller reader with sound on.
+   The build and visible/native behavior still need verification against the new Rust build;
+   `survey` shows what its interop set offers if compilation fails.
+4. Update `release.txt` and run `zz launcher` only after the candidate's in-game acceptance.
+   A source-verified development candidate does not replace the accepted launcher automatically.
 
 `interop.ps1` and `Gen.cs` name the Unity version of the client (6000.3.15). A Rust update that
 moves to another Unity version needs both changed, and the base libraries for that version.
