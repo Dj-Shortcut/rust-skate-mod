@@ -33,6 +33,13 @@ Laatste speltest: client 0.18.45 / server 0.3.38 (21 okt). Geen testomgeving sin
 
 Per rit controleren: controller, eerste/derde persoon, kompas, hand-item, pose, geluid, put-backs. Halfpipe: drie beklimmingen en fakie-terugkeren zonder put-back.
 
+## Werkblokken bij punten 23–25 (Andy, 25 okt)
+
+- **Grabs:** Weddle, Rocket Air, tweaks en one-foot/no-foot uitwerken met eigen hand- en voetbewegingen, loslaten, catch en landing. Open.
+- **Grinds:** FS/BS Overcrook, Salad, Willy en Over Willy uitwerken met passende boardhoek, truckcontact, rijderpose en in-/uitstap. Open.
+- **Speciale flips:** impossibles, foot-impossibles en underflips uitwerken met een eigen boardbaan, voetvrijgave en catch. Open.
+- **Overgangen en invoerherstel:** push, pompen, pop, grab, catch en landing samenhangend maken; invoer herstellen na afstappen of onderbreking. Open.
+
 ## Skate 3-tricks (bij punt 24)
 
 Doellijst voor punt 24: elke trick krijgt eigen board- en lichaamsbeweging, catch en landing. Namen zoals in de Skate-serie; controleer de uiteindelijke set tegen de Trick Guide in Skate 3 zelf.
