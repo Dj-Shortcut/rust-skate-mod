@@ -50,4 +50,4 @@ readback, real save/reload and bounded plugin config/reload/unload checks are
 recorded in the [Linux evidence](../mods/rust/server/LINUX.md#native-startup-and-control-evidence).
 The quit process ended with SIGKILL; clean exit 0 is not claimed. Shadow join,
 player-state persistence and plugin/two-client/full-mod acceptance remain open.
-See [hosting gate](RUST-SERVER-HOSTING.md) and [mod scope](archive/RUST-SERVER-MOD.md).
+See [hosting gate](RUST-SERVER-HOSTING.md).

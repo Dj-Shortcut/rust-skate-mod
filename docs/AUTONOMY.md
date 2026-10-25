@@ -9,7 +9,7 @@ owner and his friends on his own server without anti-cheat (it will never run on
 servers and is not a product for third parties). Skate feel and controls lead, with the
 new skate. as primary reference and Skate 3 secondary ([complete goal](SKATE-MOD.md),
 [first demo](archive/RUST-SKATE-DEMO.md), issue #408). No new work on gunplay, operators, loadouts
-or damage (#266, RUST-SERVER-MOD); that source stays as it is. Implementation, debugging
+or damage (#266); that source was removed from main on 25 October 2026 (branch `archive/mw2-rewrite`). Implementation, debugging
 and verification of the skate mod are authorized. Preserve historical work; use open-source
 code and original authored content, retaining licences.
 Keep game/server files outside GitHub, player text English and historical rewrite work.

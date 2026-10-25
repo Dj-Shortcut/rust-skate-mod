@@ -1,6 +1,6 @@
 # Rust PC server preparation
 
-Development bootstrap for [issue #266](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/266). [Loadout/damage source](../plugins/README.md) is included; real loading is unverified. The PowerShell scripts have not installed or started a real Windows Rust server. Do not treat them as a verified playable demo.
+Development bootstrap for a Rust/Oxide test server. The skate plugin is installed separately with [add-skate.sh](add-skate.sh). The PowerShell scripts have not installed or started a real Windows Rust server. Do not treat them as a verified playable demo.
 
 For Linux installation preparation and read-only preview, see [LINUX.md](LINUX.md). Native Linux installation/startup remains unverified.
 

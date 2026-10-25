@@ -27,9 +27,6 @@ OWNER_STEAMID=${OWNER_STEAMID:-}
 ALLOW_FROM=${ALLOW_FROM:-any}
 STEAMCMD_URL=${STEAMCMD_URL:-https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz}
 OXIDE_API=${OXIDE_API:-https://api.github.com/repos/OxideMod/Oxide.Rust/releases/latest}
-# Project plugin, pinned to a commit of this repository and checked against its SHA-256.
-PLUGIN_URL=${PLUGIN_URL:-https://raw.githubusercontent.com/Dj-Shortcut/mw2-rust-rust-rewrite/fd97f10736c4f0749f07e799ee50442f2ddff01b/mods/rust/plugins/ShortcutLoadouts.cs}
-PLUGIN_SHA256=${PLUGIN_SHA256:-ade96d31d5c03fc2adaa7f09e192211fb8511dcdb34539db8ceccac311bdf95e}
 
 export HOME=/root DEBIAN_FRONTEND=noninteractive NEEDRESTART_MODE=a
 mkdir -p "$(dirname "$STAGE_FILE")"
@@ -121,11 +118,6 @@ if url == expected and re.fullmatch(r"sha256:[0-9a-f]{64}", digest):
 
   stage "plugin and server identity"
   install -d -o rust -g rust "$ROOT/oxide" "$ROOT/oxide/plugins" "$ROOT/server" "$ROOT/server/$IDENTITY" "$ROOT/server/$IDENTITY/cfg"
-  if retry 3 10 curl -fsSL "$PLUGIN_URL" -o "$work/ShortcutLoadouts.cs" && echo "$PLUGIN_SHA256  $work/ShortcutLoadouts.cs" | sha256sum -c -; then
-    install -o rust -g rust -m 0644 "$work/ShortcutLoadouts.cs" "$ROOT/oxide/plugins/ShortcutLoadouts.cs"
-  else
-    echo "WARNING: ShortcutLoadouts.cs was not installed (download or checksum failed); the server still starts"
-  fi
   if [[ -n $OWNER_STEAMID ]]; then
     printf 'ownerid %s "owner" "bootstrap"\n' "$OWNER_STEAMID" > "$ROOT/server/$IDENTITY/cfg/users.cfg"
     chown rust:rust "$ROOT/server/$IDENTITY/cfg/users.cfg"
