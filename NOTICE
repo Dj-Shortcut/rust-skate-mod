@@ -14,59 +14,17 @@ authored by this project.
 skating and a Minecraft world to it.
 https://github.com/chasmlol/2010-rust-rewrite-mashup
 
---------------------------------------------------------------------------------
-Third-party material bundled with this repository
---------------------------------------------------------------------------------
-
-Both fonts below are compiled into the IW4L binary with `include_bytes!`, so
-they are redistributed with every build. Any archive that ships an IW4L binary
-ships these two licence texts with it.
-
-Oxanium (crates/ui/assets/Oxanium-Regular.ttf)
-  Copyright 2019 The Oxanium Project Authors
-  https://github.com/sevmeyer/oxanium
-  SIL Open Font License 1.1 — full text in crates/ui/assets/OFL-Oxanium.txt
-
-GNU FreeFont (crates/console/assets/FreeMono.otf)
-  Copyright (C) 2002-2012 Free Software Foundation, Inc.
-  https://www.gnu.org/software/freefont/
-  GNU General Public License v3 or later, with the GNU font exception — full
-  text in crates/console/assets/COPYING-FreeFont.txt. The exception is what
-  makes embedding the font in an Apache-2.0 binary possible: a document or
-  program that merely uses the font is not thereby covered by the GPL. The
-  font itself is unmodified and remains under the GPL.
+This repository is now the Rust PC skate mod. The IW4L and mashup engine
+sources were removed from main on 25 October 2026 and remain in the git tag
+archive/mw2-rewrite. The xtask publish-check and the repository scripts are
+derived from IW4L and keep its Apache-2.0 licence.
 
 --------------------------------------------------------------------------------
 Third-party source code
 --------------------------------------------------------------------------------
 
-This repository carries the public IW4L and 2010 Rust Rewrite Mashup sources.
-Its Cargo dependencies remain under their respective licences. It also carries
-the following public engine sources in-tree as inherited from that mashup. The
-project's Apache-2.0 licence applies to its own code only; it does not relicense
-the inherited material below:
-
-skate/ — engine crates from SK8-ENGINE/skate-3-rust-engine, revision cb79689,
-  and the inherited skating integration/data converter.
-  https://github.com/SK8-ENGINE/skate-3-rust-engine
-  The upstream project describes its code as based on Skate 3 reverse-
-  engineering research and states that its original code is GPL-3.0-only.
-  Preserve that licence for this inherited tree; the top-level Apache-2.0
-  declaration does not relicense it. Some inherited comments/constants refer
-  to Xbox 360 TU3 executable addresses and values learned from the executable.
-  The legacy converter reads an external Skate 3 installation. No proprietary
-  Skate 3 executable, model, texture, animation or sound data is bundled.
-
-third_party/minecraftoss/ — five crates of MinecraftOSS, a Rust Minecraft
-  engine, copied from its commit 4013a68 (see its README). Its few data
-  tables are gameplay values measured from Minecraft (food, waxing and
-  dispenser rules). No Minecraft code, JARs, textures or sounds are included:
-  the inherited optional Minecraft mode downloads Minecraft's files from
-  Mojang on first run. It is not the standalone survival game's content path.
-  The vendored snapshot contains no licence file or licence declaration. Its
-  licence has not been independently established; do not treat it as
-  Apache-2.0 or redistribute it as release content until MinecraftOSS confirms
-  the applicable licence.
+The project's Apache-2.0 licence applies to its own code only; it does not
+relicense the material below:
 
 mods/rust/client/generator/interop/pointer-byref.patch — a two-predicate
   correction to BepInEx/Il2CppInterop, source revision
@@ -84,21 +42,6 @@ mods/rust/shared/SkateAudio.cs — original project-authored procedural audio.
   filtered noise and damped resonators. No sampled game audio, commercial sample
   library, synthesizer preset or third-party sound asset is distributed. This
   source and its generated original waveforms use the project's Apache-2.0 licence.
-
-Bundled inherited/generated data with open provenance:
-
-crates/fx_iw4/data/fx_random_table.bin
-  This is byte-for-byte identical to the file in upstream IW4L and was
-  inherited from there. Neither repository currently records whether it was
-  authored, generated from public research, or copied from a game. Its origin
-  and redistribution permission remain to be confirmed with the IW4L author.
-
-crates/assets/data/minecraft/*-26.3.json.gz
-  These four compressed catalogs are exported by MinecraftOSS's harness for
-  the pinned Minecraft 26.3 data. They are not the Mojang client JAR or asset
-  objects. The launcher separately downloads Mojang's 26.3 files on first run.
-  Their exact licence and redistribution permission follow the unresolved
-  MinecraftOSS provenance above.
 
 --------------------------------------------------------------------------------
 References consulted during development
@@ -164,19 +107,9 @@ Ghidra — https://github.com/NationalSecurityAgency/ghidra
 Game content
 --------------------------------------------------------------------------------
 
-The standalone PC game is being built with newly authored content and public
-engine code, inspired by survival, military FPS and skateboard games. Its
-default launcher path uses assets/authored and requires no original game
-installation. Optional inherited modes differ: IW4L/MW2 import reads a user's
-MW2 install; the Skate converter reads an extracted Skate 3 Xbox 360
-default.xex with its data folder; the Minecraft mode downloads Minecraft 26.3
-files from Mojang and uses the inherited MinecraftOSS catalogs. Procedural
-building materials are authored in this repository's WGSL renderer.
-
-No proprietary Call of Duty, Rust, Skate or Minecraft game assets are bundled.
-The inherited optional IW4L import modes can read an external game installation;
-their presence does not mean those files are included or needed by the planned
-standalone content path.
+The skate mod uses newly authored park models (assets/authored, CC0-1.0),
+procedural audio and the game's own Rust content at runtime. No proprietary
+Call of Duty, Rust, Skate or Minecraft game assets are bundled.
 
 Call of Duty, Modern Warfare, Rust, Skate and other game names and trademarks
 belong to their respective owners. This project is unaffiliated with them.
