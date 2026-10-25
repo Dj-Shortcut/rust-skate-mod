@@ -50,6 +50,8 @@ public static class SkateKeys
     public static bool Pad, Analog, Charging;
     public static float Steer, Charge;
     public static bool Help;
+    public static int HelpPage;
+    private static int airGrabBlocked = SkateGrabCatalog.ModifierButtons;
     // Held in the air: the rider's turn, +1 to his right as the stick or the keys say, and the grab.
     public static float Spin;
     public static SkateGrabKind Grab;
@@ -73,7 +75,7 @@ public static class SkateKeys
         Push = Brake = Left = Right = Crouch = Jump = Manual = NoseManual = Analog = Charging = Help = false; Steer = Charge = Spin = wasSpin = 0f; PopScale = 1f;
         Grab = SkateGrabKind.None; PopKind = SkatePopKind.Ollie; Mongo = HandplantFront = HandplantBack = false; aTappedAt = -99f;
         EndStep(); SkatePad.DropPops(); JumpTap = ToggleTap = CameraTap = CrouchTap = false;
-        keyboardSuspended = true; stickPushBlocked = false; pumpPushButtons = 0; stanceSince = -1f;
+        keyboardSuspended = true; stickPushBlocked = false; pumpPushButtons = 0; stanceSince = -1f; HelpPage = 0; airGrabBlocked = SkateGrabCatalog.ModifierButtons;
     }
 
     public static void Poll()
@@ -86,7 +88,7 @@ public static class SkateKeys
         {
             padInputEpoch = SkatePad.InputEpoch;
             if (Pad) InputEpoch++;
-            stickPushBlocked = false; pumpPushButtons = 0;
+            stickPushBlocked = false; pumpPushButtons = 0; airGrabBlocked = SkateGrabCatalog.ModifierButtons;
         }
         var padDown = SkatePad.Pressed();
         SkatePadLog.Frame(now);
@@ -104,7 +106,7 @@ public static class SkateKeys
                 var heldPad = SkateRide.On && SkatePad.Shared;
                 stickPushBlocked = heldPad && SkatePad.LeftY > StickPush;
                 pumpPushButtons = heldPad ? SkatePad.Buttons & (SkatePad.A | SkatePad.X) : 0;
-                keyboardSuspended = true; stanceSince = -1f;
+                keyboardSuspended = true; stanceSince = -1f; airGrabBlocked = SkateGrabCatalog.ModifierButtons;
                 return;
             }
             var stanceKey = Down(kb.f2Key);
@@ -137,6 +139,7 @@ public static class SkateKeys
                 catch (Exception e) { helpKey = false; Out.Say("INPUT help key unavailable: " + e.GetType().Name + ": " + e.Message); }
             }
             Help = help || (SkatePad.Shared && SkateRide.On && (SkatePad.Buttons & SkatePad.Back) != 0);
+            if (Help && SkatePad.Shared && SkateRide.On && (padDown & (SkatePad.DpadLeft | SkatePad.DpadRight)) != 0) HelpPage = 1 - HelpPage;
             // The first readable frame establishes held keys; it cannot distinguish a new press
             // from one carried through chat, a missing keyboard or a ride reset.
             if (keyboardSuspended)
@@ -181,7 +184,6 @@ public static class SkateKeys
                 // Fresh A/X presses after extension still push; trigger + A/X plants below are unchanged.
                 Push = !lt0 && !rt0 && ((pushButtons & ~pumpPushButtons) != 0 || (!stickPushBlocked && straight && y > StickPush));
                 Mongo = (SkatePad.Buttons & SkatePad.X) != 0 && (SkatePad.Buttons & SkatePad.A) == 0;
-                HandplantFront = (SkatePad.Buttons & SkatePad.LeftBumper) != 0; HandplantBack = (SkatePad.Buttons & SkatePad.RightBumper) != 0;
                 // Only while the right stick is held back for the pop: a push tapped on its own stays a push.
                 if ((padDown & SkatePad.A) != 0 && SkatePad.Charging) aTappedAt = now;
                 if ((lt0 || rt0) && (padDown & (SkatePad.A | SkatePad.X)) != 0 && SkateRide.Mode != RideMode.Air)
@@ -210,7 +212,13 @@ public static class SkateKeys
                 Spin = Left ? -1f : Right ? 1f : 0f;
                 bool lt = SkatePad.LeftTrigger > SkatePad.Pulled, rt = SkatePad.RightTrigger > SkatePad.Pulled;
                 Crouch = lt || rt;
-                Grab = GrabOf(lt, rt, SkatePad.RightX, SkatePad.RightY, SkateRide.Goofy != (SkateRide.On && SkateRide.TailFirst));
+                var mirroredGrab = SkateRide.Goofy != (SkateRide.On && SkateRide.TailFirst);
+                var airGrab = SkateRide.Mode == RideMode.Air;
+                var grabButtons = SkateGrabCatalog.AirButtons(ref airGrabBlocked, airGrab, SkatePad.Buttons, padDown);
+                var basicGrab = GrabOf(lt, rt, SkatePad.RightX, SkatePad.RightY, mirroredGrab);
+                Grab = airGrab ? SkateGrabCatalog.Select(lt, rt, SkatePad.RightX, SkatePad.RightY, mirroredGrab, grabButtons, basicGrab) : basicGrab;
+                HandplantFront = (SkatePad.Buttons & SkatePad.LeftBumper) != 0 && !(airGrab && Grab != SkateGrabKind.None);
+                HandplantBack = (SkatePad.Buttons & SkatePad.RightBumper) != 0 && !(airGrab && Grab != SkateGrabKind.None);
                 Manual = SkatePad.Manual; NoseManual = SkatePad.NoseManual; Jump = false;
                 Charging = SkatePad.Charging; Charge = SkatePad.Charge;
                 BodyVarial += SkatePad.TakeBodyVarial();
@@ -225,7 +233,7 @@ public static class SkateKeys
             }
             else
             {
-                stickPushBlocked = false; pumpPushButtons = 0;
+                stickPushBlocked = false; pumpPushButtons = 0; airGrabBlocked = SkateGrabCatalog.ModifierButtons;
                 SkatePad.DropPops();
                 Analog = Charging = false; Charge = 0f; NoseManual = false;
                 Steer = (left ? -1f : 0f) + (right ? 1f : 0f);

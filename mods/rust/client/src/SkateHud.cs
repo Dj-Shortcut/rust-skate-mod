@@ -473,7 +473,7 @@ public static class SkateHud
     // Every controller trick, while Back is held on the board. Sides are those of a regular rider
     // going nose first; goofy, or rolling tail first, they are the other way round.
     private static readonly string[] PadTricks = {
-        "@RIGHT STICK ON THE GROUND   (sides for regular going nose first; goofy or fakie: mirrored)",
+        "@RIGHT STICK   BACK + D-PAD left/right for pages   (regular nose first; goofy/fakie: mirrored)",
         "back, flick forward: #Ollie   forward, flick back: #Nollie   back, flick to the forward right / left: #Kickflip / #Heelflip",
         "back, roll a quarter round to the right / left: #Pop Shove-it / #Frontside Pop Shove-it   half round: #360 Shove-it",
         "hold back-left / back-right, flick across to the opposite front: #Varial Kickflip / #Varial Heelflip",
@@ -496,13 +496,34 @@ public static class SkateHud
         "square onto an edge: stall; #LB / #RB held: frontside / backside #Handplant   flick to pop out",
     };
 
+    private static readonly string[] ExtendedGrabs = {
+        "@EXTENDED GRABS   hold BACK + D-PAD left/right for pages   (sides mirrored for goofy/fakie)",
+        "Keep a trigger held. Add #RB for tweaks; #A / #X free one foot; #B frees both feet. Release the grab before landing.",
+        "@RB + LT   centre / up / down / left / right",
+        "#Weddle / #Weddle Nosebone / #Weddle Tailbone / #Stiffy / #Tuck Knee",
+        "upper-left / upper-right: #FS / #BS Shifty Tail Grab   lower-left / lower-right: #FS / #BS Shifty Crail",
+        "@RB + RT   centre / up / down / left / right",
+        "#Backside Tweak / #Nose Tailbone / #Tail Nosebone / #Crossbone / #Japan Air",
+        "upper-left / upper-right: #FS / #BS Shifty Nose Grab   lower-left / lower-right: #FS / #BS Shifty Seatbelt",
+        "@RB + BOTH TRIGGERS   centre / up / down / left / right",
+        "#Rocket Air / #Double Nose Grab / #Double Tail Grab / #Double Left Grab / #Double Right Grab",
+        "upper-left / upper-right: #Stale FS / #BS Tuck Knee   lower-left / lower-right: #Stale Nosebone / #Stale Tailbone",
+        "@ONE FOOT   A / X with the basic grab (RB optional)",
+        "LT: #Frigid Air / #FS One-Foot   RT: #BS One-Foot / #Judo Air",
+        "Nose Grab: #Dog Piss / #Judo Nose Grab   Tail Grab: #One-Foot Tail Grab / #Benihana",
+        "@NO FEET   B with the basic grab",
+        "LT: #No-Foot Air   RT: #Christ Air   Nose: #Airwalk   Tail: #Tailwalk   both triggers: #Superdude",
+        "Buttons held from a ground plant or a menu must be released first. A naked bumper still asks for a handplant."
+    };
+
     private static void Tricks(float w, float k)
     {
+        var lines = SkateKeys.HelpPage == 0 ? PadTricks : ExtendedGrabs;
         float x = 40f * k, y = 96f * k, step = 25f * k, width = Math.Min(w - 80f * k, 1320f * k);
-        Box(x - 14f * k, y - 10f * k, width + 28f * k, (PadTricks.Length * 25f + 18f) * k, Fade(Dark, 0.72f));
-        for (var i = 0; i < PadTricks.Length; i++, y += step)
+        Box(x - 14f * k, y - 10f * k, width + 28f * k, (lines.Length * 25f + 18f) * k, Fade(Dark, 0.72f));
+        for (var i = 0; i < lines.Length; i++, y += step)
         {
-            var t = PadTricks[i];
+            var t = lines[i];
             if (t.StartsWith("@")) { Text(x, y + 4f * k, width, t.Substring(1), (int)(15 * k), Dim, 0, 1f); continue; }
             Text(x, y, width, Marked(t), (int)(16 * k), Ink, 0, 1f);
         }

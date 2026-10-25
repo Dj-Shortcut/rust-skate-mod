@@ -1,3 +1,4 @@
+using Shortcut.RustMod;
 // Rust/Standard is the game's own lit shader: a plugin-made mesh drawn with it takes the world's
 // light, casts a shadow and goes dark at night. It reads colours from a texture, not from the
 // vertices. Hidden/Internal-Colored draws vertex colours without light and is the fallback.
@@ -47,8 +48,6 @@ public static class SkateBoard
     public const float GrabRise = 0.3f;
     // A seatbelt takes the tail's toe corner (toe edge up, nose down), a crail the nose's (nose up);
     // a nosebone pushes the nose away with the front leg (nose down), a tailbone the tail (nose up).
-    private static readonly float[] grabRoll = { 0f, -15f, -20f, 25f, 0f, 0f, 0f, -20f, 15f, 15f, -30f, -40f, 0f, 0f };
-    private static readonly float[] grabPitch = { 0f, 0f, 0f, 0f, 0f, -15f, 15f, -8f, 12f, -12f, -6f, 8f, -18f, 18f };
     public static float GrabFold;
     // A no comply or a boneless: the front foot is down beside the board and the back foot kicks
     // the tail, so the nose comes up about the back foot and the board rises with it. Plant (0..1)
@@ -59,13 +58,14 @@ public static class SkateBoard
     // (the feet are near the middle, where the tweak moves the deck least).
     public static Quaternion GrabTweak(Vector3 up)
     {
-        var g = (int)RiderRig.ShownGrab;
-        if (SkateRide.Mode != RideMode.Air || g <= 0 || g >= grabRoll.Length || GrabFold <= 0.001f) return Quaternion.identity;
-        var nose = SkateRide.Dir(SkateRide.NoseYaw); nose = nose - up * Vector3.Dot(nose, up);
+        var kind = RiderRig.ShownGrab;
+        if (SkateRide.Mode != RideMode.Air || kind == SkateGrabKind.None || !SkateGrabCatalog.Valid(kind) || GrabFold <= 0.001f) return Quaternion.identity;
+        var grab = SkateGrabCatalog.Get(kind);
+        var nose = SkateRide.Dir(SkateRide.DeckYaw); nose = nose - up * Vector3.Dot(nose, up);
         if (nose.sqrMagnitude < 0.0001f) return Quaternion.identity;
         nose = nose.normalized;
         var toe = Vector3.Cross(up, nose);
-        return SkateRide.Turn(-grabRoll[g] * GrabFold, nose) * SkateRide.Turn(-grabPitch[g] * GrabFold, toe);
+        return SkateRide.Turn(-(float)grab.Roll * GrabFold, nose) * SkateRide.Turn(-(float)grab.Pitch * GrabFold, toe) * SkateRide.Turn((float)grab.Yaw * GrabFold, up);
     }
 
     // A grind or a stall holds the deck its own way (SkateRider.GrindDeck): eased toward it while
