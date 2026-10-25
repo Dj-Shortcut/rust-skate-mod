@@ -309,6 +309,9 @@ namespace Shortcut.RustMod
             double flip = angle > StraightSpreadDegrees && angle <= FlipSpreadDegrees ? ((x < 0) != mirrored ? 1 : -1) : 0;
             double shove = 0;
             if (flip != 0 && state.SideLead == -Math.Sign(x)) shove = -flip * 360;
+            // A side lead and a back setup distinguish the full same-side scoop from a varial's
+            // diagonal setup, which keeps its existing half shove even after touching the side.
+            else if (flip != 0 && state.SideLead == Math.Sign(x) && state.SetupSide == 0) shove = flip * 360;
             else if (flip != 0 && state.SetupSide == -Math.Sign(x)) shove = -flip * 180;
             else if (Math.Abs(state.SweepDegrees) >= HalfSweepDegrees)
                 shove = -Math.Sign(state.SweepDegrees) * (mirrored ? -360 : 360);
