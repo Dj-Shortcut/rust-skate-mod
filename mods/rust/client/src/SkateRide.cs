@@ -75,6 +75,7 @@ public static class SkateRide
     public static float SlopeDegrees;
     public static SkatePumpState Pump = default(SkatePumpState);
     private static uint pumpInputEpoch;
+    private static uint jumpInputEpoch;
     public static Vector3 ContactNormal = Vector3.up;
     public static string PhysicsError = "";
     public static SkateGrindKind GrindKind;
@@ -356,7 +357,7 @@ public static class SkateRide
             Measure(pos, dt);
             Sense(pos);
             if (Mode != RideMode.Grind) SkateGrind.Tick(dt);
-            if (SkateKeys.JumpPressed) { jumpWanted = now; wantKind = SkateKeys.PopKind; wantFlip = SkateKeys.PopFlip; wantShove = SkateKeys.PopShove; wantScale = SkateKeys.PopScale; wantSpecial = SkateKeys.PopSpecial; wantSpecialDirection = SkateKeys.PopSpecialDirection; }
+            if (SkateKeys.JumpPressed) { jumpWanted = now; jumpInputEpoch = SkateKeys.InputEpoch; wantKind = SkateKeys.PopKind; wantFlip = SkateKeys.PopFlip; wantShove = SkateKeys.PopShove; wantScale = SkateKeys.PopScale; wantSpecial = SkateKeys.PopSpecial; wantSpecialDirection = SkateKeys.PopSpecialDirection; }
             GroundGrabTick(dt);
             if (Mode == RideMode.Ground) GroundStep(dt);
             else if (Mode == RideMode.Air) AirStep(pos, dt);
@@ -652,6 +653,11 @@ public static class SkateRide
 
     private static void GroundGrabTick(float dt)
     {
+        // Keep a fresh pop/plant alive only through this bounded release, under the same input owner.
+        // Regripping, opening a menu or losing support cancels it instead of replaying it later.
+        if (GroundGrab.Active && now - jumpWanted >= 0 && now - jumpWanted < 0.12f)
+            jumpWanted = Mode == RideMode.Ground && Grounded && (SkateKeys.Scripted || SkateKeys.ControlsActive) &&
+                jumpInputEpoch == SkateKeys.InputEpoch && SkateKeys.GroundGrab == SkateGroundGrabKind.None ? now : -99f;
         if (Mode != RideMode.Ground)
         {
             SkateGroundGrabResult release; string releaseError;
@@ -660,7 +666,7 @@ public static class SkateRide
             return;
         }
         var eligible = (SkateKeys.Scripted || SkateKeys.ControlsActive) && Grounded && Math.Abs(Speed) >= 0.5f &&
-            PushPhase <= 0 && !Manual && !NoseManual && !SkateKeys.Charging && now - jumpWanted >= 0.12f;
+            PushPhase <= 0 && RevertLeft == 0 && !Manual && !NoseManual && !SkateKeys.Charging && now - jumpWanted >= 0.12f;
         SkateGroundGrabResult r; string error;
         if (!SkateGroundGrabs.TryStep(GroundGrab, SkateKeys.GroundGrab, eligible, dt, out r, out error))
         { GroundGrab = default(SkateGroundGrabState); Out.Say("SKATE ground grab refused: " + error); return; }
@@ -723,7 +729,7 @@ public static class SkateRide
             Yaw += SteerRate * dt;
         }
         else Yaw += Clamp(Delta(Yaw, SkateKeys.LookYaw + ((SkateKeys.Left ? -1f : 0f) + (SkateKeys.Right ? 1f : 0f)) * 40f), -maxTurn, maxTurn);
-        if (!GroundGrab.Active && now - jumpWanted >= 0.12f) Revert(dt);
+        if (RevertLeft != 0 || !GroundGrab.Active && now - jumpWanted >= 0.12f) Revert(dt);
         var dir = RevertLeft != 0f ? revertDir * revertSign : Dir(Yaw);
         var tangent = SurfaceTangent(Normal, dir);
         // The shared physics: gravity along the tangent of the ground, the slope signed by the way of
