@@ -194,6 +194,9 @@ its own player aim and selected kind, rather than trusting client coordinates. T
 planner stays paused during skate-building mode, so its old Rust wall/foundation selection
 cannot leak a normal building action or charge. Pending selections are serialized. A reply
 timeout requests `off`; native building resumes only after the `off` reply or re-equipping.
+A pending or unconfirmed placement also blocks choosing another piece. Its matching result,
+or a confirmed return to Rust building, must clear the old attempt first. Payment-review
+warnings remain visible while the wheel is open.
 No reply, a refused command, a missing local planner or an unavailable connection is
 reported honestly; no client-side wood is removed. The server verifies the held plan,
 placement and **10 Wood per successfully completed piece**. It does not charge for a
@@ -206,7 +209,8 @@ Rust's native cursor requests instead of one-shot cursor flags. That version ope
 open in the native game, but selecting Low Ledge was immediately followed by an unwanted
 server `off` reply. Version .46 bounds the cursor-release transition without cancelling the
 matching selection. The native Rust preview still remained visible in .45. Two-way switching,
-the corrected selection, actual placement and controller operation remain unverified in .46.
+the corrected selection, actual placement and controller operation remain unverified in .46/.47.
+Version .47 preserves an unresolved placement when the wheel is reopened to choose another piece.
 Compilation and controlled input checks do not close those gameplay gates.
 
 A server line can reach the client without a hook only as text: `SkateInbox` reads the BepInEx log
