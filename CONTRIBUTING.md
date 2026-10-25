@@ -3,7 +3,7 @@
 Welcome! The goal is an existing-Rust PC mod with MW2-inspired gunplay and
 skateboarding. Current source supplies the permission-controlled loadout/PvP
 component only; full gunplay/skating and their client route remain unfinished.
-Read [full acceptance](docs/RUST-MW2-SKATE.md), [the component plan](docs/RUST-SERVER-MOD.md) and [TODO.md](TODO.md) before
+Read [full acceptance](docs/SKATE-MOD.md), [the component plan](docs/archive/RUST-SERVER-MOD.md) and [TODO.md](TODO.md) before
 contributing. The standalone Rust/Bevy game is parked; its source and historical
 verification remain available. Coordinate documentation, setup and focused mod
 work through issues and PRs. [Plugin source](mods/rust/plugins/README.md) is
@@ -56,7 +56,7 @@ intend to deliver rather than claiming an entire roadmap category.
 ## Build and run the parked standalone game
 
 Install Rust through rustup and the system dependencies in
-[docs/BUILD.md](docs/BUILD.md). Fork the repository on GitHub, then replace
+[docs/BUILD.md](docs/archive/BUILD.md). Fork the repository on GitHub, then replace
 `YOUR_USERNAME` below with your account name:
 
 ```bash

@@ -1,6 +1,6 @@
 # Rider lifecycle and control fencing
 
-Part of [the full existing-Rust mod](RUST-MW2-SKATE.md); [task #283](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/283).
+Part of [the full existing-Rust mod](../SKATE-MOD.md); [task #283](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/283).
 Status: source compiled against genuine server Mono references; 115 temporary actual-DLL cases pass.
 
 ## Boundary and API

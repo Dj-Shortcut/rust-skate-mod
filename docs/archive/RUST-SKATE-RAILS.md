@@ -1,6 +1,6 @@
 # Shared skateboard rail contract
 
-[Issue #281](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/281) extends the [skate source](RUST-SKATE-CORE.md) for the [full mod](RUST-MW2-SKATE.md).
+[Issue #281](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/281) extends the [skate source](RUST-SKATE-CORE.md) for the [full mod](../SKATE-MOD.md).
 Original C#7.3 source implements bounded rail math and preserves existing calls and enum values. Native rail gameplay remains missing; see the [collider binding](RUST-SKATE-RAIL-BINDING.md).
 
 ## Trusted contacts and definitions
@@ -45,6 +45,6 @@ Root compiled the actual DLL against genuine framework references without errors
 All 69 existing and 118 rail scenarios pass. Ignored probes cover bounds/copying, actual
 collider identity, capture directions/rejections, snap/travel/exit obstruction,
 endpoints/remainder, jump edges, stale rails, cooldown and late-query atomic failure.
-No permanent tests, game files, offsets or probes ship. Record results in [TODO](../TODO.md).
+No permanent tests, game files, offsets or probes ship. Record results in [TODO](../../TODO.md).
 Native colliders/adapters, visible board/rider, animation, two-client authority,
 cleanup/lifecycle and the full player flow remain unverified; this is not a playable mod.

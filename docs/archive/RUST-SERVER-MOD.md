@@ -1,8 +1,8 @@
 # Loadout and damage component for existing Rust
 
-Component: [issue #266](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/266). Full goal: [MW2 gunplay and skate](RUST-MW2-SKATE.md).
+Component: [issue #266](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/266). Full goal: [MW2 gunplay and skate](../SKATE-MOD.md).
 The standalone Rust/Bevy rewrite and its automatic loop are parked.
-Setup and [plugin sources](../mods/rust/plugins/README.md) exist; no playable mod is verified.
+Setup and [plugin sources](../../mods/rust/plugins/README.md) exist; no playable mod is verified.
 
 ## Player flow and boundaries
 
@@ -20,7 +20,7 @@ All commands, configuration feedback and player messages must be English.
 
 ## First setup milestone
 
-Scripts: [`mods/rust/server/README.md`](../mods/rust/server/README.md), published after design.
+Scripts: [`mods/rust/server/README.md`](../../mods/rust/server/README.md), published after design.
 Install official SteamCMD app 258550, then matching official Oxide.
 Use a new `%LOCALAPPDATA%\CodexRustServer` root; reject an existing destination
 or one inside a Git checkout. Never reset, delete or overwrite an old world.
@@ -46,5 +46,5 @@ and intended-client join with recorded EAC/startup mode. Source checks are narro
 Accept the later plugin after permission/cooldown/config/inventory failure flows,
 two-client firearm damage, unchanged excluded targets, reload and removal pass
 on recorded real Rust/Oxide versions. Carbon needs separate verification.
-Mac source access works; [Windows startup](../mods/rust/server/README.md) and
-[Linux installation](../mods/rust/server/LINUX.md) need native hosts. The selected Linux host now has verified installation, startup, authenticated loopback control, save/reload and bounded plugin checks. Shadow join and real player/two-client acceptance remain open. See the [hosting gate](RUST-SERVER-HOSTING.md).
+Mac source access works; [Windows startup](../../mods/rust/server/README.md) and
+[Linux installation](../../mods/rust/server/LINUX.md) need native hosts. The selected Linux host now has verified installation, startup, authenticated loopback control, save/reload and bounded plugin checks. Shadow join and real player/two-client acceptance remain open. See the [hosting gate](../RUST-SERVER-HOSTING.md).

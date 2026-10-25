@@ -1,6 +1,6 @@
 # Native player input for rider controls
 
-Part of [the full existing-Rust mod](RUST-MW2-SKATE.md); [task #329](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/329).
+Part of [the full existing-Rust mod](../SKATE-MOD.md); [task #329](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/329).
 Status: genuine reader source and bounded native decoding verified; live capture pending.
 
 ## Scope and admission

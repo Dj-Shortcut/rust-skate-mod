@@ -78,7 +78,7 @@ loadout failure: T chat actually contains `/loudaout carbinew`, followed by
 `/loadout carbine`; all five loadout/persistence checks remain unrun. Severe
 Shadow lag was reported and live screen control timed out, but the recording
 was inspected locally. No plugin registration failure is established and no
-plugin behavior changed. See the [ordered results](RUST-SERVER-PLUGIN.md#first-shadow-player-check).
+plugin behavior changed. See the [ordered results](archive/RUST-SERVER-PLUGIN.md#first-shadow-player-check).
 A join alone is setup evidence, not a completed loadout playtest.
 No new rental, paid backup or paid change was made. The existing Droplet remains
 billable while it exists. Addresses, account identifiers and raw reports stay
@@ -120,7 +120,7 @@ Authenticated status at 14:45:44 UTC confirmed the owner as the sole active
 player, with the observed source matching the window rule. The owner confirmed
 one Assault Rifle and 120 Rifle Ammo after `/loadout carbine`. This is
 owner-reported inventory evidence, not an independent client capture. The
-[remaining ordered checks](RUST-SERVER-PLUGIN.md#return-session--9-october-2026)
+[remaining ordered checks](archive/RUST-SERVER-PLUGIN.md#return-session--9-october-2026)
 are still open. No plugin behavior, rental or paid service changed.
 
 Root leaves Shadow input to the owner. Concurrent input was suggested as a lag

@@ -1,6 +1,6 @@
 # Shared board and rider pose
 
-Part of [the full mod](RUST-MW2-SKATE.md); [task #307](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/307).
+Part of [the full mod](../SKATE-MOD.md); [task #307](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/307).
 Turns a [skate core](RUST-SKATE-CORE.md) state into how the board and rider should look.
 Shared source only: no entity, animation, rendering or network adapter exists.
 

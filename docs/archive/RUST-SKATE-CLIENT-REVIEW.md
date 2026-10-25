@@ -54,4 +54,4 @@ SHA-256 of the reviewed main files:
 
 No client edits/build/execution, Shadow PC or server use. Native occurrence of these
 source scenarios, lifecycle/feel/audio/grind and second-client acceptance were not
-verified. See [reported native facts](RUST-SKATE-CLIENT.md) and [remaining work](../TODO.md).
+verified. See [reported native facts](../RUST-SKATE-CLIENT.md) and [remaining work](../../TODO.md).

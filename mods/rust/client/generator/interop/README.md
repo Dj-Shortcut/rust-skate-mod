@@ -282,7 +282,7 @@ recheck/cleanup failures were reported. The actual staged Generator SHA256 is
 `364e6baa9c6ad50456a45aa056d97879ec759c9404ec3a98d2864bbea33c591e`,
 with product version 1.5.3. The result and observation digest were read from the
 live Windows console; the full report has not been copied to the Mac. See the
-[native build result and exact limits](../../../../../docs/RUST-CLIENT-LOADER.md#actual-windows-pointer-generator-build).
+[native build result and exact limits](../../../../../docs/archive/RUST-CLIENT-LOADER.md#actual-windows-pointer-generator-build).
 This proves source-build/staging completion only; no fresh generation, candidate
 acceptance, installation or game start followed from this build.
 

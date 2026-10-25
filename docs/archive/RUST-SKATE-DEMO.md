@@ -1,6 +1,6 @@
 # First reliable Rust skatepark demo
 
-[Issue #408](https://github.com/Dj-Shortcut/mw2-rust-skate-rewrite/issues/408) orders the work under [the full mod goal](RUST-MW2-SKATE.md). The existing Rust PC game supplies survival, building and TC rules. The standalone rewrite remains parked. New `skate.` is the primary skating reference; Skate 3 is secondary.
+[Issue #408](https://github.com/Dj-Shortcut/mw2-rust-skate-rewrite/issues/408) orders the work under [the full mod goal](../SKATE-MOD.md). The existing Rust PC game supplies survival, building and TC rules. The standalone rewrite remains parked. New `skate.` is the primary skating reference; Skate 3 is secondary.
 
 ## Completion means one repeatable player flow
 
@@ -11,9 +11,9 @@
 - [ ] Demonstrate reconnect/unload and duplicate-callback recovery without lost items, untracked carriers or replacement while cleanup is unresolved. Retain existing server ownership, build privilege and payment/refund rules.
 - [ ] Record actual integrated in-game controller evidence for this flow, including a failed placement and recovery. English contextual hints, readable rider/board/landing view and audible movement/landing belong to acceptance.
 
-These boxes remain open until their stated evidence exists. Compiler checks, headless fixtures, source screenshots and upstream test assertions cannot complete native acceptance. Before taking implementation, build, validation or integration work, read the current claims and merge/install instructions in [#337](https://github.com/Dj-Shortcut/mw2-rust-skate-rewrite/issues/337), #408 and the relevant open issue/PR, following [AUTONOMY](AUTONOMY.md).
+These boxes remain open until their stated evidence exists. Compiler checks, headless fixtures, source screenshots and upstream test assertions cannot complete native acceptance. Before taking implementation, build, validation or integration work, read the current claims and merge/install instructions in [#337](https://github.com/Dj-Shortcut/mw2-rust-skate-rewrite/issues/337), #408 and the relevant open issue/PR, following [AUTONOMY](../AUTONOMY.md).
 
-The half-wall kicker attachment and modular mega-halfpipe remain in #408. Source contracts for the one-cell mini and three-cell L quarterpipes are [available for client integration](../mods/rust/shared/README.md#one-cell-mini-and-three-cell-l-quarterpipes); native acceptance remains open. Preserve the calibrated mapping. A new lower-level transport and undo feature are outside this baseline; no deadline is set.
+The half-wall kicker attachment and modular mega-halfpipe remain in #408. Source contracts for the one-cell mini and three-cell L quarterpipes are [available for client integration](../../mods/rust/shared/README.md#one-cell-mini-and-three-cell-l-quarterpipes); native acceptance remains open. Preserve the calibrated mapping. A new lower-level transport and undo feature are outside this baseline; no deadline is set.
 
 The held-item application identity protocol is part of this demo: first demonstrate the native receipt route, then implement the version/session/sequence/UID/kind, explicit-clear and expiry contract in [the inbox gate](RUST-SKATE-INBOX.md). Picker choice or arbitrary log text cannot establish identity; native placement/payment checks remain authoritative.
 
@@ -41,4 +41,4 @@ REA-authored code is MIT. Preserve applicable licences for any future imported m
 
 ## Integration and evidence
 
-Follow current claims in the linked tasks: [the inbox gate](RUST-SKATE-INBOX.md) needs native receipt before held-item transport; #406 covers flick rearming; #409/#410 cover rollback momentum/scanner recovery; #411 guards pending-item transfers; #413 tracks duplicate-carrier cleanup. No single component completes the demo. Update #408 with integrated native evidence before checking off this goal in [TODO](../TODO.md).
+Follow current claims in the linked tasks: [the inbox gate](RUST-SKATE-INBOX.md) needs native receipt before held-item transport; #406 covers flick rearming; #409/#410 cover rollback momentum/scanner recovery; #411 guards pending-item transfers; #413 tracks duplicate-carrier cleanup. No single component completes the demo. Update #408 with integrated native evidence before checking off this goal in [TODO](../../TODO.md).

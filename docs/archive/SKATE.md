@@ -71,13 +71,13 @@ Both folders are saved in `.env` next to `iw4l.exe`. Delete `.env` (and
 
 | piece | where | what |
 |---|---|---|
-| skate simulation | [`skate/crates`](../skate/crates) | Skate 3 physics, animation graph and grind code from [SK8-ENGINE/skate-3-rust-engine](https://github.com/SK8-ENGINE/skate-3-rust-engine) at `cb79689`, run as a worker the soldier hands control to |
-| skate mode | [`crates/render_anim/src/skate.rs`](../crates/render_anim/src/skate.rs) | toggling, feeding MW2 map collision to the skate world, posing the soldier from the skater |
-| grind rails | [`crates/render_anim/src/skate/rails.rs`](../crates/render_anim/src/skate/rails.rs) | finds grindable lips in any map's collision: walkable edges where the ground drops away and nothing rises, merged and chained into rails |
-| retarget | [`crates/render_anim/src/skate/rig.rs`](../crates/render_anim/src/skate/rig.rs) | maps Skate 3 bones onto the MW2 soldier skeleton |
-| board | [`crates/assets/src/skate_board.rs`](../crates/assets/src/skate_board.rs) | derives `board.json` and `rig.json` from the converted skater model on first run |
-| setup | [`crates/launcher/src/first_run.rs`](../crates/launcher/src/first_run.rs) | the double-click flow: find MW2, pick `default.xex`, run the converter, write `.env` |
-| converter | [`skate/converter`](../skate/converter) | `iw4l-skate-convert.exe`: runs only the skate engine's core and skater exports on the player's own `default.xex` |
+| skate simulation | [`skate/crates`](../../skate/crates) | Skate 3 physics, animation graph and grind code from [SK8-ENGINE/skate-3-rust-engine](https://github.com/SK8-ENGINE/skate-3-rust-engine) at `cb79689`, run as a worker the soldier hands control to |
+| skate mode | [`crates/render_anim/src/skate.rs`](../../crates/render_anim/src/skate.rs) | toggling, feeding MW2 map collision to the skate world, posing the soldier from the skater |
+| grind rails | [`crates/render_anim/src/skate/rails.rs`](../../crates/render_anim/src/skate/rails.rs) | finds grindable lips in any map's collision: walkable edges where the ground drops away and nothing rises, merged and chained into rails |
+| retarget | [`crates/render_anim/src/skate/rig.rs`](../../crates/render_anim/src/skate/rig.rs) | maps Skate 3 bones onto the MW2 soldier skeleton |
+| board | [`crates/assets/src/skate_board.rs`](../../crates/assets/src/skate_board.rs) | derives `board.json` and `rig.json` from the converted skater model on first run |
+| setup | [`crates/launcher/src/first_run.rs`](../../crates/launcher/src/first_run.rs) | the double-click flow: find MW2, pick `default.xex`, run the converter, write `.env` |
+| converter | [`skate/converter`](../../skate/converter) | `iw4l-skate-convert.exe`: runs only the skate engine's core and skater exports on the player's own `default.xex` |
 
 ## Building
 

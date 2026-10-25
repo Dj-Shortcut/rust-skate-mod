@@ -7,7 +7,7 @@ along edges, bails, a score with combos, a rider pose on the game's own player m
 behind, sounds and a score display. It is ridden with a
 controller, laid out as in the skate. games, or with keys. It belongs to
 [#337](https://github.com/Dj-Shortcut/mw2-rust-skate-rewrite/issues/337) and the
-[complete flow](../../../docs/RUST-MW2-SKATE.md); the calculations it shares with the server
+[complete flow](../../../docs/SKATE-MOD.md); the calculations it shares with the server
 plugin are in [`../shared`](../shared/README.md).
 
 The plugin is loaded by BepInEx (IL2CPP). On the client that runs it, it changes the velocity of

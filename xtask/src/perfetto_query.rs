@@ -275,7 +275,7 @@ fn resolve_trace_path(root: &Path, arg: Option<&Path>) -> Result<PathBuf, String
             Err(format!("no such trace: {}", path.display()))
         }
         None => newest_trace(root).ok_or_else(|| {
-            "no trace.pftrace under iw4l-artifacts/runs — record with IW4L_PERF=1 (docs/PERF.md)"
+            "no trace.pftrace under iw4l-artifacts/runs — record with IW4L_PERF=1 (docs/archive/PERF.md)"
                 .into()
         }),
     }?;
@@ -316,7 +316,7 @@ fn newest_trace(root: &Path) -> Option<PathBuf> {
 fn refuse_sqlite(path: &Path) -> Result<(), String> {
     if path.extension().and_then(|e| e.to_str()) == Some("sqlite") {
         return Err(
-            "refusing SQLite — performance and observation truth is .pftrace (docs/PERF.md)".into(),
+            "refusing SQLite — performance and observation truth is .pftrace (docs/archive/PERF.md)".into(),
         );
     }
     Ok(())

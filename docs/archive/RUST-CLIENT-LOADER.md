@@ -1,5 +1,5 @@
 # Exact Rust Windows client-loader gate
-Part of [full acceptance](RUST-MW2-SKATE.md) / [diagnosis #289](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/289): official loader failed, bare recovery passed.
+Part of [full acceptance](../SKATE-MOD.md) / [diagnosis #289](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/289): official loader failed, bare recovery passed.
 Development evidence only; no installation or owner playtest.
 ## Actual Windows observations, 6 October 2026
 Mac native control reached Shadow Windows. Bare EAC-disabled RustClient.exe reached responsive Home/Options and normal exit:
@@ -30,7 +30,7 @@ Validate table strides, owners and parameter spans before interpreting accessor 
 Five original mechanism fixtures used explicit cache scaffolding; actual Windows
 metadata parsing now separately found 175 empty and 938 nonempty getterless setters.
 Checked owner/accessor/parameter relationships passed; full byte geometry is pending.
-[Correction source/build](../mods/rust/client/generator/README.md) preserves indices/methods;
+[Correction source/build](../../mods/rust/client/generator/README.md) preserves indices/methods;
 omits only noninferable wrappers; invalid relationships and output references fail.
 Previous correction (.1): clean Mac source build passed (41 nullable/source-link warnings/0 errors), 54 DLL fixture checks
 and two original-DLL reproductions. The first Windows source build stopped before
@@ -41,7 +41,7 @@ Patched LoadFromFile returned true with unchanged retail hashes; original crash 
 All 71,422 RawPropertyType metadata getters were invoked: 44,622 resolved, 175 tagged getterless empty setters,
 26,625 getter-plus-empty-setter exceptions, all classified by the explicit no-value guard.
 Raw getter scan: 26,618 VOID, seven non-VOID, zero nulls/errors.
-[Bounded accessor correction](../mods/rust/client/generator/README.md#bounded-accessor-correction)
+[Bounded accessor correction](../../mods/rust/client/generator/README.md#bounded-accessor-correction)
 omits VOID/empty-setter wrappers, preserves non-VOID getters and rejects suppressed-setter references.
 The .2 Mac build passed (41 warnings, 0 errors) and 106 authored DLL checks passed,
 including 16 serialized V29 payload cases. Generic local-index resolution is unsupported.
@@ -54,7 +54,7 @@ First managed BuildAssemblies then failed with four type failures, each
 raw VOID getters among the resolved count: 22,574 without setters, 14 with one-parameter
 setters, none getterless. No output libraries or installation were produced.
 
-The [remaining bounded correction](../mods/rust/client/generator/README.md#remaining-void-getter-correction)
+The [remaining bounded correction](../../mods/rust/client/generator/README.md#remaining-void-getter-correction)
 omits these wrappers after relationship validation, retains methods/slots and rejects
 managed VOID interface getters before association. Its .3 source builds on Mac with
 41 warnings and zero errors; all 182 authored DLL checks pass.
@@ -219,7 +219,7 @@ acceptance remain separate open gates.
 
 ## Pointer-byref generator source correction, 7 October 2026
 
-The [separate pinned Il2CppInterop recipe](../mods/rust/client/generator/interop/README.md)
+The [separate pinned Il2CppInterop recipe](../../mods/rust/client/generator/interop/README.md)
 implements the two-predicate design from #295. Direct pointer elements use existing
 byref storage-address handling in ordinary methods and the shared unstrip helper;
 no pointer-object temporary or constructor copyback is emitted. Original source
@@ -315,7 +315,7 @@ the exception fallback and are not counted as successful translations. The actua
 getter route and its strict reread binding pass. The baseline reproduces nine missing methods;
 both actual serialized boundaries require zero candidate misses. Input hashes remain preserved.
 These are macOS source/authored checks, not complete recipe staging or native generation.
-[Detailed scope and build limits](../mods/rust/client/generator/interop/README.md#authored-nested-method-verification).
+[Detailed scope and build limits](../../mods/rust/client/generator/interop/README.md#authored-nested-method-verification).
 The later authenticated Windows recipe/staging and
 [fresh generation](#actual-windows-authenticated-preparation-and-fresh-generation) are recorded below.
 Full191-assembly original/member checks before strict roundtrips, sidecars and
@@ -613,7 +613,7 @@ full-inventory, permission and save/restart/rejoin checks were not completed;
 join/spawn alone is not a loadout playtest. That window was closed and the server
 was saved/stopped with external game/query ports blocked. A new player session
 and a second EAC-disabled client for PvP damage remain separate checks. See
-[native server evidence](../mods/rust/server/LINUX.md#native-startup-and-control-evidence).
+[native server evidence](../../mods/rust/server/LINUX.md#native-startup-and-control-evidence).
 
 The owner playtests after source completion and verification of the complete
 MW2/skate flow. Any further rental or paid hosting change requires the owner's

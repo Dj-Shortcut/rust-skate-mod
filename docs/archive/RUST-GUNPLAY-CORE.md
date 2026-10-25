@@ -1,6 +1,6 @@
 # Shared gunplay timing and handling core
 
-[Issue #279](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/279) is a source slice of the [full Rust mod](RUST-MW2-SKATE.md).
+[Issue #279](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/279) is a source slice of the [full Rust mod](../SKATE-MOD.md).
 Original C#7.3 source under `mods/rust/shared/`; no native adapter yet.
 This core does not supply complete MW2 gunplay or a playable mod.
 
@@ -42,7 +42,7 @@ spread/recoil are bounded. Apply recoil once; native adapters must respect stock
 Compile actual production source against genuine framework references; temporary
 probes exercise timing boundaries, semi/auto edges, reload conservation, switching,
 mode transitions, handling outputs and malformed-input rejection. No fake game APIs.
-No permanent tests, game binaries, offsets or probes ship. Record evidence in [TODO](../TODO.md).
+No permanent tests, game binaries, offsets or probes ship. Record evidence in [TODO](../../TODO.md).
 Build: `dotnet build mods/rust/shared/Gunplay.csproj -p:RustManagedPath=...`.
 Client IL2CPP compatibility, real recoil/ADS/input, inventory transactions, native
 firing, survival interactions, networking and two-client play remain unverified.

@@ -119,7 +119,7 @@ play: require-games
 BENCH_DEMO ?= $(DEMO)
 # The live-map script has to serve both halves: load the map, then stay long
 # enough that section two has gameplay frames to count. `force_match_start`
-# skips the 20 s warmup the controls are frozen through (docs/RUN.md).
+# skips the 20 s warmup the controls are frozen through (docs/archive/RUN.md).
 BENCH_MAP_CMDS ?= wait world; spawn 0; wait ambient; force_match_start; wait 10s; quit
 BENCH_DEMO_CMDS ?=
 bench: require-games
@@ -366,7 +366,7 @@ help:
 	@echo "make provision         VPS users/dirs/caddy/systemd/certs/firewall"
 	@echo "make logs prod|dev [SINCE=2h]  print the bounded master journal"
 	@echo "cargo xtask master install user@host   your own relay on your own VPS"
-	@echo "                  then: master update|status|logs|uninstall (docs/MASTER.md)"
+	@echo "                  then: master update|status|logs|uninstall (docs/archive/MASTER.md)"
 	@echo "make mr new <name>   clone the repo for one agent under context/mrs/<name>"
 	@echo "make mr ship <name>  rebase → rustfmt touched .rs → FF onto master → rm clone"
 	@echo "make mr ls           the clones on disk and whose move each one is"

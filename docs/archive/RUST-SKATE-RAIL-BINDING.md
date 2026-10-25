@@ -1,6 +1,6 @@
 # Trusted rail collider binding
 
-Part of [the full mod](RUST-MW2-SKATE.md); [task #298](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/298).
+Part of [the full mod](../SKATE-MOD.md); [task #298](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/298).
 Connects the [rail core](RUST-SKATE-RAILS.md) to [native world queries](RUST-SKATE-WORLD.md).
 Shared binding and native adapter wiring compile and pass local checks; native scene/host integration remains unverified.
 

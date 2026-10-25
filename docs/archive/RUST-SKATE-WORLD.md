@@ -1,6 +1,6 @@
 # Native Rust skate collision queries
 
-Part of [the full mod](RUST-MW2-SKATE.md); [task #285](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/285).
+Part of [the full mod](../SKATE-MOD.md); [task #285](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/285).
 Status: shared native collision and calculated skate flow observed; connected world movement unverified.
 
 ## Boundary and guards

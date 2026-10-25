@@ -1,6 +1,6 @@
 # Owned Rust skate penetration probes
 
-Part of [the full mod](RUST-MW2-SKATE.md); [task #325](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/325).
+Part of [the full mod](../SKATE-MOD.md); [task #325](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/325).
 Status: source built and real server probes checked; connected skating remains unverified.
 
 ## Reproduction and selected boundary
