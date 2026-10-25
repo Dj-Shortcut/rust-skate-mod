@@ -32,3 +32,23 @@ Laatste speltest: client 0.18.45 / server 0.3.38 (21 okt). Geen testomgeving sin
 26. Uitzoeken hoe Skate trick-, rijder- en boardanimaties koppelt. Deels onderzocht (privé).
 
 Per rit controleren: controller, eerste/derde persoon, kompas, hand-item, pose, geluid, put-backs. Halfpipe: drie beklimmingen en fakie-terugkeren zonder put-back.
+
+## Skate 3-tricks (bij punt 24)
+
+Doellijst voor punt 24: elke trick krijgt eigen board- en lichaamsbeweging, catch en landing. Namen zoals in de Skate-serie; controleer de uiteindelijke set tegen de Trick Guide in Skate 3 zelf.
+
+- **Ollie-flips:** Ollie, Kickflip, Heelflip, Double/Triple Kickflip, Double/Triple Heelflip, FS Pop Shove-it, BS Pop Shove-it, FS 360 Shove-it, BS 360 Shove-it, Varial Kickflip, Varial Heelflip, 360 Flip, Laser Flip, Hardflip, Inward Heelflip, 360 Hardflip, 360 Inward Heelflip, Impossible, Front Foot Impossible.
+- **Nollie-flips:** Nollie, Nollie Kickflip, Nollie Heelflip, Nollie FS/BS Pop Shove-it, Nollie FS/BS 360 Shove-it, Nollie Varial Kickflip, Nollie Varial Heelflip, Nollie 360 Flip, Nollie Laser Flip, Nollie Hardflip, Nollie Inward Heelflip, Nollie 360 Hardflip, Nollie 360 Inward Heelflip, Nollie Impossible, Nollie Back Foot Impossible.
+- **Standvarianten:** alle ollie-flips ook Fakie en alle nollie-flips ook Switch, in regular en goofy.
+- **Flipvarianten:** late flips (in de lucht), held flips (extra rotaties), Boned Ollie, front/back foot One-Foot Ollie, body varials, FS/BS 180 en 360 body spins, Finger Flip.
+- **Underflips en dark:** Underflip, Dark Catch (board ondersteboven vangen), Darkslide.
+- **Grinds:** FS/BS 50-50, FS/BS 5-0, FS/BS Nosegrind, FS/BS Crooked, FS/BS Overcrook, FS/BS Smith, FS/BS Feeble, FS/BS Salad, FS/BS Willy, FS/BS Over Willy.
+- **Slides:** FS/BS Boardslide, FS/BS Lipslide, FS/BS Noseslide, FS/BS Tailslide, FS/BS Bluntslide, FS/BS Nosebluntslide; grind/slide exit links en rechts.
+- **Basisgrabs:** FS Grab (Indy), BS Grab, Double Grab, Tail Grab, Nose Grab, Stale(fish), Weddle, Crail, Seatbelt, Rocket Air.
+- **Getweakte grabs:** Nosebone, Tailbone, Tuck Knee, Stiffy, BS Tweak, Melon, Crossbone, Method, Tail Nosebone, FS/BS Shifty Tail Grab, Nose Tailbone, FS/BS Shifty Nose Grab, Stale FS/BS Tuck Knee, Stale Tailbone, Stale Nosebone, Japan Air, Weddle Tailbone, Weddle Nosebone, FS/BS Shifty Crail, FS/BS Shifty Seatbelt, Double Grab mod (nose, tail, links, rechts).
+- **One-foot en no-foot grabs:** Frigid Air, FS One-Foot Air, Judo Air, BS One-Foot Air, Dog Piss, Judo Nose Grab, Benihana, One-Foot Tail Grab, Airwalk, Tailwalk, Christ Air, No-Foot Air, Superdude.
+- **Grondgrabs:** FS/BS Ground Grab, Double Ground Grab, Coffin.
+- **Handplants:** FS/BS Handplant, FS Tailbone, FS Tuck Knee, FS Stiff, FS Boned, BS Tuck Knee, BS Crossbone, BS Method, BS Tweak, BS One-Foot, BS Judo, FS Frigid, FS One-Foot, FS/BS Gymnast Plant.
+- **Footplants en oldschool:** Boneless (FS), Beanplant, FS/BS Fastplant, No Comply, Caveman, Hippie Jump (ook met flip en spin).
+- **Manuals en rijden:** Manual, Nose Manual, manual revert, FS/BS Revert, FS/BS Powerslide, Speed Check, Kick Turn, Wallie, FS/BS Wallride.
+- **Transition:** Drop-in, Air-to-Flat, Air-to-Lip, lip trick-instap (grind of stall op de coping), FS/BS 180/360 airs met grab, Back Flip en Front Flip met grab.
