@@ -8,7 +8,7 @@ pub fn frame_budget(args: Vec<PathBuf>) -> bool {
         .find(|path| path.extension().and_then(|e| e.to_str()) == Some("sqlite"))
     {
         println!(
-            "frame-budget refuses {} — observation truth is .pftrace (docs/PERF.md)",
+            "frame-budget refuses {} — observation truth is .pftrace (docs/archive/PERF.md)",
             sqlite.display()
         );
         return false;

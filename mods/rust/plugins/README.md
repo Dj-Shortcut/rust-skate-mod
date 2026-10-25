@@ -2,7 +2,7 @@
 
 The separate skateboard movement component is documented in [SKATE.md](SKATE.md).
 The separate admin-only client echo diagnostic is documented in
-[RUST-SKATE-INBOX.md](../../../docs/RUST-SKATE-INBOX.md).
+[RUST-SKATE-INBOX.md](../../../docs/archive/RUST-SKATE-INBOX.md).
 
 Source for [issue #266](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/266), in the same repository as the parked rewrite.
 Development code with genuine-reference compilation, source review and native Oxide compile/load/config checks; **player behavior and a playable mod remain unverified**.
@@ -50,4 +50,4 @@ dotnet build mods/rust/plugins/ShortcutLoadouts.csproj -p:RustManagedPath=/absol
 
 The project uses those genuine Mono/framework references, C# 7.3 and `net48`; it excludes duplicate Newtonsoft types already in `Oxide.References`. Outputs are ignored under `context/rust-plugin-build/`. No fabricated Rust API or permanent test is included.
 Verified on macOS arm64 with SDK 8.0.425, Steam app 258550/depot 258552 public manifest 8588463972864888654 and official Oxide 2.0.7801: genuine-reference build (0 warnings/errors), 93 actual compiled-helper/schema regressions and 43 actual compiled-parser assertions, plus independent source review.
-Subsequent [native Linux server evidence](../../../docs/RUST-SERVER-PLUGIN.md#native-server-evidence) confirms compile/load, actual default config, registered permissions, unknown-field byte preservation, restoration, reload/unload/load and plugin load after save/restart on the recorded Steam public build/Oxide 2.0.7815. No clients joined; these checks prove neither runtime hook ordering/inventory cleanup nor actual PvP. Complete the [real-server acceptance](../../../docs/RUST-SERVER-PLUGIN.md) before any playable/ready claim.
+Subsequent [native Linux server evidence](../../../docs/archive/RUST-SERVER-PLUGIN.md#native-server-evidence) confirms compile/load, actual default config, registered permissions, unknown-field byte preservation, restoration, reload/unload/load and plugin load after save/restart on the recorded Steam public build/Oxide 2.0.7815. No clients joined; these checks prove neither runtime hook ordering/inventory cleanup nor actual PvP. Complete the [real-server acceptance](../../../docs/archive/RUST-SERVER-PLUGIN.md) before any playable/ready claim.

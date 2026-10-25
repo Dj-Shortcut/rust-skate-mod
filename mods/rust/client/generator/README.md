@@ -5,12 +5,12 @@ The .3 correction builds on Mac and actual Shadow Windows and passes 182 authore
 temporary checks. Actual .3 raw-property scanning and Core initialization pass;
 first managed assembly generation fails with two encountered interface-getter
 value-type errors. This count is not a complete incompatible-type census.
-[Actual evidence and next diagnosis](../../../../docs/RUST-CLIENT-LOADER.md#interface-diagnosis-before-another-correction)
+[Actual evidence and next diagnosis](../../../../docs/archive/RUST-CLIENT-LOADER.md#interface-diagnosis-before-another-correction)
 retain the strict rejection. The .4 [explicit source-model API](#explicit-interop-source-api)
 builds on Mac and actual Shadow Windows and passes 230 authored cases. A separate
 private consumer wrote 191 interop DLLs and two sidecars; full output validation
 failed after only three complete PE round trips. [Actual generation and rejected
-partial validation](../../../../docs/RUST-CLIENT-LOADER.md#actual-windows-generation-and-output-validation)
+partial validation](../../../../docs/archive/RUST-CLIENT-LOADER.md#actual-windows-generation-and-output-validation)
 record the current continuation point. Complete validation and installation
 remain unfinished.
 A separate [Il2CppInterop pointer-byref correction](interop/README.md) now supplies
@@ -18,7 +18,7 @@ a pinned LGPL patch and locked stage-only recipe. Actual Linux source/recipe bui
 and authored original-versus-patched generator checks pass; this does not repair
 or approve the preserved native candidate. Fresh complete native output validation
 remains required before any installation.
-No playable mod is available. This supports the [offline loader gate](../../../../docs/RUST-CLIENT-LOADER.md).
+No playable mod is available. This supports the [offline loader gate](../../../../docs/archive/RUST-CLIENT-LOADER.md).
 
 ## Observed failure and behavior
 Official BepInEx be.788 includes LibCpp2IL from
@@ -197,7 +197,7 @@ rollback permit a later log-only Load probe; that proves no native adapters.
 ## Explicit interop-source API
 
 The .4 source implements
-[the separate source-model contract](../../../../docs/RUST-CLIENT-LOADER.md#explicit-interop-only-source-models).
+[the separate source-model contract](../../../../docs/archive/RUST-CLIENT-LOADER.md#explicit-interop-only-source-models).
 It adds an explicitly selected in-memory interop input API while normal assembly
 generation and output remain strict. It omits all synthetic explicit-interface
 MethodImpl/property construction, preserving original metadata signatures and
@@ -246,4 +246,4 @@ validation, passive sidecar validity and runtime/native closure remain open.
 The public recipe and stock BepInEx caller remain unchanged. No candidate
 installation or Rust retry has occurred; responsive empty offline menus, normal
 exit and verified rollback remain later gates, followed by full mod acceptance.
-See the [full actual evidence and limits](../../../../docs/RUST-CLIENT-LOADER.md#actual-windows-generation-and-output-validation).
+See the [full actual evidence and limits](../../../../docs/archive/RUST-CLIENT-LOADER.md#actual-windows-generation-and-output-validation).

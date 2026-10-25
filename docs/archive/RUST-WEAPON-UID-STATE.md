@@ -1,7 +1,7 @@
 # Weapon UID gunplay state
 
-Source slice of [the full mod](RUST-MW2-SKATE.md), [#312](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/312), part of [#275](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/275).
-C#7.3 [source](../mods/rust/shared/WeaponUidState.cs) and [net48 project](../mods/rust/shared/WeaponUidState.csproj) use the [gunplay](RUST-GUNPLAY-CORE.md) API.
+Source slice of [the full mod](../SKATE-MOD.md), [#312](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/312), part of [#275](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/275).
+C#7.3 [source](../../mods/rust/shared/WeaponUidState.cs) and [net48 project](../../mods/rust/shared/WeaponUidState.csproj) use the [gunplay](RUST-GUNPLAY-CORE.md) API.
 Source compiled against genuine Rust references; scoped actual-DLL verification passed.
 
 ## Fixed roster

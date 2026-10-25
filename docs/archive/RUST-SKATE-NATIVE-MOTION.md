@@ -1,6 +1,6 @@
 # Skate motion through the native collision scene
 
-Part of [the full mod](RUST-MW2-SKATE.md); [task #327](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/327).
+Part of [the full mod](../SKATE-MOD.md); [task #327](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/327).
 Status: shared collision source and actual calculated core/scene flow observed; connected player movement pending.
 
 ## Production boundary

@@ -209,7 +209,7 @@ opened `context/` can live with.
 `origin/master` and make one commit whose message is the effect, not the
 investigation. Fixes, probes, reverts and "try this" do not survive as
 separate objects. History that has already been pushed is not rewritten —
-[`docs/DEPLOY.md`](docs/DEPLOY.md).
+[`docs/archive/DEPLOY.md`](docs/archive/DEPLOY.md).
 
 **Tests.** Only `crates/approved_tests`, and only scenarios the owner approved
 by name. Anything else goes, however useful; `make publish-check` refuses it.

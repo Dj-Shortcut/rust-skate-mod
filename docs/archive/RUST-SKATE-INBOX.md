@@ -7,7 +7,7 @@ The client keeps the park preview cleared when identity is unknown.
 
 ## Bounded sender contract
 
-The separate [ShortcutSkateProbe.cs](../mods/rust/plugins/ShortcutSkateProbe.cs) Oxide plugin supplies
+The separate [ShortcutSkateProbe.cs](../../mods/rust/plugins/ShortcutSkateProbe.cs) Oxide plugin supplies
 `skate.probe <sequence>`. A connected in-game server administrator invokes it
 from the Rust console. Server console/RCON without a player, disconnected
 callers and ordinary players are refused. There is no target-player argument.
@@ -38,7 +38,7 @@ dotnet build mods/rust/plugins/ShortcutSkateProbe.csproj -p:RustManagedPath=/abs
 Copy only the reviewed diagnostic source to `oxide/plugins/`, observe Oxide's
 compile/load result and registered command, preserving the existing park source.
 Start the current client with Unity log listening enabled
-(`sv plisten 1; zz play`) as documented in the [client tools](../mods/rust/client/tools/README.md).
+(`sv plisten 1; zz play`) as documented in the [client tools](../../mods/rust/client/tools/README.md).
 Confirm the inbox reports watching/reading, then issue `skate.probe 1` from
 the connected administrator's in-game console. Record the corresponding new
 `INBOX` line containing `SKATE-PROBE 1` and elapsed receipt time, or its absence.

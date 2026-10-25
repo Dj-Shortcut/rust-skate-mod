@@ -1,6 +1,6 @@
 # Shared skateboard motion core
 
-[Issue #277](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/277) is a source slice of the [full mod](RUST-MW2-SKATE.md).
+[Issue #277](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/277) is a source slice of the [full mod](../SKATE-MOD.md).
 This original C#7.3 module lives under `mods/rust/shared/`; no native adapter exists.
 It does not resume Bevy, supply a visible board/rider, or satisfy playable acceptance.
 
@@ -42,7 +42,7 @@ Compile actual production source and exercise it with temporary analytic world f
 push/steer/brake, jump edges, slopes, obstacles, gravity, trick landing/bail, both exits,
 and malformed input/query rejection. Fixtures prove core rules, not Rust collision.
 Build: `dotnet build mods/rust/shared/SkateMotion.csproj -p:RustManagedPath=...`.
-No permanent tests, binary references or probes ship; results belong in [TODO](../TODO.md).
+No permanent tests, binary references or probes ship; results belong in [TODO](../../TODO.md).
 Current [Il2CppInterop #283](https://github.com/BepInEx/Il2CppInterop/issues/283) reports a Rust client startup crash;
 [PR #286](https://github.com/BepInEx/Il2CppInterop/pull/286) is unmerged and does not verify Rust compatibility.
 An authored BepInEx client remains a candidate requiring an exact-version native smoke;

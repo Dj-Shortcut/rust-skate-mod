@@ -15,7 +15,7 @@ All of it lives under the user's `Downloads` folder and none of it is in this re
 
 | Path under `Downloads` | What it is |
 | --- | --- |
-| `BepInEx-Unity.IL2CPP-win-x64-6.0.0-be.788+5b766a3.zip` | The official mod loader build ([identity](../../../../docs/RUST-CLIENT-LOADER.md)). |
+| `BepInEx-Unity.IL2CPP-win-x64-6.0.0-be.788+5b766a3.zip` | The official mod loader build ([identity](../../../../docs/archive/RUST-CLIENT-LOADER.md)). |
 | `codex-bep788-probe\` | What the build of the corrected interop generator ([`../generator`](../generator/README.md)) left behind: a .NET SDK, the generator with its own .NET host, and PowerShell 7 (`pwsh-diag\pwsh.exe`, used by `survey` only). |
 | `claude-loader-probe\` | The staging folder of these tools. `setup` copies the SDK and the generator into it; the rest is created as needed. |
 

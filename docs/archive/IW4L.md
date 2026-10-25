@@ -47,7 +47,7 @@ writes anything back; caches, settings, demos and logs land in
 
 ## Build and run
 
-System packages first: [`docs/BUILD.md`](BUILD.md) (Fedora / Debian /
+System packages first: [`docs/archive/BUILD.md`](BUILD.md) (Fedora / Debian /
 Arch — compiler, ALSA, udev, X11/Wayland headers; macOS — Xcode command line
 tools).
 
@@ -60,33 +60,33 @@ make help                     # every recipe
 
 Live runs use `[profile.play]`, a development build with optimizations turned
 on. `PROFILE=release` builds the real release binary.
-[`docs/WINDOWS.md`](WINDOWS.md) covers Windows.
+[`docs/archive/WINDOWS.md`](WINDOWS.md) covers Windows.
 
 ## Documentation
 
 Implementation notes live under `docs/`, one short file per area. Start at
-[`docs/INDEX.md`](INDEX.md).
+[`docs/INDEX.md`](../INDEX.md).
 
 | file | about |
 | ---- | ----- |
-| [`docs/BUILD.md`](BUILD.md)         | system packages per distro, macOS, Windows cross prerequisites |
-| [`docs/RUN.md`](RUN.md)           | running the game, console scripts, commands and traps |
-| [`docs/PERF.md`](PERF.md)         | Perfetto tracing and performance analysis             |
-| [`docs/RENDER.md`](RENDER.md)     | rendering pipeline                                    |
-| [`docs/MAP-LOAD.md`](MAP-LOAD.md) | map loading and asset installation                    |
-| [`docs/ENTITIES.md`](ENTITIES.md) | simulation data flow and entity taxonomy              |
-| [`docs/SIM-STEP.md`](SIM-STEP.md) | simulation step architecture                          |
-| [`docs/ANIM.md`](ANIM.md)         | animation system                                      |
-| [`docs/WINDOWS.md`](WINDOWS.md)   | portable Windows build                                |
-| [`docs/DEPLOY.md`](DEPLOY.md)     | release, publishing and deployment                    |
-| [`docs/MASTER.md`](MASTER.md)     | running your own master server                        |
+| [`docs/archive/BUILD.md`](BUILD.md)         | system packages per distro, macOS, Windows cross prerequisites |
+| [`docs/archive/RUN.md`](RUN.md)           | running the game, console scripts, commands and traps |
+| [`docs/archive/PERF.md`](PERF.md)         | Perfetto tracing and performance analysis             |
+| [`docs/archive/RENDER.md`](RENDER.md)     | rendering pipeline                                    |
+| [`docs/archive/MAP-LOAD.md`](MAP-LOAD.md) | map loading and asset installation                    |
+| [`docs/archive/ENTITIES.md`](ENTITIES.md) | simulation data flow and entity taxonomy              |
+| [`docs/archive/SIM-STEP.md`](SIM-STEP.md) | simulation step architecture                          |
+| [`docs/archive/ANIM.md`](ANIM.md)         | animation system                                      |
+| [`docs/archive/WINDOWS.md`](WINDOWS.md)   | portable Windows build                                |
+| [`docs/archive/DEPLOY.md`](DEPLOY.md)     | release, publishing and deployment                    |
+| [`docs/archive/MASTER.md`](MASTER.md)     | running your own master server                        |
 
 ## Contributing and support
 
 A personal, experimental project. Bug reports are welcome and get no promised
-fix date. [`CONTRIBUTING.md`](CONTRIBUTING.md) says what a useful report
+fix date. [`CONTRIBUTING.md`](../../CONTRIBUTING.md) says what a useful report
 contains and how changes get reviewed; security reports go to
-[`SECURITY.md`](SECURITY.md).
+[`SECURITY.md`](../../SECURITY.md).
 
 ## Acknowledgements
 
@@ -105,8 +105,8 @@ IW4L ships none of the code below. It was read against all of it.
 
 ## License
 
-IW4L is licensed under the [Apache License 2.0](LICENSE), and
-[`NOTICE`](NOTICE) holds the copyright notices, the licences of the projects
+IW4L is licensed under the [Apache License 2.0](../../LICENSE), and
+[`NOTICE`](../../NOTICE) holds the copyright notices, the licences of the projects
 above and the bundled fonts. That licence covers IW4L's own source code. Call
 of Duty, Modern Warfare, Black Ops and the related assets, trademarks and
 intellectual property belong to their respective owners.

@@ -1,6 +1,6 @@
 # Live Rust skate rails
 
-Part of [the full mod](RUST-MW2-SKATE.md); [task #323](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/323).
+Part of [the full mod](../SKATE-MOD.md); [task #323](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/323).
 Status: implemented; live rail checks pass on the real server; connected skating remains unverified.
 
 ## Server contract

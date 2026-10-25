@@ -1,5 +1,5 @@
 //! `cargo xtask master …` — a relay of your own on a VPS you rent, installed
-//! over ssh from the machine holding the clone. `docs/MASTER.md` is the prose.
+//! over ssh from the machine holding the clone. `docs/archive/MASTER.md` is the prose.
 //!
 //! Nothing here is our release pipeline: no Caddy, no update URL, no channels
 //! to publish between. One binary, one certificate, one unit — and the CA

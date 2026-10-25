@@ -1,6 +1,6 @@
 # Held-input freshness between native callbacks
 
-Part of [the full mod](RUST-MW2-SKATE.md); [task #331](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/331).
+Part of [the full mod](../SKATE-MOD.md); [task #331](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/331).
 Status: additive source compiled; 382 actual server protocol checks pass; native host pending.
 
 ## Problem and compatibility

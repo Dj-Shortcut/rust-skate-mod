@@ -61,7 +61,7 @@ impl Channel {
     }
 
     /// `IW4L_MASTER_SERVER_NAME`: the SAN entry checked at the QUIC handshake.
-    /// A fixed label, never the host — `docs/MASTER.md` explains why a master
+    /// A fixed label, never the host — `docs/archive/MASTER.md` explains why a master
     /// therefore needs no domain.
     pub const fn server_name(self) -> &'static str {
         match self {

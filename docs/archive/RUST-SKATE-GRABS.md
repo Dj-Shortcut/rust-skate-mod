@@ -2,7 +2,7 @@
 
 This is a proposed animation specification for the existing Rust skate mod. The grip identities below use public skateboarding teaching references. Every angle, distance, knee range and timing target marked **proposal** is original authored data for this project, not a measurement of a skater or an animation extracted from a game. These values have not been applied or visually verified in the Rust client.
 
-The grab source audit refers to revision `d07f0a6`; its audited values are unchanged at `9f8569d`. The stall/plant audit below includes Claude's subsequent `6f54d2f` changes through `9f8569d`. The relevant files are [the grab enum](../mods/rust/shared/SkateTricks.cs), [shared rider poses](../mods/rust/shared/SkateRider.cs), [the board mesh](../mods/rust/shared/SkateBoardMesh.cs), [board rendering](../mods/rust/client/src/SkateBoard.cs), and [the rider adapter](../mods/rust/client/src/RiderRig.cs). This document changes none of those files.
+The grab source audit refers to revision `d07f0a6`; its audited values are unchanged at `9f8569d`. The stall/plant audit below includes Claude's subsequent `6f54d2f` changes through `9f8569d`. The relevant files are [the grab enum](../../mods/rust/shared/SkateTricks.cs), [shared rider poses](../../mods/rust/shared/SkateRider.cs), [the board mesh](../../mods/rust/shared/SkateBoardMesh.cs), [board rendering](../../mods/rust/client/src/SkateBoard.cs), and [the rider adapter](../../mods/rust/client/src/RiderRig.cs). This document changes none of those files.
 
 ## Hands, stance and board ends
 

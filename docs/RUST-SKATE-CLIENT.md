@@ -81,7 +81,7 @@ The launcher was installed from `c5098ae` and tested: Rust started through the S
 launcher killed the helper removed all six loader roots 35 s after Rust closed. Complete
 update/crash/lifecycle recovery remains open. Death/respawn/reconnect, a lost late driver, clothing changes and
 sound failure are covered only offline, against a stand-in engine outside this repository.
-Interop regeneration after Rust updates and [loader gates](RUST-CLIENT-LOADER.md) remain separate.
+Interop regeneration after Rust updates and [loader gates](archive/RUST-CLIENT-LOADER.md) remain separate.
 One client/account was available; second-client observation, the owner's control feel and
-[full acceptance](RUST-MW2-SKATE.md) remain open. [TODO](../TODO.md) tracks progress;
-[Codex item 12](RUST-SKATE-CLIENT-REVIEW.md) reviewed the client source.
+[full acceptance](SKATE-MOD.md) remain open. [TODO](../TODO.md) tracks progress;
+[Codex item 12](archive/RUST-SKATE-CLIENT-REVIEW.md) reviewed the client source.

@@ -4,7 +4,7 @@
 //! Two callers with two different requirements share this: our release host
 //! also serves release HTTPS through Caddy, so its certificate must carry the
 //! host in the SAN; a master of your own is verified against a fixed label
-//! instead (`docs/MASTER.md`), so its certificate carries no host at all and
+//! instead (`docs/archive/MASTER.md`), so its certificate carries no host at all and
 //! survives a move to a new IP.
 
 use std::path::{Path, PathBuf};

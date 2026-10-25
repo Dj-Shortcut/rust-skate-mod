@@ -3,7 +3,7 @@
 Design for [issue #266](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/266).
 Source target: `mods/rust/plugins/ShortcutLoadouts.cs`; stock Rust remains the base.
 Design published before implementation; source now exists and compiles locally.
-See [installation/configuration and exact source evidence](../mods/rust/plugins/README.md).
+See [installation/configuration and exact source evidence](../../mods/rust/plugins/README.md).
 Native compile/load and bounded configuration/control checks are verified; real player behavior and full mod gameplay remain unverified.
 
 ## Player and configuration contract
@@ -34,7 +34,7 @@ All command, config and player feedback is English.
 ## Native server evidence
 
 On 8 October 2026, unchanged ShortcutLoadouts 0.1.0 compiled and loaded on
-Ubuntu 24.04.5 x86_64, [recorded Steam server build](../mods/rust/server/LINUX.md#native-installation-evidence)/protocol 2634.289.1
+Ubuntu 24.04.5 x86_64, [recorded Steam server build](../../mods/rust/server/LINUX.md#native-installation-evidence)/protocol 2634.289.1
 and official Oxide 2.0.7815. Authenticated private console and real server logs
 confirmed compile success and `oxide.plugins` loaded state.
 
@@ -60,7 +60,7 @@ persistence and full MW2/skate acceptance remain open.
 On 9 October 2026, the owner requested a narrow existing-server component check.
 The server reached startup complete with public game UDP 28015, private RCON,
 externally blocked query and disabled Rust+. Only the observed Shadow IPv4 was
-allowed during the [bounded test window](RUST-SERVER-HOSTING.md#shadow-player-check--9-october-2026);
+allowed during the [bounded test window](../RUST-SERVER-HOSTING.md#shadow-player-check--9-october-2026);
 actual rule removal and listener closure were verified after the stopped check.
 Plugin source and default config hashes remain unchanged. Authenticated console
 confirmed both permissions granted only to the owner, no grants to other users
@@ -101,7 +101,7 @@ component check does not establish full MW2 gunplay/skate acceptance.
 ## Return session — 9 October 2026
 
 After the initial mistyped attempt, the owner requested another check. The
-[return-session route](RUST-SERVER-HOSTING.md#return-session--9-october-2026)
+[return-session route](../RUST-SERVER-HOSTING.md#return-session--9-october-2026)
 used the same unchanged ShortcutLoadouts 0.1.0/default config and owner grants.
 Before closure, authenticated status at 14:45:44 UTC confirmed the active owner
 and matching source address.
@@ -149,6 +149,6 @@ Later require actual Oxide load/commands, permissions/life/cooldown/config refus
 full inventory, creation/move failure cleanup, reentrancy, weapon switching,
 two-client Bullet damage with unchanged exclusions, reload/removal and restart.
 Record exact server/framework/client modes. No playable/ready claim before that.
-See [server preparation](../mods/rust/server/README.md) and
-[hosting gate](RUST-SERVER-HOSTING.md). Do not order a server before the owner's
+See [server preparation](../../mods/rust/server/README.md) and
+[hosting gate](../RUST-SERVER-HOSTING.md). Do not order a server before the owner's
 requested source-work milestone and approval of concrete costs.

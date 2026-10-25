@@ -4,7 +4,7 @@
 and its former Codex/Claude task split. That rewrite is parked. The human project
 owner decides current assignments and any resumption; the roles, branches and
 implementation instructions below are historical, not an active delegation.
-Follow [docs/AUTONOMY.md](docs/AUTONOMY.md) and the owner's latest direction.
+Follow [docs/AUTONOMY.md](../AUTONOMY.md) and the owner's latest direction.
 
 Build a standalone PC game in Rust and Bevy combining Rust-inspired survival,
 building and an island world, MW2-inspired FPS gunplay and original operators,
