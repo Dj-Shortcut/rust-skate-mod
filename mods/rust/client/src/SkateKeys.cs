@@ -35,10 +35,11 @@ public static class SkateKeys
     private static float aTappedAt = -99f;
     // What a physics step has not seen yet. A pop comes with what the board does in it: whole flips
     // (a kickflip is +1) and degrees of shove under the feet (frontside is +). LateFlip is flips
-    // asked for in the air. SpinPressed: the turn was asked for afresh, not held from before.
+    // asked for in the air; HeldFlip continues the same pop. SpinPressed: the turn was asked for
+    // afresh, not held from before.
     public static bool JumpPressed, SpinPressed;
     public static SkatePopKind PopKind = SkatePopKind.Ollie;
-    public static int PopFlip, LateFlip;
+    public static int PopFlip, LateFlip, HeldFlip;
     // Asked for in the air: degrees of shove under the feet, and degrees of body varial (the rider
     // turns, the board does not).
     public static float LateShove, BodyVarial;
@@ -71,7 +72,7 @@ public static class SkateKeys
         InputEpoch++; ControlsActive = false;
         Push = Brake = Left = Right = Crouch = Jump = Manual = NoseManual = Analog = Charging = Help = false; Steer = Charge = Spin = wasSpin = 0f; PopScale = 1f;
         Grab = SkateGrabKind.None; PopKind = SkatePopKind.Ollie; Mongo = HandplantFront = HandplantBack = false; aTappedAt = -99f;
-        EndStep(); JumpTap = ToggleTap = CameraTap = CrouchTap = false;
+        EndStep(); SkatePad.DropPops(); JumpTap = ToggleTap = CameraTap = CrouchTap = false;
         keyboardSuspended = true; stickPushBlocked = false; pumpPushButtons = 0; stanceSince = -1f;
     }
 
@@ -220,6 +221,7 @@ public static class SkateKeys
                     if (pop.Kind == SkatePopKind.None) { LateFlip += flips; LateShove += (float)pop.ShoveDegrees; }
                     else { JumpPressed = true; PopKind = PopWith(pop.Kind, now - aTappedAt < NoComplyTap && (SkatePad.Buttons & SkatePad.A) == 0, false); aTappedAt = -99f; PopFlip = flips; PopShove = (float)pop.ShoveDegrees; PopScale = LeastPop + (1f - LeastPop) * (float)pop.Strength; }
                 }
+                HeldFlip += SkatePad.TakeHeldFlip();
             }
             else
             {
@@ -255,7 +257,7 @@ public static class SkateKeys
         return noComply ? SkatePopKind.NoComply : boneless ? SkatePopKind.Boneless : kind;
     }
 
-    public static void EndStep() { JumpPressed = SpinPressed = false; PopFlip = LateFlip = 0; PopShove = LateShove = BodyVarial = 0f; }
+    public static void EndStep() { JumpPressed = SpinPressed = false; PopFlip = LateFlip = HeldFlip = 0; PopShove = LateShove = BodyVarial = 0f; }
 
     // Which grab the triggers and the right stick ask for. The triggers alone give the three plain
     // grabs; with the stick held up, down or to a side they give the others. The stick's sides are
