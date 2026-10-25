@@ -573,7 +573,7 @@ public static class RiderRig
                         SkateRide.Trick.PopTailLeads, SkateRide.TailFirst, SkateRide.Trick.Late)
                     : default(SkateRiderTrickContext);
                 if (SkateRider.TryStepContact(contact, SkateRide.Mode == RideMode.Air, SkateRide.Rotating, SkateRide.VSpeed <= 0f,
-                    SkateRide.FootPlanted, SkateRide.FlipDeg, SkateRide.ShoveDeg, grab, held, landing, trick, contactDelta, out next, out error))
+                    SkateRide.FootPlanted, SkateRide.FlipDeg, SkateRide.ShoveDeg, grab, held, landing, trick, SkateRide.BoardPath, contactDelta, out next, out error))
                     contact = next;
                 else
                 {
@@ -664,7 +664,8 @@ public static class RiderRig
                 SkateRide.Clamp(SkateBoard.PitchDegrees, -40f, 40f) * Math.PI / 180.0,
                 noseSlide, chestLead, mode == RideMode.Air ? SkateRide.ShoveDeg : 0.0, landing, contact, SkateRide.PushPeriod, new SkateVector(deckFace.x, deckFace.y, deckFace.z),
                 mode == RideMode.Grind && SkateGrinds.Truck(SkateRide.GrindKind) != 0, SkateBoard.GrindRoll * Math.PI / 180.0,
-                mode == RideMode.Grind ? SkateGrinds.Truck(SkateRide.GrindKind) * SkateBoard.Axle : 0);
+                mode == RideMode.Grind ? SkateGrinds.Truck(SkateRide.GrindKind) * SkateBoard.Axle : 0,
+                SkateRig.LocalT != null && handplant <= 0.001f && mode != RideMode.Bail ? SkateBoard.PoseFor(SkateRig.LocalT) : default(SkateBoardPose), SkateRide.BoardPath);
             SkateRiderPose pose; string error;
             if (!SkateRider.TryCreate(Rig, input, out pose, out error))
             {
@@ -733,8 +734,8 @@ public static class RiderRig
             var pushLeft = SkateRide.PushLead ? !trailingIsLeft : trailingIsLeft;
             // A gripping hand must remain reachable from the solved upper body. Its shared
             // secondary motion is already contact-aware; another independent trunk lag is not.
-            pinHips = pushing || pinL || pinR;
-            pinLeft = pushing && (!pushLeft || footDown); pinRight = pushing && (pushLeft || footDown);
+            pinHips = pushing || pinL || pinR || SkateRide.BoardPath.Known;
+            pinLeft = SkateRide.BoardPath.Known || pushing && (!pushLeft || footDown); pinRight = SkateRide.BoardPath.Known || pushing && (pushLeft || footDown);
             Shown = pose;
             Ease(pose, plane, toToes, upV, new Vector3((float)fx, (float)fy, (float)fz), now, frameSeconds, pinL, pinR);
             Shape(upV);
@@ -757,7 +758,16 @@ public static class RiderRig
                 var roll = SkateRide.Turn(-(float)(input.DeckRoll * 180 / Math.PI), axis);
                 leftSole = roll * leftSole; rightSole = roll * rightSole;
             }
-            if (mode == RideMode.Air && grab != SkateGrabKind.None)
+            if (input.DeckFrame.Initialized)
+            {
+                var sole = SkateRide.BoardPath.Active ? upV : V(input.DeckFrame.Up);
+                var lc = mode == RideMode.Air ? (SkateRide.Goofy ? contact.BackFootContact : contact.FrontFootContact) : 1;
+                var rc = mode == RideMode.Air ? (SkateRide.Goofy ? contact.FrontFootContact : contact.BackFootContact) : 1;
+                if (pushing) { if (pushLeft) lc *= 1 - groundContact; else rc *= 1 - groundContact; }
+                leftSole = Vector3.Lerp(upV, sole, (float)lc).normalized;
+                rightSole = Vector3.Lerp(upV, sole, (float)rc).normalized;
+            }
+            else if (mode == RideMode.Air && grab != SkateGrabKind.None)
             {
                 var definition = SkateGrabCatalog.Get(grab); var tweak = SkateBoard.GrabTweak(upV);
                 if (!(input.Stance == SkateStance.Regular ? definition.FrontReleased : definition.BackReleased)) leftSole = tweak * leftSole;

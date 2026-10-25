@@ -120,6 +120,19 @@ first, or goofy, they are the other way round.
 | From the left or right rolled round to the back, then flicked to the opposite front | 360 flip, laser flip |
 | From the right or left rolled round to the back, then flicked to the same front | 360 Hardflip, 360 Inward Heelflip |
 | Held back, rolled 45 to 60 degrees to the right or left, flicked straight forward | Hardflip, inward heelflip (rolled less than 40 degrees it stays an ollie) |
+| Hold LB with a popped right-stick gesture, without triggers or a shove | Impossible |
+| Hold RB with the same gesture | Front Foot Impossible (forward setup: Nollie Back Foot Impossible) |
+| Hold LB and RB with the same gesture | Underflip |
+
+Client source 0.18.53 gives these special flips their own timed board paths. An Impossible
+wraps the deck around the popped foot; Front Foot Impossible uses the opposite foot. Nollie
+exchanges their ends. An Underflip starts with a half flip and reverses after a brief underside
+kick. The feet release and catch with that path; the rider keeps the support frame while the
+board turns. An unfinished path bails, and cannot receive the completed trick's name or points.
+Used bumpers must be released before they can request a handplant. Triggers retain grab controls.
+Board rendering and native rider targets now share the actual deck-top frame, including its
+inverted orientation. These are source and cached-reference checks; Shadow visuals and feel
+remain unverified.
 
 An edge is taken when the rider comes down on it from an ollie: the way of travel within 60° of
 the edge, at least 1 m/s along it, the feet from 0.15 m below its top to 0.5 m above, the edge

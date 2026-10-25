@@ -211,16 +211,29 @@ public static class SkatePad
                 EndHeldFlip();
                 if (poppedCount < popped.Length)
                 {
-                    popped[poppedCount++] = r.Composition;
+                    var composition = r.Composition;
+                    // Bumpers modify a popped stick gesture; naked bumpers still own handplants.
+                    var bumpers = Buttons & (LeftBumper | RightBumper);
+                    if (!air && SkateRide.On && LeftTrigger <= Pulled && RightTrigger <= Pulled &&
+                        composition.Kind != SkatePopKind.None && composition.ShoveDegrees == 0 && bumpers != 0)
+                    {
+                        var special = bumpers == (LeftBumper | RightBumper) ? SkateBoardTrickKind.Underflip :
+                            bumpers == LeftBumper ? SkateBoardTrickKind.Impossible : SkateBoardTrickKind.FrontFootImpossible;
+                        composition = new SkatePop(composition.Kind, 0, 0, composition.Strength, special,
+                            composition.FlipTurns < 0 ? -1 : 1);
+                    }
+                    popped[poppedCount++] = composition;
                     if (!air && SkateRide.On && LeftTrigger <= Pulled && RightTrigger <= Pulled && !rightSuspended &&
-                        r.Composition.Kind != SkatePopKind.None && Math.Abs(r.Composition.FlipTurns) == 1 &&
+                        composition.Special == SkateBoardTrickKind.None && r.Composition.Kind != SkatePopKind.None && Math.Abs(r.Composition.FlipTurns) == 1 &&
                         r.Composition.ShoveDegrees == 0 && rightFar >= SkateFlick.FireReach * SkateFlick.FireReach)
                     {
                         heldFlip = (int)r.Composition.FlipTurns;
                         var far = (float)Math.Sqrt(rightFar); heldX = RightX / far; heldY = RightY / far;
                     }
                 }
-                Flicks++; SkatePadLog.Fired(r.Events, r.Composition);
+                Flicks++; SkatePadLog.Fired(poppedCount > 0 && popped[poppedCount - 1].Special != SkateBoardTrickKind.None ?
+                    (r.Events & (SkateFlickEvents.Ollie | SkateFlickEvents.Nollie)) | SkateFlickEvents.Special : r.Events,
+                    poppedCount > 0 ? popped[poppedCount - 1] : r.Composition);
             }
             Charging = r.Charging; Charge = (float)r.Charge; Manual = r.Manual; NoseManual = r.NoseManual;
         }

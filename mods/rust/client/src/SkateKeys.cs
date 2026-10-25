@@ -40,6 +40,9 @@ public static class SkateKeys
     public static bool JumpPressed, SpinPressed;
     public static SkatePopKind PopKind = SkatePopKind.Ollie;
     public static int PopFlip, LateFlip, HeldFlip;
+    public static SkateBoardTrickKind PopSpecial;
+    public static int PopSpecialDirection;
+    private static int specialBumpers;
     // Asked for in the air: degrees of shove under the feet, and degrees of body varial (the rider
     // turns, the board does not).
     public static float LateShove, BodyVarial;
@@ -217,8 +220,10 @@ public static class SkateKeys
                 var grabButtons = SkateGrabCatalog.AirButtons(ref airGrabBlocked, airGrab, SkatePad.Buttons, padDown);
                 var basicGrab = GrabOf(lt, rt, SkatePad.RightX, SkatePad.RightY, mirroredGrab);
                 Grab = airGrab ? SkateGrabCatalog.Select(lt, rt, SkatePad.RightX, SkatePad.RightY, mirroredGrab, grabButtons, basicGrab) : basicGrab;
-                HandplantFront = (SkatePad.Buttons & SkatePad.LeftBumper) != 0 && !(airGrab && Grab != SkateGrabKind.None);
-                HandplantBack = (SkatePad.Buttons & SkatePad.RightBumper) != 0 && !(airGrab && Grab != SkateGrabKind.None);
+                specialBumpers &= SkatePad.Buttons;
+                if (SkateRide.BoardPath.Active || SkateRide.FootPlanted) Grab = SkateGrabKind.None;
+                HandplantFront = ((SkatePad.Buttons & ~specialBumpers) & SkatePad.LeftBumper) != 0 && !SkateRide.BoardPath.Active && !(airGrab && Grab != SkateGrabKind.None);
+                HandplantBack = ((SkatePad.Buttons & ~specialBumpers) & SkatePad.RightBumper) != 0 && !SkateRide.BoardPath.Active && !(airGrab && Grab != SkateGrabKind.None);
                 Manual = SkatePad.Manual; NoseManual = SkatePad.NoseManual; Jump = false;
                 Charging = SkatePad.Charging; Charge = SkatePad.Charge;
                 BodyVarial += SkatePad.TakeBodyVarial();
@@ -227,7 +232,14 @@ public static class SkateKeys
                 {
                     var flips = (int)Math.Round(pop.FlipTurns);
                     if (pop.Kind == SkatePopKind.None) { LateFlip += flips; LateShove += (float)pop.ShoveDegrees; }
-                    else { JumpPressed = true; PopKind = PopWith(pop.Kind, now - aTappedAt < NoComplyTap && (SkatePad.Buttons & SkatePad.A) == 0, false); aTappedAt = -99f; PopFlip = flips; PopShove = (float)pop.ShoveDegrees; PopScale = LeastPop + (1f - LeastPop) * (float)pop.Strength; }
+                    else
+                    {
+                        JumpPressed = true; PopSpecial = pop.Special; PopSpecialDirection = pop.SpecialDirection;
+                        PopKind = pop.Special != SkateBoardTrickKind.None ? pop.Kind : PopWith(pop.Kind, now - aTappedAt < NoComplyTap && (SkatePad.Buttons & SkatePad.A) == 0, false);
+                        if (pop.Special != SkateBoardTrickKind.None)
+                        { specialBumpers |= SkatePad.Buttons & (SkatePad.LeftBumper | SkatePad.RightBumper); HandplantFront = HandplantBack = false; }
+                        aTappedAt = -99f; PopFlip = flips; PopShove = (float)pop.ShoveDegrees; PopScale = LeastPop + (1f - LeastPop) * (float)pop.Strength;
+                    }
                 }
                 HeldFlip += SkatePad.TakeHeldFlip();
             }
@@ -265,7 +277,7 @@ public static class SkateKeys
         return noComply ? SkatePopKind.NoComply : boneless ? SkatePopKind.Boneless : kind;
     }
 
-    public static void EndStep() { JumpPressed = SpinPressed = false; PopFlip = LateFlip = HeldFlip = 0; PopShove = LateShove = BodyVarial = 0f; }
+    public static void EndStep() { JumpPressed = SpinPressed = false; PopFlip = LateFlip = HeldFlip = PopSpecialDirection = 0; PopSpecial = SkateBoardTrickKind.None; PopShove = LateShove = BodyVarial = 0f; }
 
     // Which grab the triggers and the right stick ask for. The triggers alone give the three plain
     // grabs; with the stick held up, down or to a side they give the others. The stick's sides are

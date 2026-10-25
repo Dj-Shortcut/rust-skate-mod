@@ -480,6 +480,8 @@ public static class SkateHud
         "from the left / right, roll round to the back, flick to the opposite front: #360 Flip / #Laser Flip",
         "from the right / left, roll round to the back, flick to the same front: #360 Hardflip / #360 Inward Heelflip",
         "back, roll 45-60 degrees to the right / left, flick straight forward: #Hardflip / #Inward Heelflip",
+        "LB + popped stick gesture: #Impossible   RB: #Front Foot Impossible   LB + RB: #Underflip (no triggers)",
+        "forward setup gives #Nollie Impossible / #Nollie Back Foot Impossible; release used bumpers before a handplant",
         "part way back / forward for a moment: #Manual / #Nose Manual, flick out of it to pop",
         "@IN THE AIR",
         "keep the same rim direction after a pure pop flip: #Double / #Triple; release, grab or change direction to end the hold",

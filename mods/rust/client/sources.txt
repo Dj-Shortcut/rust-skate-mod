@@ -32,6 +32,7 @@ mods/rust/shared/SkateRails.cs
 mods/rust/shared/SkatePose.cs
 mods/rust/shared/SkateTricks.cs
 mods/rust/shared/SkateGrabCatalog.cs
+mods/rust/shared/SkateBoardPath.cs
 mods/rust/shared/SkateRider.cs
 mods/rust/shared/SkateEdges.cs
 mods/rust/shared/SkateAudio.cs
