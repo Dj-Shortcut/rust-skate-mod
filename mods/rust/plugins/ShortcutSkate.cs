@@ -1612,6 +1612,138 @@ namespace Shortcut.RustMod
 
 namespace Shortcut.RustMod
 {
+    // BEGIN SHARED SKATE PARK PRESET
+    // A whole park as one set: existing park pieces on a slab of stock square foundations, laid out
+    // on the 3 m support grid. Cell (0, 0) is the slab's near middle; right and forward follow the
+    // placing administrator's heading snapped to a quarter turn. Each piece is anchored on a cell
+    // centre and turned in quarter turns, so its support cells land exactly on slab foundations.
+    public struct SkateParkPresetPiece
+    {
+        public SkateParkKind Kind;
+        public int Right, Forward, Turns;
+        public SkateParkPresetPiece(SkateParkKind kind, int right, int forward, int turns)
+        { Kind = kind; Right = right; Forward = forward; Turns = turns; }
+    }
+
+    public static class SkateParkPreset
+    {
+        public const double CellSize = SkateParkLayout.CellSize;
+        // The slab starts one cell ahead of the administrator's feet, with a 1.5 m gap before it.
+        public const double NearGap = 3;
+
+        public static readonly string[] Names = { "plaza" };
+
+        // "plaza": a street plaza in the spirit of a classic warehouse level, built only from the
+        // project's own pieces. Banks along the near edge and quarterpipes along the far edge give a
+        // back-and-forth line; a funbox in the middle; long ledges along both sides for grinds.
+        private static readonly SkateParkPresetPiece[] plaza =
+        {
+            new SkateParkPresetPiece(SkateParkKind.Bank, -3, 0, 2),
+            new SkateParkPresetPiece(SkateParkKind.Bank, -2, 0, 2),
+            new SkateParkPresetPiece(SkateParkKind.Bank, -1, 0, 2),
+            new SkateParkPresetPiece(SkateParkKind.Bank, 0, 0, 2),
+            new SkateParkPresetPiece(SkateParkKind.Bank, 1, 0, 2),
+            new SkateParkPresetPiece(SkateParkKind.Bank, 2, 0, 2),
+            new SkateParkPresetPiece(SkateParkKind.Bank, 3, 0, 2),
+            new SkateParkPresetPiece(SkateParkKind.LongLedge, -3, 3, 1),
+            new SkateParkPresetPiece(SkateParkKind.Funbox, 0, 3, 0),
+            new SkateParkPresetPiece(SkateParkKind.LongLedge, 3, 3, 1),
+            new SkateParkPresetPiece(SkateParkKind.QuarterPipe, -3, 5, 0),
+            new SkateParkPresetPiece(SkateParkKind.QuarterPipe, -2, 5, 0),
+            new SkateParkPresetPiece(SkateParkKind.QuarterPipe, -1, 5, 0),
+            new SkateParkPresetPiece(SkateParkKind.QuarterPipe, 0, 5, 0),
+            new SkateParkPresetPiece(SkateParkKind.QuarterPipe, 1, 5, 0),
+            new SkateParkPresetPiece(SkateParkKind.QuarterPipe, 2, 5, 0),
+            new SkateParkPresetPiece(SkateParkKind.QuarterPipe, 3, 5, 0),
+        };
+
+        public static bool TryPreset(string name, out SkateParkPresetPiece[] pieces,
+            out int minRight, out int maxRight, out int minForward, out int maxForward)
+        {
+            pieces = null; minRight = maxRight = minForward = maxForward = 0;
+            if (!string.Equals(name, "plaza", StringComparison.OrdinalIgnoreCase)) return false;
+            pieces = (SkateParkPresetPiece[])plaza.Clone();
+            minRight = -3; maxRight = 3; minForward = 0; maxForward = 6;
+            return true;
+        }
+
+        public static string Usage()
+        { return "Usage: skate.park <" + string.Join("|", Names) + ">. Stand on open, roughly flat dry ground and look along the park's run."; }
+
+        // The slab's cell (0, 0) centre for an administrator standing at (feetX, feetZ) facing yaw.
+        public static bool TryOrigin(double feetX, double feetZ, double yaw, out double x, out double z)
+        {
+            x = z = 0;
+            if (!Finite(feetX) || !Finite(feetZ) || !Finite(yaw)) return false;
+            double reach = NearGap + CellSize / 2, angle = yaw * Math.PI / 180;
+            x = feetX + reach * Math.Sin(angle); z = feetZ + reach * Math.Cos(angle);
+            return Finite(x) && Finite(z);
+        }
+
+        // A slab cell's world centre; the same right/forward convention as SkateParkLayout.TryTransform.
+        public static bool TryCell(double originX, double originZ, double yaw, int right, int forward, out double x, out double z)
+        {
+            x = z = 0;
+            if (!Finite(originX) || !Finite(originZ) || !Finite(yaw)) return false;
+            double angle = yaw * Math.PI / 180, r = right * CellSize, f = forward * CellSize;
+            x = originX + r * Math.Cos(angle) + f * Math.Sin(angle);
+            z = originZ - r * Math.Sin(angle) + f * Math.Cos(angle);
+            return Finite(x) && Finite(z);
+        }
+
+        public static bool TryPieceAnchor(SkateParkPresetPiece piece, double originX, double originZ, double yaw,
+            out double x, out double z, out double pieceYaw)
+        {
+            pieceYaw = Normalize(yaw + piece.Turns * 90);
+            return TryCell(originX, originZ, yaw, piece.Right, piece.Forward, out x, out z);
+        }
+
+        // Every support cell of every piece lies on the slab and no two pieces share a cell.
+        public static bool Validate(string name, out string failure)
+        {
+            SkateParkPresetPiece[] pieces;
+            int minRight, maxRight, minForward, maxForward;
+            failure = "Unknown park preset " + (name ?? "(none)") + ".";
+            if (!TryPreset(name, out pieces, out minRight, out maxRight, out minForward, out maxForward)) return false;
+            var used = new Dictionary<long, int>();
+            for (int p = 0; p < pieces.Length; p++)
+            {
+                SkateParkPresetPiece piece = pieces[p];
+                double ax, az, pieceYaw;
+                int cells = SkateParkLayout.SupportCellCount(piece.Kind);
+                if (cells == 0 || piece.Kind == SkateParkKind.MegaHalfpipe || piece.Turns < 0 || piece.Turns > 3 ||
+                    !TryPieceAnchor(piece, 0, 0, 0, out ax, out az, out pieceYaw))
+                { failure = "Preset piece " + p + " has no supported grid layout."; return false; }
+                for (int i = 0; i < cells; i++)
+                {
+                    SkateParkTransform cell;
+                    if (!SkateParkLayout.TrySupportCellPose(piece.Kind, i, ax, az, pieceYaw, out cell))
+                    { failure = "Preset piece " + p + " cell " + i + " is outside world bounds."; return false; }
+                    double fr = cell.X / CellSize, ff = cell.Z / CellSize;
+                    int r = (int)Math.Round(fr), f = (int)Math.Round(ff);
+                    if (Math.Abs(fr - r) > 1e-6 || Math.Abs(ff - f) > 1e-6)
+                    { failure = "Preset piece " + p + " cell " + i + " is off the 3 m grid."; return false; }
+                    if (r < minRight || r > maxRight || f < minForward || f > maxForward)
+                    { failure = "Preset piece " + p + " cell (" + r + "," + f + ") is off the slab."; return false; }
+                    long key = ((long)r << 32) ^ (uint)f;
+                    int other;
+                    if (used.TryGetValue(key, out other))
+                    { failure = "Preset pieces " + other + " and " + p + " share cell (" + r + "," + f + ")."; return false; }
+                    used.Add(key, p);
+                }
+            }
+            failure = null;
+            return true;
+        }
+
+        private static bool Finite(double value) { return !double.IsNaN(value) && !double.IsInfinity(value) && Math.Abs(value) <= 100000; }
+        private static double Normalize(double yaw) { yaw %= 360; return yaw < 0 ? yaw + 360 : yaw; }
+    }
+    // END SHARED SKATE PARK PRESET
+}
+
+namespace Shortcut.RustMod
+{
     // BEGIN SHARED SKATE PARK BUILD ITEMS
     public enum SkateParkBuildItemState { None, Preparing, Paid, RecoveryClaimed }
 
@@ -1731,7 +1863,7 @@ namespace Shortcut.RustMod
 
 namespace Oxide.Plugins
 {
-    [Info("ShortcutSkate", "Dj-Shortcut", "0.3.38")]
+    [Info("ShortcutSkate", "Dj-Shortcut", "0.3.39")]
     [Description("Player-scoped skateboard movement bounds and saved park assemblies.")]
     public sealed class ShortcutSkate : RustPlugin
     {
@@ -5127,13 +5259,25 @@ namespace Oxide.Plugins
             string failure;
             if (!SkateParkPlacement.TryRequest(arguments, out kind, out explicitAnchor, out x, out y, out z, out yaw, out failure))
             { ReplyParkCommand(arg, kind, failure); return; }
+            string message;
+            TryPlaceParkPiece(player, kind, explicitAnchor, x, y, z, yaw, itemOnly, out message);
+            ReplyParkCommand(arg, kind, message);
+        }
+
+        // One park piece for an in-game administrator: aimed, or at an explicit anchor. The message is
+        // the placement reply or the reason it was refused.
+        private bool TryPlaceParkPiece(BasePlayer player, SkateParkKind kind, bool explicitAnchor,
+            double x, double y, double z, double yaw, bool itemOnly, out string message)
+        {
+            string failure;
+            message = null;
             try
             {
                 if (!Eligible(player) || player.eyes == null)
-                { ReplyParkCommand(arg, kind, "Park placement is unavailable; be alive, awake, unmounted and on dry land."); return; }
+                { message = "Park placement is unavailable; be alive, awake, unmounted and on dry land."; return false; }
                 if (parkBusy || parkRefreshing || parkClosing || parkNativeRequests.Count != 0 || parkNativeCleaning || SaveRestore.IsSaving)
-                { ReplyParkCommand(arg, kind, "Park placement is busy or the world is being saved; try again shortly."); return; }
-                if (!RefreshParkWorld(out failure)) { ReplyParkCommand(arg, kind, failure); return; }
+                { message = "Park placement is busy or the world is being saved; try again shortly."; return false; }
+                if (!RefreshParkWorld(out failure)) { message = failure; return false; }
                 ItemContainer belt;
                 Item item;
                 Planner planner;
@@ -5141,32 +5285,32 @@ namespace Oxide.Plugins
                 Item heldItem = player.GetActiveItem();
                 bool buildItem = TaggedParkItem(heldItem);
                 if (itemOnly && !buildItem)
-                { ReplyParkCommand(arg, kind, "Keep the selected park build item active until placement completes."); return; }
+                { message = "Keep the selected park build item active until placement completes."; return false; }
                 if (buildItem)
                 {
                     SkateParkKind observed;
                     belt = player.inventory == null ? null : player.inventory.containerBelt;
                     item = heldItem; planner = held;
                     if (!ParkItemIdentity(item, out observed) || observed != kind || !ParkPlannerItem(player, belt, item, planner))
-                    { ReplyParkCommand(arg, kind, "The active park build item identity, amount, kind or owner changed; placement refused."); return; }
+                    { message = "The active park build item identity, amount, kind or owner changed; placement refused."; return false; }
                 }
                 else if (!FindParkPlanner(player, out belt, out item, out planner) || TaggedParkItem(item))
-                { ReplyParkCommand(arg, kind, "Park placement needs an existing building plan in your belt for native building-hook checks. Hold the plan once if it has not initialized."); return; }
+                { message = "Park placement needs an existing building plan in your belt for native building-hook checks. Hold the plan once if it has not initialized."; return false; }
                 Vector3 eye = player.eyes.position;
-                if (!Coordinate(eye)) { ReplyParkCommand(arg, kind, "The server eye position is unavailable."); return; }
+                if (!Coordinate(eye)) { message = "The server eye position is unavailable."; return false; }
                 var failures = new List<string>();
                 ParkNativePart[] definitions;
                 ParkPrefabs(kind, failures, out definitions);
-                if (failures.Count != 0) { ReplyParkCommand(arg, kind, string.Join("\n", failures)); return; }
+                if (failures.Count != 0) { message = string.Join("\n", failures); return false; }
                 ParkGroup wallGroup = null;
                 var wallRequest = new ParkPlacementRequest { Player = player, Planner = planner, PlannerItem = item,
                     Belt = belt, Data = parkData, BuildItem = buildItem, ItemKind = kind, ItemUid = item.uid,
                     ItemDefinition = item.info, ItemData = item.instanceData, Owner = player.userID };
                 if (kind == SkateParkKind.HalfWallKicker)
                 {
-                    if (explicitAnchor) { ReplyParkCommand(arg, kind, "Half-wall kickers require an aimed placed half wall; free anchors are not supported."); return; }
+                    if (explicitAnchor) { message = "Half-wall kickers require an aimed placed half wall; free anchors are not supported."; return false; }
                     if (!TryWallPlacement(wallRequest, new Ray(eye, player.eyes.HeadForward()), null, definitions, out wallGroup, out failure))
-                    { ReplyParkCommand(arg, kind, failure); return; }
+                    { message = failure; return false; }
                     x = wallGroup.AnchorX; y = wallGroup.AnchorY; z = wallGroup.AnchorZ; yaw = wallGroup.AnchorYaw;
                 }
                 else if (!explicitAnchor)
@@ -5178,40 +5322,41 @@ namespace Oxide.Plugins
                         LayerMask.NameToLayer("Terrain") < 0 || LayerMask.NameToLayer("Construction") < 0 ||
                         !Physics.Raycast(eye, direction.normalized, out hit, MaximumParkPlacementDistance, mask, QueryTriggerInteraction.Ignore) ||
                         !Coordinate(hit.point) || !Coordinate(hit.normal) || hit.normal.y <= 0)
-                    { ReplyParkCommand(arg, kind, "Aim at an upward-facing terrain or construction surface within 25 metres."); return; }
+                    { message = "Aim at an upward-facing terrain or construction surface within 25 metres."; return false; }
                     Vector3 viewAngles = player.eyes.rotation.eulerAngles;
                     if (!Coordinate(viewAngles))
-                    { ReplyParkCommand(arg, kind, "The server view heading is unavailable."); return; }
+                    { message = "The server view heading is unavailable."; return false; }
                     Bounds bounds = definitions[0].Construction.bounds;
                     if (!SkateParkLayout.TrySupportedAnchor(kind, hit.point.y, bounds.center.y, bounds.center.z,
                         bounds.size.y, bounds.size.z, out y))
-                    { ReplyParkCommand(arg, kind, "The aim surface or supported native layout height is outside world-coordinate bounds."); return; }
+                    { message = "The aim surface or supported native layout height is outside world-coordinate bounds."; return false; }
                     CaptureParkSupport(wallRequest, hit.collider == null ? null : hit.collider.ToBaseEntity() as BuildingBlock);
                     x = hit.point.x; z = hit.point.z;
                     yaw = (viewAngles.y % 360 + 360) % 360;
                     BuildingBlock host = hit.collider == null ? null : hit.collider.ToBaseEntity() as BuildingBlock;
                     if (host != null && (HorizontalParkFoundation(host) || parkMembers.ContainsKey(ParkId(host))) &&
                         !TryParkTargetFrame(wallRequest, host, hit, yaw, false, definitions, out x, out z, out yaw, out failure))
-                    { ReplyParkCommand(arg, kind, failure); return; }
+                    { message = failure; return false; }
                 }
                 if (kind != SkateParkKind.HalfWallKicker && wallRequest.SnapSnapshot == null &&
                     !SkateParkLayout.TrySnapYaw(yaw, 0, ParkRotationStep(), out yaw))
-                { ReplyParkCommand(arg, kind, "The native foundation rotation step is unavailable."); return; }
+                { message = "The native foundation rotation step is unavailable."; return false; }
                 Vector3 anchor = new Vector3((float)x, (float)y, (float)z);
                 if (!Coordinate(anchor) || Vector3.Distance(eye, anchor) > MaximumParkPlacementDistance)
-                { ReplyParkCommand(arg, kind, "The park anchor must be within 25 metres of your server eye position."); return; }
+                { message = "The park anchor must be within 25 metres of your server eye position."; return false; }
                 var request = wallRequest;
                 var group = wallGroup ?? new ParkGroup { Id = Guid.NewGuid().ToString("N"), Owner = player.userID,
                     Kind = SkateParkLayout.Name(kind), AnchorX = x, AnchorY = y, AnchorZ = z, AnchorYaw = yaw,
                     Members = new List<ParkMember>(), BuildItemState = buildItem ? SkateParkBuildItemState.Preparing : SkateParkBuildItemState.None };
                 if (kind != SkateParkKind.HalfWallKicker &&
                     !ResolveParkSupport(request, kind, definitions, group, out failure))
-                { ReplyParkCommand(arg, kind, failure); return; }
+                { message = failure; return false; }
                 if (!BuildParkAssembly(request, kind, definitions, group, out failure))
-                { ReplyParkCommand(arg, kind, "Park " + group.Kind + " placement refused: " + failure); return; }
-                ReplyParkCommand(arg, kind, ParkPlacementReply(group));
+                { message = "Park " + group.Kind + " placement refused: " + failure; return false; }
+                message = ParkPlacementReply(group);
+                return true;
             }
-            catch (Exception error) { ReplyParkCommand(arg, kind, "Park placement refused: " + error.Message); }
+            catch (Exception error) { message = "Park placement refused: " + error.Message; return false; }
         }
 
         private void ReplyParkCommand(ConsoleSystem.Arg arg, SkateParkKind kind, string message)
@@ -5247,6 +5392,146 @@ namespace Oxide.Plugins
             foreach (var pair in parkSelections.ToArray())
                 if (pair.Value.Player == null || !pair.Value.Player.IsConnected || now > pair.Value.Expires)
                     parkSelections.Remove(pair.Key);
+        }
+
+        // A whole park in one go (skate.park plaza): a level slab of stock stone foundations ahead of
+        // the administrator, then every preset piece placed on it through the normal explicit-anchor
+        // placement, so each piece gets the same support, space, permission and save checks as one
+        // placed by hand. Pieces that are refused are listed; the slab and placed pieces stay.
+        private const float ParkPresetMaximumSpread = 1f, ParkPresetSlabLift = 0.05f;
+
+        [ConsoleCommand("skate.park")]
+        private void SpawnParkPreset(ConsoleSystem.Arg arg)
+        {
+            BasePlayer player = arg.Player();
+            if (player == null || !player.IsAdmin) { arg.ReplyWith("Use this command as an in-game administrator."); return; }
+            string name = arg.Args != null && arg.Args.Length == 1 ? arg.GetString(0) : null;
+            SkateParkPresetPiece[] pieces;
+            int minRight, maxRight, minForward, maxForward;
+            string failure;
+            if (name == null || !SkateParkPreset.TryPreset(name, out pieces, out minRight, out maxRight, out minForward, out maxForward))
+            { arg.ReplyWith(SkateParkPreset.Usage()); return; }
+            if (!SkateParkPreset.Validate(name, out failure)) { arg.ReplyWith(failure); return; }
+            if (!ready || !Eligible(player) || player.eyes == null)
+            { arg.ReplyWith("Park presets are unavailable; stand alive on dry ground with skating ready."); return; }
+            if (parkBusy || parkRefreshing || parkClosing || parkNativeRequests.Count != 0 || parkNativeCleaning || SaveRestore.IsSaving)
+            { arg.ReplyWith("Park placement is busy or the world is being saved; try again shortly."); return; }
+            if (TaggedParkItem(player.GetActiveItem()))
+            { arg.ReplyWith("Put the park build item away first; presets use an ordinary building plan in your belt."); return; }
+            ItemContainer belt;
+            Item planItem;
+            Planner planner;
+            if (!FindParkPlanner(player, out belt, out planItem, out planner) || TaggedParkItem(planItem))
+            { arg.ReplyWith("Park presets need an ordinary building plan in your belt. Hold it once if it has not initialized."); return; }
+            if (!RefreshParkWorld(out failure)) { arg.ReplyWith(failure); return; }
+            uint foundationId = StringPool.Get(ParkFoundationPrefab);
+            var foundationPrefab = GameManager.server.FindPrefab(ParkFoundationPrefab);
+            var construction = PrefabAttribute.server.Find<Construction>(foundationId);
+            var stone = construction == null ? null : construction.GetGrade(BuildingGrade.Enum.Stone, 0);
+            if (foundationId == 0 || foundationPrefab == null || foundationPrefab.GetComponent<BuildingBlock>() == null ||
+                construction == null || stone == null || stone.gradeBase == null || stone.gradeBase.type != BuildingGrade.Enum.Stone)
+            { arg.ReplyWith("The stock foundation prefab or its stone grade is unavailable in this server build."); return; }
+            double step = ParkRotationStep(), yaw;
+            Vector3 view = player.eyes.rotation.eulerAngles;
+            if (!Coordinate(view) || !SkateParkLayout.TrySnapYaw((view.y % 360 + 360) % 360, 0, step, out yaw) ||
+                !SkateParkLayout.TrySnapYaw(yaw, 0, 90, out yaw))
+            { arg.ReplyWith("The server view heading or foundation rotation step is unavailable."); return; }
+            Vector3 feet = player.transform.position;
+            double originX, originZ;
+            if (!Coordinate(feet) || !SkateParkPreset.TryOrigin(feet.x, feet.z, yaw, out originX, out originZ))
+            { arg.ReplyWith("Your position is outside world bounds."); return; }
+
+            // Survey the ground under every slab cell: dry terrain, one rough level, nothing in the way.
+            int terrain = LayerMask.GetMask("Terrain", "World"), blockers = LayerMask.GetMask("Construction", "Deployed", "Player (Server)", "Tree", "World");
+            Quaternion rotation = Quaternion.Euler(0, (float)yaw, 0);
+            var cells = new List<Vector3>();
+            float low = float.PositiveInfinity, high = float.NegativeInfinity;
+            for (int f = minForward; f <= maxForward; f++)
+                for (int r = minRight; r <= maxRight; r++)
+                {
+                    double cx, cz;
+                    if (!SkateParkPreset.TryCell(originX, originZ, yaw, r, f, out cx, out cz))
+                    { arg.ReplyWith("The park area is outside world bounds."); return; }
+                    var centre = new Vector3((float)cx, feet.y, (float)cz);
+                    for (int sample = 0; sample < 9; sample++)
+                    {
+                        Vector3 point = centre + rotation * new Vector3((sample % 3 - 1) * 1.45f, 0, (sample / 3 - 1) * 1.45f);
+                        RaycastHit hit;
+                        if (!Physics.Raycast(point + Vector3.up * 12, Vector3.down, out hit, 24, terrain, QueryTriggerInteraction.Ignore) ||
+                            hit.collider == null || hit.collider.gameObject.layer != LayerMask.NameToLayer("Terrain") ||
+                            WaterLevel.Test(hit.point + Vector3.up * 0.1f, true, false))
+                        { arg.ReplyWith("Park cell (" + r + "," + f + ") is not open dry terrain; find a clear, roughly flat area about 21 by 21 metres ahead of you."); return; }
+                        low = Math.Min(low, hit.point.y); high = Math.Max(high, hit.point.y);
+                    }
+                    cells.Add(centre);
+                }
+            if (high - low > ParkPresetMaximumSpread)
+            { arg.ReplyWith(string.Format(CultureInfo.InvariantCulture, "The ground varies {0:F1} m under the park; at most {1:F1} m is allowed. Find flatter ground.", high - low, ParkPresetMaximumSpread)); return; }
+            float top = high + ParkPresetSlabLift;
+            Bounds bounds = construction.bounds;
+            Vector3 middle = rotation * new Vector3((float)((minRight + maxRight) * SkateParkPreset.CellSize / 2), 0,
+                (float)((minForward + maxForward) * SkateParkPreset.CellSize / 2));
+            var slabCentre = new Vector3((float)originX, top + 2.5f, (float)originZ) + middle;
+            var slabHalf = new Vector3((float)((maxRight - minRight + 1) * SkateParkPreset.CellSize / 2), 2.5f - ParkPresetSlabLift / 2,
+                (float)((maxForward - minForward + 1) * SkateParkPreset.CellSize / 2));
+            if (Physics.CheckBox(slabCentre, slabHalf, rotation, blockers, QueryTriggerInteraction.Ignore))
+            { arg.ReplyWith("The park area is occupied by a player, tree, rock or building; find an open spot."); return; }
+            if (!player.CanBuild(slabCentre, rotation, new Bounds(Vector3.zero, slabHalf * 2), false))
+            { arg.ReplyWith("You have no building permission over the park area."); return; }
+
+            // The slab: one building of stone foundations, their tops level at the surveyed height.
+            float lift = top - (bounds.center.y + bounds.extents.y);
+            var slab = new List<BuildingBlock>();
+            uint building = BuildingManager.server.NewBuildingID();
+            try
+            {
+                parkBusy = true;
+                foreach (Vector3 centre in cells)
+                {
+                    BaseEntity entity = GameManager.server.CreateEntity(ParkFoundationPrefab, new Vector3(centre.x, lift, centre.z), rotation, true);
+                    BuildingBlock block = entity as BuildingBlock;
+                    if (block == null) { if (entity != null) entity.Kill(); throw new InvalidDataException("Foundation creation failed."); }
+                    block.OwnerID = player.userID;
+                    block.grounded = true;
+                    block.AttachToBuilding(building);
+                    block.Spawn();
+                    slab.Add(block);
+                    if (block.IsDestroyed || block.net == null || !HorizontalParkFoundation(block))
+                        throw new InvalidDataException("A slab foundation did not spawn level.");
+                    block.SetGrade(BuildingGrade.Enum.Stone);
+                    block.SetHealthToMax();
+                    block.SendNetworkUpdateImmediate();
+                }
+            }
+            catch (Exception error)
+            {
+                foreach (BuildingBlock block in slab) if (block != null && !block.IsDestroyed) block.Kill();
+                PrintError("Park preset slab failed: " + error.Message);
+                arg.ReplyWith("The park slab could not be built and was removed: " + error.Message);
+                return;
+            }
+            finally { parkBusy = false; }
+
+            // The pieces, each through the ordinary placement path at its explicit anchor.
+            int placed = 0;
+            var refused = new List<string>();
+            foreach (SkateParkPresetPiece piece in pieces)
+            {
+                double x, z, pieceYaw;
+                string message;
+                if (!SkateParkPreset.TryPieceAnchor(piece, originX, originZ, yaw, out x, out z, out pieceYaw))
+                { refused.Add(SkateParkLayout.Name(piece.Kind) + " (" + piece.Right + "," + piece.Forward + "): outside world bounds"); continue; }
+                if (TryPlaceParkPiece(player, piece.Kind, true, x, top, z, pieceYaw, false, out message)) placed++;
+                else refused.Add(SkateParkLayout.Name(piece.Kind) + " (" + piece.Right + "," + piece.Forward + "): " + message);
+            }
+            string reply = string.Format(CultureInfo.InvariantCulture, "Park {0}: {1} foundations, {2} of {3} pieces placed.",
+                name.ToLowerInvariant(), slab.Count, placed, pieces.Length);
+            if (refused.Count != 0)
+            {
+                PrintWarning("Park preset " + name + " refused pieces:\n" + string.Join("\n", refused));
+                reply += " Refused:\n" + string.Join("\n", refused);
+            }
+            arg.ReplyWith(reply + "\nUse a hammer to demolish pieces; the foundations are an ordinary building.");
         }
 
         [ConsoleCommand("skate.pieces")]
