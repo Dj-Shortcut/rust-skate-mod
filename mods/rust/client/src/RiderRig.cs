@@ -662,7 +662,9 @@ public static class RiderRig
                 DeckTop, mode == RideMode.Bail ? SkateRide.Clamp((now - SkateRide.ModeAt) / SkateRide.BailSeconds, 0f, 1f) : 0f,
                 SkateRide.PushLead, plant, contact.Initialized ? contact.GrabSeconds : grabHold >= 0f ? grabHold : grabSince < 0f ? 0f : now - grabSince, handplant,
                 SkateRide.Clamp(SkateBoard.PitchDegrees, -40f, 40f) * Math.PI / 180.0,
-                noseSlide, chestLead, mode == RideMode.Air ? SkateRide.ShoveDeg : 0.0, landing, contact, SkateRide.PushPeriod, new SkateVector(deckFace.x, deckFace.y, deckFace.z));
+                noseSlide, chestLead, mode == RideMode.Air ? SkateRide.ShoveDeg : 0.0, landing, contact, SkateRide.PushPeriod, new SkateVector(deckFace.x, deckFace.y, deckFace.z),
+                mode == RideMode.Grind && SkateGrinds.Truck(SkateRide.GrindKind) != 0, SkateBoard.GrindRoll * Math.PI / 180.0,
+                mode == RideMode.Grind ? SkateGrinds.Truck(SkateRide.GrindKind) * SkateBoard.Axle : 0);
             SkateRiderPose pose; string error;
             if (!SkateRider.TryCreate(Rig, input, out pose, out error))
             {
@@ -744,11 +746,17 @@ public static class RiderRig
             // The trunk keeps the support frame; the soles meet the pitched deck. Only the
             // pushing foot rolls onto the ground plane during its existing contact window.
             var groundContact = pushing ? (float)SkateRider.PushContact(input.PushPhase) : 0f;
-            var footTravel = new Vector3((float)fx, (float)fy, (float)fz) * (input.Switch ? -1f : 1f);
+            var footTravel = input.DeckPitchFrame ? deckFace : new Vector3((float)fx, (float)fy, (float)fz) * (input.Switch ? -1f : 1f);
             var leftPitch = mode == RideMode.Bail ? 0 : input.DeckPitch * (pushing && pushLeft ? 1f - groundContact : 1f);
             var rightPitch = mode == RideMode.Bail ? 0 : input.DeckPitch * (pushing && !pushLeft ? 1f - groundContact : 1f);
             var leftSole = upV * (float)Math.Cos(leftPitch) - footTravel * (float)Math.Sin(leftPitch);
             var rightSole = upV * (float)Math.Cos(rightPitch) - footTravel * (float)Math.Sin(rightPitch);
+            if (input.DeckPitchFrame && Math.Abs(input.DeckRoll) > 0.0001)
+            {
+                var axis = footTravel * (float)Math.Cos(input.DeckPitch) + upV * (float)Math.Sin(input.DeckPitch);
+                var roll = SkateRide.Turn(-(float)(input.DeckRoll * 180 / Math.PI), axis);
+                leftSole = roll * leftSole; rightSole = roll * rightSole;
+            }
             if (mode == RideMode.Air && grab != SkateGrabKind.None)
             {
                 var definition = SkateGrabCatalog.Get(grab); var tweak = SkateBoard.GrabTweak(upV);

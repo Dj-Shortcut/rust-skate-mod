@@ -93,21 +93,22 @@ public static class SkateBoard
         var pitch = PitchDegrees;
         if (Math.Abs(pitch) > 0.01f)
         {
-            var lead = OnFace(up, SkateRide.Dir(SkateRide.Yaw));
+            var truck = SkateRide.Mode == RideMode.Grind ? SkateGrinds.Truck(SkateRide.GrindKind) : 0;
+            var lead = OnFace(up, SkateRide.Dir(truck != 0 ? SkateRide.DeckYaw : SkateRide.Yaw));
             if (lead.sqrMagnitude > 0.0001f)
             {
-                lead = SkateRide.Speed >= 0f ? lead.normalized : -lead.normalized;
+                lead = truck != 0 || SkateRide.Speed >= 0f ? lead.normalized : -lead.normalized;
                 var turn = SkateRide.Turn(pitch, Vector3.Cross(lead, up));
                 // A manual and a stall on one end pitch about the axle that stays down; a grind on a
                 // truck about that truck, which is where the edge is.
-                var pivot = at - lead * (pitch > 0f ? Axle : -Axle);
+                var pivot = at + lead * (truck != 0 ? truck * Axle : pitch > 0f ? -Axle : Axle);
                 at = pivot + turn * (at - pivot);
                 up = turn * up;
             }
         }
         if (Math.Abs(GrindRoll) > 0.01f)
         {
-            var nose = SkateRide.Dir(SkateRide.NoseYaw); nose = nose - up * Vector3.Dot(nose, up);
+            var nose = SkateRide.Dir(SkateRide.Mode == RideMode.Grind && SkateGrinds.Truck(SkateRide.GrindKind) != 0 ? SkateRide.DeckYaw : SkateRide.NoseYaw); nose = nose - up * Vector3.Dot(nose, up);
             if (nose.sqrMagnitude > 0.0001f) up = SkateRide.Turn(-GrindRoll, nose.normalized) * up;
         }
     }
@@ -149,12 +150,15 @@ public static class SkateBoard
         lieUntil = -1f;
         var n = SkateRide.ViewNormal;
         var at = Contact(playerT);
+        var trucked = SkateRide.Mode == RideMode.Grind && SkateGrinds.Truck(SkateRide.GrindKind) != 0;
+        var deckNose = OnFace(n, SkateRide.Dir(SkateRide.DeckYaw));
+        var deckTurn = trucked ? SkateRide.Turn(PitchDegrees, Vector3.Cross(deckNose, n)) : Quaternion.identity;
         Tilt(ref at, ref n);
         var travel = OnFace(n, SkateRide.Dir(SkateRide.Yaw));
         // The lean rolls the board about its direction of travel, right side down in a right turn.
-        var up = SkateRide.Turn(-SkateRide.Lean, travel) * n;
+        var up = trucked ? n : SkateRide.Turn(-SkateRide.Lean, travel) * n;
         // The board's own nose: the rider's stance, and what the board has turned under his feet.
-        var nose = OnFace(up, SkateRide.Dir(SkateRide.DeckYaw));
+        var nose = trucked ? deckTurn * deckNose : OnFace(up, SkateRide.Dir(SkateRide.DeckYaw));
         nose = nose - up * Vector3.Dot(nose, up);
         nose = nose.sqrMagnitude > 0.0001f ? nose.normalized : travel;
         var flip = (float)SkateRide.FlipDeg; var askew = 0f;

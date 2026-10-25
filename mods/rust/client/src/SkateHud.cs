@@ -493,6 +493,8 @@ public static class SkateHud
         "LT or RT held down a transition, let go at the bottom: pump   #Y get off   #R3 camera",
         "@EDGES",
         "come down on an edge from a pop: grind; right stick back / forward: #5-0 / #Nosegrind, across on the tail / nose: #Bluntslide / #Nosebluntslide",
+        "angled front truck: #Crooked / #Overcrook; right stick part way back: #Willy / #Over Willy (side from take-off)",
+        "angled rear truck, right stick part way back: #Salad; release for #Smith / #Feeble",
         "square onto an edge: stall; #LB / #RB held: frontside / backside #Handplant   flick to pop out",
     };
 
