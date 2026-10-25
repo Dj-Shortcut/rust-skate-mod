@@ -286,7 +286,9 @@ public static class SkateRide
         catch (Exception e) { CapsuleReach = 0.2f; if (!capsuleSaid) { capsuleSaid = true; Out.Say("SKATE capsule unreadable: " + e.GetType().Name + ": " + e.Message); } }
         var v = b.linearVelocity; velocity = v; var rise = v.y; v.y = 0f;
         Speed = Vector3.Dot(v, Dir(yaw));
-        SkateKeys.EndStep();
+        if (SkateKeys.Scripted) SkateKeys.EndStep(); else SkateKeys.Reset();
+        SkateBoard.BeginRide();
+        RiderRig.BeginRide();
         hasLast = false; pastCount = 0; Steps = 0; Resets = 0; Top = 0f; Lean = 0f; SteerRate = 0f; Powerslide = 0f; PowerslideSide = 1f; lastPull = mountAt = Time.realtimeSinceStartup;
         // A cap from a ride a while ago says nothing about this one.
         if (mountAt - putBackAt > CapForget) ForgetServer();
@@ -318,7 +320,7 @@ public static class SkateRide
         if (Mode == RideMode.Off) return;
         airViewFrom = Vector3.up; airViewAt = airViewRise = 0f; airView = default(SkateRiderAirFrameState);
         Mode = RideMode.Off; BoardPath = default(SkateBoardPathSample); wantSpecial = SkateBoardTrickKind.None; wantSpecialDirection = 0; Pump = default(SkatePumpState); PumpHeld = RevertLeft = 0f; Stalling = false; grindClassified = airFromValid = false; OffReason = reason; Grab = SkateGrabKind.None; Manual = NoseManual = false;
-        SkateKeys.EndStep();
+        if (SkateKeys.Scripted) SkateKeys.EndStep(); else SkateKeys.Reset();
     }
 
     private static void Enter(RideMode m)

@@ -566,6 +566,7 @@ public class SkateRig : MonoBehaviour
         if (grinding) Shortcut.RustMod.SkateRider.GrindDeck(SkateRide.GrindKind, out gp, out gr, out gc);
         SkateBoard.GrindPitch += ((float)gp - SkateBoard.GrindPitch) * SkateRide.Clamp(frame * 12f, 0f, 1f);
         SkateBoard.GrindRoll += ((float)gr - SkateBoard.GrindRoll) * SkateRide.Clamp(frame * 12f, 0f, 1f);
+        SkateBoard.PrepareSupport();
         var third = SkateRide.On && LocalT != null && (SkateCamera.Chase || SkateCamera.Fixed);
         var t1 = SkateClock.Now(); RiderRig.Look(third); SkateClock.Add(SkateClock.Look, t1);
         RiderRig.Prepare(frame);

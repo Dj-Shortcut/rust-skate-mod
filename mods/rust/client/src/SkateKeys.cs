@@ -42,7 +42,7 @@ public static class SkateKeys
     public static int PopFlip, LateFlip, HeldFlip;
     public static SkateBoardTrickKind PopSpecial;
     public static int PopSpecialDirection;
-    private static int specialBumpers;
+    private static int specialBumpers, triggerBlocked, keyboardHeld;
     // Asked for in the air: degrees of shove under the feet, and degrees of body varial (the rider
     // turns, the board does not).
     public static float LateShove, BodyVarial;
@@ -61,7 +61,7 @@ public static class SkateKeys
     private static bool wasPush, wasBrake, wasLeft, wasRight, wasJump, wasCrouch, wasToggle, wasCamera, wasStance, wasBody;
     private static float stanceSince = -1f;
     private static float wasSpin;
-    private static bool keyboardSuspended, stickPushBlocked;
+    private static bool keyboardSuspended, stickPushBlocked, spinBlocked;
     private static int pumpPushButtons;
     private static uint padInputEpoch;
     private static bool popKeys = true, crouchKeys = true, cameraKey = true, manualKey = true, helpKey = true, taps = true, cursorKnown = true, failed;
@@ -77,8 +77,8 @@ public static class SkateKeys
         InputEpoch++; ControlsActive = false;
         Push = Brake = Left = Right = Crouch = Jump = Manual = NoseManual = Analog = Charging = Help = false; Steer = Charge = Spin = wasSpin = 0f; PopScale = 1f;
         Grab = SkateGrabKind.None; PopKind = SkatePopKind.Ollie; Mongo = HandplantFront = HandplantBack = false; aTappedAt = -99f;
-        EndStep(); SkatePad.DropPops(); JumpTap = ToggleTap = CameraTap = CrouchTap = false;
-        keyboardSuspended = true; stickPushBlocked = false; pumpPushButtons = 0; stanceSince = -1f; HelpPage = 0; airGrabBlocked = SkateGrabCatalog.ModifierButtons;
+        EndStep(); SkatePad.SuspendGestures(); JumpTap = ToggleTap = CameraTap = CrouchTap = false;
+        keyboardSuspended = true; keyboardHeld = 0; triggerBlocked = (SkatePad.LeftTrigger > SkatePad.Pulled ? 1 : 0) | (SkatePad.RightTrigger > SkatePad.Pulled ? 2 : 0); specialBumpers = SkatePad.Buttons & (SkatePad.LeftBumper | SkatePad.RightBumper); stickPushBlocked = SkatePad.LeftY > StickPush; pumpPushButtons = SkatePad.Buttons & (SkatePad.A | SkatePad.X); spinBlocked = SkatePad.LeftX * SkatePad.LeftX + SkatePad.LeftY * SkatePad.LeftY > SpinFrom * SpinFrom; stanceSince = -1f; HelpPage = 0; airGrabBlocked = SkateGrabCatalog.ModifierButtons;
     }
 
     public static void Poll()
@@ -91,7 +91,13 @@ public static class SkateKeys
         {
             padInputEpoch = SkatePad.InputEpoch;
             if (Pad) InputEpoch++;
-            stickPushBlocked = false; pumpPushButtons = 0; airGrabBlocked = SkateGrabCatalog.ModifierButtons;
+            EndStep(); SkatePad.SuspendGestures();
+            keyboardSuspended = true; specialBumpers |= SkatePad.Buttons & (SkatePad.LeftBumper | SkatePad.RightBumper);
+            triggerBlocked = (SkatePad.LeftTrigger > SkatePad.Pulled ? 1 : 0) | (SkatePad.RightTrigger > SkatePad.Pulled ? 2 : 0);
+            aTappedAt = -99f; rawSide = 0; sideSince = movedAt = rimAt = -99f; onRim = false;
+            stickPushBlocked = SkatePad.LeftY > StickPush; pumpPushButtons = SkatePad.Buttons & (SkatePad.A | SkatePad.X);
+            spinBlocked = SkatePad.LeftX * SkatePad.LeftX + SkatePad.LeftY * SkatePad.LeftY > SpinFrom * SpinFrom;
+            airGrabBlocked = SkateGrabCatalog.ModifierButtons;
         }
         var padDown = SkatePad.Pressed();
         SkatePadLog.Frame(now);
@@ -104,11 +110,15 @@ public static class SkateKeys
             {
                 SuspendControls();
                 Push = Brake = Left = Right = Crouch = Jump = Manual = NoseManual = Charging = Help = false; Steer = Charge = Spin = wasSpin = 0f; Grab = SkateGrabKind.None;
-                wasPush = wasBrake = wasLeft = wasRight = wasJump = wasCrouch = wasToggle = wasCamera = false; EndStep(); SkatePad.DropPops();
+                wasPush = wasBrake = wasLeft = wasRight = wasJump = wasCrouch = wasToggle = wasCamera = false; EndStep(); SkatePad.SuspendGestures();
+                Mongo = HandplantFront = HandplantBack = false; aTappedAt = -99f; rawSide = 0; sideSince = movedAt = rimAt = -99f; onRim = false;
+                specialBumpers |= SkatePad.Buttons & (SkatePad.LeftBumper | SkatePad.RightBumper);
+                triggerBlocked = (SkatePad.LeftTrigger > SkatePad.Pulled ? 1 : 0) | (SkatePad.RightTrigger > SkatePad.Pulled ? 2 : 0);
                 // Held controller pushes must return after a menu; closing it is not a new stroke.
                 var heldPad = SkateRide.On && SkatePad.Shared;
                 stickPushBlocked = heldPad && SkatePad.LeftY > StickPush;
                 pumpPushButtons = heldPad ? SkatePad.Buttons & (SkatePad.A | SkatePad.X) : 0;
+                spinBlocked = SkatePad.LeftX * SkatePad.LeftX + SkatePad.LeftY * SkatePad.LeftY > SpinFrom * SpinFrom;
                 keyboardSuspended = true; stanceSince = -1f; airGrabBlocked = SkateGrabCatalog.ModifierButtons;
                 return;
             }
@@ -153,6 +163,16 @@ public static class SkateKeys
             }
             if (!stanceKey) wasStance = false;
             SkateRide.StanceHold(ref stanceSince, stanceKey && !wasStance, now);
+            // A key held across a menu/reset is not a fresh riding action. Native on-foot input
+            // remains with Steam/the game; this filters only the plugin's riding fields.
+            int heldKeys = (push ? 1 : 0) | (brake ? 2 : 0) | (left ? 4 : 0) | (right ? 8 : 0) |
+                (jump ? 16 : 0) | (crouch ? 32 : 0) | (manual ? 64 : 0) | (body ? 128 : 0);
+            if (keyboardSuspended) keyboardHeld = heldKeys;
+            keyboardHeld &= heldKeys;
+            push &= (keyboardHeld & 1) == 0; brake &= (keyboardHeld & 2) == 0;
+            left &= (keyboardHeld & 4) == 0; right &= (keyboardHeld & 8) == 0;
+            jump &= (keyboardHeld & 16) == 0; crouch &= (keyboardHeld & 32) == 0;
+            manual &= (keyboardHeld & 64) == 0; body &= (keyboardHeld & 128) == 0;
             // Whose hands are on the ride: the controller's from the moment it is touched; the
             // keyboard's again when a riding key goes down while the controller has been at rest,
             // which Steam's layout cannot have sent.
@@ -172,10 +192,13 @@ public static class SkateKeys
                 if ((padDown & SkatePad.Y) != 0) ToggleTap = true;
                 if ((padDown & SkatePad.RightStickClick) != 0) CameraTap = true;
                 float x = SkatePad.LeftX, y = SkatePad.LeftY;
+                if (x * x + y * y < SkateFlick.RearmZone * SkateFlick.RearmZone) spinBlocked = false;
                 var straight = Math.Abs(x) < Straight;
                 Analog = true;
                 Steer = Math.Abs(x) <= SteerDead ? 0f : (x - Math.Sign(x) * SteerDead) / (1f - SteerDead);
-                bool lt0 = SkatePad.LeftTrigger > SkatePad.Pulled, rt0 = SkatePad.RightTrigger > SkatePad.Pulled;
+                var triggers = (SkatePad.LeftTrigger > SkatePad.Pulled ? 1 : 0) | (SkatePad.RightTrigger > SkatePad.Pulled ? 2 : 0);
+                triggerBlocked &= triggers;
+                bool lt0 = (triggers & ~triggerBlocked & 1) != 0, rt0 = (triggers & ~triggerBlocked & 2) != 0;
                 // A held forward stick must return before it pushes after a pump's release.
                 if (!SkateRide.On || y <= StickPush) stickPushBlocked = false;
                 else if (SkateRide.Mode == RideMode.Ground && SkateRide.Grounded && (lt0 || rt0)) stickPushBlocked = true;
@@ -212,8 +235,8 @@ public static class SkateKeys
                 else onRim = false;
                 var held = side != 0 && now - sideSince >= SpinHold && now - movedAt >= SpinHold;
                 Left = held && side < 0; Right = held && side > 0;
-                Spin = Left ? -1f : Right ? 1f : 0f;
-                bool lt = SkatePad.LeftTrigger > SkatePad.Pulled, rt = SkatePad.RightTrigger > SkatePad.Pulled;
+                Spin = spinBlocked ? 0f : Left ? -1f : Right ? 1f : 0f;
+                bool lt = lt0, rt = rt0;
                 Crouch = lt || rt;
                 var mirroredGrab = SkateRide.Goofy != (SkateRide.On && SkateRide.TailFirst);
                 var airGrab = SkateRide.Mode == RideMode.Air;
@@ -246,7 +269,7 @@ public static class SkateKeys
             else
             {
                 stickPushBlocked = false; pumpPushButtons = 0; airGrabBlocked = SkateGrabCatalog.ModifierButtons;
-                SkatePad.DropPops();
+                SkatePad.SuspendGestures();
                 Analog = Charging = false; Charge = 0f; NoseManual = false;
                 Steer = (left ? -1f : 0f) + (right ? 1f : 0f);
                 Spin = Steer;

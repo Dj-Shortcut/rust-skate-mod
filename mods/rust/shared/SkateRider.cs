@@ -49,6 +49,7 @@ namespace Shortcut.RustMod
         public readonly double GrabWeight, GrabSeconds, Landing;
         public readonly SkateRiderTrickContext Trick;
         public readonly double FlightSeconds;
+        public readonly bool GrabTransition;
         public readonly SkateBoardPathSample BoardPath;
         public SkateGrabKind VisibleGrab { get { return GrabWeight > 0 ? GrabKind : SkateGrabKind.None; } }
         public double BoardFold { get { return GrabWeight * (0.8 + 0.2 * Math.Min(1, GrabSeconds / 0.6)); } }
@@ -82,8 +83,14 @@ namespace Shortcut.RustMod
             double flipLift, double shoveLift, double flick, double scoop, double caught,
             SkateGrabKind grab, double grabWeight, double grabSeconds, double landing,
             SkateRiderTrickContext trick, double flightSeconds, SkateBoardPathSample boardPath)
+            : this(air, rotating, phase, flip, shove, flipTravel, shoveTravel, flipDirection, shoveDirection, flipLift, shoveLift, flick, scoop, caught, grab, grabWeight, grabSeconds, landing, trick, flightSeconds, boardPath, false) { }
+        internal SkateRiderContactState(bool air, bool rotating, SkateRiderContactPhase phase,
+            double flip, double shove, double flipTravel, double shoveTravel, int flipDirection, int shoveDirection,
+            double flipLift, double shoveLift, double flick, double scoop, double caught,
+            SkateGrabKind grab, double grabWeight, double grabSeconds, double landing,
+            SkateRiderTrickContext trick, double flightSeconds, SkateBoardPathSample boardPath, bool grabTransition)
         {
-            BoardPath = boardPath; Initialized = true; Airborne = air; Rotating = rotating; Phase = phase;
+            GrabTransition = grabTransition; BoardPath = boardPath; Initialized = true; Airborne = air; Rotating = rotating; Phase = phase;
             LastFlip = flip; LastShove = shove; FlipTravel = flipTravel; ShoveTravel = shoveTravel;
             FlipDirection = flipDirection; ShoveDirection = shoveDirection;
             FlipLift = flipLift; ShoveLift = shoveLift; Flick = flick; Scoop = scoop; Catch = caught;
@@ -333,22 +340,36 @@ namespace Shortcut.RustMod
             // Rotating also includes body/yaw spins, during which gameplay permits a grab.
             // Only a moving flip/shove displaces its contact or interrupts a fading grip.
             bool boardTurning = rotating && (changed || boardPath.Active);
-            if (boardTurning) { weight = 0; visible = SkateGrabKind.None; seconds = 0; }
-            else if (grab != SkateGrabKind.None)
-            { visible = grab; seconds = grabSeconds; weight = Smooth(Math.Min(1, grabSeconds / GrabIn)); }
+            bool transfer = !fresh && state.GrabTransition;
+            if (boardTurning) { weight = 0; visible = SkateGrabKind.None; seconds = 0; transfer = true; }
+            else if (grab == SkateGrabKind.None || (visible != SkateGrabKind.None && visible != grab && weight > 0))
+            {
+                // Release the previous hand/foot contacts before selecting another grip.
+                transfer |= grab != SkateGrabKind.None;
+                weight = Math.Max(0, weight - dt / GrabIn);
+                if (weight == 0) { visible = SkateGrabKind.None; seconds = 0; if (grab == SkateGrabKind.None) transfer = false; }
+            }
             else
-            { weight = Math.Max(0, weight - dt / GrabIn); if (weight == 0) { visible = SkateGrabKind.None; seconds = 0; } }
+            {
+                if (transfer)
+                {
+                    seconds = visible == grab ? Math.Min(86400, seconds + dt) : 0;
+                    weight = Math.Min(1, weight + dt / GrabIn);
+                }
+                else { seconds = grabSeconds; weight = Smooth(Math.Min(1, grabSeconds / GrabIn)); }
+                visible = grab;
+            }
             bool aligned = Math.Abs(flip - Math.Round(flip / 360) * 360) < 0.01 && Math.Abs(shove - Math.Round(shove / 180) * 180) < 0.01;
             bool catching = (!rotating || grab != SkateGrabKind.None) && !footPlanted && aligned && (grab != SkateGrabKind.None || descending || ft > 0 || st > 0 || boardPath.Complete);
             double caught = burst ? 0 : state.Catch;
             if (boardTurning) caught = 0; else if (catching) caught = Math.Min(1, caught + dt / ContactCatchSeconds);
             double fl = Smooth(Math.Min(1, ft / 90)) * (1 - caught), sl = Smooth(Math.Min(1, st / 45)) * (1 - caught);
-            var phase = boardTurning ? SkateRiderContactPhase.Rotating : grab != SkateGrabKind.None ? SkateRiderContactPhase.Holding
+            var phase = boardTurning ? SkateRiderContactPhase.Rotating : grab != SkateGrabKind.None && visible == grab ? SkateRiderContactPhase.Holding
                 : weight > 0 ? SkateRiderContactPhase.Releasing : catching ? caught < 1 ? SkateRiderContactPhase.Catching : SkateRiderContactPhase.Caught
                 : rotating ? SkateRiderContactPhase.Rotating : SkateRiderContactPhase.Air;
             next = new SkateRiderContactState(true, rotating, phase, flip, shove, ft, st, fd, sd, fl, sl,
                 Kick(Math.Min(1, ft / 360)), Kick(Math.Min(1, st / 180)), caught, visible, weight, seconds, 0,
-                takeoff, Math.Min(86400, (fresh ? 0 : state.FlightSeconds) + dt), boardPath);
+                takeoff, Math.Min(86400, (fresh ? 0 : state.FlightSeconds) + dt), boardPath, transfer);
             return true;
         }
         public const double ContactCatchSeconds = 0.12;

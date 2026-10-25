@@ -541,12 +541,13 @@ public static class RiderRig
 
     private static void ResetPresentation()
     {
-        grabSince = -1f; plantBlend = chestLead = crouchSpeed = 0f;
+        grabSince = grabHold = -1f; plantBlend = chestLead = crouchSpeed = 0f; Crouch = 0.18f;
         contact = default(SkateRiderContactState);
         pinLeft = pinRight = pinHips = false;
         motion = default(SkateRiderMotionState); easedAt = -99f;
         SkateBoard.GrabFold = SkateBoard.Plant = 0f; SkateBoard.Held = false;
     }
+    public static void BeginRide() { ResetPresentation(); }
 
     public static void Prepare(float frameSeconds)
     {
@@ -663,8 +664,8 @@ public static class RiderRig
                 SkateRide.PushLead, plant, contact.Initialized ? contact.GrabSeconds : grabHold >= 0f ? grabHold : grabSince < 0f ? 0f : now - grabSince, handplant,
                 SkateRide.Clamp(SkateBoard.PitchDegrees, -40f, 40f) * Math.PI / 180.0,
                 noseSlide, chestLead, mode == RideMode.Air ? SkateRide.ShoveDeg : 0.0, landing, contact, SkateRide.PushPeriod, new SkateVector(deckFace.x, deckFace.y, deckFace.z),
-                mode == RideMode.Grind && SkateGrinds.Truck(SkateRide.GrindKind) != 0, SkateBoard.GrindRoll * Math.PI / 180.0,
-                mode == RideMode.Grind ? SkateGrinds.Truck(SkateRide.GrindKind) * SkateBoard.Axle : 0,
+                SkateBoard.SupportTruck != 0, SkateBoard.GrindRoll * Math.PI / 180.0,
+                SkateBoard.SupportTruck * SkateBoard.Axle * SkateBoard.SupportWeight,
                 SkateRig.LocalT != null && handplant <= 0.001f && mode != RideMode.Bail ? SkateBoard.PoseFor(SkateRig.LocalT) : default(SkateBoardPose), SkateRide.BoardPath);
             SkateRiderPose pose; string error;
             if (!SkateRider.TryCreate(Rig, input, out pose, out error))
