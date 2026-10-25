@@ -3,7 +3,7 @@
 `SkateRidePhysics` supplies pure surface acceleration, bounded transition pumping,
 surface-velocity launch and landing roll. It uses double-precision `SkateVector`
 values and no Unity types, ground queries or transforms. The client adapter in
-[PR #357](https://github.com/Dj-Shortcut/mw2-rust-skate-rewrite/pull/357) consumes
+[PR #357](https://github.com/Dj-Shortcut/rust-skate-mod/pull/357) consumes
 these results. Claude reported native flat-trick checks for its earlier client
 pin; the landing correction here has no native validation. This document does
 not establish ramp collision, controller feel or server acceptance.
@@ -143,7 +143,7 @@ feel remain unverified in the game.
 ## Numbered client integration review
 
 The handover review covers the four client files at
-[`d4ab18f`](https://github.com/Dj-Shortcut/mw2-rust-skate-rewrite/commit/d4ab18f8bf30d56e70feb89c40adf960de4e3ab6)
+[`d4ab18f`](https://github.com/Dj-Shortcut/rust-skate-mod/commit/d4ab18f8bf30d56e70feb89c40adf960de4e3ab6)
 and the corrections in the current source. These conclusions are source review, not native
 execution. The complete client requires generated IL2CPP references that are unavailable in
 this Mac checkout; it has not been compiled here.

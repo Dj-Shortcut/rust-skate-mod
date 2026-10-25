@@ -1,6 +1,6 @@
 # Rust PC skate client architecture
 
-Scope: existing Rust PC game; standalone rewrite parked. Claude/the owner reported these observations in [#337, run R](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/337#issuecomment-6094262459), [integrated runs R2/R3/T/P](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/337#issuecomment-6094749999) and, on the source of [PR #340](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/pull/340), in further runs on 10 October 2026.
+Scope: existing Rust PC game; standalone rewrite parked. Claude/the owner reported these observations in [#337, run R](https://github.com/Dj-Shortcut/rust-skate-mod/issues/337#issuecomment-6094262459), [integrated runs R2/R3/T/P](https://github.com/Dj-Shortcut/rust-skate-mod/issues/337#issuecomment-6094749999) and, on the source of [PR #340](https://github.com/Dj-Shortcut/rust-skate-mod/pull/340), in further runs on 10 October 2026.
 Codex did not rerun them. Client Steam build25824447. The owner's launcher plays client commit `0f3098a4b15eadcd644b247c184a2fdbf8332027` (plugin 0.15.0) with the shared modules pinned in its `sources.txt`; `claude-skate-next` is ahead of it (controller, trick vocabulary, score display) and is checked in the game before it is released.
 Source, controls and tools: [client](../mods/rust/client/README.md), [tools](../mods/rust/client/tools/README.md).
 
@@ -37,7 +37,7 @@ world's light and cast a shadow; night was not looked at. Since then it is the d
 (deck, trucks that steer with the lean, wheels that roll) with the mesh's own 256 × 256 texture; its deck top is
 .092 m, which the rider's `DeckTop` follows. Not yet seen in the game.
 In daylight the stance reads as hands on hips, the push as a step off sideways, and during a bail the rider holds
-a squat at deck height while the board leaves; [#337](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/337#issuecomment-6096570455) lists what the look still needs.
+a squat at deck height while the board leaves; [#337](https://github.com/Dj-Shortcut/rust-skate-mod/issues/337#issuecomment-6096570455) lists what the look still needs.
 Moving the **main camera** late gives a lit/skinned view; a second CopyFrom camera rendered white.
 The **score display** is IMGUI text: the game has `RobotoCondensed-Bold` loaded and the display draws in it, but
 `GUIStyle.font`'s setter is stripped from this client and throws; the style's font is set through the engine call

@@ -6,7 +6,7 @@ combinations, spins that end in switch stance, named grabs, manuals and nose man
 along edges, bails, a score with combos, a rider pose on the game's own player model, a view from
 behind, sounds and a score display. It is ridden with a
 controller, laid out as in the skate. games, or with keys. It belongs to
-[#337](https://github.com/Dj-Shortcut/mw2-rust-skate-rewrite/issues/337) and the
+[#337](https://github.com/Dj-Shortcut/rust-skate-mod/issues/337) and the
 [complete flow](../../../docs/SKATE-MOD.md); the calculations it shares with the server
 plugin are in [`../shared`](../shared/README.md).
 

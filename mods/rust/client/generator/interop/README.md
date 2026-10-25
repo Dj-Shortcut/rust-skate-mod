@@ -1,14 +1,14 @@
 # Pointer byref, nested method and generated callee repair
 
 Source for the separate Il2CppInterop generator correction defined in merged
-[PR #295](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/pull/295), tracked in
-[issue #289](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/289).
+[PR #295](https://github.com/Dj-Shortcut/rust-skate-mod/pull/295), tracked in
+[issue #289](https://github.com/Dj-Shortcut/rust-skate-mod/issues/289).
 The existing [Cpp2IL recipe](../README.md) addresses source-model generation;
 it does not apply this correction. This directory supplies a pinned patch and
 source-build recipe; no DLL or client installation is published here.
 
-The nested-method traversal correction in [issue #303](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/303)
-/ [merged design PR #304](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/pull/304) is implemented and verified on authored models.
+The nested-method traversal correction in [issue #303](https://github.com/Dj-Shortcut/rust-skate-mod/issues/303)
+/ [merged design PR #304](https://github.com/Dj-Shortcut/rust-skate-mod/pull/304) is implemented and verified on authored models.
 Actual SDK8.0.425 source builds and isolated baseline/candidate generator checks pass on macOS.
 Those authored checks do not establish full native output acceptance or a working loader.
 

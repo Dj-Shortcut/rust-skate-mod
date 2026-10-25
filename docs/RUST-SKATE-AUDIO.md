@@ -1,7 +1,7 @@
 # Authored skateboard audio
 
 The Rust client caches seeded mono floats from `SkateAudio` and `SkateFoley` during setup.
-It does **not** load the WAV pack. [EA's skate. is the owner's reference](https://github.com/Dj-Shortcut/mw2-rust-skate-rewrite/issues/408);
+It does **not** load the WAV pack. [EA's skate. is the owner's reference](https://github.com/Dj-Shortcut/rust-skate-mod/issues/408);
 these are original procedural sounds, with no recordings, commercial presets or game audio.
 C# source/generated waveforms follow Apache-2.0; the separate authored WAV pack is CC0-1.0.
 

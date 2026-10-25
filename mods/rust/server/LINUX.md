@@ -1,6 +1,6 @@
 # Linux Rust/Oxide installation preparation
 
-Source for [issue #266](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/266). A native Linux installation is verified; server/client acceptance remains incomplete. The standalone rewrite remains parked.
+Source for [issue #266](https://github.com/Dj-Shortcut/rust-skate-mod/issues/266). A native Linux installation is verified; server/client acceptance remains incomplete. The standalone rewrite remains parked.
 
 ## Preview without installing
 
@@ -38,11 +38,11 @@ After a real install, record actual server startup, matching framework, listener
 
 ## Update the skate plugin
 
-The [owner's 12 October session](https://github.com/Dj-Shortcut/mw2-rust-skate-rewrite/issues/337#issuecomment-6125730635)
+The [owner's 12 October session](https://github.com/Dj-Shortcut/rust-skate-mod/issues/337#issuecomment-6125730635)
 identified an Oxide `Newline in constant` compile error in the 0.3.6/0.3.7
 separator literals and reported disabled automatic plugin reload. The pinned
 0.3.8 source uses numeric char values for those exclusions and separates trusted
-fly authority from the horizontal speed grant ([PR #387](https://github.com/Dj-Shortcut/mw2-rust-skate-rewrite/pull/387)).
+fly authority from the horizontal speed grant ([PR #387](https://github.com/Dj-Shortcut/rust-skate-mod/pull/387)).
 The explicit deferred-reload command below installs verified source with a backup,
 then restarts the existing service. It does not claim native loading without a verdict or roll back while waiting
 for a watcher that is disabled. Loading,
@@ -96,7 +96,7 @@ nonroot `rust` user/group. It needs Bash, Python 3, curl, sha256sum, GNU file to
 runuser and setsid. The plugins folder must be writable by `rust`; any prior
 source must be a regular nonsymlink file readable by that account.
 
-The selected source is the building-item backend review correction in [PR #401](https://github.com/Dj-Shortcut/mw2-rust-skate-rewrite/pull/401), following merged #398; merge #401 before this delivery follow-up. The source now uses native square-foundation input; its actual hooks/inventory, retained-marker serialization and same-owner reconnect delivery remain unverified. Claude reports an offline own-picker/hotbar implementation; native frontend acceptance remains open. Current0.3.10 relies on the failed client-command route and should not be installed.
+The selected source is the building-item backend review correction in [PR #401](https://github.com/Dj-Shortcut/rust-skate-mod/pull/401), following merged #398; merge #401 before this delivery follow-up. The source now uses native square-foundation input; its actual hooks/inventory, retained-marker serialization and same-owner reconnect delivery remain unverified. Claude reports an offline own-picker/hotbar implementation; native frontend acceptance remains open. Current0.3.10 relies on the failed client-command route and should not be installed.
 Keep a private backup of `oxide/data/ShortcutSkate.Parks.json` with its matching world/source before upgrading. Older 0.3.9 rejects nonzero build-item provenance; source-only downgrade is not park-data rollback. Never remove paid provenance to force a downgrade.
 
 Preview the pinned public bytes without root or a server:
