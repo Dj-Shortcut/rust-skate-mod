@@ -6,7 +6,7 @@
 Elke regel hieronder heeft één issue, één eigenaar en één zin die zegt wanneer het klaar is.
 Nieuwe wensen van Andy komen eerst hier en in #469 te staan, met zijn eigen woorden, voordat iemand eraan begint.
 
-Oude lijst (alles tot 18 oktober): git-tag `archive/mw2-rewrite`, `docs/archive/TODO-HISTORY.md`.
+Oude lijst (alles tot 18 oktober): git-branch `archive/mw2-rewrite`, `docs/archive/TODO-HISTORY.md`.
 
 ## Eigenaarfeedback 21 oktober: open verzoeken blijven vooruitgaan
 

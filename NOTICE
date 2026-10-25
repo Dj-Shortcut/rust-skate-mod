@@ -15,7 +15,7 @@ skating and a Minecraft world to it.
 https://github.com/chasmlol/2010-rust-rewrite-mashup
 
 This repository is now the Rust PC skate mod. The IW4L and mashup engine
-sources were removed from main on 25 October 2026 and remain in the git tag
+sources were removed from main on 25 October 2026 and remain in the git branch
 archive/mw2-rewrite. The xtask publish-check and the repository scripts are
 derived from IW4L and keep its Apache-2.0 licence.
 
