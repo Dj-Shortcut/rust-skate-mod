@@ -521,6 +521,7 @@ public static class SkatePieces
         else if (reply.StartsWith("payment-review ", StringComparison.Ordinal) && BuilderKind >= 0)
         { placementUnknown = true; Said = "Park saved; payment needs operator review. Do not retry. " + reply.Substring(15); }
         else return;
+        if (placementReply && Open && !switchingToRust) Status = placementUnknown ? Said : "";
         SaidAt = Time.realtimeSinceStartup;
         builderNoticeUntil = placementUnknown ? float.PositiveInfinity : SaidAt + 2.5f;
     }
@@ -671,6 +672,12 @@ public static class SkatePieces
     {
         SaidAt = now;
         if (requestedKind >= 0 || offPending) { Said = Status = "Waiting for the server reply..."; return; }
+        if (placementToken.Length != 0)
+        {
+            Said = Status = placementUnknown ? "Previous placement needs review. Choose Rust building before selecting again."
+                : "Waiting for placement confirmation before selecting another piece.";
+            return;
+        }
         if (SkateRig.Local == null || !SkateHeld.HasPlanner(SkateRig.Local))
         { Said = Status = "Hold your ordinary building plan first."; return; }
         selectionToken = Guid.NewGuid().ToString("N");
