@@ -168,6 +168,33 @@ full shove in the same direction (360 Hardflip or 360 Inward Heelflip); the oppo
 exit retains 360 Flip and Laser Flip. Nollie reverses front/back, and goofy/fakie mirrors
 the sides. These compositions use the existing board rotation and rider release/catch
 path. Their native appearance and control feel still need the Shadow test.
+Client source 0.18.51 adds the extended air-grab palette without replacing the basic controls.
+Keep a trigger held and add `RB` for tweaks; use `A` / `X` for one-foot variants and `B`
+for no-foot variants. With the basic nose grab, `A` / `X` / `B` choose Dog Piss / Judo Nose /
+Airwalk; with the basic tail grab they choose One-Foot Tail / Benihana / Tailwalk.
+Without an end grab, `LT+A/X/B` choose Frigid Air / Frontside One-Foot / No-Foot Air,
+`RT+A/X/B` choose Backside One-Foot / Judo Air / Christ Air; both triggers with `B` give
+Superdude. Ground-held plant/push buttons and menu-held modifiers must be released or freshly
+pressed before changing the air grab. A bare bumper retains its handplant action.
+
+| Hold in the air | Centre / up / down / left / right on the right stick |
+| --- | --- |
+| `RB + LT` | Weddle / Weddle Nosebone / Weddle Tailbone / Stiffy / Tuck Knee |
+| `RB + RT` | Backside Tweak / Nose Tailbone / Tail Nosebone / Crossbone / Japan Air |
+| `RB + LT + RT` | Rocket Air / Double Nose / Double Tail / Double Left / Double Right |
+
+The four diagonal positions extend those rows: `RB+LT` selects Frontside/Backside Shifty Tail
+on the upper diagonals and Shifty Crail on the lower ones; `RB+RT` selects Shifty Nose and
+Shifty Seatbelt. With both triggers, the upper diagonals select Stale Frontside/Backside Tuck
+Knee and the lower ones Stale Nosebone/Tailbone. Left/right are mirrored for goofy/fakie.
+Hold `Back` and tap D-pad Left/Right for the basic and extended control pages.
+
+These grabs share authored board/hand/foot definitions, including both hands at the nose and
+both feet on the tail for Rocket Air, and explicit foot release for one-foot/no-foot variants.
+The pose solver uses measured limb lengths to reach the requested board points; a supplied deck
+frame keeps end grabs on the actual nose/tail after shoves and body varials. Source and cached
+reference checks do not establish native appearance or feel; Shadow acceptance remains open.
+
 The steering turns the board at a rate; the view does not steer it.
 
 **Park pieces on foot.** Server ShortcutSkate 0.3.3+ lets an administrator select the next piece

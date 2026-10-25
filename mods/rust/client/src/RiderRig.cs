@@ -655,13 +655,14 @@ public static class RiderRig
             // The shared take-off description chooses that foot without changing the ride's inputs.
             var noseSlide = mode == RideMode.Air && SkateRide.Jumped && grab == SkateGrabKind.None && contact.Trick.FootPop ? SkateRide.Clamp(1f - SkateRide.VSpeed / SkateRide.OlliePop, 0f, 1f) * (1f - (float)contact.Catch) : 0f;
             var pushing = mode == RideMode.Ground && SkateRide.PushPhase > 0f;
+            var deckFace = SkateBoard.OnFace(upV, SkateRide.Dir(SkateRide.DeckYaw));
             var input = new SkateRiderInput(new SkateVector(plane.x, plane.y, plane.z), new SkateVector(fx, fy, fz), new SkateVector(ux, uy, uz), SkateRide.Goofy ? SkateStance.Goofy : SkateStance.Regular, SkateRide.TailFirst,
                 speed, lean, Crouch, mode == RideMode.Air, pushing, SkateRide.Clamp(SkateRide.PushPhase, 0f, 1f),
                 SkateRide.FlipDeg, grab, mode == RideMode.Bail, SkateKeys.LookYaw % 360f, SkatePose.FootLift - AnkleHeight,
                 DeckTop, mode == RideMode.Bail ? SkateRide.Clamp((now - SkateRide.ModeAt) / SkateRide.BailSeconds, 0f, 1f) : 0f,
                 SkateRide.PushLead, plant, contact.Initialized ? contact.GrabSeconds : grabHold >= 0f ? grabHold : grabSince < 0f ? 0f : now - grabSince, handplant,
                 SkateRide.Clamp(SkateBoard.PitchDegrees, -40f, 40f) * Math.PI / 180.0,
-                noseSlide, chestLead, mode == RideMode.Air ? SkateRide.ShoveDeg : 0.0, landing, contact, SkateRide.PushPeriod);
+                noseSlide, chestLead, mode == RideMode.Air ? SkateRide.ShoveDeg : 0.0, landing, contact, SkateRide.PushPeriod, new SkateVector(deckFace.x, deckFace.y, deckFace.z));
             SkateRiderPose pose; string error;
             if (!SkateRider.TryCreate(Rig, input, out pose, out error))
             {
@@ -748,6 +749,12 @@ public static class RiderRig
             var rightPitch = mode == RideMode.Bail ? 0 : input.DeckPitch * (pushing && !pushLeft ? 1f - groundContact : 1f);
             var leftSole = upV * (float)Math.Cos(leftPitch) - footTravel * (float)Math.Sin(leftPitch);
             var rightSole = upV * (float)Math.Cos(rightPitch) - footTravel * (float)Math.Sin(rightPitch);
+            if (mode == RideMode.Air && grab != SkateGrabKind.None)
+            {
+                var definition = SkateGrabCatalog.Get(grab); var tweak = SkateBoard.GrabTweak(upV);
+                if (!(input.Stance == SkateStance.Regular ? definition.FrontReleased : definition.BackReleased)) leftSole = tweak * leftSole;
+                if (!(input.Stance == SkateStance.Regular ? definition.BackReleased : definition.FrontReleased)) rightSole = tweak * rightSole;
+            }
             Apply(upV, legsOnly, leftSole, rightSole);
             Applied++;
         }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Shortcut.RustMod
 {
@@ -8,7 +9,15 @@ namespace Shortcut.RustMod
     public enum SkateGrabKind
     {
         None = 0, Legacy = 1, Backside = 2, Frontside = 3, Double = 4, Tail = 5, Nose = 6,
-        Stalefish = 7, Crail = 8, Seatbelt = 9, Melon = 10, Method = 11, Nosebone = 12, Tailbone = 13
+        Stalefish = 7, Crail = 8, Seatbelt = 9, Melon = 10, Method = 11, Nosebone = 12, Tailbone = 13,
+        Weddle = 14, RocketAir = 15, TuckKnee = 16, Stiffy = 17, BacksideTweak = 18, Crossbone = 19,
+        TailNosebone = 20, FrontsideShiftyTail = 21, BacksideShiftyTail = 22, NoseTailbone = 23,
+        FrontsideShiftyNose = 24, BacksideShiftyNose = 25, StaleFrontsideTuckKnee = 26, StaleBacksideTuckKnee = 27,
+        StaleTailbone = 28, StaleNosebone = 29, JapanAir = 30, WeddleTailbone = 31, WeddleNosebone = 32,
+        FrontsideShiftyCrail = 33, BacksideShiftyCrail = 34, FrontsideShiftySeatbelt = 35, BacksideShiftySeatbelt = 36,
+        DoubleNose = 37, DoubleTail = 38, DoubleLeft = 39, DoubleRight = 40, FrigidAir = 41, FrontsideOneFoot = 42,
+        JudoAir = 43, BacksideOneFoot = 44, DogPiss = 45, JudoNose = 46, Benihana = 47, OneFootTail = 48,
+        Airwalk = 49, Tailwalk = 50, ChristAir = 51, NoFootAir = 52, Superdude = 53
     }
 
     public enum SkateGrindKind
@@ -210,19 +219,15 @@ namespace Shortcut.RustMod
         };
         private static readonly string[] DirectionalGrindNames = BuildGrindNames();
         private static readonly int[] GrindRates = { 100, 100, 130, 130, 120, 140, 150, 150, 160, 160, 160, 150, 160, 160, 150, 250, 170, 170, 190 };
-        private static readonly string[] GrabSuffixes = {
-            "", " Grab", " Backside Grab", " Frontside Grab", " Double Grab", " Tail Grab", " Nose Grab",
-            " Stalefish", " Crail", " Seatbelt", " Melon", " Method", " Nosebone", " Tailbone"
-        };
         private static readonly string[] NamePrefixes = {
             "", "Nollie", "No Comply", "Boneless", "Fastplant", "Beanplant",
             "Switch", "Fakie", "Switch No Comply", "Switch Boneless", "Switch Fastplant", "Switch Beanplant",
             "Switch Nollie", "Fakie Nollie", "Fakie No Comply", "Fakie Boneless", "Fakie Fastplant", "Fakie Beanplant"
         };
-        private static readonly string[] ComposedNames = BuildNames();
-        private static readonly string[] FallbackNames = BuildFallbackNames();
-        private static readonly string[] AirNames = BuildAirNames();
-        private static readonly string[] AirFallbackNames = BuildAirFallbackNames();
+        // Only combinations actually landed are named. The old eager Cartesian product multiplied
+        // startup work with every new grab. Stable keys preserve warmed, allocation-free lookups.
+        private static readonly Dictionary<int, string> ComposedNames = new Dictionary<int, string>();
+        private static readonly object NameLock = new object();
 
         public static bool TryStep(SkateTrickState state, SkateTrickInput input, double dt,
                                    out SkateTrickResult result, out string error)
@@ -452,71 +457,19 @@ namespace Shortcut.RustMod
                 else if (pop == SkatePopKind.Nollie) style = 12;
             }
             int modifier = (late && (flip != 0 || shove != 0) ? 1 : 0) + (bodyVarial ? 2 : 0);
-            if (Math.Abs(spin) > 4 || Math.Abs(flip) > 3 || Math.Abs(shove) > 2)
-                return modifier == 0 ? FallbackNames[style * 14 + (int)grab] :
-                    AirFallbackNames[(modifier - 1) * FallbackNames.Length + style * 14 + (int)grab];
-            int index = NameIndex(spin, flip, shove, (int)grab, style);
-            return modifier == 0 ? ComposedNames[index] : AirNames[(modifier - 1) * ComposedNames.Length + index];
-        }
-
-        private static string[] BuildAirNames()
-        {
-            var names = new string[3 * ComposedNames.Length];
-            for (int modifier = 1; modifier <= 3; modifier++)
-                for (int style = 0; style < NamePrefixes.Length; style++)
-                    for (int spin = -4; spin <= 4; spin++)
-                        for (int flip = -3; flip <= 3; flip++)
-                            for (int shove = -2; shove <= 2; shove++)
-                            {
-                                string core = Composition(spin, flip, shove);
-                                if ((modifier & 1) != 0 && (flip != 0 || shove != 0)) core = "Late " + core;
-                                if ((modifier & 2) != 0) core = core == "Ollie" ? "Body Varial" : "Body Varial " + core;
-                                core = PrefixName(core, style);
-                                for (int grab = 0; grab < 14; grab++)
-                                    names[(modifier - 1) * ComposedNames.Length + NameIndex(spin, flip, shove, grab, style)] = core + GrabSuffixes[grab];
-                            }
-            return names;
-        }
-
-        private static string[] BuildAirFallbackNames()
-        {
-            var names = new string[3 * FallbackNames.Length];
-            for (int modifier = 1; modifier <= 3; modifier++)
-                for (int style = 0; style < NamePrefixes.Length; style++)
-                    for (int grab = 0; grab < 14; grab++)
-                    {
-                        string core = ((modifier & 1) != 0 ? "Late " : "") + "Multiple Rotation Trick";
-                        if ((modifier & 2) != 0) core = "Body Varial " + core;
-                        names[(modifier - 1) * FallbackNames.Length + style * 14 + grab] = PrefixName(core, style) + GrabSuffixes[grab];
-                    }
-            return names;
-        }
-
-        private static int NameIndex(int spin, int flip, int shove, int grab, int style)
-        { return (((style * 9 + spin + 4) * 7 + flip + 3) * 5 + shove + 2) * 14 + grab; }
-
-        private static string[] BuildNames()
-        {
-            var names = new string[NamePrefixes.Length * 9 * 7 * 5 * 14];
-            for (int style = 0; style < NamePrefixes.Length; style++)
-                for (int spin = -4; spin <= 4; spin++)
-                    for (int flip = -3; flip <= 3; flip++)
-                        for (int shove = -2; shove <= 2; shove++)
-                        {
-                            string core = PrefixName(Composition(spin, flip, shove), style);
-                            for (int grab = 0; grab < 14; grab++)
-                                names[NameIndex(spin, flip, shove, grab, style)] = core + GrabSuffixes[grab];
-                        }
-            return names;
-        }
-
-        private static string[] BuildFallbackNames()
-        {
-            var names = new string[NamePrefixes.Length * 14];
-            for (int style = 0; style < NamePrefixes.Length; style++)
-                for (int grab = 0; grab < 14; grab++)
-                    names[style * 14 + grab] = PrefixName("Multiple Rotation Trick", style) + GrabSuffixes[grab];
-            return names;
+            bool fallback = Math.Abs(spin) > 4 || Math.Abs(flip) > 3 || Math.Abs(shove) > 2;
+            int key = (((style * 4 + modifier) * 316 + (fallback ? 315 : ((spin + 4) * 7 + flip + 3) * 5 + shove + 2)) * SkateGrabCatalog.Count) + (int)grab;
+            lock (NameLock)
+            {
+                string name;
+                if (ComposedNames.TryGetValue(key, out name)) return name;
+                string core = fallback ? "Multiple Rotation Trick" : Composition(spin, flip, shove);
+                if ((modifier & 1) != 0) core = "Late " + core;
+                if ((modifier & 2) != 0) core = core == "Ollie" ? "Body Varial" : "Body Varial " + core;
+                name = PrefixName(core, style) + SkateGrabCatalog.Suffix(grab);
+                ComposedNames.Add(key, name);
+                return name;
+            }
         }
 
         private static string PrefixName(string core, int style)
@@ -595,7 +548,7 @@ namespace Shortcut.RustMod
             (s.Airborne || (!s.PopTailLeads && !s.StanceNaming)) && (s.StanceNaming || !s.PopTailLeads) &&
             (s.Airborne || s.Flip == 0 || s.DarkslideCaught) &&
             Finite(s.BodySpin) && Math.Abs(s.BodySpin) <= 180 && (s.Airborne || (s.BodySpin == 0 && !s.Late)); }
-        private static bool GrabKindValid(SkateGrabKind kind) { return (int)kind >= 0 && (int)kind <= 13; }
+        private static bool GrabKindValid(SkateGrabKind kind) { return SkateGrabCatalog.Valid(kind); }
         private static bool GrindKindValid(SkateGrindKind kind) { return (int)kind >= 0 && (int)kind <= 18; }
         private static bool PopKindValid(SkatePopKind kind) { return (int)kind >= 0 && (int)kind <= 6; }
         public static bool IsPlant(SkatePopKind kind) { return (int)kind >= 3 && (int)kind <= 6; }

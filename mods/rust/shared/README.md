@@ -118,7 +118,7 @@ Start with `new SkateTrickState(ridingSwitch)` (default means the unturned rider
 
 Ground landing requires Flip within 25 degrees of a whole turn, and Spin/Shove within 25 degrees of half turns, at impact no greater than the chosen limit (8 m/s by default). A [Darkslide half-flip catch](DARKSLIDE.md) is the sole inverted-contact exception. A successful touchdown returns those **snapped** angles; commit them to persistent visual headings before the next step resets them. An odd rider half-spin toggles `result.Switch`; shove alone does not. The next input's mirror rule follows the resulting stance. The client supplies its continuously held analog Spin axis, rather than an automatic 180. Positive Spin/Shove is frontside, negative backside; positive Flip is kickflip, negative heelflip.
 
-The additive input constructor is `SkateTrickInput(spin,flip,shove,grabKind,airborne,grinding,impactSpeed,manual,noseManual,rollingSpeed,popKind)`. Axes stay in [-1,1]; enum values must be defined. At takeoff `popKind` selects Ollie or Nollie (None defaults to Ollie); subsequent None preserves that takeoff kind. Names include Pop Shove-it, Varial Kickflip/Heelflip, 360 Flip, Laser Flip, Hardflip, Inward Heelflip, 360 Hardflip, 360 Inward Heelflip, Frontside/Backside Flip and Bigspin, plus composed 540/720, double-flip, shove and named-grab variants with a Nollie prefix. Names are cached English strings: no per-step construction. The old constructors retain their original names/scoring and map bool grab to Legacy. The composed path supports rider rotations through 720, flips through three turns and relative shoves through 360; greater rotations use a cached `Multiple Rotation Trick` name. Rotation scoring caps rider half-spins at four on the composed path, and flips/shove half-turns at two.
+The additive input constructor is `SkateTrickInput(spin,flip,shove,grabKind,airborne,grinding,impactSpeed,manual,noseManual,rollingSpeed,popKind)`. Axes stay in [-1,1]; enum values must be defined. At takeoff `popKind` selects Ollie or Nollie (None defaults to Ollie); subsequent None preserves that takeoff kind. Names include Pop Shove-it, Varial Kickflip/Heelflip, 360 Flip, Laser Flip, Hardflip, Inward Heelflip, 360 Hardflip, 360 Inward Heelflip, Frontside/Backside Flip and Bigspin, plus composed 540/720, double-flip, shove and named-grab variants with a Nollie prefix. Names are cached on first use; repeated landing labels reuse the same English string. No Cartesian product of all grabs is allocated at startup. The old constructors retain their original names/scoring and map bool grab to Legacy. The composed path supports rider rotations through 720, flips through three turns and relative shoves through 360; greater rotations use a cached `Multiple Rotation Trick` name. Rotation scoring caps rider half-spins at four on the composed path, and flips/shove half-turns at two.
 
 Events: `Landed`, `Bailed`, `GrindEnded`, `ComboBanked`, `ManualEnded` (new bit 16; prior bits unchanged). `TrickName`/`Points` identify each event; `GrindSeconds` exposes live duration or the completed duration on exit (name `Grind`, 100 points/second, rounded, minimum 1). A supported grind capture can land an air trick and begin the grind in the same call. Each completed trick/grind/manual increases the combo multiplier, capped at 16. `ComboPoints` is open base points times multiplier, including provisional manual points while active; 1.5 seconds of plain rolling banks it into `TotalPoints` and reports `BankedPoints` with name `Combo`. Air, grind or an eligible manual suspends that rolling timer. Bail discards the open/provisional combo and retains the banked total. Call `TryBail` for collision/lifecycle bails outside touchdown; do not manufacture a landing. Totals saturate at 10^15. These value-state calls allocate no memory after static initialization.
 
@@ -282,6 +282,28 @@ The corrected look pass's actual net48 DLL passes 5,639,465 focused assertions a
 The named-grab extension's integrated net48 DLL passes 34,098,041 private checks over 524,020 accepted geometry poses, including 6,912 bool poses bit-identical to the baseline and 624 mirrored stance poses. All 52 measured-rig kind/stance/switch hand targets have zero nominal grip gap; other proportions can still reach-clamp. Nosebone/Tailbone use a restrained relative leg extension with a low body and opposite-end grip; they do not presume a fully straight native leg. Warm 100,000-call valid/invalid loops allocate zero measured bytes. Actual animation, grip-to-mesh contact and adapter blending remain unverified.
 
 The client adapter must also own the local held-item/arm visibility while using a chase camera, refresh that ownership on item replacement and restore saved visibility on first-person/dismount/teardown. A settled bail board needs an independent world anchor; textures/materials allocated for a failed lit-material attempt must be released before fallback. These client follow-ups are recorded in the [pinned visual-pass source review](https://github.com/Dj-Shortcut/rust-skate-mod/pull/342#pullrequestreview-5478791980). Native lighting, held-item transitions, torso deformation and entry/exit easing still need client verification.
+
+## Extended grab contacts
+
+`SkateGrabCatalog` appends the Weddle/Rocket Air, tweak, shifty, double-location and one-foot/no-foot
+families while preserving enum values 0–13. It supplies stable names, button filtering/selection,
+board angles and authored hand/foot contact data. `AirButtons` prevents a ground plant or a held
+menu button from becoming a new airborne modifier; `Select` preserves the basic layout unless
+an explicit modifier is supplied. The client’s old `GrabOf` signature and behavior remain available.
+
+The added full `SkateRiderInput` overload accepts a unit `deckForward`, perpendicular to `BoardUp`.
+All existing constructor signatures remain; zero/default deck direction retains the earlier frame.
+The client passes the observed deck direction, distinct from the rider after shoves/body varials.
+Board and contact targets consume the same `TurnPoint` yaw/pitch/roll transform. Coupled grabs solve
+both legs, torso and gripping arms to measured lengths instead of silently clamping hands away from
+the board. One-foot/no-foot contact fractions return through the existing release blend; Rocket Air
+places both hands at the nose and both feet at the tail. Older flat-frame pose calls remain supported.
+
+The bounded contact search allocates nothing on warmed success; native cost, visible style,
+foot/board alignment on the actual skeleton and controller feel remain gameplay gates. Authored
+profiles are development source and do not claim frame-for-frame reconstruction of Skate assets.
+Reference control principles: [EA’s Get Control guide](https://www.ea.com/games/skate/skate/news/get-control).
+Weddle naming follows [Tony Hawk’s account](https://www.skateboarding.com/news/tony-hawk-explains-renaming-of-the-mute-grab-to-weddle-grab-in-thps).
 
 ## Rider secondary motion API
 
