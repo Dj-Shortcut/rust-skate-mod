@@ -34,7 +34,7 @@ The selected Oxide asset must have the expected release/name/URL/size and publis
 
 Linux server console input is noninteractive: screen/tmux show output. Real `oxide.version`, permissions, save and `quit` need authenticated RCON/private access or separately verified in-game administrator control. That access/credential/startup design is a separate selected-host task; no public RCON is required.
 For Shadow's EAC-disabled client, later startup needs explicit current `-insecure` plus a reviewed **UDP game-port** route for F1 direct join. Query exposure is only for separately required discovery. The Windows loopback launcher is not a Linux/remote-client launcher.
-After a real install, record actual server startup, matching framework, listeners, intended-client join, save/restart and the [plugin acceptance](../../../docs/archive/RUST-SERVER-PLUGIN.md). No playable/ready claim before those results.
+After a real install, record actual server startup, matching framework, listeners, intended-client join, save/restart and the plugin acceptance. No playable/ready claim before those results.
 
 ## Update the skate plugin
 
@@ -231,7 +231,7 @@ persistence or general crash recovery.
 Unchanged ShortcutLoadouts 0.1.0 compiled/loaded on this host. Its generated
 default config, permission registration, rejected unknown-field config byte
 preservation, restored original bytes, reload and temporary unload/load
-were checked. See [plugin runtime scope](../../../docs/archive/RUST-SERVER-PLUGIN.md).
+were checked. See plugin runtime scope.
 At the 8 October checkpoint, client joins, player inventory/cooldown/PvP and
 full MW2/skate acceptance remained open. The later Shadow join and stopped,
 mistyped loadout attempt are recorded below. These server checks do not establish a
@@ -271,7 +271,7 @@ no plugin registration failure is established. Severe Shadow lag was reported
 and live screen control returned `timeoutReached`; the later recording was
 inspected locally. Delivery, cooldown/inventory refusal, permission denial and
 player/item persistence remain unverified. Follow the ordered
-[player check record](../../../docs/archive/RUST-SERVER-PLUGIN.md#first-shadow-player-check).
+player check record.
 A join without the loadout checks is not a playtest; two-client PvP and full
 MW2/skate acceptance remain open. No plugin behavior or paid resources changed.
 Private operational scripts, addresses, identifiers and raw logs are not shipped.
@@ -307,7 +307,7 @@ owner and matching source.
 The owner reports one Assault Rifle and 120 Rifle Ammo after `/loadout carbine`.
 This is owner-reported delivery evidence; cooldown, full-inventory safety,
 permission denial/restoration and save/restart/rejoin of player/items remain
-open in the [ordered record](../../../docs/archive/RUST-SERVER-PLUGIN.md#return-session--9-october-2026).
+open in the ordered record.
 Neither a client-crash cause nor Shadow lag resolution is established. Root
 leaves native input to the owner. No behavior or paid-resource change was made;
 private operational sources/reports remain ignored.
