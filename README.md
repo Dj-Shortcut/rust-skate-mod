@@ -33,5 +33,5 @@ statische inspectie van managed code. Deze projecten zijn bestudeerd; hun code
 en assets worden niet meegeleverd. Zie [NOTICE](NOTICE) voor credits en
 [de eerste demo-acceptatie](docs/archive/RUST-SKATE-DEMO.md) voor de toepassing en grenzen.
 
-De geparkeerde MW2/Bevy-rewrite en zijn documentatie staan in
-[docs/archive/](docs/archive/REWRITE-README.md). Credits en licenties: [NOTICE](NOTICE) en [LICENSE](LICENSE).
+De oude MW2/Bevy-rewrite is uit main gehaald en staat nog in de git-branch
+`archive/mw2-rewrite`. Credits en licenties: [NOTICE](NOTICE) en [LICENSE](LICENSE).

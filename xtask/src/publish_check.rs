@@ -27,7 +27,7 @@
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-use crate::shell::Res;
+use crate::Res;
 
 /// The IW4 image range. A literal inside it is an address.
 const IMAGE_BASE: u64 = 0x0040_0000;
@@ -204,114 +204,8 @@ fn is_from_bits_arg(line: &str, at: usize) -> bool {
 
 // Keep these audited data expressions exact: comments and altered expressions
 // still pass through the offset scan, and no path or private-key scan is exempt.
-const AUDITED_DATA_LINES: &[(&str, &[&str])] = &[
-    (
-        "crates/minecraft_terrain/src/mesh.rs",
-        &[".wrapping_mul(42_317_861)"],
-    ),
-    (
-        "crates/minecraft_terrain/src/sheep_render.rs",
-        &[
-            "16383998, 16351261, 13061821, 3847130, 16701501, 8439583, 15961002, 4673362, 10329495, 1481884,",
-            "8991416, 3949738, 8606770, 6192150, 11546150, 1908001,",
-            "let rgb = if id == 0 { 0xe6e6e6 } else { DYE_DIFFUSE[id] };",
-        ],
-    ),
-    (
-        "crates/minecraft_terrain/src/wolf_render.rs",
-        &[
-            "16383998, 16351261, 13061821, 3847130, 16701501, 8439583, 15961002, 4673362, 10329495, 1481884, 8991416, 3949738, 8606770, 6192150, 11546150, 1908001,",
-            "16383998, 16351261, 13061821, 3847130, 16701501, 8439583, 15961002, 4673362, 10329495, 1481884,",
-            "8991416, 3949738, 8606770, 6192150, 11546150, 1908001,",
-        ],
-    ),
-    (
-        "skate/crates/skate-core/src/animation/skeleton_input/name.rs",
-        &["let mut weight = 79_235_168u32;"],
-    ),
-    (
-        "skate/crates/skate-core/src/physics/skeleton_body/collision_mode.rs",
-        &[
-            "0x03FFFFFF, 0x03FFF447, 0x03FFFC47, 0x039B8479, 0x03BB8479, 0x039F8479, 0x03FFFFFF,",
-            "0x03B987C1, 0x03BB87C1, 0x03F987C1, 0x03FFFFFF, 0x03FFFC45, 0x03FFFC47, 0x03FFFC47,",
-            "0x03FFFC47, 0x03FFFFFF, 0x038FFFFF, 0x038FFD7F, 0x03CFFC67, 0x03FFFFFF, 0x03F8FFFF,",
-            "0x03F8FFD7, 0x03FCFE47, 0x03FFFFFF, 0x03FFFFFF, 0x03FFFFFF,",
-        ],
-    ),
-    (
-        "skate/crates/skate-data/src/abin/mod.rs",
-        &["0x0052_4256 => Self::Vbr,"],
-    ),
-    (
-        "skate/crates/skate-data/src/sha256.rs",
-        &["0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc,"],
-    ),
-    (
-        "skate/crates/skate-data/src/state_graph/binding.rs",
-        &["hash.wrapping_mul(0x01000193) ^ u32::from(byte)"],
-    ),
-    (
-        "skate/crates/skate-host/src/graph_host/motion_riding_conditions.rs",
-        &["0x0702_c49c,"],
-    ),
-    (
-        "skate/crates/skate-host/src/physics/animation_grind.rs",
-        &["for weight in [79_235_168, 2_085_136, 54_872, 1_444, 38, 1] {"],
-    ),
-    (
-        "skate/crates/skate-host/src/physics/clock.rs",
-        &[
-            "if 10_000_000 / frequency == 0 {",
-            "Duration::from_nanos((10_000_000 / frequency) as u64 * 100)",
-        ],
-    ),
-    (
-        "skate/crates/skate-host/src/physics/grind/rng.rs",
-        &["0x0702_c49c,"],
-    ),
-    (
-        "third_party/minecraftoss/core/src/environment.rs",
-        &[
-            "a(\"visual/water_fog_color\", Rgb, Value::Rgb(rgb24(-16448205i32 as u32)), None, true),",
-            "a(\"visual/night_vision_color\", Rgb, Value::Rgb(rgb24(-6710887i32 as u32)), None, true),",
-        ],
-    ),
-    (
-        "third_party/minecraftoss/core/src/random.rs",
-        &[".wrapping_mul(42_317_861)"],
-    ),
-    (
-        "third_party/minecraftoss/entities/src/potion.rs",
-        &[
-            "MobEffect::Slowness => 9154528,",
-            "MobEffect::InstantHealth => 16262179,",
-            "MobEffect::InstantDamage => 11101546,",
-            "MobEffect::Regeneration => 13458603,",
-            "MobEffect::FireResistance => 16750848,",
-            "MobEffect::WaterBreathing => 10017472,",
-            "MobEffect::Weakness => 4738376,",
-            "MobEffect::Poison => 8889187,",
-        ],
-    ),
-    (
-        "third_party/minecraftoss/entities/src/trading.rs",
-        &[
-            "16383998, 16351261, 13061821, 3847130, 16701501, 8439583, 15961002, 4673362, 10329495, 1481884, 8991416, 3949738, 8606770, 6192150, 11546150, 1908001,",
-        ],
-    ),
-    (
-        "third_party/minecraftoss/world/src/level/explosion.rs",
-        &["if self.outside(pos.y) || pos.x.abs() >= 30_000_000 || pos.z.abs() >= 30_000_000 {"],
-    ),
-    (
-        "third_party/minecraftoss/world/src/natural_spawner/spawning.rs",
-        &[
-            ".wrapping_add(i64::from(x.wrapping_mul(x).wrapping_mul(4_987_142)))",
-            ".wrapping_add(i64::from(x.wrapping_mul(5_947_611)))",
-            ".wrapping_add(i64::from(z.wrapping_mul(z)).wrapping_mul(4_392_871))",
-        ],
-    ),
-];
+// Empty since the parked rewrite left main; add an entry only with an audited reason.
+const AUDITED_DATA_LINES: &[(&str, &[&str])] = &[];
 
 fn audited_data_literal(rel: &str, line: &str, at: usize) -> bool {
     let code_end = line.find("//").unwrap_or(line.len());
@@ -481,8 +375,7 @@ fn address_in_name(lower: &str) -> bool {
 fn gsc_citation(lower: &str) -> bool {
     let Some(at) = lower.find(".gsc@sha256:") else {
         return lower.find(".gsc#l").is_some_and(|at| {
-            lower[at + ".gsc#l".len()..]
-                .as_bytes()
+            lower.as_bytes()[at + ".gsc#l".len()..]
                 .first()
                 .is_some_and(u8::is_ascii_digit)
         });
