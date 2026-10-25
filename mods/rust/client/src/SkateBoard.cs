@@ -120,6 +120,60 @@ public static class SkateBoard
     public static bool RollingOut { get { return rollingOut; } }
     public static Vector3 RollOutAt { get { return rollAt; } }
 
+    // Called after Prepare/Pop, by both the rider and renderer in the same frame.
+    // No previously rendered Transform participates in the contact calculation.
+    public static SkateBoardPose PoseFor(Transform playerT)
+    {
+        var now = Time.realtimeSinceStartup;
+        var n = SkateRide.ViewNormal;
+        var at = Contact(playerT);
+        var trucked = SkateRide.Mode == RideMode.Grind && SkateGrinds.Truck(SkateRide.GrindKind) != 0;
+        var deckNose = OnFace(n, SkateRide.Dir(SkateRide.DeckYaw));
+        var deckTurn = trucked ? SkateRide.Turn(PitchDegrees, Vector3.Cross(deckNose, n)) : Quaternion.identity;
+        Tilt(ref at, ref n);
+        var travel = OnFace(n, SkateRide.Dir(SkateRide.Yaw));
+        // The lean rolls the board about its direction of travel, right side down in a right turn.
+        var up = trucked ? n : SkateRide.Turn(-SkateRide.Lean, travel) * n;
+        // The board's own nose: the rider's stance, and what the board has turned under his feet.
+        var nose = trucked ? deckTurn * deckNose : OnFace(up, SkateRide.Dir(SkateRide.DeckYaw));
+        nose = nose - up * Vector3.Dot(nose, up);
+        nose = nose.sqrMagnitude > 0.0001f ? nose.normalized : travel;
+        var flip = SkateRide.BoardPath.Known ? 0f : (float)SkateRide.FlipDeg; var askew = 0f;
+        if (SkateRide.Mode == RideMode.Bail)
+        {
+            // The rider goes on and down. The board is on its own from the moment of the bail: it
+            // turns over once and comes to rest behind where the rider will stop, on its deck.
+            if (bailStamp != SkateRide.ModeAt)
+            {
+                bailStamp = SkateRide.ModeAt; bailFrom = at; bailTravel = travel; bailNose = nose; bailUp = up;
+                var speed = Math.Abs(SkateRide.Speed);
+                bailRoll = (SkateRide.Speed < 0f ? -1f : 1f) * (speed * speed / (2f * SkateRide.BailDecel)) - BailBehind;
+            }
+            var t = now - SkateRide.ModeAt;
+            var over = SkateRide.Clamp(t / BailTurn, 0f, 1f); over = over * over * (3f - 2f * over);
+            flip += 180f * over; askew = 35f * over;
+            travel = bailTravel; nose = bailNose; up = bailUp;
+            at = bailFrom + travel * (bailRoll * over) + Vector3.up * (0.22f * (float)Math.Sin(over * Math.PI)) - up * ((RiderRig.DeckTop - BailRest) * over);
+        }
+        var rot = SkateRide.Turn(askew, up) * Quaternion.LookRotation(nose, up) * SkateRide.Turn(flip, Vector3.forward);
+        rot = GrabTweak(up) * rot;
+        // A flip turns the board about the middle of the deck, not about the wheels.
+        var centre = at + up * RiderRig.DeckTop - (rot * Vector3.up) * RiderRig.DeckTop;
+        if (Plant > 0.001f && SkateRide.Mode != RideMode.Bail)
+        {
+            var lead = Vector3.Dot(travel, nose) >= 0f ? nose : -nose;
+            var kick = SkateRide.Turn(-PlantPitch * Plant, Vector3.Cross(up, lead));
+            var pivot = centre - lead * PlantPivot;
+            centre = pivot + kick * (centre - pivot) + up * (PlantLift * Plant);
+            rot = kick * rot;
+        }
+        var top = centre + (rot * Vector3.up) * RiderRig.DeckTop;
+        var frame = new SkateBoardPose(V(top), V(rot * Vector3.forward), V(rot * Vector3.up));
+        return SkateRide.Mode == RideMode.Air ? frame.WithPath(SkateRide.BoardPath) : frame;
+    }
+    private static SkateVector V(Vector3 v) { return new SkateVector(v.x, v.y, v.z); }
+    private static Vector3 V(SkateVector v) { return new Vector3((float)v.X, (float)v.Y, (float)v.Z); }
+
     public static void Follow(GameObject board, Transform playerT)
     {
         var now = Time.realtimeSinceStartup;
@@ -148,40 +202,11 @@ public static class SkateBoard
         if (board.activeSelf != show) board.SetActive(show);
         if (!riding) return;
         lieUntil = -1f;
-        var n = SkateRide.ViewNormal;
-        var at = Contact(playerT);
-        var trucked = SkateRide.Mode == RideMode.Grind && SkateGrinds.Truck(SkateRide.GrindKind) != 0;
-        var deckNose = OnFace(n, SkateRide.Dir(SkateRide.DeckYaw));
-        var deckTurn = trucked ? SkateRide.Turn(PitchDegrees, Vector3.Cross(deckNose, n)) : Quaternion.identity;
-        Tilt(ref at, ref n);
-        var travel = OnFace(n, SkateRide.Dir(SkateRide.Yaw));
-        // The lean rolls the board about its direction of travel, right side down in a right turn.
-        var up = trucked ? n : SkateRide.Turn(-SkateRide.Lean, travel) * n;
-        // The board's own nose: the rider's stance, and what the board has turned under his feet.
-        var nose = trucked ? deckTurn * deckNose : OnFace(up, SkateRide.Dir(SkateRide.DeckYaw));
-        nose = nose - up * Vector3.Dot(nose, up);
-        nose = nose.sqrMagnitude > 0.0001f ? nose.normalized : travel;
-        var flip = (float)SkateRide.FlipDeg; var askew = 0f;
-        if (SkateRide.Mode == RideMode.Bail)
-        {
-            // The rider goes on and down. The board is on its own from the moment of the bail: it
-            // turns over once and comes to rest behind where the rider will stop, on its deck.
-            if (bailStamp != SkateRide.ModeAt)
-            {
-                bailStamp = SkateRide.ModeAt; bailFrom = at; bailTravel = travel; bailNose = nose; bailUp = up;
-                var speed = Math.Abs(SkateRide.Speed);
-                bailRoll = (SkateRide.Speed < 0f ? -1f : 1f) * (speed * speed / (2f * SkateRide.BailDecel)) - BailBehind;
-            }
-            var t = now - SkateRide.ModeAt;
-            var over = SkateRide.Clamp(t / BailTurn, 0f, 1f); over = over * over * (3f - 2f * over);
-            flip += 180f * over; askew = 35f * over;
-            travel = bailTravel; nose = bailNose; up = bailUp;
-            at = bailFrom + travel * (bailRoll * over) + Vector3.up * (0.22f * (float)Math.Sin(over * Math.PI)) - up * ((RiderRig.DeckTop - BailRest) * over);
-        }
-        var rot = SkateRide.Turn(askew, up) * Quaternion.LookRotation(nose, up) * SkateRide.Turn(flip, Vector3.forward);
-        rot = GrabTweak(up) * rot;
-        // A flip turns the board about the middle of the deck, not about the wheels.
-        var centre = at + up * RiderRig.DeckTop - (rot * Vector3.up) * RiderRig.DeckTop;
+        var frame = PoseFor(playerT);
+        var up = V(frame.Up); var nose = V(frame.Forward);
+        var rot = Quaternion.LookRotation(nose, up);
+        var centre = V(frame.Origin) - up * RiderRig.DeckTop;
+        var at = Contact(playerT); var travel = OnFace(SkateRide.ViewNormal, SkateRide.Dir(SkateRide.Yaw));
         if (Held && SkateRide.Handplant)
         {
             // Against the feet through the handplant: from where it rode as the body goes up, and
@@ -195,14 +220,6 @@ public static class SkateBoard
             board.transform.position = Vector3.Lerp(centre, HeldAt, over);
             Parts(now, travel, heldNose.normalized);
             return;
-        }
-        if (Plant > 0.001f && SkateRide.Mode != RideMode.Bail)
-        {
-            var lead = Vector3.Dot(travel, nose) >= 0f ? nose : -nose;
-            var kick = SkateRide.Turn(-PlantPitch * Plant, Vector3.Cross(up, lead));
-            var pivot = centre - lead * PlantPivot;
-            centre = pivot + kick * (centre - pivot) + up * (PlantLift * Plant);
-            rot = kick * rot;
         }
         board.transform.rotation = rot;
         board.transform.position = centre;

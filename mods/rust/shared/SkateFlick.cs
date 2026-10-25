@@ -10,9 +10,13 @@ namespace Shortcut.RustMod
         public readonly double FlipTurns;
         public readonly double ShoveDegrees;
         public readonly double Strength;
-        public bool Late { get { return Kind == SkatePopKind.None && (FlipTurns != 0 || ShoveDegrees != 0); } }
+        public readonly SkateBoardTrickKind Special;
+        public readonly int SpecialDirection;
+        public bool Late { get { return Kind == SkatePopKind.None && (FlipTurns != 0 || ShoveDegrees != 0 || Special != SkateBoardTrickKind.None); } }
         public SkatePop(SkatePopKind kind, double flipTurns, double shoveDegrees, double strength)
-        { Kind = kind; FlipTurns = flipTurns; ShoveDegrees = shoveDegrees; Strength = strength; }
+            : this(kind, flipTurns, shoveDegrees, strength, SkateBoardTrickKind.None, 0) { }
+        public SkatePop(SkatePopKind kind, double flipTurns, double shoveDegrees, double strength, SkateBoardTrickKind special, int specialDirection)
+        { Kind = kind; FlipTurns = flipTurns; ShoveDegrees = shoveDegrees; Strength = strength; Special = special; SpecialDirection = specialDirection; }
     }
 
     [Flags]
@@ -25,7 +29,8 @@ namespace Shortcut.RustMod
         Heelflip = 8,
         ShoveFrontside = 16,
         ShoveBackside = 32,
-        BodyVarial = 64
+        BodyVarial = 64,
+        Special = 128
     }
 
     public struct SkateFlickInput
