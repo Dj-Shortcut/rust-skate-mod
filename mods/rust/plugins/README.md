@@ -4,7 +4,7 @@ The separate skateboard movement component is documented in [SKATE.md](SKATE.md)
 The separate admin-only client echo diagnostic is documented in
 [RUST-SKATE-INBOX.md](../../../docs/archive/RUST-SKATE-INBOX.md).
 
-Source for [issue #266](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/266), in the same repository as the parked rewrite.
+Source for [issue #266](https://github.com/Dj-Shortcut/rust-skate-mod/issues/266), in the same repository as the parked rewrite.
 Development code with genuine-reference compilation, source review and native Oxide compile/load/config checks; **player behavior and a playable mod remain unverified**.
 Stock Rust supplies the world, survival, building and TC behavior. This plugin adds personal firearm kits and bounded Bullet PvP scaling; MW2 assets/animations and skating are outside its scope.
 

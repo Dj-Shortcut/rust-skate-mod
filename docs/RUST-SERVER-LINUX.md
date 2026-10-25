@@ -1,6 +1,6 @@
 # Linux Rust server installation preparation
 
-Design for [issue #266](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/266): `mods/rust/server/Install-LinuxServer.py`.
+Design for [issue #266](https://github.com/Dj-Shortcut/rust-skate-mod/issues/266): `mods/rust/server/Install-LinuxServer.py`.
 Design published first; installer source and bounded Mac checks now exist.
 See [commands and evidence](../mods/rust/server/LINUX.md): the reviewed installer completed natively on Ubuntu 24.04.5 x86_64 as a dedicated nonroot user, using the recorded Steam public build and publisher-digest-verified Oxide 2.0.7815. Server/client and playable-mod acceptance remain incomplete.
 

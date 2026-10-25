@@ -1,6 +1,6 @@
 # Property-signature and interop source generator
 
-Source for [issue #289](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/289).
+Source for [issue #289](https://github.com/Dj-Shortcut/rust-skate-mod/issues/289).
 The .3 correction builds on Mac and actual Shadow Windows and passes 182 authored
 temporary checks. Actual .3 raw-property scanning and Core initialization pass;
 first managed assembly generation fails with two encountered interface-getter

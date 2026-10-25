@@ -3,7 +3,7 @@
 On 14 October 2026 the owner removed MW2 from the active goal and prioritized skate feel and controls. New skate. is the primary reference, Skate 3 secondary; the standalone rewrite stays parked.
 Earlier gunplay/operator/loadout plans are historical work, not current delivery criteria; preserve their source and credits.
 Rust supplies the world, survival, building and TC rules. Player text stays English.
-The [first repeatable skatepark demo](archive/RUST-SKATE-DEMO.md), [#408](https://github.com/Dj-Shortcut/mw2-rust-skate-rewrite/issues/408) and [TODO](../TODO.md) track implementation and evidence separately.
+The [first repeatable skatepark demo](archive/RUST-SKATE-DEMO.md), [#408](https://github.com/Dj-Shortcut/rust-skate-mod/issues/408) and [TODO](../TODO.md) track implementation and evidence separately.
 
 ## Complete player flow
 

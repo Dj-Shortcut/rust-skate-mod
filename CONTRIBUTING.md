@@ -19,8 +19,8 @@ is ready yet.
 
 Before writing code, read [README.md](README.md), [TODO.md](TODO.md), and the
 relevant guides in [docs/INDEX.md](docs/INDEX.md). Check the project's
-[open issues](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues) and
-[pull requests](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/pulls) to
+[open issues](https://github.com/Dj-Shortcut/rust-skate-mod/issues) and
+[pull requests](https://github.com/Dj-Shortcut/rust-skate-mod/pulls) to
 see whether someone is already working on the same area.
 
 Start in an issue. For an existing task, comment with your proposed scope,
@@ -60,9 +60,9 @@ Install Rust through rustup and the system dependencies in
 `YOUR_USERNAME` below with your account name:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/mw2-rust-rust-rewrite.git
-cd mw2-rust-rust-rewrite
-git remote add upstream https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite.git
+git clone https://github.com/YOUR_USERNAME/rust-skate-mod.git
+cd rust-skate-mod
+git remote add upstream https://github.com/Dj-Shortcut/rust-skate-mod.git
 git fetch upstream
 git switch -c feature/short-description upstream/main
 cargo check -p launcher --locked

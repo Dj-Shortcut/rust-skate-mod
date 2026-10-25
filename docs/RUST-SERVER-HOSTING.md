@@ -1,6 +1,6 @@
 # Self-managed Rust PC test server
 
-Preparation for [issue #266](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/266).
+Preparation for [issue #266](https://github.com/Dj-Shortcut/rust-skate-mod/issues/266).
 The owner selected and created a DigitalOcean Linux test host on 8 October 2026. Native installation is verified; remote-client and playable-mod acceptance remain incomplete.
 
 ## Use an existing machine or choose a permitted rental

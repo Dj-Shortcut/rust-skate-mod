@@ -71,7 +71,7 @@ flags, Harmony invocation, native noclip and correction-free gameplay remain unv
 ## Recorded gestures
 
 
-The three scenarios requested by the owner through [issue #337](https://github.com/Dj-Shortcut/mw2-rust-rust-rewrite/issues/337#issuecomment-6098063930) replay the exact recorded stick positions and timestamps. Each position is held until the next timestamp; long holds are subdivided at the module's maximum step without interpolating new positions.
+The three scenarios requested by the owner through [issue #337](https://github.com/Dj-Shortcut/rust-skate-mod/issues/337#issuecomment-6098063930) replay the exact recorded stick positions and timestamps. Each position is held until the next timestamp; long holds are subdivided at the module's maximum step without interpolating new positions.
 
 - `skate_air_pullback_ollie`: a pull back and pop in the air produces one Ollie, rather than being consumed as a late flip.
 - `skate_ground_diagonal_kickflip`: the recorded diagonal flick produces one Ollie with one Kickflip.
@@ -114,7 +114,7 @@ unverified. See the [API](../../../mods/rust/shared/README.md#late-flips-and-rid
 
 ## Ride physics
 
-The owner approved three scenarios by name on 11 October 2026 for [Task 5](https://github.com/Dj-Shortcut/mw2-rust-skate-rewrite/issues/337#issuecomment-6106747983):
+The owner approved three scenarios by name on 11 October 2026 for [Task 5](https://github.com/Dj-Shortcut/rust-skate-mod/issues/337#issuecomment-6106747983):
 
 - `skate_transition_pumping`: descent-to-bottom crouch/release timing, slope-dependent energy capped per traversal, a six-metre flat crossing, spam refusal, rearm, timeout, loss of support and physical reversal.
 - `skate_drop_in_and_launch`: uphill/downhill gravity, stall/reversal, heading-preserving tangent velocity, mechanical energy, inherited ramp velocity and vertical pop.
@@ -129,7 +129,7 @@ The runner uses the actual compiled shared DLL, prints its path/SHA-256 and comp
 
 ## Park layouts
 
-The owner approved two layout scenarios by name for [Task 4](https://github.com/Dj-Shortcut/mw2-rust-skate-rewrite/issues/337#issuecomment-6099499139):
+The owner approved two layout scenarios by name for [Task 4](https://github.com/Dj-Shortcut/rust-skate-mod/issues/337#issuecomment-6099499139):
 
 - `skate_park_piece_layouts`: the twelve pieces' block positions, orientations, native materials and adjoining nominal square-floor edges, including the complete halfpipe's flat, transitions, decks and railings, plus nominal authored-asset pivot offsets. Appended mini/large quarterpipe cases check literal cell masks/rotations, quarter-circle surfaces, missing-cell/apron boundaries, native bound containment and reservation-box overlap/touching. Native halfpipe walls use thin local X and three-metre local Z; checks cover all twenty wall footprints, joined rail ends and their placement under rotated anchors.
 - `skate_park_anchor_yaw_and_snap`: translated and rotated layouts preserve the supplied native snapped anchor, including anchors away from the world origin. Inverse and complete known-kind matching cover unordered/wrapped observations, relative noise, ambiguous single-floor kinds, invalid values/counts/prefabs, reflection and atomic finite bounds. The foundation extension supplies abstract construction bounds and independently checks exact lowest-corner contact, all other corners above support, native yaw steps, adjacent 3m cells, lowest-only support samples and complete support-plane agreement. Relative layouts remain stable; ledge anchors compensate for their absent legs.
