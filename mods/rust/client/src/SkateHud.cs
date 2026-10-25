@@ -264,9 +264,9 @@ public static class SkateHud
         s.Score = t.TotalPoints; s.Base = t.ComboBasePoints; s.Count = t.ComboCount;
         s.Window = (float)(t.RollingSeconds / SkateTricks.ComboRollingTimeout);
         var grinding = SkateRide.Mode == RideMode.Grind;
-        s.Live = grinding ? SkateTricks.GrindName(SkateRide.GrindKind, SkateRide.GrindFrontside).ToUpperInvariant() : !t.Manualing ? "" : t.NoseManualing ? "NOSE MANUAL" : "MANUAL";
-        s.LiveSeconds = grinding ? (float)t.GrindSeconds : (float)t.ManualSeconds;
-        s.LivePoints = (long)Math.Round(s.LiveSeconds * (grinding ? SkateTricks.GrindRate(SkateRide.GrindKind) : SkateTricks.ManualPointsPerSecond));
+        s.Live = SkateRide.GroundGrab.Active ? SkateGroundGrabs.Name(SkateRide.GroundGrab.Kind).ToUpperInvariant() : grinding ? SkateTricks.GrindName(SkateRide.GrindKind, SkateRide.GrindFrontside).ToUpperInvariant() : !t.Manualing ? "" : t.NoseManualing ? "NOSE MANUAL" : "MANUAL";
+        s.LiveSeconds = SkateRide.GroundGrab.Active ? (float)SkateRide.GroundGrab.Seconds : grinding ? (float)t.GrindSeconds : (float)t.ManualSeconds;
+        s.LivePoints = (long)Math.Round(s.LiveSeconds * (SkateRide.GroundGrab.Active ? 80 : grinding ? SkateTricks.GrindRate(SkateRide.GrindKind) : SkateTricks.ManualPointsPerSecond));
         if (s.Speed > TopSpeed) TopSpeed = s.Speed;
         if (grinding && s.LiveSeconds > LongestGrind) LongestGrind = s.LiveSeconds;
         if (t.Manualing && s.LiveSeconds > LongestManual) LongestManual = s.LiveSeconds;
@@ -443,7 +443,7 @@ public static class SkateHud
     private static readonly Color Cool = new Color(0.45f, 0.78f, 0.95f), Warm = new Color(0.98f, 0.60f, 0.30f);
     private static Color Kind(string name)
     {
-        if (SkateGrabCatalog.IsNamedGrab(name)) return Good;
+        if (SkateGrabCatalog.IsNamedGrab(name) || string.Equals(name, "Coffin", StringComparison.OrdinalIgnoreCase)) return Good;
         var n = name.ToLowerInvariant();
         if (n.Contains("grind") || n.Contains("slide") || n.Contains("50-50") || n.Contains("5-0")) return Cool;
         if (n.Contains("manual") || n.Contains("revert")) return Warm;
@@ -502,6 +502,9 @@ public static class SkateHud
     };
 
     private static readonly string[] ExtendedGrabs = {
+        "@GROUND GRABS (rolling, LB separates these from pumping)",
+        "#LB + LT / RT / both: Frontside / Backside / Double Ground Grab   #LB + LT + RT + A + X: Coffin",
+        "Release the chord and triggers before popping or pumping again; an unfinished push stroke returns first.",
         "@EXTENDED GRABS   hold BACK + D-PAD left/right for pages   (sides mirrored for goofy/fakie)",
         "Keep a trigger held. Add #RB for tweaks; #A / #X free one foot; #B frees both feet. Release the grab before landing.",
         "@RB + LT   centre / up / down / left / right",
