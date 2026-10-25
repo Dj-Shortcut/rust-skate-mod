@@ -1,0 +1,24 @@
+<Project>
+  <PropertyGroup>
+    <ActualPluginPath Condition="'$(ActualPluginPath)' == ''">../../../context/rust-skate-plugin-build/bin/net48/ShortcutSkate.dll</ActualPluginPath>
+    <SkateParkLibraryPath Condition="'$(SkateParkLibraryPath)' == ''">$(ActualPluginPath)</SkateParkLibraryPath>
+    <ParkLibraryName>$([System.IO.Path]::GetFileNameWithoutExtension('$(SkateParkLibraryPath)'))</ParkLibraryName>
+    <BaseIntermediateOutputPath>../../../context/skate-approved-park-preset/obj/$(ParkLibraryName)/</BaseIntermediateOutputPath>
+    <OutputPath>../../../context/skate-approved-park-preset/bin/$(ParkLibraryName)/</OutputPath>
+  </PropertyGroup>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="SkateParkPresetScenarios.cs" />
+    <Reference Include="SkateParkLibrary"><HintPath>$(SkateParkLibraryPath)</HintPath></Reference>
+  </ItemGroup>
+  <Target Name="RequireActualParkLibrary" BeforeTargets="PrepareForBuild">
+    <Error Condition="'$(SkateParkLibraryPath)' == '' Or !Exists('$(SkateParkLibraryPath)')" Text="Provide SkateParkLibraryPath pointing to SkateMotion.dll or ShortcutSkate.dll built against genuine Rust references." />
+  </Target>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+</Project>
