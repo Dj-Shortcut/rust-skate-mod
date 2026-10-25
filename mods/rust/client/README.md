@@ -134,6 +134,18 @@ Board rendering and native rider targets now share the actual deck-top frame, in
 inverted orientation. These are source and cached-reference checks; Shadow visuals and feel
 remain unverified.
 
+Client source 0.18.54 releases the previous grab before bringing in a different hand/foot
+contact, with a fresh entry clock. A grind exit retains its engaged truck while its remaining
+pitch and roll ease out. Push, pump, pop and landing continue to use their existing shared
+contact and spring phases. Mounting resets old pose/board state. Menus, reader changes and
+dismount abandon unfinished stick gestures and queued actions; held push keys/buttons,
+triggers and special bumpers must be released before they can start another action.
+Steering remains available after closing a menu, with air spin rearmed at the stick centre.
+This filters the plugin's inputs; native on-foot movement and camera still need Shadow acceptance.
+Special foot pivots retain the rider's chosen foot after a shove reverses the physical deck.
+Attached feet follow the complete deck rotation, including shifty yaw. A pop out of a Darkslide
+finishes its caught half flip; bumper specials are deferred until that recovery has landed.
+
 An edge is taken when the rider comes down on it from an ollie: the way of travel within 60° of
 the edge, at least 1 m/s along it, the feet from 0.15 m below its top to 0.5 m above, the edge
 within 0.45 m to the side and 0.3 m ahead; the board's own angle is free. When an edge is near but

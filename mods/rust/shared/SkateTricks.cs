@@ -326,7 +326,8 @@ namespace Shortcut.RustMod
                 {
                     var request = input.BoardPath;
                     double previous = path.Known ? path.Progress : 0;
-                    if ((path.Known && (path.Kind != request.Kind || path.Direction != request.Direction || path.Nollie != request.Nollie)) ||
+                    if ((path.Known && (path.Kind != request.Kind || path.Direction != request.Direction || path.Nollie != request.Nollie || path.Reversed != request.Reversed)) ||
+                        (!path.Known && state.DarkslideCaught) ||
                         request.Nollie != (popKind == SkatePopKind.Nollie) || (popKind != SkatePopKind.Ollie && popKind != SkatePopKind.Nollie) ||
                         request.Progress < previous || request.Progress - previous > dt / request.Duration + 0.000001)
                     { error = "Invalid special board path progression."; return false; }

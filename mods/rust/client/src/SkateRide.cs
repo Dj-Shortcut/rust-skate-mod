@@ -286,7 +286,9 @@ public static class SkateRide
         catch (Exception e) { CapsuleReach = 0.2f; if (!capsuleSaid) { capsuleSaid = true; Out.Say("SKATE capsule unreadable: " + e.GetType().Name + ": " + e.Message); } }
         var v = b.linearVelocity; velocity = v; var rise = v.y; v.y = 0f;
         Speed = Vector3.Dot(v, Dir(yaw));
-        SkateKeys.EndStep();
+        if (SkateKeys.Scripted) SkateKeys.EndStep(); else SkateKeys.Reset();
+        SkateBoard.BeginRide();
+        RiderRig.BeginRide();
         hasLast = false; pastCount = 0; Steps = 0; Resets = 0; Top = 0f; Lean = 0f; SteerRate = 0f; Powerslide = 0f; PowerslideSide = 1f; lastPull = mountAt = Time.realtimeSinceStartup;
         // A cap from a ride a while ago says nothing about this one.
         if (mountAt - putBackAt > CapForget) ForgetServer();
@@ -318,7 +320,7 @@ public static class SkateRide
         if (Mode == RideMode.Off) return;
         airViewFrom = Vector3.up; airViewAt = airViewRise = 0f; airView = default(SkateRiderAirFrameState);
         Mode = RideMode.Off; BoardPath = default(SkateBoardPathSample); wantSpecial = SkateBoardTrickKind.None; wantSpecialDirection = 0; Pump = default(SkatePumpState); PumpHeld = RevertLeft = 0f; Stalling = false; grindClassified = airFromValid = false; OffReason = reason; Grab = SkateGrabKind.None; Manual = NoseManual = false;
-        SkateKeys.EndStep();
+        if (SkateKeys.Scripted) SkateKeys.EndStep(); else SkateKeys.Reset();
     }
 
     private static void Enter(RideMode m)
@@ -925,7 +927,7 @@ public static class SkateRide
         popKind = jumped ? wantKind : SkatePopKind.Ollie; pendFlip = jumped ? wantFlip : 0; pendShove = jumped ? wantShove : 0f;
         BoardPath = default(SkateBoardPathSample);
         SkateBoardPathSample path; string pathError;
-        if (jumped && wantSpecial != SkateBoardTrickKind.None && SkateBoardPath.TrySample(wantSpecial, 0, wantSpecialDirection, popKind == SkatePopKind.Nollie, out path, out pathError))
+        if (jumped && !Trick.DarkslideCaught && wantSpecial != SkateBoardTrickKind.None && SkateBoardPath.TrySample(wantSpecial, 0, wantSpecialDirection, popKind == SkatePopKind.Nollie, DeckReversed, out path, out pathError))
         { BoardPath = path; pendFlip = 0; pendShove = 0; }
         wantSpecial = SkateBoardTrickKind.None; wantSpecialDirection = 0;
         wantFlip = 0; wantShove = 0f; wantKind = SkatePopKind.Ollie;
@@ -1071,7 +1073,7 @@ public static class SkateRide
             if (BoardPath.Active)
             {
                 var previous = BoardPath; SkateBoardPathSample next; string error;
-                if (SkateBoardPath.TrySample(previous.Kind, Math.Min(1, previous.Progress + dt / previous.Duration), previous.Direction, previous.Nollie, out next, out error))
+                if (SkateBoardPath.TrySample(previous.Kind, Math.Min(1, previous.Progress + dt / previous.Duration), previous.Direction, previous.Nollie, previous.Reversed, out next, out error))
                 { BoardPath = next; flipAxis = Clamp((float)((next.Roll - previous.Roll) / flipStep), -1f, 1f); }
             }
             TrickTick(true, false, spinAxis, flipAxis, shoveAxis, 0, dt, bodyAxis);

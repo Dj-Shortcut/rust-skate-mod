@@ -51,6 +51,13 @@ namespace Shortcut.RustMod
         public static bool Valid(SkateGrabKind kind) { return (uint)kind < Count; }
         public static string Name(SkateGrabKind kind) { return Valid(kind) ? Names[(int)kind] : ""; }
         public static string Suffix(SkateGrabKind kind) { return Valid(kind) ? Suffixes[(int)kind] : ""; }
+        public static bool IsNamedGrab(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return false;
+            for (int i = 1; i < Names.Length; i++)
+                if (string.Equals(name, Names[i], StringComparison.OrdinalIgnoreCase) || name.EndsWith(Suffixes[i], StringComparison.OrdinalIgnoreCase)) return true;
+            return false;
+        }
 
         // Ground-held plant/push buttons must be released or freshly pressed before owning an air grab.
         public static int AirButtons(ref int blocked, bool air, int buttons, int pressed)

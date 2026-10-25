@@ -443,6 +443,7 @@ public static class SkateHud
     private static readonly Color Cool = new Color(0.45f, 0.78f, 0.95f), Warm = new Color(0.98f, 0.60f, 0.30f);
     private static Color Kind(string name)
     {
+        if (SkateGrabCatalog.IsNamedGrab(name)) return Good;
         var n = name.ToLowerInvariant();
         if (n.Contains("grind") || n.Contains("slide") || n.Contains("50-50") || n.Contains("5-0")) return Cool;
         if (n.Contains("manual") || n.Contains("revert")) return Warm;

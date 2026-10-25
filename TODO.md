@@ -35,10 +35,10 @@ Per rit controleren: controller, eerste/derde persoon, kompas, hand-item, pose, 
 
 ## Werkblokken bij punten 23–25 (Andy, 25 okt)
 
-- **Grabs:** Weddle, Rocket Air, tweaks en one-foot/no-foot uitwerken met eigen hand- en voetbewegingen, loslaten, catch en landing. Open.
-- **Grinds:** FS/BS Overcrook, Salad, Willy en Over Willy uitwerken met passende boardhoek, truckcontact, rijderpose en in-/uitstap. Open.
-- **Speciale flips:** impossibles, foot-impossibles en underflips uitwerken met een eigen boardbaan, voetvrijgave en catch. Open.
-- **Overgangen en invoerherstel:** push, pompen, pop, grab, catch en landing samenhangend maken; invoer herstellen na afstappen of onderbreking. Open.
+- **Grabs:** Weddle, Rocket Air, tweaks en one-foot/no-foot met eigen hand- en voetcontact, loslaten, catch en landing: bron aanwezig sinds 0.18.51; gedeeld deckframe in 0.18.53. Headless gecontroleerd; beeld en gevoel in game open.
+- **Grinds:** FS/BS Overcrook, Salad, Willy en Over Willy met boardhoek, truckcontact, rijderpose en in-/uitstap: bron aanwezig sinds 0.18.52; uitdempen bij exit in 0.18.54. Headless gecontroleerd; native railcontact en gevoel open.
+- **Speciale flips:** Impossible, Front Foot Impossible, nollie-voetvarianten en Underflip met eigen boardbaan, voetvrijgave en catch: bron aanwezig in 0.18.53. Voortgang, scoring en poses headless gecontroleerd; uitvoering in game open.
+- **Overgangen en invoerherstel:** push/pomp/pop/grab/catch/landing gekoppeld, grabwissels en herstel na menu, readerwissel of afstappen: bron aanwezig in 0.18.54. Headless gecontroleerd; controller te voet, camera en volledige rit op Shadow open.
 
 ## Skate 3-tricks (bij punt 24)
 

@@ -31,6 +31,7 @@ public static class SkatePad
     // in it, a flip added in the air.
     private static readonly SkatePop[] popped = new SkatePop[4];
     private static int poppedCount;
+    private static int blockedSpecialBumpers;
     // A pure pop flip may continue while the same rim direction is held, up to a triple.
     // These are further rotations of that pop, not a new late-flick gesture.
     private static int heldFlip, heldExtras, heldFlips;
@@ -158,6 +159,7 @@ public static class SkatePad
         SkatePadLog.Stick(us, rx, ry);
         SkatePadLog.Buttons(buttons, lt, rt, lx, ly, rx, ry, now, edges);
         Buttons = buttons; LeftTrigger = lt; RightTrigger = rt; LeftX = lx; LeftY = ly; RightX = rx; RightY = ry;
+        blockedSpecialBumpers &= buttons;
         // Also a press that is over again before the next frame.
         if (buttons != 0 || lt > Pulled || rt > Pulled || lx * lx + ly * ly > Touch * Touch || rx * rx + ry * ry > Touch * Touch) TouchedAt = now;
     }
@@ -213,8 +215,8 @@ public static class SkatePad
                 {
                     var composition = r.Composition;
                     // Bumpers modify a popped stick gesture; naked bumpers still own handplants.
-                    var bumpers = Buttons & (LeftBumper | RightBumper);
-                    if (!air && SkateRide.On && LeftTrigger <= Pulled && RightTrigger <= Pulled &&
+                    var bumpers = Buttons & ~blockedSpecialBumpers & (LeftBumper | RightBumper);
+                    if (!air && SkateRide.On && (SkateRide.Mode != RideMode.Grind || SkateRide.GrindKind != SkateGrindKind.Darkslide) && LeftTrigger <= Pulled && RightTrigger <= Pulled &&
                         composition.Kind != SkatePopKind.None && composition.ShoveDegrees == 0 && bumpers != 0)
                     {
                         var special = bumpers == (LeftBumper | RightBumper) ? SkateBoardTrickKind.Underflip :
@@ -282,6 +284,14 @@ public static class SkatePad
     }
 
     public static void DropPops() { poppedCount = heldFlips = 0; BodyVarialDegrees = 0f; EndHeldFlip(); }
+    // Abandon the gesture too, not just its output queue. A held setup must come back to rest.
+    public static void SuspendGestures()
+    {
+        DropPops(); flick = default(SkateFlickState); Charging = Manual = NoseManual = false; Charge = 0;
+        rightSuspended = RightX * RightX + RightY * RightY > SkateFlick.RearmZone * SkateFlick.RearmZone;
+        wasGrabbing = false; grabStick = 0; LeftSweep = leftAngle = 0; leftOnRim = false; sweepFromUs = 0;
+        blockedSpecialBumpers |= Buttons & (LeftBumper | RightBumper);
+    }
     public static int TakeHeldFlip() { var flips = heldFlips; heldFlips = 0; return flips; }
     public static float TakeBodyVarial() { var d = BodyVarialDegrees; BodyVarialDegrees = 0f; return d; }
 
