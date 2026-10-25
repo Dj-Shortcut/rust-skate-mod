@@ -927,7 +927,7 @@ public static class SkateRide
         popKind = jumped ? wantKind : SkatePopKind.Ollie; pendFlip = jumped ? wantFlip : 0; pendShove = jumped ? wantShove : 0f;
         BoardPath = default(SkateBoardPathSample);
         SkateBoardPathSample path; string pathError;
-        if (jumped && wantSpecial != SkateBoardTrickKind.None && SkateBoardPath.TrySample(wantSpecial, 0, wantSpecialDirection, popKind == SkatePopKind.Nollie, out path, out pathError))
+        if (jumped && !Trick.DarkslideCaught && wantSpecial != SkateBoardTrickKind.None && SkateBoardPath.TrySample(wantSpecial, 0, wantSpecialDirection, popKind == SkatePopKind.Nollie, DeckReversed, out path, out pathError))
         { BoardPath = path; pendFlip = 0; pendShove = 0; }
         wantSpecial = SkateBoardTrickKind.None; wantSpecialDirection = 0;
         wantFlip = 0; wantShove = 0f; wantKind = SkatePopKind.Ollie;
@@ -1073,7 +1073,7 @@ public static class SkateRide
             if (BoardPath.Active)
             {
                 var previous = BoardPath; SkateBoardPathSample next; string error;
-                if (SkateBoardPath.TrySample(previous.Kind, Math.Min(1, previous.Progress + dt / previous.Duration), previous.Direction, previous.Nollie, out next, out error))
+                if (SkateBoardPath.TrySample(previous.Kind, Math.Min(1, previous.Progress + dt / previous.Duration), previous.Direction, previous.Nollie, previous.Reversed, out next, out error))
                 { BoardPath = next; flipAxis = Clamp((float)((next.Roll - previous.Roll) / flipStep), -1f, 1f); }
             }
             TrickTick(true, false, spinAxis, flipAxis, shoveAxis, 0, dt, bodyAxis);

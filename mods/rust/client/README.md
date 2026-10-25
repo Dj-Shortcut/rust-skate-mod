@@ -142,6 +142,9 @@ dismount abandon unfinished stick gestures and queued actions; held push keys/bu
 triggers and special bumpers must be released before they can start another action.
 Steering remains available after closing a menu, with air spin rearmed at the stick centre.
 This filters the plugin's inputs; native on-foot movement and camera still need Shadow acceptance.
+Special foot pivots retain the rider's chosen foot after a shove reverses the physical deck.
+Attached feet follow the complete deck rotation, including shifty yaw. A pop out of a Darkslide
+finishes its caught half flip; bumper specials are deferred until that recovery has landed.
 
 An edge is taken when the rider comes down on it from an ollie: the way of travel within 60° of
 the edge, at least 1 m/s along it, the feet from 0.15 m below its top to 0.5 m above, the edge

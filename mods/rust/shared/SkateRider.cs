@@ -650,8 +650,13 @@ namespace Shortcut.RustMod
             if (framed)
             {
                 double ankle = SkatePose.FootLift - input.DeckOffset;
-                leftAnkle = Blend(leftAnkle, input.DeckFrame.Project(leftAnkle, ankle), leftContact);
-                rightAnkle = Blend(rightAnkle, input.DeckFrame.Project(rightAnkle, ankle), rightContact);
+                var deckRight = Cross(up, deckForward);
+                var leftLocal = leftAnkle - input.DeckFrame.Origin; var rightLocal = rightAnkle - input.DeckFrame.Origin;
+                // Preserve the full attached-foot coordinates, including shifty yaw about the deck normal.
+                var leftAttached = input.DeckFrame.Point(new SkateVector(SkateVector.Dot(leftLocal, deckRight), ankle, SkateVector.Dot(leftLocal, deckForward)));
+                var rightAttached = input.DeckFrame.Point(new SkateVector(SkateVector.Dot(rightLocal, deckRight), ankle, SkateVector.Dot(rightLocal, deckForward)));
+                leftAnkle = Blend(leftAnkle, leftAttached, leftContact);
+                rightAnkle = Blend(rightAnkle, rightAttached, rightContact);
                 if (namedGrab && definition.FeetOnTail)
                 {
                     var tail = input.DeckFrame.Point(new SkateVector(0, ankle, -0.24));
@@ -701,7 +706,9 @@ namespace Shortcut.RustMod
             if (framed)
             {
                 var sole = input.BoardPath.Active ? up : input.DeckFrame.Up;
-                var lf = Project(leftToeDir, sole); var rf = Project(rightToeDir, sole);
+                var deckRight = Cross(up, deckForward);
+                var lf = input.DeckFrame.Rotate(new SkateVector(SkateVector.Dot(leftToeDir, deckRight), SkateVector.Dot(leftToeDir, up), SkateVector.Dot(leftToeDir, deckForward)));
+                var rf = input.DeckFrame.Rotate(new SkateVector(SkateVector.Dot(rightToeDir, deckRight), SkateVector.Dot(rightToeDir, up), SkateVector.Dot(rightToeDir, deckForward)));
                 if (lf.LengthSquared > 0.0001) leftToeDir = Unit(Blend(leftToeDir, Unit(lf), leftContact));
                 if (rf.LengthSquared > 0.0001) rightToeDir = Unit(Blend(rightToeDir, Unit(rf), rightContact));
                 leftFootUp = Unit(Blend(up, sole, leftContact)); rightFootUp = Unit(Blend(up, sole, rightContact));

@@ -34,15 +34,17 @@ namespace Shortcut.RustMod
         public readonly SkateBoardTrickKind Kind;
         public readonly double Progress;
         public readonly int Direction;
-        public readonly bool Nollie;
+        public readonly bool Nollie, Reversed;
         internal SkateBoardPathSample(SkateBoardTrickKind kind, double progress, int direction, bool nollie)
-        { Kind = kind; Progress = progress; Direction = direction; Nollie = nollie; }
+            : this(kind, progress, direction, nollie, false) { }
+        internal SkateBoardPathSample(SkateBoardTrickKind kind, double progress, int direction, bool nollie, bool reversed)
+        { Kind = kind; Progress = progress; Direction = direction; Nollie = nollie; Reversed = reversed; }
         public bool Known { get { return Kind != SkateBoardTrickKind.None; } }
         public bool Complete { get { return Known && Progress >= 1; } }
         public bool Active { get { return Known && !Complete; } }
         public double Duration { get { return SkateBoardPath.Duration(Kind); } }
         // Physical front/nose foot is +1, rear/tail foot -1; nollie exchanges the popped end.
-        public int Foot { get { return (Kind == SkateBoardTrickKind.FrontFootImpossible || Kind == SkateBoardTrickKind.Underflip ? 1 : -1) * (Nollie ? -1 : 1); } }
+        public int Foot { get { return (Kind == SkateBoardTrickKind.FrontFootImpossible || Kind == SkateBoardTrickKind.Underflip ? 1 : -1) * (Nollie ? -1 : 1) * (Reversed ? -1 : 1); } }
         public SkateVector Pivot { get { return new SkateVector(0, SkateBoardPath.FootRadius, SkateBoardPath.Axle * Foot); } }
         public double Contact
         {
@@ -80,14 +82,17 @@ namespace Shortcut.RustMod
         { return kind == SkateBoardTrickKind.None ? 0 : (kind == SkateBoardTrickKind.Underflip ? 720 : 360) / SkateMotion.FlipRate; }
         public static bool TrySample(SkateBoardTrickKind kind, double progress, int direction, bool nollie,
             out SkateBoardPathSample sample, out string error)
+        { return TrySample(kind, progress, direction, nollie, false, out sample, out error); }
+        public static bool TrySample(SkateBoardTrickKind kind, double progress, int direction, bool nollie, bool reversed,
+            out SkateBoardPathSample sample, out string error)
         {
             sample = default(SkateBoardPathSample); error = null;
             if (kind <= SkateBoardTrickKind.None || kind > SkateBoardTrickKind.Underflip || !Finite(progress) || progress < 0 || progress > 1 || (direction != -1 && direction != 1))
             { error = "Invalid special board path."; return false; }
-            sample = new SkateBoardPathSample(kind, progress, direction, nollie); return true;
+            sample = new SkateBoardPathSample(kind, progress, direction, nollie, reversed); return true;
         }
         public static bool Valid(SkateBoardPathSample sample)
-        { return sample.Kind == SkateBoardTrickKind.None ? sample.Progress == 0 && sample.Direction == 0 && !sample.Nollie :
+        { return sample.Kind == SkateBoardTrickKind.None ? sample.Progress == 0 && sample.Direction == 0 && !sample.Nollie && !sample.Reversed :
             sample.Kind > SkateBoardTrickKind.None && sample.Kind <= SkateBoardTrickKind.Underflip && Finite(sample.Progress) && sample.Progress >= 0 && sample.Progress <= 1 && (sample.Direction == -1 || sample.Direction == 1); }
         public static bool Valid(SkateBoardPose pose)
         {

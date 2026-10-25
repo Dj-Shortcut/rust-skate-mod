@@ -216,7 +216,7 @@ public static class SkatePad
                     var composition = r.Composition;
                     // Bumpers modify a popped stick gesture; naked bumpers still own handplants.
                     var bumpers = Buttons & ~blockedSpecialBumpers & (LeftBumper | RightBumper);
-                    if (!air && SkateRide.On && LeftTrigger <= Pulled && RightTrigger <= Pulled &&
+                    if (!air && SkateRide.On && (SkateRide.Mode != RideMode.Grind || SkateRide.GrindKind != SkateGrindKind.Darkslide) && LeftTrigger <= Pulled && RightTrigger <= Pulled &&
                         composition.Kind != SkatePopKind.None && composition.ShoveDegrees == 0 && bumpers != 0)
                     {
                         var special = bumpers == (LeftBumper | RightBumper) ? SkateBoardTrickKind.Underflip :
