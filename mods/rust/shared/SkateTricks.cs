@@ -539,6 +539,8 @@ namespace Shortcut.RustMod
             else if (flip == -1 && shove == 2) board = "Laser Flip";
             else if (flip == 1 && shove == 1) board = "Hardflip";
             else if (flip == -1 && shove == -1) board = "Inward Heelflip";
+            else if (flip == 1 && shove == 2) board = "360 Hardflip";
+            else if (flip == -1 && shove == -2) board = "360 Inward Heelflip";
             else
             {
                 string flips = flip == 0 ? "" : flip == 1 ? "Kickflip" : flip == -1 ? "Heelflip" :
