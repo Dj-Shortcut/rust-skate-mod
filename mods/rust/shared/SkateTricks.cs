@@ -25,7 +25,35 @@ namespace Shortcut.RustMod
         None = 0, FiftyFifty = 1, FiveO = 2, Nosegrind = 3, Boardslide = 4, Lipslide = 5,
         Noseslide = 6, Tailslide = 7, Smith = 8, Feeble = 9, Crooked = 10,
         FiftyFiftyStall = 11, NoseStall = 12, TailStall = 13, BoardStall = 14, Handplant = 15,
-        Bluntslide = 16, Nosebluntslide = 17, Darkslide = 18
+        Bluntslide = 16, Nosebluntslide = 17, Darkslide = 18, Overcrook = 19, Salad = 20, Willy = 21, OverWilly = 22
+    }
+
+    // Geometry and board weighting choose a contact; names never choose the motion.
+    public static class SkateGrinds
+    {
+        public static SkateGrindKind Classify(double across, double crossing, bool noseFar, bool manual, bool noseManual)
+        {
+            if (double.IsNaN(across) || double.IsInfinity(across) || across < 0 || across > 90 ||
+                double.IsNaN(crossing) || double.IsInfinity(crossing) || Math.Abs(crossing) > 10 || (manual && noseManual)) return SkateGrindKind.None;
+            if (across < 25) return manual ? SkateGrindKind.FiveO : noseManual ? SkateGrindKind.Nosegrind : SkateGrindKind.FiftyFifty;
+            if (across > 65) return crossing > 0.25 ? noseManual ? SkateGrindKind.Nosebluntslide : SkateGrindKind.Noseslide :
+                crossing < -0.25 ? manual ? SkateGrindKind.Bluntslide : SkateGrindKind.Tailslide : noseFar ? SkateGrindKind.Boardslide : SkateGrindKind.Lipslide;
+            if (crossing > 0.1) return manual ? noseFar ? SkateGrindKind.Willy : SkateGrindKind.OverWilly :
+                noseFar ? SkateGrindKind.Crooked : SkateGrindKind.Overcrook;
+            if (crossing < -0.1 && manual) return SkateGrindKind.Salad;
+            return noseFar ? SkateGrindKind.Feeble : SkateGrindKind.Smith;
+        }
+        // The physical nose/front truck is +1, tail/rear truck -1; slides/stalls use their old support.
+        public static int Truck(SkateGrindKind kind)
+        {
+            switch (kind)
+            {
+                case SkateGrindKind.FiveO: case SkateGrindKind.Smith: case SkateGrindKind.Feeble: case SkateGrindKind.Salad: return -1;
+                case SkateGrindKind.Nosegrind: case SkateGrindKind.Crooked: case SkateGrindKind.Overcrook:
+                case SkateGrindKind.Willy: case SkateGrindKind.OverWilly: return 1;
+                default: return 0;
+            }
+        }
     }
 
     public struct SkateTrickInput
@@ -215,10 +243,10 @@ namespace Shortcut.RustMod
         private static readonly string[] GrindNames = {
             "Grind", "50-50", "5-0", "Nosegrind", "Boardslide", "Lipslide", "Noseslide", "Tailslide", "Smith Grind", "Feeble Grind", "Crooked Grind",
             "50-50 Stall", "Nose Stall", "Tail Stall", "Board Stall", "Handplant",
-            "Bluntslide", "Nosebluntslide", "Darkslide"
+            "Bluntslide", "Nosebluntslide", "Darkslide", "Overcrook", "Salad Grind", "Willy Grind", "Over Willy Grind"
         };
         private static readonly string[] DirectionalGrindNames = BuildGrindNames();
-        private static readonly int[] GrindRates = { 100, 100, 130, 130, 120, 140, 150, 150, 160, 160, 160, 150, 160, 160, 150, 250, 170, 170, 190 };
+        private static readonly int[] GrindRates = { 100, 100, 130, 130, 120, 140, 150, 150, 160, 160, 160, 150, 160, 160, 150, 250, 170, 170, 190, 160, 160, 160, 160 };
         private static readonly string[] NamePrefixes = {
             "", "Nollie", "No Comply", "Boneless", "Fastplant", "Beanplant",
             "Switch", "Fakie", "Switch No Comply", "Switch Boneless", "Switch Fastplant", "Switch Beanplant",
@@ -549,7 +577,7 @@ namespace Shortcut.RustMod
             (s.Airborne || s.Flip == 0 || s.DarkslideCaught) &&
             Finite(s.BodySpin) && Math.Abs(s.BodySpin) <= 180 && (s.Airborne || (s.BodySpin == 0 && !s.Late)); }
         private static bool GrabKindValid(SkateGrabKind kind) { return SkateGrabCatalog.Valid(kind); }
-        private static bool GrindKindValid(SkateGrindKind kind) { return (int)kind >= 0 && (int)kind <= 18; }
+        private static bool GrindKindValid(SkateGrindKind kind) { return (int)kind >= 0 && (int)kind <= (int)SkateGrindKind.OverWilly; }
         private static bool PopKindValid(SkatePopKind kind) { return (int)kind >= 0 && (int)kind <= 6; }
         public static bool IsPlant(SkatePopKind kind) { return (int)kind >= 3 && (int)kind <= 6; }
         private static bool Axis(double n) { return Finite(n) && Math.Abs(n) <= 1; }

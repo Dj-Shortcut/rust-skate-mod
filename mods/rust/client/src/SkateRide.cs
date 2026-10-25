@@ -111,7 +111,9 @@ public static class SkateRide
     public static bool PushLead;
     // The deck's angle to the edge, taken when the grind begins and kept through it.
     public static float GrindDeck;
-    private static float grindCross, grindNoseFar, grindNose, airNoseOffset, airDeckOffset;
+    private static float grindCross, grindNoseFar, grindNose, airNoseOffset, airDeckOffset, grindAcross, grindCrossing;
+    private static bool grindClassified, airFromValid;
+    private static Vector3 airFrom;
     // Off an edge the board comes round to the way of travel over a moment, not in a jump: the pose
     // it had on the edge is kept as an air offset that runs out at ComeRoundRate.
     private const float ComeRoundRate = 540f;
@@ -287,7 +289,7 @@ public static class SkateRide
         if (mountAt - putBackAt > CapForget) ForgetServer();
         VSpeed = 0f; AirTime = 0f; flipLeft = shoveLeft = pendShove = bodyLeft = 0f; pendFlip = 0; SpinDeg = FlipDeg = ShoveDeg = BodyDeg = 0; LateTrick = false; Jumped = TrickAir = Braking = Manual = NoseManual = spinning = DeckReversed = false; PushPhase = 0f; stuck = 0; heldSteps = 0; Held = false;
         Grab = SkateGrabKind.None; spinSide = 1f; wantKind = SkatePopKind.Ollie; wantFlip = 0; wantShove = 0f; wantScale = 1f;
-        PumpHeld = RevertLeft = revertTurned = 0f; landedTrick = false; steppedAt = -99f; StepUps = 0; Pump = default(SkatePumpState); SlopeDegrees = 0f; ContactNormal = Vector3.up; OnRamp = false; GrindKind = SkateGrindKind.None; GrindFrontside = GrindAlong = false; GrindDeck = 0f; Stalling = false; Stalls = 0; PlantedUntil = -99f; PushMongo = PushLead = false; handDownAt = -99f; rollingBack = false;
+        PumpHeld = RevertLeft = revertTurned = 0f; landedTrick = false; steppedAt = -99f; StepUps = 0; Pump = default(SkatePumpState); SlopeDegrees = 0f; ContactNormal = Vector3.up; OnRamp = false; GrindKind = SkateGrindKind.None; GrindFrontside = GrindAlong = false; GrindDeck = 0f; grindClassified = airFromValid = false; Stalling = false; Stalls = 0; PlantedUntil = -99f; PushMongo = PushLead = false; handDownAt = -99f; rollingBack = false;
         Trick = new SkateTrickState(false); TrickName = ""; ComboPoints = 0; TrickAt = BankedAt = LandAt = jumpWanted = -99f; OffReason = "";
         SkateHud.Clear();
         Normal = ViewNormal = Vector3.up; Position = b.position; Tangent = Dir(yaw);
@@ -312,7 +314,7 @@ public static class SkateRide
         SkateRig.ReleaseRootProxy();
         if (Mode == RideMode.Off) return;
         airViewFrom = Vector3.up; airViewAt = airViewRise = 0f; airView = default(SkateRiderAirFrameState);
-        Mode = RideMode.Off; Pump = default(SkatePumpState); PumpHeld = RevertLeft = 0f; Stalling = false; OffReason = reason; Grab = SkateGrabKind.None; Manual = NoseManual = false;
+        Mode = RideMode.Off; Pump = default(SkatePumpState); PumpHeld = RevertLeft = 0f; Stalling = false; grindClassified = airFromValid = false; OffReason = reason; Grab = SkateGrabKind.None; Manual = NoseManual = false;
         SkateKeys.EndStep();
     }
 
@@ -914,6 +916,7 @@ public static class SkateRide
         spinSide = (TailFirst ? -1f : 1f) * StanceSign;
         Enter(RideMode.Air);
         // A manual survives a hop over a bump; a jump ends it, and so does a longer fall below.
+        airFrom = Position; airFromValid = jumped;
         Jumped = jumped; TrickAir = jumped; if (jumped) Manual = NoseManual = false; VSpeed = vertical; AirTime = 0f; AirPeak = 0f; takeOffY = Position.y;
         flipLeft = shoveLeft = bodyLeft = 0f; spinning = spinLate = false; PushPhase = 0f; Braking = false; stuck = 0; heldSteps = 0; Held = false; LateTrick = false;
         popKind = jumped ? wantKind : SkatePopKind.Ollie; pendFlip = jumped ? wantFlip : 0; pendShove = jumped ? wantShove : 0f;
@@ -1347,6 +1350,7 @@ public static class SkateRide
         GrindVelocity(pos);
         // Along the edge the stick leans the board onto one truck: back for a 5-0, forward for a nosegrind.
         if (GrindKind == SkateGrindKind.Darkslide) { }
+        else if (grindClassified) GrindKind = SkateGrinds.Classify(grindAcross, grindCrossing, grindNoseFar > 0f, SkateKeys.Manual, SkateKeys.NoseManual);
         else if (GrindAlong) GrindKind = SkateKeys.Manual ? SkateGrindKind.FiveO : SkateKeys.NoseManual ? SkateGrindKind.Nosegrind : SkateGrindKind.FiftyFifty;
         // Across the edge on the tail or the nose, the stick held back or forward stands the deck up: a bluntslide.
         else if (GrindKind == SkateGrindKind.Tailslide || GrindKind == SkateGrindKind.Bluntslide) GrindKind = SkateKeys.Manual ? SkateGrindKind.Bluntslide : SkateGrindKind.Tailslide;
@@ -1370,14 +1374,18 @@ public static class SkateRide
         var cross = deck.x * rail.z - deck.z * rail.x;
         grindCross = cross; var t = 0f;
         if (Math.Abs(cross) > 0.2f) t = (to.x * rail.z - to.z * rail.x) / cross;
-        var near = -to.normalized; grindNoseFar = Vector3.Dot(deck, near) < 0f ? 1f : -1f;
+        // Keep the side from which the popped flight approached. Recomputing it from the landed
+        // board centre makes every front-truck contact look identical after crossing the rail.
+        var approach = airFrom - SkateGrind.Target; approach.y = 0f;
+        approach -= rail * Vector3.Dot(approach, rail);
+        var near = airFromValid && approach.sqrMagnitude > 0.0025f ? approach.normalized : -to.normalized;
+        grindNoseFar = Vector3.Dot(deck, near) < 0f ? 1f : -1f;
         GrindAlong = across < 25f;
         // Along the edge the deck is squared to it; across or at an angle it keeps the angle it had.
         grindNose = Delta(SkateGrind.Heading, NoseYaw);
         GrindDeck = GrindAlong ? (Math.Abs(rel) > 90f ? 180f : 0f) : rel;
-        if (GrindAlong) GrindKind = SkateGrindKind.FiftyFifty;
-        else if (across > 65f) GrindKind = t > 0.25f ? (SkateKeys.NoseManual ? SkateGrindKind.Nosebluntslide : SkateGrindKind.Noseslide) : t < -0.25f ? (SkateKeys.Manual ? SkateGrindKind.Bluntslide : SkateGrindKind.Tailslide) : grindNoseFar > 0f ? SkateGrindKind.Boardslide : SkateGrindKind.Lipslide;
-        else GrindKind = t > 0.1f ? SkateGrindKind.Crooked : grindNoseFar > 0f ? SkateGrindKind.Feeble : SkateGrindKind.Smith;
+        grindAcross = across; grindCrossing = t; grindClassified = true;
+        GrindKind = SkateGrinds.Classify(across, t, grindNoseFar > 0f, SkateKeys.Manual, SkateKeys.NoseManual);
         Out.Say("GRIND kind " + SkateTricks.GrindName(GrindKind, GrindFrontside) + " (deck " + rel.ToString("F0") + " deg to the edge, crossing at " + t.ToString("F2") + " m)");
     }
 

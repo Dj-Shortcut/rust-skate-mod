@@ -128,6 +128,16 @@ not taken, the log says why (`GRIND edge near, not taken (...)`). A trick popped
 how the board meets the edge: along it a 50-50 (or a 5-0 / nosegrind with the stick), across it a
 boardslide, lipslide, noseslide or tailslide by which part of the board is on the edge (a bluntslide
 or nosebluntslide with the stick held back or forward), at an angle a crooked, smith or feeble grind; frontside when the edge is on the side the rider's chest faces. On the edge the board keeps the angle it came down with (squared to the edge for a 50-50), and off the end it comes round to the way of travel over a moment (540° a second), not in a jump; a stall stops the board on the edge as it came, square across it.
+Client source 0.18.52 adds Overcrook, Salad, Willy and Over Willy with Frontside/Backside
+names. An angled front-truck contact becomes Crooked or Overcrook by which side the popped
+flight approached from. Hold the right stick part way back in its manual band to lower the
+rear truck for Willy or Over Willy; on an angled rear-truck contact the same weighting raises
+the nose for Salad. Release the stick to return to the ordinary contact. The side is retained
+from take-off, so landing past the rail does not erase the distinction. The board pitches
+around its engaged physical truck, and the feet consume the same deck pitch/roll frame.
+Existing stalls, Darkslide holding and pop/roll-off paths remain. Native contact and feel
+are unverified on Shadow.
+
 Landing on a slope, the part of the fall that runs along the slope becomes roll.
 
 A turn of the rider goes on for as long as the left stick is held and the next half turn can

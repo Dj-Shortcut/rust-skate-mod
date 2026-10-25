@@ -8,12 +8,12 @@ internal static class SkateTrickGrindNamesScenarios
 {
     private static readonly string[] Kinds = { "None", "FiftyFifty", "FiveO", "Nosegrind", "Boardslide", "Lipslide",
         "Noseslide", "Tailslide", "Smith", "Feeble", "Crooked", "FiftyFiftyStall", "NoseStall", "TailStall",
-        "BoardStall", "Handplant", "Bluntslide", "Nosebluntslide", "Darkslide" };
+        "BoardStall", "Handplant", "Bluntslide", "Nosebluntslide", "Darkslide", "Overcrook", "Salad", "Willy", "OverWilly" };
     private static readonly string[] Names = { "Grind", "50-50", "5-0", "Nosegrind", "Boardslide", "Lipslide",
         "Noseslide", "Tailslide", "Smith Grind", "Feeble Grind", "Crooked Grind", "50-50 Stall", "Nose Stall",
-        "Tail Stall", "Board Stall", "Handplant", "Bluntslide", "Nosebluntslide", "Darkslide" };
+        "Tail Stall", "Board Stall", "Handplant", "Bluntslide", "Nosebluntslide", "Darkslide", "Overcrook", "Salad Grind", "Willy Grind", "Over Willy Grind" };
     private static readonly int[] Rates = { 100, 100, 130, 130, 120, 140, 150, 150, 160, 160, 160, 150, 160, 160, 150,
-        250, 170, 170, 190 };
+        250, 170, 170, 190, 160, 160, 160, 160 };
     private static readonly ConstructorInfo StateConstructor = typeof(SkateTrickState).GetConstructor(
         BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, null,
         new[] { typeof(double), typeof(double), typeof(double), typeof(double), typeof(double), typeof(bool),
@@ -50,7 +50,7 @@ internal static class SkateTrickGrindNamesScenarios
     private static void VocabularyAndCompatibility()
     {
         var values = Enum.GetValues(typeof(SkateGrindKind));
-        Check(values.Length == 19, "nineteen append-only grind kinds");
+        Check(values.Length == 23, "twenty-three append-only grind kinds");
         for (int kind = 0; kind < Kinds.Length; kind++)
         {
             var value = (SkateGrindKind)values.GetValue(kind);
@@ -195,7 +195,7 @@ internal static class SkateTrickGrindNamesScenarios
 
     private static void InvalidKindsAndStates()
     {
-        foreach (int invalid in new[] { int.MinValue, -1, 19, 255, int.MaxValue })
+        foreach (int invalid in new[] { int.MinValue, -1, 23, 255, int.MaxValue })
             foreach (bool frontside in new[] { false, true })
             {
                 var kind = (SkateGrindKind)invalid;

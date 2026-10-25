@@ -146,13 +146,22 @@ have a one-point minimum. Existing enum numbers and mappings remain unchanged.
 | `Bluntslide` | 16 | 170 | Tail contact from a tail stall, with the deck pitched past vertical over the edge |
 | `Nosebluntslide` | 17 | 170 | The corresponding nose contact and pitch |
 | `Darkslide` | 18 | 190 | Flip onto the edge with griptape against it and wheels upward |
+| `Overcrook` | 19 | 160 | Angled front truck, tail across the original approach side |
+| `Salad` | 20 | 160 | Angled rear truck, nose raised by manual weighting |
+| `Willy` | 21 | 160 | Angled front truck, rear truck lowered on the approach side |
+| `OverWilly` | 22 | 160 | Angled front truck, rear truck lowered across the approach side |
 
 These values produce `Frontside`/`Backside` names without Switch/Fakie prefixes. Airborne
 pop stance is tracked separately. An unknown input grind kind sanitizes to `None`/`Grind`
 at 100 points/second; an unknown kind retained in state rejects the next state operation
-atomically. This library scores an observed contact; it does not detect entries, rotate
-the deck or enforce those contact shapes. Client detection, `GrindDeck` poses, native
-contact and owner play acceptance remain separate work.
+atomically. `SkateGrinds.Classify` classifies supplied angle/crossing/approach-side geometry and
+weighting, without querying native rails. `Truck` identifies the physical front/rear support.
+The client retains the original take-off side, pitches around that truck and supplies the
+matching deck frame to the pose. Native entry/contact and owner play acceptance remain open.
+
+The added pose overload carries `deckPitchFrame`, `deckRoll` (radians) and `deckSupport`
+(metres along the physical nose). It keeps pitched/rolled feet on the display frame and places
+weight over the engaged truck. All previous constructor signatures remain available.
 
 On an airborne-to-Darkslide transition only, Flip within 25 degrees of +/-180 snaps
 to that half turn; other catch/impact guards still apply. `State.DarkslideCaught` exposes
@@ -241,9 +250,8 @@ final accumulated board composition, rather than naming each sequential flip sep
 zero completed board rotations never become `Late Ollie`.
 
 Existing public methods/constructors remain; the added state/input/result fields change
-struct layout, so rebuild adapters with the shared DLL. Three extra name tables and
-fallback variants are created at static initialization; subsequent stepping/naming uses
-cached strings. Native IL2CPP startup/memory cost, left-stick conflicts with steering,
+struct layout, so rebuild adapters with the shared DLL. Composed names are now cached on
+first use rather than allocating extra Cartesian name tables at initialization. Native IL2CPP startup/memory cost, left-stick conflicts with steering,
 input timing, body/deck application, catching and visuals remain unverified. These APIs
 read and score authored input; they do not change the client adapter.
 
