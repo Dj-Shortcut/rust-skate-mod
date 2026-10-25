@@ -152,6 +152,15 @@ back to the middle within 0.3 s with the trigger still pulled, which is how it i
 a grab; on the keyboard: `W` or `S` tapped while `Ctrl` or `C` is held). Let go of the trigger with the right stick still out
 (a melon, a method), and the stick must come back to the middle before it moves the board again:
 letting go of a grab is no late flip.
+
+Client source 0.18.49 lets a pure kickflip or heelflip continue into a double or triple:
+keep the right stick at the same rim direction after the pop. As each rotation nears its
+end, the popped flight requests another complete rotation, up to two extras, at the existing
+720-degree-per-second flip rate. Returning the stick, changing its direction, grabbing,
+landing, losing input or resetting the ride ends that hold. These continuations retain the
+pop name; a fresh airborne flick still counts as late. Asking too near the ground can bail.
+Triple names include nollie, stance, body-varial and late modifiers. This input and naming
+are source-verified; Shadow controller feel, visible animation and landing remain untested.
 The steering turns the board at a rate; the view does not steer it.
 
 **Park pieces on foot.** Server ShortcutSkate 0.3.3+ lets an administrator select the next piece

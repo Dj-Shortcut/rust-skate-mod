@@ -452,7 +452,7 @@ namespace Shortcut.RustMod
                 else if (pop == SkatePopKind.Nollie) style = 12;
             }
             int modifier = (late && (flip != 0 || shove != 0) ? 1 : 0) + (bodyVarial ? 2 : 0);
-            if (Math.Abs(spin) > 4 || Math.Abs(flip) > 2 || Math.Abs(shove) > 2)
+            if (Math.Abs(spin) > 4 || Math.Abs(flip) > 3 || Math.Abs(shove) > 2)
                 return modifier == 0 ? FallbackNames[style * 14 + (int)grab] :
                     AirFallbackNames[(modifier - 1) * FallbackNames.Length + style * 14 + (int)grab];
             int index = NameIndex(spin, flip, shove, (int)grab, style);
@@ -465,7 +465,7 @@ namespace Shortcut.RustMod
             for (int modifier = 1; modifier <= 3; modifier++)
                 for (int style = 0; style < NamePrefixes.Length; style++)
                     for (int spin = -4; spin <= 4; spin++)
-                        for (int flip = -2; flip <= 2; flip++)
+                        for (int flip = -3; flip <= 3; flip++)
                             for (int shove = -2; shove <= 2; shove++)
                             {
                                 string core = Composition(spin, flip, shove);
@@ -493,14 +493,14 @@ namespace Shortcut.RustMod
         }
 
         private static int NameIndex(int spin, int flip, int shove, int grab, int style)
-        { return (((style * 9 + spin + 4) * 5 + flip + 2) * 5 + shove + 2) * 14 + grab; }
+        { return (((style * 9 + spin + 4) * 7 + flip + 3) * 5 + shove + 2) * 14 + grab; }
 
         private static string[] BuildNames()
         {
-            var names = new string[NamePrefixes.Length * 9 * 5 * 5 * 14];
+            var names = new string[NamePrefixes.Length * 9 * 7 * 5 * 14];
             for (int style = 0; style < NamePrefixes.Length; style++)
                 for (int spin = -4; spin <= 4; spin++)
-                    for (int flip = -2; flip <= 2; flip++)
+                    for (int flip = -3; flip <= 3; flip++)
                         for (int shove = -2; shove <= 2; shove++)
                         {
                             string core = PrefixName(Composition(spin, flip, shove), style);
@@ -542,7 +542,8 @@ namespace Shortcut.RustMod
             else
             {
                 string flips = flip == 0 ? "" : flip == 1 ? "Kickflip" : flip == -1 ? "Heelflip" :
-                    flip > 0 ? "Double Kickflip" : "Double Heelflip";
+                    flip == 2 ? "Double Kickflip" : flip == -2 ? "Double Heelflip" :
+                    flip > 0 ? "Triple Kickflip" : "Triple Heelflip";
                 string shoves = shove == 0 ? "" : shove == -1 ? "Pop Shove-it" : shove == 1 ? "Frontside Pop Shove-it" :
                     shove < 0 ? "360 Shove-it" : "Frontside 360 Shove-it";
                 board = shoves.Length == 0 ? flips : flips.Length == 0 ? shoves : shoves + " " + flips;

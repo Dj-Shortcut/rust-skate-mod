@@ -554,8 +554,8 @@ internal static class SkateLateFlipsBodyVarialsScenarios
         }
         foreach (var fixture in new[] {
             new StanceCase(true, true, SkatePopKind.Nollie, "Fakie Nollie Multiple Rotation Trick", 475, spin: 900, steps: 60),
-            new StanceCase(true, false, SkatePopKind.Nollie, "Switch Nollie Multiple Rotation Trick", 275, flip: 3, steps: 60),
-            new StanceCase(true, true, SkatePopKind.Nollie, "Fakie Nollie Body Varial Late Multiple Rotation Trick", 375,
+            new StanceCase(true, false, SkatePopKind.Nollie, "Switch Nollie Triple Kickflip", 275, flip: 3, steps: 60),
+            new StanceCase(true, true, SkatePopKind.Nollie, "Fakie Nollie Body Varial Late Triple Kickflip", 375,
                 flip: 3, body: 180, late: true, steps: 60),
             new StanceCase(true, false, SkatePopKind.Ollie, "Switch Late Kickflip", 175, flip: 1, late: true),
             new StanceCase(true, true, SkatePopKind.Ollie, "Fakie Body Varial", 175, body: 180) })

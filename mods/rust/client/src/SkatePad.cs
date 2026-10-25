@@ -31,6 +31,12 @@ public static class SkatePad
     // in it, a flip added in the air.
     private static readonly SkatePop[] popped = new SkatePop[4];
     private static int poppedCount;
+    // A pure pop flip may continue while the same rim direction is held, up to a triple.
+    // These are further rotations of that pop, not a new late-flick gesture.
+    private static int heldFlip, heldExtras, heldFlips;
+    private static float heldX, heldY;
+    private static double heldSeconds;
+    private static bool heldAir;
     // A body varial the left stick asked for, in degrees, until the ride takes it.
     public static float BodyVarialDegrees;
     public static int BodyVarials;
@@ -118,7 +124,7 @@ public static class SkatePad
         if (Shared || primed) InputEpoch++;
         primed = rightSuspended = wasGrabbing = false; grabStick = 0; LeftSweep = leftAngle = 0f; leftOnRim = false; sweepFromUs = 0;
         Shared = false; Buttons = 0; LeftX = LeftY = RightX = RightY = LeftTrigger = RightTrigger = 0f;
-        poppedCount = 0; BodyVarialDegrees = 0f; Charging = Manual = NoseManual = false; Charge = 0f; pressed = 0; flick = default(SkateFlickState);
+        DropPops(); Charging = Manual = NoseManual = false; Charge = 0f; pressed = 0; flick = default(SkateFlickState);
     }
 
     private static void Take(int at, float now, bool edges)
@@ -195,16 +201,57 @@ public static class SkatePad
         while (seconds > 0.000001)
         {
             var dt = seconds > 0.01 ? 0.01 : seconds; seconds -= dt;
+            StepHeldFlip(air, grabbing || rightSuspended, dt);
             SkateFlickResult r; string error;
-            if (!SkateFlick.TryStep(flick, input, dt, out r, out error)) { flick = default(SkateFlickState); return; }
+            if (!SkateFlick.TryStep(flick, input, dt, out r, out error)) { flick = default(SkateFlickState); DropPops(); return; }
             flick = r.State;
             if ((r.Events & SkateFlickEvents.BodyVarial) != 0) { BodyVarialDegrees += (float)r.BodyVarialDegrees; BodyVarials++; }
             if ((r.Events & ~SkateFlickEvents.BodyVarial) != SkateFlickEvents.None)
             {
-                if (poppedCount < popped.Length) popped[poppedCount++] = r.Composition;
+                EndHeldFlip();
+                if (poppedCount < popped.Length)
+                {
+                    popped[poppedCount++] = r.Composition;
+                    if (!air && SkateRide.On && LeftTrigger <= Pulled && RightTrigger <= Pulled && !rightSuspended &&
+                        r.Composition.Kind != SkatePopKind.None && Math.Abs(r.Composition.FlipTurns) == 1 &&
+                        r.Composition.ShoveDegrees == 0 && rightFar >= SkateFlick.FireReach * SkateFlick.FireReach)
+                    {
+                        heldFlip = (int)r.Composition.FlipTurns;
+                        var far = (float)Math.Sqrt(rightFar); heldX = RightX / far; heldY = RightY / far;
+                    }
+                }
                 Flicks++; SkatePadLog.Fired(r.Events, r.Composition);
             }
             Charging = r.Charging; Charge = (float)r.Charge; Manual = r.Manual; NoseManual = r.NoseManual;
+        }
+    }
+
+    private static void EndHeldFlip() { heldFlip = heldExtras = 0; heldSeconds = 0; heldAir = false; }
+
+    private static void StepHeldFlip(bool air, bool blocked, double dt)
+    {
+        if (heldFlip == 0) return;
+        var far = Math.Sqrt(RightX * RightX + RightY * RightY);
+        if (!SkateRide.On || blocked || LeftTrigger > Pulled || RightTrigger > Pulled || far < SkateFlick.FireReach ||
+            (RightX * heldX + RightY * heldY) / far < Math.Cos(SkateFlick.StraightSpreadDegrees * Math.PI / 180))
+        { EndHeldFlip(); return; }
+        if (!air)
+        {
+            // Give the queued pop time to take off; never carry it across a landing or a failed pop.
+            heldSeconds += dt;
+            if (heldAir || heldSeconds >= MostCatchUp) EndHeldFlip();
+            return;
+        }
+        if (!SkateRide.Jumped) { EndHeldFlip(); return; }
+        if (!heldAir) { heldAir = true; heldSeconds = 0; }
+        heldSeconds += dt;
+        // Queue before the first rotation can finish, so physics keeps one continuous burst.
+        var interval = 360.0 / SkateMotion.FlipRate - (heldExtras == 0 ? SkateMotion.MaximumStep : 0);
+        if (heldSeconds + 1e-9 >= interval)
+        {
+            heldSeconds -= interval;
+            heldFlips += heldFlip;
+            if (++heldExtras == 2) EndHeldFlip();
         }
     }
 
@@ -221,7 +268,8 @@ public static class SkatePad
         return true;
     }
 
-    public static void DropPops() { poppedCount = 0; BodyVarialDegrees = 0f; }
+    public static void DropPops() { poppedCount = heldFlips = 0; BodyVarialDegrees = 0f; EndHeldFlip(); }
+    public static int TakeHeldFlip() { var flips = heldFlips; heldFlips = 0; return flips; }
     public static float TakeBodyVarial() { var d = BodyVarialDegrees; BodyVarialDegrees = 0f; return d; }
 
     // A scripted check plays a controller without one: the same states, on a clock of its own.
