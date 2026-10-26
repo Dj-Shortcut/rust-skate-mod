@@ -609,6 +609,16 @@ namespace Shortcut.RustMod
             var ls = chest + cu * r.ShoulderRise - cr * (r.ShoulderWidth * 0.5); var rs = chest + cu * r.ShoulderRise + cr * (r.ShoulderWidth * 0.5);
             var floor = supportFloor ?? (input.BoardPosition + up * (Math.Min(0, input.DeckOffset) - input.FootPlant * (input.GroundDrop + PlantDrop)
                 - Math.Abs(SkatePose.FootOffset * Math.Sin(input.DeckPitch))));
+            if (!supportFloor.HasValue && input.Airborne && !input.Bailed && input.DeckFrame.Initialized)
+            {
+                // This carrier datum is not terrain. Preserve the complete measured grab/release
+                // envelope, as Riding does for the held endpoints; inverted soles can put an
+                // ankle below its toe. Explicit planted-hand support floors remain authoritative.
+                double low = Math.Min(Math.Min(SkateVector.Dot(p.LeftAnkle - floor, up), SkateVector.Dot(p.RightAnkle - floor, up)),
+                    Math.Min(SkateVector.Dot(p.LeftToe - floor, up), SkateVector.Dot(p.RightToe - floor, up)));
+                low = Math.Min(low, Math.Min(SkateVector.Dot(p.LeftHand - floor, up), SkateVector.Dot(p.RightHand - floor, up)));
+                if (low < 0) floor += up * (low - .001);
+            }
             SkateVector lk, rk, le, re, lhand, rhand;
             if (!Limb(lh, p.LeftAnkle, r.ThighLength, r.ShinLength, p.LeftKnee - lh, floor, up, out lk) ||
                 !Limb(rh, p.RightAnkle, r.ThighLength, r.ShinLength, p.RightKnee - rh, floor, up, out rk) ||
@@ -899,6 +909,8 @@ namespace Shortcut.RustMod
                 // The airborne datum is not terrain collision; the inverted deck can pass below a released sole.
                 double low = Math.Min(SkateVector.Dot(leftAnkle + leftToeDir * rig.FootLength - floor, up),
                     SkateVector.Dot(rightAnkle + rightToeDir * rig.FootLength - floor, up));
+                if (input.Airborne || input.DeckPitchFrame || SkateVector.Dot(input.DeckFrame.Up, up) < .9999)
+                    low = Math.Min(low, Math.Min(SkateVector.Dot(leftAnkle - floor, up), SkateVector.Dot(rightAnkle - floor, up)));
                 if (low < 0) floor += up * (low - 0.001);
             }
             if (input.DeckPitchFrame)

@@ -348,7 +348,13 @@ public static class SkateRide
         try
         {
             if (body == null) { Dismount("the movement body is gone"); return; }
-            if (Frozen) { hasLast = false; pastCount = 0; return; }
+            if (Frozen)
+            {
+                // The preview stages the drawn rig only. Keep the actual stationary body still;
+                // a moved/changed player cancels the preview instead of being teleported back.
+                if (SkateRiggingShowcase.Running) body.linearVelocity = Vector3.zero;
+                hasLast = false; pastCount = 0; return;
+            }
             var dt = Time.fixedDeltaTime;
             if (!(dt > 0.001f && dt <= 0.05f)) dt = 0.03125f;
             now = Time.realtimeSinceStartup;

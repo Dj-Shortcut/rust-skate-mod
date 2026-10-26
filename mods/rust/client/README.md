@@ -70,6 +70,30 @@ pitch/volume by speed, gives a new bail priority over concurrent events and owns
 These are development source behaviors; native event delivery, mixed levels and audible quality
 still need validation. [Sound profiles, licence and checks](../../../docs/RUST-SKATE-AUDIO.md).
 
+## Flatground rigging preview
+
+Client 0.18.60 adds `zz rigging`: build the pinned source and start through the same
+`RustClient` Steam shortcut and controller reader as `zz play`. Stand still on dry,
+flat ground with clear space around and above the rider. After the stage and measured
+rig are ready, it cycles the currently implemented pose catalogue, five seconds per
+entry, with the name and stance on screen. Air, wall and plant poses are staged as
+rendered poses above that flat location; the physical player is kept stationary.
+The preview awards no tricks and does not establish gameplay contact or controller feel.
+The dedicated halfpipe drop-in animation remains TODO 27.
+
+- Controller: D-pad left/right selects previous/next; A pauses/resumes; B, Y or Back
+  stops. LB/RB changes the view, X toggles regular/goofy, D-pad up toggles switch,
+  D-pad down reverses the deck, and RS click changes camera distance.
+- Keyboard: left/right arrows select, Space pauses, Escape stops, F2 changes stance,
+  up/down changes switch/deck, F5/F6 changes view, F7 changes distance.
+
+The last pose stays visible when paused; selecting another while paused shows its
+middle phase. A menu, lost input/player ownership, missing support or obstruction
+stops the preview. Stopping restores normal play without closing Rust or the reader.
+The complete game session is bounded to two hours; `$global:plimit = 3600` before
+`zz rigging` sets one hour. Source/cached-reference checks are reported separately
+from the owner's first Shadow visual run.
+
 ## Rules
 
 - It is used only on the owner's own server, which runs without anti-cheat. Rust is started for it
@@ -545,6 +569,7 @@ file it runs `skate`. Runtime steps share one rig; the last scenario step select
 | --- | --- |
 | `skate` | The mod as the owner plays it. |
 | `ride` | Scripted: ride out, brake, turn round, ride back, get off. |
+| `rigging` | Flatground visual inspection of every implemented pose family, with auto cycle, pause, selection, view and stance controls; stops back to normal play. |
 | `pose` | Scripted: rider and board in each state, standing still, from fixed cameras, then the score display in nine made-up states; `K` steps on. |
 | `trick` | Scripted: ollie, kickflip, heelflip, both spins, a grab let go before the landing, a manual, shove-its, varial and 360 flips, an impossible, a revert, a fakie nollie, a no comply, a boneless and a body varial; every name is logged as the scorer gives it, for the screen check of the names. |
 | `pad` | Scripted: the ride with a controller, played into the plugin without one. |
