@@ -80,8 +80,47 @@ public static class SkateBoard
         else if (SkateRide.Mode == RideMode.Grind) SupportTruck = SkateGrinds.Truck(SkateRide.GrindKind);
         else if (Math.Abs(GrindPitch) < 0.02f && Math.Abs(GrindRoll) < 0.02f) SupportTruck = 0;
     }
+    private static SkateBoardPose detached;
+    private static Vector3 detachedVelocity;
+    private static float detachedAt, detachedUntil;
+    public static void ReleaseIndependent(SkateBoardPose frame, Vector3 motion)
+    {
+        if (!frame.Initialized || !SkateBoardPath.Valid(frame)) return;
+        detached = frame; detachedVelocity = motion; detachedAt = Time.realtimeSinceStartup;
+        detachedUntil = detachedAt + LieSeconds; rollingOut = false; lieUntil = detachedUntil;
+    }
+    private static bool FollowIndependent(GameObject board, float now)
+    {
+        if (!detached.Initialized || now >= detachedUntil) { detached = default(SkateBoardPose); return false; }
+        var dt = SkateRide.Clamp(now - detachedAt, 0, .05f); detachedAt = now;
+        var from = V(detached.Origin); var to = from + detachedVelocity * dt - Vector3.up * (SkateRide.AirGravity * dt * dt * .5f);
+        detachedVelocity.y -= SkateRide.AirGravity * dt;
+        try
+        {
+            RaycastHit hit; var travel = to - from; var length = travel.magnitude;
+            if (length > .00001f && SkateParks.Sphere(from, .04f, travel / length, out hit, length, SkateRide.GroundMask) && hit.m_Normal.y < .5f)
+            { to = from; detachedVelocity = Vector3.zero; }
+            var top = Math.Max(from.y, to.y) + .15f;
+            if (SkateParks.Ray(new Vector3(to.x, top, to.z), Vector3.down, out hit, top - to.y + .35f, SkateRide.GroundMask) && hit.m_Normal.y >= .5f &&
+                to.y <= hit.m_Point.y + RiderRig.DeckTop)
+            {
+                to = hit.m_Point + hit.m_Normal * RiderRig.DeckTop;
+                detachedVelocity -= hit.m_Normal * Math.Min(0, Vector3.Dot(detachedVelocity, hit.m_Normal));
+                detachedVelocity *= Math.Max(0, 1 - dt * 2);
+                var forward = OnFace(hit.m_Normal, V(detached.Forward));
+                detached = new SkateBoardPose(V(to), V(forward), V(hit.m_Normal));
+            }
+            else detached = new SkateBoardPose(V(to), detached.Forward, detached.Up);
+        }
+        catch { detachedVelocity = Vector3.zero; }
+        board.transform.rotation = Quaternion.LookRotation(V(detached.Forward), V(detached.Up));
+        board.transform.position = V(detached.Origin) - V(detached.Up) * RiderRig.DeckTop;
+        if (!board.activeSelf) board.SetActive(true);
+        return true;
+    }
     public static void BeginRide()
     {
+        detached = default(SkateBoardPose); detachedVelocity = Vector3.zero;
         Tip = Pop = GrindPitch = GrindRoll = AirPitch = GrabFold = Plant = 0f;
         SupportTruck = 0; Held = false; bailStamp = -1f;
     }
@@ -136,6 +175,17 @@ public static class SkateBoard
 
     // Called after Prepare/Pop, by both the rider and renderer in the same frame.
     // No previously rendered Transform participates in the contact calculation.
+    // A Caveman begins with this actually visible nearby loose board, never a synthetic frame
+    // under an on-foot player. The oldschool adapter independently verifies ground and pickup.
+    public static bool TryLoosePose(GameObject board, out SkateBoardPose frame, out Vector3 velocity)
+    {
+        frame = default(SkateBoardPose); velocity = Vector3.zero;
+        if (SkateRide.On || board == null || !board.activeSelf || (!detached.Initialized && !rollingOut && Time.realtimeSinceStartup >= lieUntil)) return false;
+        var t = board.transform; frame = new SkateBoardPose(V(t.position + t.up * RiderRig.DeckTop), V(t.forward), V(t.up));
+        if (!SkateBoardPath.Valid(frame)) return false;
+        velocity = detached.Initialized ? detachedVelocity : rollingOut ? rollDir * rollSpeed : Vector3.zero; return true;
+    }
+
     public static SkateBoardPose PoseFor(Transform playerT) { return PoseFor(playerT, false); }
     public static SkateBoardPose CarrierFor(Transform playerT) { return PoseFor(playerT, true); }
     private static SkateBoardPose PoseFor(Transform playerT, bool carrier)
@@ -154,7 +204,7 @@ public static class SkateBoard
         var nose = trucked ? deckTurn * deckNose : OnFace(up, SkateRide.Dir(SkateRide.DeckYaw));
         nose = nose - up * Vector3.Dot(nose, up);
         nose = nose.sqrMagnitude > 0.0001f ? nose.normalized : travel;
-        var flip = SkateRide.BoardPath.Known || SkateActions.Finger.Initialized ? 0f : (float)SkateRide.FlipDeg; var askew = 0f;
+        var flip = SkateRide.BoardPath.Known || SkateActions.Finger.Initialized || SkateOldschoolRide.Active ? 0f : (float)SkateRide.FlipDeg; var askew = 0f;
         if (SkateRide.Mode == RideMode.Bail)
         {
             // The rider goes on and down. The board is on its own from the moment of the bail: it
@@ -194,11 +244,12 @@ public static class SkateBoard
     {
         var now = Time.realtimeSinceStartup;
         var riding = SkateRide.On && playerT != null;
+        if ((!riding || SkateRide.Mode == RideMode.Bail) && FollowIndependent(board, now)) { wasRiding = riding; return; }
         // A bail ends on foot: the board stays where it came to rest for a while, or until the
         // rider gets on again. Stepped off while rolling, it rolls on and comes to rest.
         if (riding) { lying = SkateRide.Mode == RideMode.Bail; rollingOut = false; }
         else if (lying) { lying = false; lieUntil = now + LieSeconds; }
-        else if (wasRiding && SkateRide.OffReason == "stepped off" && Math.Abs(lastSpeed) > RollOutFrom)
+        else if (wasRiding && SkateRide.OffReason == "stepped off" )
         {
             rollingOut = true; rollAt = lastAt; rollDir = lastTravel * (lastSpeed < 0f ? -1f : 1f); rollUp = lastUp; rollNose = lastNose; rollSpeed = Math.Abs(lastSpeed); rolledAt = now; lieUntil = now + 999f;
         }
@@ -223,6 +274,13 @@ public static class SkateBoard
         var rot = Quaternion.LookRotation(nose, up);
         var centre = V(frame.Origin) - up * RiderRig.DeckTop;
         var at = Contact(playerT); var travel = OnFace(SkateRide.ViewNormal, SkateRide.Dir(SkateRide.Yaw));
+        if (SkateOldschoolRide.Active)
+        {
+            var independent = SkateOldschoolRide.Frame;
+            board.transform.rotation = Quaternion.LookRotation(V(independent.Forward), V(independent.Up));
+            board.transform.position = V(independent.Origin) - V(independent.Up) * RiderRig.DeckTop;
+            Parts(now, travel, V(independent.Forward)); return;
+        }
         if (SkateActions.DisplayFrame.Initialized)
         {
             var action = SkateActions.DisplayFrame;

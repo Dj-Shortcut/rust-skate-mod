@@ -401,3 +401,10 @@ throw, release, rotation and catch phases; the scorer receives one complete lega
 overload carries the attained grab before measured release blending; the hand uses minimal chest
 rotation for reach. Existing constructors/overloads retain defaults. Native clearance and gameplay
 remain adapter and Shadow responsibilities.
+
+`SkateOldschool` owns independent Caveman/Hippie deck position, velocity, pickup, release,
+initial-kick rotation, catch and failure. Supply fresh wheel support and swept clearance;
+missing support is never inferred from the rider. `SkateRider.TryCreateIndependentDeck`
+solves measured hand/foot targets at that frame while the body keeps its own carrier frame.
+Physical catch may fail on a bank as deck gravity diverges from the ballistic rider; callers
+must preserve that result rather than moving the board to create a catch. Existing APIs remain.
