@@ -41,7 +41,7 @@ public static class SkateActions
             if (!SkateOllieStyles.TryStep(Style, controls && (SkatePad.Buttons & SkatePad.LeftStickClick) != 0, dt, out next, out error)) { SkateRide.Bail(); return; }
             Style = next;
         }
-        if (SkateKeys.FingerFlip != 0 && !Style.Known && !Finger.Initialized && controls && !SkateRide.BoardPath.Known && !SkateRide.Rotating && !SkateRide.FootPlanted)
+        if (SkateKeys.FingerFlip != 0 && !SkateSurfaceRide.BodyFlip.Known && !SkateSurfaceRide.Active && !Style.Known && !Finger.Initialized && controls && !SkateRide.BoardPath.Known && !SkateRide.Rotating && !SkateRide.FootPlanted)
         {
             bool left, right; SkateRider.GrabHands(SkateRide.Goofy ? SkateStance.Goofy : SkateStance.Regular, SkateRide.TailFirst, lastGrab, out left, out right);
             if (left != right && RiderRig.Contact.GrabWeight >= .99 && Time.realtimeSinceStartup - posedAt < .1f && remaining >= SkateOllieStyles.FingerDuration + .04)

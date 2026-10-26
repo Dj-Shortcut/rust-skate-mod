@@ -560,13 +560,15 @@ public static class RiderRig
         SkateBoard.HeldFrame = default(SkateBoardPose);
         if (!SkateRide.On) { ResetPresentation(); return; }
         var now = Time.realtimeSinceStartup;
-        var grab = SkateRide.Mode == RideMode.Air && !SkateActions.Owns && !SkateOldschoolRide.Active ? SkateRide.Grab : SkateGrabKind.None;
+        var wall = SkateSurfaceRide.DisplayWall;
+        var grab = SkateRide.Mode == RideMode.Air && !wall && !SkateActions.Owns && !SkateOldschoolRide.Active ? SkateRide.Grab : SkateGrabKind.None;
         if (grab == SkateGrabKind.None) { grabSince = -1f; grabHold = -1f; } else if (grabSince < 0f) grabSince = now;
         var held = grab == SkateGrabKind.None ? 0f : grabHold >= 0f ? grabHold : now - grabSince;
         var since = now - SkateRide.LandAt;
         var settle = SkateRide.Mode == RideMode.Ground && since >= 0f && since < LandSettle ? 1f - since / LandSettle : 0f;
         var landing = settle * settle * SkateRide.Clamp(SkateRide.LandImpact / 8f, 0.2f, 1f);
-        if (SkateRide.Mode == RideMode.Ground || SkateRide.Mode == RideMode.Air)
+        if (wall) contact = default(SkateRiderContactState);
+        else if (SkateRide.Mode == RideMode.Ground || SkateRide.Mode == RideMode.Air)
         {
             // A pause/hitch must not erase the current flight or replay its initial flick.
             if (!float.IsNaN(frameSeconds) && !float.IsInfinity(frameSeconds) && frameSeconds > 0f)
@@ -591,11 +593,12 @@ public static class RiderRig
         }
         else contact = default(SkateRiderContactState);
         // Body, held hands and board tweak consume this same release/catch phase in this frame.
-        SkateBoard.GrabFold = SkateActions.Owns ? 0 : (float)contact.BoardFold;
-        SkateBoard.Plant = SkateRide.FootPlanted ? SkateRide.Clamp((SkateRide.PlantedUntil - now) / SkateRide.PlantSeconds * 1.5f, 0f, 1f) * SkateRide.Clamp((now - (SkateRide.PlantedUntil - SkateRide.PlantSeconds)) / PlantIn, 0f, 1f) : 0f;
+        SkateBoard.GrabFold = wall || SkateActions.Owns ? 0 : (float)contact.BoardFold;
+        SkateBoard.Plant = !wall && SkateRide.FootPlanted ? SkateRide.Clamp((SkateRide.PlantedUntil - now) / SkateRide.PlantSeconds * 1.5f, 0f, 1f) * SkateRide.Clamp((now - (SkateRide.PlantedUntil - SkateRide.PlantSeconds)) / PlantIn, 0f, 1f) : 0f;
         var plantWant = SkateRide.Handplant && !SkateRide.HandplantDown ? 1f : 0f;
         var plantStep = SkateRide.Clamp(frameSeconds / PlantSeconds, 0f, 1f);
         plantBlend = SkateRide.Mode == RideMode.Bail ? 0f : SkateRide.Clamp(plantBlend + SkateRide.Clamp(plantWant - plantBlend, -plantStep, plantStep), 0f, 1f);
+        if (wall) plantBlend = 0;
         if (!SkateRide.Handplant || plantId != SkateRide.Stalls) plantStyle = default(SkateHandplantState);
         plantId = SkateRide.Stalls;
         if (SkateRide.Handplant && frameSeconds > 0 && !float.IsInfinity(frameSeconds))
@@ -613,15 +616,30 @@ public static class RiderRig
         try
         {
             if (Pelvis == null) { Bound = false; return; }
+            var wall = SkateSurfaceRide.DisplayWall;
+            var bodyFlip = SkateSurfaceRide.BodyFlip.Known;
+            var wallDeck = default(SkateBoardPose);
+            if (wall)
+            {
+                if (SkateRig.LocalT == null) return;
+                wallDeck = SkateBoard.UnflippedFor(SkateRig.LocalT);
+                up = V(wallDeck.Up);
+                feet = V(wallDeck.Origin) - up * DeckTop;
+            }
             // The rider stands square to the deck all the way up a transition to the vertical, as the
             // board does: only a missing or upside-down up falls back to the world's.
             double ux = up.x, uy = up.y, uz = up.z;
             var ul = Math.Sqrt(ux * ux + uy * uy + uz * uz);
-            if (ul < 0.5 || uy / ul < -0.1) { ux = 0; uy = 1; uz = 0; ul = 1; }
+            if (ul < 0.5 || !wall && uy / ul < -0.1) { ux = 0; uy = 1; uz = 0; ul = 1; }
             ux /= ul; uy /= ul; uz /= ul;
             // The nose's way on the face: the part of it into a steep face goes up the face, so the
             // body still has a forward where the nose points straight into a vertical wall.
             var face = SkateBoard.OnFace(new Vector3((float)ux, (float)uy, (float)uz), SkateRide.Dir(SkateRide.NoseYaw));
+            if (wall)
+            {
+                face = V(wallDeck.Forward);
+                if (Vector3.Dot(face, SkateRide.Dir(SkateRide.NoseYaw)) < 0) face = -face;
+            }
             if (SkateOldschoolRide.Active && (SkateOldschoolRide.State.Caught || SkateOldschoolRide.Phase == SkateOldschoolPhase.Catching))
             {
                 var deckWay = SkateBoard.OnFace(new Vector3((float)ux, (float)uy, (float)uz), V(SkateOldschoolRide.Frame.Forward));
@@ -646,9 +664,11 @@ public static class RiderRig
             // The ollie's pitch about the tail lifts the deck's middle too; the legs fold by that as well.
             var pitchRise = SkateBoard.Axle * (float)Math.Abs(Math.Sin(SkateBoard.AirPitch * Math.PI / 180.0));
             var inAir = SkateRide.Jumped ? 0.2f + (SkateBoard.Pop + pitchRise) / (float)SkatePose.CrouchDrop : 0.45f;
-            var shownGrab = mode == RideMode.Air && !SkateActions.Owns && !SkateOldschoolRide.Active ? ShownGrab : SkateGrabKind.None;
+            var shownGrab = mode == RideMode.Air && !wall && !SkateActions.Owns && !SkateOldschoolRide.Active ? ShownGrab : SkateGrabKind.None;
             if (shownGrab != SkateGrabKind.None) inAir += (0.95f - inAir) * (contact.Initialized ? (float)contact.GrabWeight : 1f);
             var want = mode == RideMode.Air ? inAir : mode == RideMode.Grind ? GrindCrouch(SkateRide.GrindKind) : SkateRide.Braking ? 0.4f : 0.12f;
+            if (wall) want = .55f;
+            else if (SkateSurfaceRide.WallieWeight > 0) want = Math.Max(want, .25f + .55f * SkateSurfaceRide.WallieWeight);
             if (SkateOldschoolRide.Active && SkateOldschoolRide.Kind == SkateOldschoolKind.Caveman &&
                 (SkateOldschoolRide.Phase == SkateOldschoolPhase.Pickup || SkateOldschoolRide.Phase == SkateOldschoolPhase.Carrying)) want = .95f;
             // A right stick held back is the rider gathering for the pop; a trigger held is the crouch of a pump.
@@ -674,11 +694,11 @@ public static class RiderRig
             var leadWant = mode == RideMode.Air ? SkateRide.SpinLead
                 : mode == RideMode.Ground && SkateKeys.Charging && SkateKeys.Spin != 0f ? SkateKeys.Spin * SkateRide.SpinSide * SkateRide.SpinWindUp : 0f;
             chestLead += (SkateRide.Clamp(leadWant, -(float)SkateRider.MaximumChestTurn, (float)SkateRider.MaximumChestTurn) - chestLead) * SkateRide.Clamp(frameSeconds * 10f, 0f, 1f);
-            var handplant = PlantBlend;
+            var handplant = wall || bodyFlip ? 0 : PlantBlend;
             // The opposite foot slides away from the popped end, including when the tail leads.
             // The shared take-off description chooses that foot without changing the ride's inputs.
-            var noseSlide = !SkateOldschoolRide.Active && !SkateActions.Finger.Initialized && mode == RideMode.Air && SkateRide.Jumped && grab == SkateGrabKind.None && contact.Trick.FootPop ? SkateRide.Clamp(1f - SkateRide.VSpeed / SkateRide.OlliePop, 0f, 1f) * (1f - (float)contact.Catch) : 0f;
-            var groundGrab = (mode == RideMode.Ground || mode == RideMode.Air) && SkateRide.GroundGrab.Active;
+            var noseSlide = !wall && !SkateOldschoolRide.Active && !SkateActions.Finger.Initialized && mode == RideMode.Air && SkateRide.Jumped && grab == SkateGrabKind.None && contact.Trick.FootPop ? SkateRide.Clamp(1f - SkateRide.VSpeed / SkateRide.OlliePop, 0f, 1f) * (1f - (float)contact.Catch) : 0f;
+            var groundGrab = !wall && (mode == RideMode.Ground || mode == RideMode.Air) && SkateRide.GroundGrab.Active;
             var pushing = mode == RideMode.Ground && !groundGrab && SkateRide.PushPhase > 0f;
             var deckFace = SkateBoard.OnFace(upV, SkateRide.Dir(SkateRide.DeckYaw));
             var input = new SkateRiderInput(new SkateVector(plane.x, plane.y, plane.z), new SkateVector(fx, fy, fz), new SkateVector(ux, uy, uz), SkateRide.Goofy ? SkateStance.Goofy : SkateStance.Regular, SkateRide.TailFirst,
@@ -690,11 +710,12 @@ public static class RiderRig
                 noseSlide, chestLead, mode == RideMode.Air ? SkateRide.ShoveDeg : 0.0, landing, SkateActions.Owns || SkateOldschoolRide.Active ? default(SkateRiderContactState) : contact, SkateRide.PushPeriod, new SkateVector(deckFace.x, deckFace.y, deckFace.z),
                 SkateBoard.SupportTruck != 0, SkateBoard.GrindRoll * Math.PI / 180.0,
                 SkateBoard.SupportTruck * SkateBoard.Axle * SkateBoard.SupportWeight,
-                SkateRig.LocalT != null && mode != RideMode.Bail ? (SkateActions.Owns || SkateOldschoolRide.Active ? SkateBoard.CarrierFor(SkateRig.LocalT) : SkateBoard.PoseFor(SkateRig.LocalT)) : default(SkateBoardPose), SkateRide.BoardPath);
+                SkateRig.LocalT != null && mode != RideMode.Bail ? (SkateActions.Owns || SkateOldschoolRide.Active ? SkateBoard.CarrierFor(SkateRig.LocalT) : SkateBoard.UnflippedFor(SkateRig.LocalT)) : default(SkateBoardPose), SkateRide.BoardPath);
             SkateRiderPose pose; string error;
             SkateBoardPose plantBoard = default(SkateBoardPose);
             bool posed;
-            if (groundGrab) posed = SkateRider.TryCreateGroundGrab(Rig, input, SkateRide.GroundGrab, out pose, out error);
+            if (wall) posed = WallPose(input, out pose, out error);
+            else if (groundGrab) posed = SkateRider.TryCreateGroundGrab(Rig, input, SkateRide.GroundGrab, out pose, out error);
             else if (handplant > .001f && SkateRide.Handplant)
             {
                 var edgeWay = SkateGrind.StallSupported ? SkateRide.Dir(SkateGrind.Heading) : Vector3.Cross(upV, face);
@@ -711,12 +732,13 @@ public static class RiderRig
                 if (!pushing || !SkateRider.TryCreate(Rig, withoutPush, out pose, out error))
                 {
                     if (Refusals++ == 0 || error != Error) Say("pose refused: " + error);
-                    Error = error; return;
+                    Error = error;
+                    if (wall || bodyFlip) SkateRide.Bail();
+                    return;
                 }
                 if (WithoutPush++ == 0 || error != Error) Say("pose shown without the push: " + error);
                 Error = error; pushing = false;
             }
-            Posed = pose; PosedPlane = plane;
             // Secondary motion: the pelvis springs and the shoulders and hands lag a little behind
             // the pose, so the body is not rigid. In the air the legs' own spring carries the pop, so
             // the module's pelvis spring is off there, and a grabbing hand is pinned to its target so
@@ -732,8 +754,9 @@ public static class RiderRig
                 pose = freePose;
             }
             if (!SkateActions.Pose(Rig, input, ref pose)) return;
+            Posed = pose; PosedPlane = plane;
             SkateActions.Record(pose, SkateActions.DisplayFrame.Initialized ? SkateActions.DisplayFrame : input.DeckFrame, SkateRig.LocalT != null ? SkateBoard.CarrierFor(SkateRig.LocalT) : input.DeckFrame, grab);
-            var hardContact = SkateOldschoolRide.Active || SkateActions.Owns || handplant > 0.001f || mode == RideMode.Bail || groundGrab;
+            var hardContact = wall || bodyFlip || SkateOldschoolRide.Active || SkateActions.Owns || handplant > 0.001f || mode == RideMode.Bail || groundGrab;
             // Between the air and the ground the lag carries on, so the chest and the hands follow
             // through the catch into the landing instead of jumping onto the pose; into and out of a
             // grind or a bail the motion starts over.
@@ -764,6 +787,7 @@ public static class RiderRig
                 { pose = shown; motion = next; }
                 else { motion = default(SkateRiderMotionState); if (motionError != MotionError) { MotionError = motionError; Say("secondary motion refused: " + motionError); } }
             }
+            SkateSurfaceRide.Record(pose, input.DeckFrame, wall || handplant > .001f ? SkateGrabKind.None : SurfaceGrab(pose, input.DeckFrame, grab));
             // In a handplant the board is against the feet, held: the board follows the pose, from
             // the first of the way up to the last of the way down.
             SkateBoard.Held = handplant > 0.001f;
@@ -793,11 +817,11 @@ public static class RiderRig
             var pushLeft = SkateRide.PushLead ? !trailingIsLeft : trailingIsLeft;
             // A gripping hand must remain reachable from the solved upper body. Its shared
             // secondary motion is already contact-aware; another independent trunk lag is not.
-            pinHips = SkateOldschoolRide.Active || SkateActions.Owns || plantBoard.Initialized || groundGrab || pushing || pinL || pinR || SkateRide.BoardPath.Known;
-            pinLeft = SkateOldschoolRide.Active || SkateActions.Owns || plantBoard.Initialized || groundGrab || SkateRide.BoardPath.Known || pushing && (!pushLeft || footDown); pinRight = SkateOldschoolRide.Active || SkateActions.Owns || plantBoard.Initialized || groundGrab || SkateRide.BoardPath.Known || pushing && (pushLeft || footDown);
+            pinHips = wall || bodyFlip || SkateOldschoolRide.Active || SkateActions.Owns || plantBoard.Initialized || groundGrab || pushing || pinL || pinR || SkateRide.BoardPath.Known;
+            pinLeft = wall || bodyFlip || SkateOldschoolRide.Active || SkateActions.Owns || plantBoard.Initialized || groundGrab || SkateRide.BoardPath.Known || pushing && (!pushLeft || footDown); pinRight = wall || bodyFlip || SkateOldschoolRide.Active || SkateActions.Owns || plantBoard.Initialized || groundGrab || SkateRide.BoardPath.Known || pushing && (pushLeft || footDown);
             Shown = pose;
             Ease(pose, plane, toToes, upV, new Vector3((float)fx, (float)fy, (float)fz), now, frameSeconds, pinL, pinR);
-            if (!SkateActions.Owns && !SkateOldschoolRide.Active) Shape(upV);
+            if (!wall && !bodyFlip && !SkateActions.Owns && !SkateOldschoolRide.Active) Shape(upV);
             // Pitch/grind balance shapes the free arm, never the hand already holding the board.
             if (pinL) { joint[LHandJ] = V(pose.LeftHand); joint[LElbowJ] = V(pose.LeftElbow); }
             if (pinR) { joint[RHandJ] = V(pose.RightHand); joint[RElbowJ] = V(pose.RightElbow); }
@@ -853,10 +877,67 @@ public static class RiderRig
                 var deckUp = V(SkateOldschoolRide.Frame.Up);
                 leftSole = rightSole = Vector3.Lerp(upV, deckUp, SkateOldschoolRide.FootContact).normalized;
             }
+            if (wall) leftSole = rightSole = V(wallDeck.Up);
+            if (bodyFlip)
+            {
+                // All support/contact/easing work stays in the unflipped measured frame.
+                // The same final rigid map moves the board, every joint and both soles once.
+                for (int i = 0; i < Points; i++) joint[i] = SkateSurfaceRide.FlipPoint(joint[i]);
+                for (int i = Points; i < All; i++) joint[i] = SkateSurfaceRide.FlipDirection(joint[i]);
+                upV = SkateSurfaceRide.FlipDirection(upV);
+                leftSole = SkateSurfaceRide.FlipDirection(leftSole); rightSole = SkateSurfaceRide.FlipDirection(rightSole);
+                SkateRiderPose flipped;
+                if (SkateRider.TryTransformPose(Shown, input.DeckFrame, SkateSurfaceRide.FlipFrame(input.DeckFrame), out flipped)) Shown = flipped;
+            }
             Apply(upV, legsOnly, leftSole, rightSole);
             Applied++;
         }
         catch (Exception e) { failed = true; Say("pose threw " + e.GetType().Name + ": " + e.Message); }
+    }
+
+    // Shared upright poses keep their strict world-up validation. A wall is solved in its
+    // own supported coordinates, then rigidly carried onto the exact observed wall plane.
+    private static bool WallPose(SkateRiderInput input, out SkateRiderPose pose, out string error)
+    {
+        pose = default(SkateRiderPose); error = null;
+        var support = new SkateBoardPose(input.BoardPosition, input.BoardForward, input.BoardUp);
+        if (!SkateBoardPath.Valid(support) || !input.DeckFrame.Initialized || !SkateBoardPath.Valid(input.DeckFrame))
+        { error = "The wall rider frame is invalid."; return false; }
+        var localDeck = new SkateBoardPose(WallLocal(input.DeckFrame.Origin - support.Origin, support),
+            WallLocal(input.DeckFrame.Forward, support), WallLocal(input.DeckFrame.Up, support));
+        var look = WallLocal(new SkateVector(Math.Sin(input.LookYawDegrees * Math.PI / 180), 0,
+            Math.Cos(input.LookYawDegrees * Math.PI / 180)), support);
+        var lookYaw = look.X * look.X + look.Z * look.Z < .000001 ? 0 : Math.Atan2(look.X, look.Z) * 180 / Math.PI;
+        var along = new SkateVector(0, 0, 1); var normal = new SkateVector(0, 1, 0);
+        var canonical = new SkateRiderInput(default(SkateVector), along, normal, input.Stance, input.Switch,
+            input.Speed, input.LeanDegrees, input.Crouch, input.Airborne, false, 0, 0, SkateGrabKind.None, false,
+            lookYaw, input.DeckOffset, input.GroundDrop, 0, false, 0, 0, 0, 0, 0, 0, 0, input.Landing,
+            default(SkateRiderContactState), input.PushSeconds, WallLocal(input.DeckForward, support), false, 0, 0,
+            localDeck, default(SkateBoardPathSample));
+        SkateRiderPose solved;
+        if (!SkateRider.TryCreate(Rig, canonical, out solved, out error)) return false;
+        if (!SkateRider.TryTransformPose(solved, new SkateBoardPose(default(SkateVector), along, normal), support, out pose))
+        { error = "The measured rider could not follow the wall frame."; return false; }
+        return true;
+    }
+
+    private static SkateVector WallLocal(SkateVector direction, SkateBoardPose support)
+    { return new SkateVector(SkateVector.Dot(direction, support.Right), SkateVector.Dot(direction, support.Up), SkateVector.Dot(direction, support.Forward)); }
+
+    private static SkateGrabKind SurfaceGrab(SkateRiderPose pose, SkateBoardPose deck, SkateGrabKind kind)
+    {
+        if (kind == SkateGrabKind.None || !SkateGrabCatalog.Valid(kind) || !deck.Initialized || !SkateBoardPath.Valid(deck)) return SkateGrabKind.None;
+        bool left, right;
+        SkateRider.GrabHands(SkateRide.Goofy ? SkateStance.Goofy : SkateStance.Regular, SkateRide.TailFirst, kind, out left, out right);
+        if ((!left && !right) || left && !SurfaceHand(pose.LeftHand, deck) || right && !SurfaceHand(pose.RightHand, deck)) return SkateGrabKind.None;
+        return kind;
+    }
+
+    private static bool SurfaceHand(SkateVector hand, SkateBoardPose deck)
+    {
+        var local = WallLocal(hand - deck.Origin, deck);
+        return Math.Abs(local.Y) <= .025 && Math.Abs(local.X) <= .15 && Math.Abs(local.Z) <= .44 &&
+            (Math.Abs(local.X) >= .07 || Math.Abs(local.Z) >= .25);
     }
 
     private static void Ease(SkateRiderPose p, Vector3 origin, Vector3 x, Vector3 y, Vector3 z, float now, float frameSeconds, bool pinLeftHand, bool pinRightHand)
@@ -881,7 +962,7 @@ public static class RiderRig
             // a chest eased behind pinned hips would untwist the spine for a moment each stroke.
             // Keep a grab's solved hand target through the final filter too. The free hand and
             // the rest of the pose still ease; releasing starts from the last held hand and elbow targets.
-            var pinned = SkateOldschoolRide.Active || SkateActions.Owns || (pinHips && (i == PelvisJ || i == LHipJ || i == RHipJ || i == PelvisForwardJ || i == PelvisUpJ ||
+            var pinned = SkateSurfaceRide.DisplayWall || SkateSurfaceRide.BodyFlip.Known || SkateOldschoolRide.Active || SkateActions.Owns || (pinHips && (i == PelvisJ || i == LHipJ || i == RHipJ || i == PelvisForwardJ || i == PelvisUpJ ||
                     i == LShoulderJ || i == RShoulderJ || i == ChestForwardJ || i == ChestUpJ)) ||
                 (pinLeft && (i == LAnkleJ || i == LToeJ)) || (pinRight && (i == RAnkleJ || i == RToeJ)) ||
                 (pinLeftHand && (i == LHandJ || i == LElbowJ)) || (pinRightHand && (i == RHandJ || i == RElbowJ));

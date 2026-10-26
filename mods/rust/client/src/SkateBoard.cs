@@ -186,8 +186,27 @@ public static class SkateBoard
         velocity = detached.Initialized ? detachedVelocity : rollingOut ? rollDir * rollSpeed : Vector3.zero; return true;
     }
 
-    public static SkateBoardPose PoseFor(Transform playerT) { return PoseFor(playerT, false); }
+    public static SkateBoardPose PoseFor(Transform playerT) { return SkateSurfaceRide.FlipFrame(UnflippedFor(playerT)); }
     public static SkateBoardPose CarrierFor(Transform playerT) { return PoseFor(playerT, true); }
+    public static SkateBoardPose UnflippedFor(Transform playerT)
+    {
+        if (SkateSurfaceRide.DisplayWall && SkateSurfaceRide.WallFrame.Initialized)
+        {
+            var wall = SkateSurfaceRide.WallFrame; var n = V(wall.Up);
+            var delta = playerT.position - SkateRide.Position; if (SkateSurfaceRide.Active) delta -= n * Vector3.Dot(delta, n);
+            return new SkateBoardPose(wall.Origin + V(delta), wall.Forward, wall.Up);
+        }
+        var frame = PoseFor(playerT, false);
+        var bounce = SkateSurfaceRide.WallieWeight;
+        if (bounce > 0 && SkateRide.Mode == RideMode.Air)
+        {
+            var sign = Vector3.Dot(V(frame.Forward), SkateRide.Dir(SkateRide.NoseYaw)) >= 0 ? 1 : -1;
+            var tilt = SkateRide.Turn(-20 * bounce * sign, V(frame.Right));
+            var pivot = V(frame.Origin) - V(frame.Forward) * (Axle * sign);
+            frame = new SkateBoardPose(V(pivot + tilt * (V(frame.Origin) - pivot)), V(tilt * V(frame.Forward)), V(tilt * V(frame.Up)));
+        }
+        return frame;
+    }
     private static SkateBoardPose PoseFor(Transform playerT, bool carrier)
     {
         var now = Time.realtimeSinceStartup;

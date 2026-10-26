@@ -102,6 +102,8 @@ game; see [The controller](#the-controller).
 | Fresh `LB` + one trigger during an attained one-hand grab; right stick from centre to rim and back | | Finger Flip: hand throw, release, one full deck rotation and foot catch. Requires at least 1.11 s remaining flight; ordinary grab flicks still refuse a flip. |
 | Left stick click + fresh `Y` while riding | Hippie Jump: rider jumps while the actual deck rolls on the ground. A right-stick flip/shove during the initial release kick rotates that separate deck; a late request is refused. A left-stick body varial or held turn rotates the rider. The descending catch must reach the actual board. | |
 | Fresh `LB` + `Y` on foot beside your visible loose board | Caveman: reach and pick up that board, jump, then release `LB` to throw/catch it. Flick with the release for a flip/shove. A missing or unreachable board refuses entry; ordinary `Y` still mounts. | |
+| D-pad Up held | Approaching a low observed wall: Wallie. | FS/BS Wallride needs continued actual wall support. Release to leave; RS click while attached pops away instead of changing camera. Ramps/coping retain their transition behavior. |
+| Fresh D-pad Down | Drop-in from a supported deck facing an actually observed descending transition. | From an attained grab, LS forward/back with D-pad Down requests Front/Back Flip. The complete rider and deck turn together; release the grab and complete the turn before landing. |
 | Right stick click | View from behind or the game's first person | |
 | `Back` held on the board | Every controller trick and grab in a panel at the top left, for as long as it is held (the first seconds on the board show the short version). On foot with an ordinary building plan, `Back` opens the selected building mode; `X` switches between Skate and Rust building. Native validation pending for the new switch. | |
 | Left stick swept half round its rim, within 0.6 s of landing a trick (as in the skate. games; a hard steer alone is a carve) | Revert: the rider and the board pivot a half turn together on the ground and roll on the same way, the other end of the deck leading (fakie after a regular landing, regular again after a fakie one); it joins the combo. | |
@@ -139,6 +141,15 @@ Used bumpers must be released before they can request a handplant. Triggers reta
 Board rendering and native rider targets now share the actual deck-top frame, including its
 inverted orientation. These are source and cached-reference checks; Shadow visuals and feel
 remain unverified.
+
+Client source 0.18.59 adds actual-contact Wallies/Wallrides, explicit Drop-in and coupled
+Front/Back Flips with a grab. Wall support is refreshed and the low Wallie top must belong to
+the same obstacle. Wall release retains a brief display transition while physics returns to
+ordinary air; wheel sound follows actual contact. Drop-in receives credit after confirmed
+transition contact. A body flip needs an attained grip and observed room for the rotating
+rider/deck; it rigidly maps one measured pose and board frame, leaving native capsule/camera
+ownership intact. Failed/unfinished contact bails. These checks do not establish native mesh
+clearance, presentation, sound, observer visibility or skate feel; those remain for Shadow.
 
 Client source 0.18.58 adds Caveman and Hippie Jump with an independently observed deck.
 Both axles need real support while rolling; deck travel and rotation are swept through the
