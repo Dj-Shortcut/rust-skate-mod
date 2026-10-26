@@ -1,12 +1,15 @@
 # Geluidenbrief voor het skateboard
 
 De huidige geluiden in de game zijn door Andy beluisterd en afgekeurd als
-grotendeels ruis. Andy laat vervangende geluiden maken. Het doel is herkenbaar,
+grotendeels ruis. Andy heeft vervanging via ElevenLabs Sound Effects gevraagd. Het doel is herkenbaar,
 droog skateboardgeluid: wielen, hout, schoenen en metaal moeten te onderscheiden
 zijn. De bestaande gegenereerde WAV-set geldt niet als goedgekeurd eindresultaat.
 
-Maak **18 soorten, elk met 3 varianten**: 54 WAV-bestanden. Gebruik de onderstaande
-stam met `_01.wav`, `_02.wav` en `_03.wav`, bijvoorbeeld `skate_ollie_01.wav`.
+Maak **18 soorten, elk met één gekozen variant**: 18 WAV-bestanden. Gebruik de onderstaande
+stam met `_01.wav`, bijvoorbeeld `skate_ollie_01.wav`. Dit vervangt op verzoek van
+Andy de eerdere opdracht voor drie varianten per soort en beperkt de lokale opslag.
+Kies uit de gegenereerde alternatieven op basis van de waveform; bewaar alleen de
+gekozen bron en het benodigde spelbestand. Tussentijdse luisterproeven zijn niet nodig.
 
 | Bestandsstam | Type | Benodigd geluid |
 | --- | --- | --- |
@@ -45,17 +48,24 @@ lagerzoem zeer zacht. Vermeld gemeten niveau en piek per bestand; behoud de
 relatieve dynamiek. Het uiteindelijke volume wordt in de game afgesteld.
 
 Graag ook `demo.wav` van 30 seconden: push → rollen → ollie → landing → grind →
-val. Daarmee kunnen we eerst de klank beoordelen. Lever een `manifest.json`
+val. Lever een `manifest.json`
 mee met per bestand type, lengte, LUFS, piek, looppunten en herkomst.
 
-Alles moet eigen opname, eigen synthese of aantoonbaar CC0 zijn, met bronnenlijst
-en `LICENSE.txt` (CC0-1.0). Geen geluid uit andere games of uit bibliotheken met
-beperkingen op herdistributie. Echte skateboardopnames hebben de voorkeur.
+Leg de werkelijke herkomst en rechten vast. ElevenLabs-uitvoer krijgt geen
+CC0-licentie: de [ElevenCreative-voorwaarden](https://elevenlabs.io/creative-terms)
+blijven gelden. Houd deze audiobestanden buiten de openbare GitHub-repository;
+gebruik ze binnen het private spelpakket. Bewaar brongegevens en `RIGHTS.txt`,
+inclusief toepasselijke [attributie- en gebruiksvoorwaarden](https://elevenlabs.io/docs/help-center/legal/can-i-publish-the-content-i-generate-on-the-platform).
+Andy accepteert een onhoorbaar digitaal watermerk; een hoorbare merkstem hoort
+niet in de clips. Pas geen watermerkverwijdering toe.
+
+Een latere eigen opname of aantoonbaar CC0-alternatief kan wel met de bijbehorende
+bronnenlijst en licentie worden gepubliceerd. Gebruik geen geluid uit andere games.
 
 ## Inbouwen en acceptatie
 
 De huidige clientcode maakt zijn geluiden zelf; hij laadt de losse WAV-set nog
-niet. Na ontvangst en beluistering moeten de gekozen bestanden en variaties nog
+niet. Na selectie moeten de gekozen bestanden nog
 worden aangesloten op de events en oppervlakken in de mod. Daarna volgen
 volumebalans, timing en een gezamenlijke spelcontrole op Shadow. Deze lijst is
 een productiebrief, geen bewijs dat het vervangende geluid al in de game zit.
