@@ -39,3 +39,5 @@ authoring versions; another version can change export layout/triangulation.
 The Rust PC client adapter source includes GLB reading, park matching and
 checking commands. Codex has not verified its execution, native overlay/contact,
 network placement or riding; the pack's geometry checks do not establish those.
+
+The four additional round transition models are listed in [the ramp table](../../docs/RUST-SKATE-RAMP-ASSETS.md#round-transition-assets). Use the generator `--only` selector for a focused update. All existing models and unrelated manifest entries are preserved. Native binding is a separate integration step.
