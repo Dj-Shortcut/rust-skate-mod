@@ -1,60 +1,106 @@
-# Authored skateboard audio
+# Selected WAV skateboard audio
 
-The Rust client caches seeded mono floats from `SkateAudio` and `SkateFoley` during setup.
-It does **not** load the WAV pack. [EA's skate. is the owner's reference](https://github.com/Dj-Shortcut/rust-skate-mod/issues/408);
-these are original procedural sounds, with no recordings, commercial presets or game audio.
-C# source/generated waveforms follow Apache-2.0; the separate authored WAV pack is CC0-1.0.
+Client source `0.18.61` loads **18 selected WAV sounds**, one `_01.wav` per
+sound type, from `Path.Combine(BepInEx.Paths.PluginPath, "skate_sounds")`. In an
+active Rust loader this is `BepInEx/plugins/skate_sounds/`. The public source does
+not include the replacement sounds. The historical `SkateAudio` and
+`SkateFoley` synthesis APIs remain available, but the current `SkateSfx` playback
+path does not call them and has no synthetic fallback.
 
-| Generator sound | Contact/event and synthesis | Default seconds | Individual peak |
-| --- | --- | --- | --- |
-| Rolling | Granular urethane friction, low wheel load and irregular, dry truck rattle | 1 | 0.45 |
-| Grind | Broadband metal rasp, stick-slip catches and short inharmonic truck chatter | 1 | 0.65 |
-| DeckSlide | Lower dusty wooden scrape, uneven friction grains and short deck modes | 1 | 0.55 |
-| Push | Rubber sole contact followed by a brief shoe scuff | 0.18 | 0.80 |
-| Ollie | Sharp wooden tail pop, short tail/grip scrape and a tiny hardware tick | 0.14 | 0.80 |
-| Landing | Solid wheel thump, two axles 11 ms apart, deck flex and fading truck clatter | 0.28 | 0.80 |
-| Bail | Irregular board/wheel impacts followed by friction drag and loose hardware | 0.65 | 0.80 |
-| Foley.Hollow | Wooden ramp rolling: dense soft friction and briefly excited, detuned panel knocks | 2 | 0.50 |
+The [sound brief](RUST-SKATE-SOUND-BRIEF.md) defines the intended sounds and
+mix. Their presence, installation and heard quality are separate gates from the
+WAV loader source. A source compile is not a successful Shadow installation or
+playback test.
 
-The client keeps its current playback contract: ground roll pitch 0.75–1.30, wood ×0.9;
-metal/deck pitch 0.90–1.25, wood layer 0.85–1.15. Speed changes gain and the pitch-scaled
-grain/rattle cadence. Wood layers Hollow under Rolling; hard ground uses Rolling alone.
-Surface selection uses the nearest existing contact ray and exact captured colliders of recognized
-park overlays: authored concrete ledges use the dry hard-ground roll, plywood riding panels add
-Hollow, and owned coping is metal and uses the dry roll. Halfpipe/MEGA flat boundaries come from
-the same rendered profile, so their central concrete flat stays dry while the wooden transitions resonate.
-This is a coarse riding-substrate contract,
-not per-triangle or native material recognition. Unclassified entry bridges and unrelated default-layer
-objects use hard ground; a default-layer hit alone never implies wood. Destroyed, disabled, reparented
-or removed owned colliders lose the lookup. Construction/terrain fallbacks and the existing 1 m reach remain.
-Other Foley events, dirt and airborne wheel loops retain their synthesis and playback.
-Counters, crossfades, clip ownership, release pins and the server are unchanged. Native contact identity,
-material transitions and heard quality still require in-game verification.
-`SkateSound` IDs 0–6, both `TryCreate` overloads and default durations remain stable.
-Accept 8,000–192,000 Hz, 0.02–10 seconds and any uint seed; length is round(rate × seconds),
-away from zero. Invalid requests return false/null samples with an English error.
-Arrays belong to the caller; equal requests reproduce float samples on the same runtime.
-Cross-platform math is not promised byte-identical. Generate/cache only during setup.
-Shared loops use warmed filtered noise, wrapped friction grains and damped modes.
-Wrapped contacts accumulate their full seven-decay envelope modulo the buffer,
-including multiple revolutions for short loops; one-shots stop at the buffer end.
-A smooth join window of at most 2 ms per edge gives silent, equal-slope boundaries;
-weighted DC removal preserves them. The fixed one-second pattern still repeats.
-Metal has an additional low-pass stage to reduce the high-frequency tail when pitched.
-One-shots have silent endpoints, damped fixed-frequency modes and endpoint-zero DC removal.
-Peak normalization retains existing limits; combined sources still require mix-level checks.
+## Files and event routing
 
-The [existing approved audio scenario](../crates/approved_tests/skate/README.md#authored-audio)
-checks the actual shared DLL and actual Foley source: 4,516 checks / 588 generated clips.
-Genuine-reference C#7.3/net48 shared and approved runner: zero warnings/errors.
-The earlier full 34-source cached-interop/.NET6 client compile passed; it was not
-repeated after the bounded wrapped-contact correction.
-It covers durations, finite/peak/DC properties, seeds, seams, decay, contact separation and
-source energy above Nyquist/max-pitch below 1% at 44.1 kHz. This measures bandwidth risk.
-Short-loop contacts equal complete longer events folded into 20–30 ms buffers at
-8,000, 44,100 and 192,000 Hz; non-wrapped contacts retain their endpoint truncation.
-Asset and publication gates pass; previews stay in ignored `context/`.
+Every stem below requires the exact suffix `_01.wav`; `_02` and `_03` are not
+loaded. There are seven continuous channels and eleven one-shot types.
 
-Native sample upload, mixing, surface detection, speed/impact/event timing, teardown,
-performance, repeated-loop artifacts and heard quality versus skate. remain unverified.
-No native client/server/Shadow session, deployment or merge is part of this source change.
+| File stem | Playback and trigger |
+| --- | --- |
+| `skate_rolling_smooth` | Loop: hard ground and construction surfaces |
+| `skate_rolling_rough` | Loop: terrain/dirt rolling bed |
+| `skate_rolling_wood` | Loop: recognized wooden riding panels |
+| `skate_grit` | Loop: extra terrain/dirt layer |
+| `skate_whirr` | Loop: airborne wheels, fading as they slow |
+| `skate_push` | One-shot: push counter advances |
+| `skate_ollie` | One-shot: pop counter advances |
+| `skate_landing` | One-shot: ordinary landing |
+| `skate_drop` | One-shot: landing with `LandImpact >= 7.5` |
+| `skate_seam` | One-shot: step-up, or periodic construction seams |
+| `skate_grind_in` | One-shot: truck-grind entry |
+| `skate_grind` | Loop: moving truck grind |
+| `skate_grind_out` | One-shot: grind/slide ends without a simultaneous pop |
+| `skate_slide_in` | One-shot: deck-slide entry |
+| `skate_deckslide` | Loop: moving deck slide or ground powerslide |
+| `skate_scrape` | One-shot: revert or beginning of a powerslide |
+| `skate_slam` | One-shot: wall slam or bail |
+| `skate_bail` | One-shot: escaping-board sound when a bail begins |
+
+A bail emits one body-impact and one escaping-board clip; a simultaneous wall
+slam does not add a duplicate body-impact clip. The heavier drop replaces the
+ordinary landing clip for that event. Mounting or ordinary dismounting does not
+play a drop sound.
+
+Surface selection retains the existing nearest-contact ray and recognized
+park-collider lookup. Hard/construction uses the smooth bed, wood uses its own
+bed, and terrain/dirt combines rough rolling with grit. The rough recording does
+not prove native asphalt recognition. Unclassified objects remain hard ground;
+a default-layer hit alone does not imply wood. Speed affects gain and pitch,
+and loop gains crossfade. This remains a coarse substrate mapping, not native
+per-triangle material recognition.
+
+Playback is still local **2D audio** (`spatialBlend = 0`), with no observer
+replication, positional multiplayer sound or server audio change. It respects
+the existing listener/mute state. Event timing, transitions and mix balance still
+need in-game listening.
+
+## Loading, failure and lifecycle
+
+The runtime reader accepts little-endian RIFF/WAVE, PCM16 mono at 44,100 Hz. It
+checks chunk boundaries, format, duration and sample counts. Durations must be
+at least 20 ms and at most four seconds for a loop or six seconds for a one-shot.
+The production brief asks for two-to-four-second loops; the reader's wider
+structural bound does not certify loudness, loop joins or recording quality.
+
+Off-board setup separates file opening, clip creation, bounded PCM decoding and
+sample upload into preparation units. Files are cached before a ride; events do
+not reread WAVs. Native clip creation/upload remains an uninterruptible engine
+call, so cooperative preparation is not a hard frame-time guarantee.
+
+A missing, corrupt or unsupported required file, upload error or playback error
+latches the optional sound subsystem unavailable. It stops its sources and attempts to release owned clips and file readers. An
+English HUD notice points to `skate.log`, and the rider can continue without
+skateboard audio. There is no partial-pack playback or automatic synthetic
+fallback. Fixing files does not hot-reload a failed cache; restart the client or
+reinitialize the rig after correcting the pack.
+
+Disabling the rig stops/mutes its sources and synchronizes event counters. A
+complete cache can resume; unfinished decoding is disposed and restarted during
+later preparation. Destruction releases sources, clips and readers. Audio
+cleanup failure remains an explicit diagnostic rather than a successful-cleanup
+claim.
+
+## Packaging, rights and verification
+
+The stock launcher, build, pack and install paths **do not stage the external
+`skate_sounds` folder**. Their managed DLL/GLB inventory is unchanged. Do not treat
+a stock friend pack as an installed replacement sound pack. A private companion
+staging proposal exists, but its Windows/PowerShell session and cleanup flow have
+not been executed; it is not a verified installer.
+
+The chosen ElevenLabs-generated sounds and raw downloads stay outside public GitHub.
+They are not relicensed as CC0. Keep provenance and applicable usage terms with
+the private pack, as described in the sound brief. The historical procedural API
+and its separately authored assets retain their own existing licences.
+
+Offline reader/playback fixtures and a genuine cached-reference C# compile cover
+their stated source scope. Historical procedural-audio tests remain API coverage;
+they do not validate these sounds. All 18 selected private WAVs now pass format,
+peak/clipping, DC, onset/tail and repeated loop-join checks. The actual client
+reader decoded the full pack with float samples matching the PCM bytes. Absolute
+LUFS targets and the requested drop/landing level difference remain unmet; no
+compressor or limiter was used to conceal those limits. Installed-build interop, native upload,
+actual pack staging, teardown, performance, repeated-loop artifacts, output mix
+and heard quality remain open until the replacement pack is tested on Shadow.

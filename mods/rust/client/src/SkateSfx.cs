@@ -1,5 +1,7 @@
 using System;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
+using System.IO;
+using BepInEx;
 using Shortcut.RustMod;
 using UnityEngine;
 
@@ -9,14 +11,17 @@ public static class SkateSfx
     public static bool Ready;
     public static string State = "not started";
     private static GameObject audio;
-    private static readonly AudioClip[] ownedClips = new AudioClip[7 + SkateFoley.Count];
+    private const int Smooth = 0, Rough = 1, Wood = 2, Grit = 3, Whirr = 4, Push = 5,
+        Ollie = 6, Landing = 7, Drop = 8, Seamed = 9, GrindIn = 10, Grind = 11,
+        GrindOut = 12, SlideIn = 13, DeckSlide = 14, Scrape = 15, Slam = 16, Bail = 17;
+    public const float HeavyLandingImpact = 7.5f;
+    private static readonly AudioClip[] ownedClips = new AudioClip[SkateSoundPack.Count * SkateSoundPack.Variations];
     private static int ownedCount;
-    private static AudioSource roll, grind, slide, shots, hollow, grit, whirr;
-    private static AudioClip push, ollie, landing, bail;
-    private static readonly AudioClip[] foley = new AudioClip[SkateFoley.Count];
+    private static AudioSource roll, rough, grind, slide, shots, hollow, grit, whirr;
     private static int pops, lands, bails, pushes, grindStarts, grindEnds, slams, reverts, stepUps;
-    private static bool wasOn, wasAir, fell;
-    private static float rollVolume, grindVolume, slideVolume, hollowVolume, gritVolume, whirrVolume, whirrPitch = 1f;
+    private static bool wasOn, wasAir, wasSliding;
+    private static bool rollRun, roughRun, woodRun, gritRun, whirrRun, grindRun, slideRun;
+    private static float rollVolume, roughVolume, grindVolume, slideVolume, hollowVolume, gritVolume, whirrVolume, whirrPitch = 1f;
     // What the wheels are on, looked at a few times a second: a wooden park piece booms, dirt and grass
     // crunch, a foundation clacks at its seams every Seam metres.
     public enum Ground { Hard, Wood, Dirt, Build }
@@ -25,31 +30,15 @@ public static class SkateSfx
     private static float surfaceAt, seamRun;
     private static int terrainLayer = -2, buildLayer = -2;
     public static float SlideVolumeForTest { get { return slideVolume; } }
-    private static bool failed, deaf, ranked = true;
+    private static bool failed, suspended, deaf, ranked = true;
+    public static bool Failed { get { return failed; } }
     private static Il2CppStructArray<float> block;
     public static float RollHeard, GrindHeard, ShotsHeard;
 
-    private static AudioClip Clip(SkateSound sound, uint seed)
-    {
-        float[] samples; string error;
-        if (!SkateAudio.TryCreate(sound, Rate, seed, out samples, out error)) throw new InvalidOperationException(sound + ": " + error);
-        if (ownedCount == ownedClips.Length) throw new InvalidOperationException("audio clip capacity exceeded");
-        var clip = Out.Keep(AudioClip.Create("skate_" + sound, samples.Length, 1, Rate, false));
-        // Own the clip before upload so a failed setup can release it.
-        ownedClips[ownedCount++] = clip;
-        if (clip == null || !clip.SetData(samples, 0)) throw new InvalidOperationException(sound + ": clip upload failed");
-        return clip;
-    }
-
-    private static AudioClip Clip(SkateFoleySound sound, uint seed)
-    {
-        if (ownedCount == ownedClips.Length) throw new InvalidOperationException("audio clip capacity exceeded");
-        var samples = SkateFoley.Create(sound, Rate, seed);
-        var clip = Out.Keep(AudioClip.Create("skate_" + sound, samples.Length, 1, Rate, false));
-        ownedClips[ownedCount++] = clip;
-        if (clip == null || !clip.SetData(samples, 0)) throw new InvalidOperationException(sound + ": clip upload failed");
-        return clip;
-    }
+    private static SkateSoundPack.Reader reader;
+    private static string directory;
+    private static int preparation, slot, phase, uploaded, uploadCount, sourceStep;
+    private static float[] samples, upload;
 
     private static AudioSource Source(GameObject go, AudioClip clip, bool loop)
     {
@@ -61,12 +50,12 @@ public static class SkateSfx
             try { s.priority = 16; }
             catch (Exception e) { ranked = false; Out.Say("AUDIO source priority unavailable: " + e.GetType().Name + ": " + e.Message); }
         }
-        if (clip != null) { s.clip = clip; s.Play(); }
+        if (clip != null) { s.clip = clip; if (!suspended) s.Play(); }
         return s;
     }
 
-    private static int preparation;
-    // One clip/source per call. Native upload cannot be preempted; the caller measures this unit.
+    // Open, native create, bounded decode, and native upload are separate preparation units.
+    // Native operations remain uninterruptible; the existing caller measures/quiet-waits each unit.
     // Existing explicit audio checks may still ask for synchronous Start; boarding never does.
     public static void Start() { while (!PrepareStep()) { } }
     public static bool PrepareStep()
@@ -74,44 +63,89 @@ public static class SkateSfx
         if (Ready || failed) return true;
         try
         {
-            var step = preparation++;
-            if (step == 0)
+            if (preparation == 0)
             {
+                directory = Path.Combine(Paths.PluginPath, "skate_sounds");
+                SkateSoundPack.ResetVariants(1u);
+                samples = new float[32768];
                 audio = new GameObject("skate_audio");
                 UnityEngine.Object.DontDestroyOnLoad(audio);
                 shots = Source(audio, null, false);
-                State = "preparing";
+                State = "preparing WAV sound pack";
+                preparation = 1;
             }
-            else if (step == 1) roll = Source(audio, Clip(SkateSound.Rolling, 11u), true);
-            else if (step == 2) grind = Source(audio, Clip(SkateSound.Grind, 12u), true);
-            else if (step == 3) slide = Source(audio, Clip(SkateSound.DeckSlide, 17u), true);
-            else if (step == 4) push = Clip(SkateSound.Push, 13u);
-            else if (step == 5) ollie = Clip(SkateSound.Ollie, 14u);
-            else if (step == 6) landing = Clip(SkateSound.Landing, 15u);
-            else if (step == 7) bail = Clip(SkateSound.Bail, 16u);
-            else if (step < 8 + SkateFoley.Count)
+            else if (slot < ownedClips.Length) PrepareClip();
+            else if (sourceStep < 7)
             {
-                var i = step - 8;
-                if (!SkateFoley.IsLoop((SkateFoleySound)i)) foley[i] = Clip((SkateFoleySound)i, 21u + (uint)i);
+                if (sourceStep == 0) roll = Source(audio, ownedClips[Smooth * SkateSoundPack.Variations], true);
+                else if (sourceStep == 1) rough = Source(audio, ownedClips[Rough * SkateSoundPack.Variations], true);
+                else if (sourceStep == 2) hollow = Source(audio, ownedClips[Wood * SkateSoundPack.Variations], true);
+                else if (sourceStep == 3) grit = Source(audio, ownedClips[Grit * SkateSoundPack.Variations], true);
+                else if (sourceStep == 4) whirr = Source(audio, ownedClips[Whirr * SkateSoundPack.Variations], true);
+                else if (sourceStep == 5) grind = Source(audio, ownedClips[Grind * SkateSoundPack.Variations], true);
+                else slide = Source(audio, ownedClips[DeckSlide * SkateSoundPack.Variations], true);
+                sourceStep++;
             }
-            else if (step == 8 + SkateFoley.Count) hollow = Source(audio, Clip(SkateFoleySound.Hollow, 31u), true);
-            else if (step == 9 + SkateFoley.Count) grit = Source(audio, Clip(SkateFoleySound.Grit, 32u), true);
-            else if (step == 10 + SkateFoley.Count) whirr = Source(audio, Clip(SkateFoleySound.Whirr, 33u), true);
             else
             {
+                samples = upload = null; directory = null;
                 Sync(); wasOn = false;
                 Ready = true; State = "ready";
-                Out.Say("AUDIO ready: six loops and eleven one-shots at " + Rate + " Hz");
+                Out.Say("AUDIO ready: " + ownedClips.Length + " selected WAVs, seven loops and eleven one-shot types at " + Rate + " Hz");
             }
         }
         catch (Exception e) { Fail("failed", e); }
         return Ready || failed;
     }
 
+    private static void PrepareClip()
+    {
+        var stem = slot / SkateSoundPack.Variations;
+        var variant = slot % SkateSoundPack.Variations + 1;
+        if (phase == 0)
+        {
+            string error;
+            if (!SkateSoundPack.TryOpen(directory, stem, variant, out reader, out error))
+                throw new InvalidDataException(error);
+            uploaded = 0; phase = 1;
+        }
+        else if (phase == 1)
+        {
+            var clip = Out.Keep(AudioClip.Create(SkateSoundPack.Stem(stem) + "_0" + variant,
+                reader.SampleCount, 1, Rate, false));
+            // Register before any upload so cancellation/failure owns every partial clip.
+            ownedClips[slot] = clip; ownedCount = slot + 1;
+            if (clip == null) throw new InvalidOperationException("WAV clip creation failed");
+            phase = 2;
+        }
+        else if (phase == 2)
+        {
+            string error;
+            if (!reader.Read(samples, out uploadCount, out error)) throw new InvalidDataException(error);
+            if (uploadCount == 0)
+            {
+                if (uploaded != reader.SampleCount) throw new InvalidDataException("Incomplete WAV upload");
+                reader.Dispose(); reader = null; slot++; phase = 0;
+            }
+            else
+            {
+                if (uploadCount == samples.Length) upload = samples;
+                else { upload = new float[uploadCount]; Array.Copy(samples, upload, uploadCount); }
+                phase = 3;
+            }
+        }
+        else
+        {
+            if (uploaded > reader.SampleCount - uploadCount || !ownedClips[slot].SetData(upload, uploaded))
+                throw new InvalidOperationException("WAV clip upload failed: " + SkateSoundPack.Stem(stem));
+            uploaded += uploadCount; upload = null; phase = 2;
+        }
+    }
+
     public static void Shutdown()
     {
         failed = !Cleanup();
-        deaf = false; ranked = true;
+        suspended = false; deaf = false; ranked = true;
         State = failed ? "cleanup incomplete" : "stopped";
         if (failed) Out.Err("AUDIO " + State);
     }
@@ -119,30 +153,75 @@ public static class SkateSfx
     private static void Fail(string phase, Exception e)
     {
         failed = true;
-        State = phase + ": " + e.GetType().Name + ": " + e.Message;
+        State = "WAV sound pack unavailable (" + phase + "): " + e.GetType().Name + ": " + e.Message;
         if (!Cleanup()) State += "; cleanup incomplete";
         Out.Say("AUDIO " + State);
     }
 
     private static bool Cleanup()
     {
-        Ready = false; preparation = 0;
-        Silence(roll); Silence(grind); Silence(slide); Silence(shots); Silence(hollow); Silence(grit); Silence(whirr);
-        var clean = DestroyOwned(audio);
-        if (clean) { audio = null; roll = grind = slide = shots = hollow = grit = whirr = null; }
+        Ready = false; preparation = slot = phase = uploaded = uploadCount = sourceStep = 0;
+        var clean = true;
+        try { if (reader != null) reader.Dispose(); reader = null; }
+        catch (Exception) { clean = false; }
+        samples = upload = null; directory = null;
+        SilenceAll();
+        if (DestroyOwned(audio)) { audio = null; roll = rough = grind = slide = shots = hollow = grit = whirr = null; }
+        else clean = false;
         for (var i = 0; i < ownedCount; i++)
         {
             if (DestroyOwned(ownedClips[i])) ownedClips[i] = null;
             else clean = false;
         }
         if (clean) ownedCount = 0;
-        push = ollie = landing = bail = null;
-        for (var i = 0; i < foley.Length; i++) foley[i] = null;
         block = null;
-        wasAir = false;
-        rollVolume = grindVolume = slideVolume = hollowVolume = gritVolume = whirrVolume = RollHeard = GrindHeard = ShotsHeard = 0f;
+        ResetPlayback();
+        Surface = said = Ground.Hard; surfaceAt = -99f; seamRun = 0f;
+        RollHeard = GrindHeard = ShotsHeard = 0f;
         pops = lands = bails = pushes = 0;
+        SkateSoundPack.ResetVariants(1u);
         return clean;
+    }
+
+    private static void ResetPlayback()
+    {
+        wasOn = wasAir = wasSliding = false;
+        rollRun = roughRun = woodRun = gritRun = whirrRun = grindRun = slideRun = false;
+        rollVolume = roughVolume = grindVolume = slideVolume = hollowVolume = gritVolume = whirrVolume = 0f;
+        whirrPitch = 1f;
+    }
+
+    private static void SilenceAll()
+    { Silence(roll); Silence(rough); Silence(grind); Silence(slide); Silence(shots); Silence(hollow); Silence(grit); Silence(whirr); }
+
+    public static void Suspend()
+    {
+        suspended = true; SilenceAll(); ResetPlayback();
+        if (Ready) Sync();
+        else if (!failed)
+        {
+            // A disabled rig must not retain an unfinished file reader indefinitely.
+            // A complete cache survives suspension; partial preparation restarts off-board.
+            if (Cleanup()) State = "WAV sound pack preparation paused";
+            else
+            {
+                failed = true; State = "WAV sound pack unavailable (suspend): cleanup incomplete";
+                Out.Err("AUDIO " + State);
+            }
+        }
+    }
+
+    public static void Resume()
+    {
+        if (!suspended) return;
+        suspended = false; ResetPlayback();
+        if (!Ready || failed) return;
+        try
+        {
+            Sync();
+            roll.Play(); rough.Play(); hollow.Play(); grit.Play(); whirr.Play(); grind.Play(); slide.Play();
+        }
+        catch (Exception e) { Fail("failed while resuming", e); }
     }
 
     private static bool DestroyOwned(UnityEngine.Object value)
@@ -165,7 +244,22 @@ public static class SkateSfx
         grindStarts = SkateRide.GrindStarts; grindEnds = SkateRide.GrindEnds; slams = SkateRide.WallSlams; reverts = SkateRide.Reverts; stepUps = SkateRide.StepUps;
     }
 
-    private static void Play(SkateFoleySound sound, float volume) { var c = foley[(int)sound]; if (c != null) shots.PlayOneShot(c, volume); }
+    private static AudioClip Variant(int stem)
+    {
+        var clip = ownedClips[stem * SkateSoundPack.Variations + SkateSoundPack.NextVariant(stem) - 1];
+        if (clip == null) throw new InvalidOperationException("Missing cached WAV: " + SkateSoundPack.Stem(stem));
+        return clip;
+    }
+
+    private static void Play(int stem, float volume) { shots.PlayOneShot(Variant(stem), volume); }
+
+    private static void ContactLoop(AudioSource source, int stem, bool active, ref bool running)
+    {
+        if (active && !running && source.volume <= 0.001f)
+        { source.clip = Variant(stem); source.Play(); }
+        // Briefly interrupted contacts retain their playing clip through its audible fade.
+        running = active;
+    }
 
     // The nearest of the terrain, a building block or a park piece (the default layer) under the
     // board; anything else, rock and monument concrete, is hard ground.
@@ -195,7 +289,8 @@ public static class SkateSfx
         try
         {
             if (block == null) block = new Il2CppStructArray<float>(256);
-            RollHeard = Math.Max(RollHeard, Peak(roll)); GrindHeard = Math.Max(GrindHeard, Math.Max(Peak(grind), Peak(slide))); ShotsHeard = Math.Max(ShotsHeard, Peak(shots));
+            var wheels = Math.Max(Math.Max(Peak(roll), Peak(rough)), Math.Max(Peak(hollow), Math.Max(Peak(grit), Peak(whirr))));
+            RollHeard = Math.Max(RollHeard, wheels); GrindHeard = Math.Max(GrindHeard, Math.Max(Peak(grind), Peak(slide))); ShotsHeard = Math.Max(ShotsHeard, Peak(shots));
         }
         catch (Exception e) { deaf = true; Out.Say("AUDIO output cannot be read back: " + e.GetType().Name + ": " + e.Message); }
     }
@@ -222,7 +317,7 @@ public static class SkateSfx
 
     public static void Update(float frameSeconds)
     {
-        if (!Ready || failed) return;
+        if (!Ready || failed || suspended) return;
         try
         {
             var speed = Math.Abs(SkateRide.Speed);
@@ -239,8 +334,11 @@ public static class SkateSfx
             if (SkateRide.Lands != lands) surfaceAt = -99f;
             if (rolling && !SkateSurfaceRide.Active) Feel(Time.time);
             var rollShare = rolling ? SkateRide.Clamp(speed / 9f, 0f, 1f) : 0f;
-            var wantRoll = rollShare * (Surface == Ground.Dirt ? 0.4f : Surface == Ground.Wood ? 0.45f : 0.55f);
-            var wantHollow = Surface == Ground.Wood ? rollShare * 0.5f : 0f;
+            // These WAVs are complete wheel beds. Use one substrate bed, not smooth+wood.
+            // Dirt intentionally uses rough rolling+grit; no native asphalt identity is inferred.
+            var wantRoll = Surface == Ground.Hard || Surface == Ground.Build ? rollShare * 0.55f : 0f;
+            var wantRough = Surface == Ground.Dirt ? rollShare * 0.55f : 0f;
+            var wantHollow = Surface == Ground.Wood ? rollShare * 0.55f : 0f;
             var wantGrit = Surface == Ground.Dirt ? rollShare * 0.45f : 0f;
             // Off the ground the wheels spin on at the speed they rolled and wind down; back on, they
             // are the rolling sound again.
@@ -251,15 +349,25 @@ public static class SkateSfx
             var wantGrind = onEdge && !deck ? edgeVolume : 0f;
             // A powerslide on the ground scrubs with the deck's own slide sound, louder the faster.
             var sliding = on && SkateRide.Mode == RideMode.Ground && SkateRide.Powerslide > 0.3f && speed > 0.8f;
+            var beganSlide = sliding && !wasSliding; wasSliding = sliding;
             var wantSlide = onEdge && deck ? edgeVolume : sliding ? (0.25f + ratio * 0.35f) * SkateRide.Powerslide : 0f;
+            ContactLoop(roll, Smooth, wantRoll > 0.001f, ref rollRun);
+            ContactLoop(rough, Rough, wantRough > 0.001f, ref roughRun);
+            ContactLoop(hollow, Wood, wantHollow > 0.001f, ref woodRun);
+            ContactLoop(grit, Grit, wantGrit > 0.001f, ref gritRun);
+            ContactLoop(whirr, Whirr, airborne && whirrVolume > 0.001f, ref whirrRun);
+            ContactLoop(grind, Grind, wantGrind > 0.001f, ref grindRun);
+            ContactLoop(slide, DeckSlide, wantSlide > 0.001f, ref slideRun);
             var k = 1f - (float)Math.Exp(-12f * SkateRide.Clamp(frameSeconds, 0f, 0.1f));
             rollVolume += (wantRoll - rollVolume) * k;
+            roughVolume += (wantRough - roughVolume) * k;
             grindVolume += (wantGrind - grindVolume) * k; slideVolume += (wantSlide - slideVolume) * k;
             hollowVolume += (wantHollow - hollowVolume) * k; gritVolume += (wantGrit - gritVolume) * k;
             if (airborne) { whirrVolume *= (float)Math.Exp(-SkateRide.Clamp(frameSeconds, 0f, 0.1f) / 1.4f); whirrPitch = Math.Max(0.6f, whirrPitch - frameSeconds * 0.15f); }
             else whirrVolume += (0f - whirrVolume) * k;
             var pitch = 0.75f + ratio * 0.55f;
-            roll.volume = rollVolume; roll.pitch = Surface == Ground.Dirt ? pitch * 0.85f : Surface == Ground.Wood ? pitch * 0.9f : pitch;
+            roll.volume = rollVolume; roll.pitch = pitch;
+            rough.volume = roughVolume; rough.pitch = pitch * 0.85f;
             hollow.volume = hollowVolume; hollow.pitch = 0.85f + ratio * 0.3f;
             grit.volume = gritVolume; grit.pitch = 0.8f + ratio * 0.5f;
             whirr.volume = whirrVolume; whirr.pitch = whirrPitch;
@@ -267,36 +375,35 @@ public static class SkateSfx
             grind.pitch = slide.pitch = 0.9f + ratio * 0.35f;
             if (!on)
             {
-                // Stepped off: the board drops back onto its wheels. A bail has had its own sound.
-                if (wasOn && !fell && SkateRide.Bails == bails) Play(SkateFoleySound.Drop, 0.35f);
                 wasOn = false; Sync(); return;
             }
-            if (!wasOn) { Play(SkateFoleySound.Drop, 0.55f); wasOn = true; fell = false; seamRun = 0f; }
+            if (!wasOn) { wasOn = true; seamRun = 0f; }
             var bailed = SkateRide.Bails != bails;
-            if (bailed) fell = true;
-            if (bailed) shots.PlayOneShot(bail, 0.8f);
+            // The two authored stems are distinct body impact and escaping-board events.
+            // WallSlams and Bails may change together; this branch emits each only once.
+            if (bailed) { Play(Slam, 0.6f); Play(Bail, 0.45f); }
             else
             {
                 var popped = SkateRide.Pops != pops;
-                if (SkateRide.Pushes != pushes) shots.PlayOneShot(push, 0.4f);
-                if (popped) shots.PlayOneShot(ollie, 0.8f);
+                if (SkateRide.Pushes != pushes) Play(Push, 0.8f);
+                if (popped) Play(Ollie, 0.8f);
                 if (SkateRide.Lands != lands)
                 {
                     var hard = SkateRide.Clamp(SkateRide.LandImpact / 15f, 0f, 1f);
-                    shots.PlayOneShot(landing, SkateRide.Clamp(0.3f + hard, 0.3f, 0.85f));
-                    // A big drop onto a ramp also booms in its boards.
-                    if (Surface == Ground.Wood && hard > 0.2f) Play(SkateFoleySound.SlideIn, 0.3f + hard * 0.4f);
+                    Play(SkateRide.LandImpact >= HeavyLandingImpact ? Drop : Landing,
+                        SkateRide.Clamp(0.3f + hard, 0.3f, 0.85f));
                 }
                 if (SkateRide.GrindStarts != grindStarts && SkateRide.GrindKind != SkateGrindKind.Handplant)
-                    Play(deck ? SkateFoleySound.SlideIn : SkateFoleySound.GrindIn, 0.45f + ratio * 0.4f);
-                if (SkateRide.GrindEnds != grindEnds && !popped) Play(SkateFoleySound.GrindOut, 0.5f);
-                if (SkateRide.WallSlams != slams) Play(SkateFoleySound.Slam, 0.8f);
-                if (SkateRide.Reverts != reverts) Play(SkateFoleySound.Scrape, 0.3f + ratio * 0.3f);
-                if (SkateRide.StepUps != stepUps) Play(SkateFoleySound.Seam, 0.6f);
+                    Play(deck ? SlideIn : GrindIn, 0.45f + ratio * 0.4f);
+                if (SkateRide.GrindEnds != grindEnds && !popped) Play(GrindOut, 0.5f);
+                if (SkateRide.WallSlams != slams) Play(Slam, 0.6f);
+                if (SkateRide.Reverts != reverts || beganSlide) Play(Scrape, 0.3f + ratio * 0.3f);
+                var seamed = SkateRide.StepUps != stepUps;
+                if (seamed) Play(Seamed, 0.6f);
                 if (rolling && Surface == Ground.Build && speed > 1f)
                 {
                     seamRun += speed * frameSeconds;
-                    if (seamRun >= Seam) { seamRun -= Seam; Play(SkateFoleySound.Seam, 0.2f + ratio * 0.35f); }
+                    if (seamRun >= Seam) { seamRun %= Seam; if (!seamed) Play(Seamed, 0.2f + ratio * 0.35f); }
                 }
             }
             Sync();
