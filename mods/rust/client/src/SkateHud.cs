@@ -525,6 +525,8 @@ public static class SkateHud
     };
 
     private static readonly string[] PlantTricks = {
+        "LS click + Ollie/Nollie: Boned; + A: Front Foot; + X: Back Foot One-Foot",
+        "Finger Flip: held one-hand grab + fresh LB, RS out and back (high air)",
         "@HANDPLANTS   Enter with naked LB (Frontside) / RB (Backside) on a captured edge",
         "Hold one trigger while planted; the right stick selects a variant without popping.",
         "@FRONTSIDE   right stick up / down / left / right",

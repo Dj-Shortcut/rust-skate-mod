@@ -59,6 +59,7 @@ public static class SkateKeys
     public static float Spin;
     public static SkateGrabKind Grab;
     public static SkateGroundGrabKind GroundGrab;
+    public static SkateOllieStyle PopStyle; public static int FingerFlip;
     public static SkateHandplantKind HandplantVariant;
     private static bool wasGroundChord;
     private static int plantButtonsBlocked = SkateGrabCatalog.ModifierButtons;
@@ -224,13 +225,13 @@ public static class SkateKeys
                 if (!SkateRide.On) pumpPushButtons = 0;
                 else if (SkateRide.Mode == RideMode.Ground && SkateRide.Grounded && (lt0 || rt0)) pumpPushButtons |= pushButtons;
                 // Fresh A/X presses after extension still push; trigger + A/X plants below are unchanged.
-                Push = !lt0 && !rt0 && ((pushButtons & ~pumpPushButtons) != 0 || (!stickPushBlocked && straight && y > StickPush));
+                Push = (SkatePad.Buttons & SkatePad.LeftStickClick) == 0 && !lt0 && !rt0 && ((pushButtons & ~pumpPushButtons) != 0 || (!stickPushBlocked && straight && y > StickPush));
                 Mongo = (SkatePad.Buttons & SkatePad.X) != 0 && (SkatePad.Buttons & SkatePad.A) == 0;
                 // Only while the right stick is held back for the pop: a push tapped on its own stays a push.
-                if ((padDown & SkatePad.A) != 0 && SkatePad.Charging) aTappedAt = now;
+                if ((SkatePad.Buttons & SkatePad.LeftStickClick) == 0 && (padDown & SkatePad.A) != 0 && SkatePad.Charging) aTappedAt = now;
                 if (!groundChord && !SkateRide.Handplant && (lt0 || rt0) && (padDown & (SkatePad.A | SkatePad.X)) != 0 && SkateRide.Mode != RideMode.Air)
                 {
-                    JumpPressed = true; PopFlip = 0; PopShove = 0f; PopScale = 1f;
+                    JumpPressed = true; PopStyle = SkateOllieStyle.None; PopSpecial = SkateBoardTrickKind.None; PopSpecialDirection = 0; PopFlip = 0; PopShove = 0f; PopScale = 1f;
                     PopKind = (padDown & SkatePad.A) != 0 ? (lt0 ? SkatePopKind.Boneless : SkatePopKind.Beanplant) : SkatePopKind.Fastplant;
                     aTappedAt = -99f;
                 }
@@ -275,13 +276,15 @@ public static class SkateKeys
                     else
                     {
                         JumpPressed = true; PopSpecial = pop.Special; PopSpecialDirection = pop.SpecialDirection;
-                        PopKind = pop.Special != SkateBoardTrickKind.None ? pop.Kind : PopWith(pop.Kind, now - aTappedAt < NoComplyTap && (SkatePad.Buttons & SkatePad.A) == 0, false);
+                        PopStyle = pop.Style;
+                        PopKind = pop.Style != SkateOllieStyle.None ? pop.Kind : pop.Special != SkateBoardTrickKind.None ? pop.Kind : PopWith(pop.Kind, now - aTappedAt < NoComplyTap && (SkatePad.Buttons & SkatePad.A) == 0, false);
                         if (pop.Special != SkateBoardTrickKind.None)
                         { specialBumpers |= SkatePad.Buttons & (SkatePad.LeftBumper | SkatePad.RightBumper); HandplantFront = HandplantBack = false; }
                         aTappedAt = -99f; PopFlip = flips; PopShove = (float)pop.ShoveDegrees; PopScale = LeastPop + (1f - LeastPop) * (float)pop.Strength;
                     }
                 }
                 HeldFlip += SkatePad.TakeHeldFlip();
+                var fingerRequest = SkatePad.TakeFingerFlip(); if (fingerRequest != 0) FingerFlip = fingerRequest;
                 if (SkateRide.Handplant && (lt || rt))
                 {
                     HandplantVariant = SkateHandplants.Select(SkateRide.GrindFrontside, lt, rt, mirroredGrab ? -SkatePad.RightX : SkatePad.RightX,
@@ -310,7 +313,7 @@ public static class SkateKeys
                 if (body && !wasBody) BodyVarial += 180f;
                 wasBody = body;
                 Mongo = HandplantFront = HandplantBack = false;
-                if (jump && !wasJump) { JumpPressed = true; PopKind = PopWith(SkatePopKind.Ollie, noComply, boneless); PopFlip = 0; PopShove = 0f; PopScale = 1f; }
+                if (jump && !wasJump) { PopStyle = SkateOllieStyle.None; PopSpecial = SkateBoardTrickKind.None; PopSpecialDirection = 0; JumpPressed = true; PopKind = PopWith(SkatePopKind.Ollie, noComply, boneless); PopFlip = 0; PopShove = 0f; PopScale = 1f; }
                 if (crouch && !wasCrouch) CrouchTap = true;
                 Push = push; Brake = brake; Left = left; Right = right; Jump = jump; Crouch = crouch; Manual = manual;
                 Grab = crouch ? SkateGrabKind.Legacy : SkateGrabKind.None;
@@ -330,7 +333,7 @@ public static class SkateKeys
         return noComply ? SkatePopKind.NoComply : boneless ? SkatePopKind.Boneless : kind;
     }
 
-    public static void EndStep() { JumpPressed = SpinPressed = false; PopFlip = LateFlip = HeldFlip = PopSpecialDirection = 0; PopSpecial = SkateBoardTrickKind.None; PopShove = LateShove = BodyVarial = 0f; }
+    public static void EndStep() { PopStyle = SkateOllieStyle.None; FingerFlip = 0; JumpPressed = SpinPressed = false; PopFlip = LateFlip = HeldFlip = PopSpecialDirection = 0; PopSpecial = SkateBoardTrickKind.None; PopShove = LateShove = BodyVarial = 0f; }
 
     // Which grab the triggers and the right stick ask for. The triggers alone give the three plain
     // grabs; with the stick held up, down or to a side they give the others. The stick's sides are

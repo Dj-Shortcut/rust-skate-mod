@@ -31,7 +31,9 @@ public static class SkatePad
     // in it, a flip added in the air.
     private static readonly SkatePop[] popped = new SkatePop[4];
     private static int poppedCount;
-    private static int blockedSpecialBumpers;
+    private static int blockedSpecialBumpers; private static bool blockedStyleClick;
+    private static bool fingerArmed, fingerChord; private static int fingerRequest;
+    public static int TakeFingerFlip() { var request = fingerRequest; fingerRequest = 0; return request; }
     // A pure pop flip may continue while the same rim direction is held, up to a triple.
     // These are further rotations of that pop, not a new late-flick gesture.
     private static int heldFlip, heldExtras, heldFlips;
@@ -160,6 +162,7 @@ public static class SkatePad
         SkatePadLog.Buttons(buttons, lt, rt, lx, ly, rx, ry, now, edges);
         Buttons = buttons; LeftTrigger = lt; RightTrigger = rt; LeftX = lx; LeftY = ly; RightX = rx; RightY = ry;
         blockedSpecialBumpers &= buttons;
+        blockedStyleClick &= (buttons & LeftStickClick) != 0;
         // Also a press that is over again before the next frame.
         if (buttons != 0 || lt > Pulled || rt > Pulled || lx * lx + ly * ly > Touch * Touch || rx * rx + ry * ry > Touch * Touch) TouchedAt = now;
     }
@@ -183,13 +186,21 @@ public static class SkatePad
         // In the grab the flick module never sees the stick, so a flip asked for there is told apart
         // here: from inside the rim out to where a flick fires and back to the middle within a flick's
         // time, the trigger still pulled. A grab picked with the stick stays out there, and is none.
+        var fingerHeld = air && grabbing && (Buttons & ~blockedSpecialBumpers & LeftBumper) != 0 && ((LeftTrigger > Pulled) != (RightTrigger > Pulled));
+        if (!fingerHeld) { fingerArmed = fingerChord = false; }
+        else if (!fingerChord) { fingerChord = true; fingerArmed = rightFar <= SkateFlick.DeadZone * SkateFlick.DeadZone; }
+        else if (rightFar <= SkateFlick.DeadZone * SkateFlick.DeadZone && grabStick != 2) fingerArmed = true;
         if (!grabbing) grabStick = 0;
         else if (grabStick == 0) { if (rightFar < SkateFlick.FireReach * SkateFlick.FireReach) grabStick = 1; }
         else if (grabStick == 1) { if (rightFar >= SkateFlick.FireReach * SkateFlick.FireReach) { grabStick = 2; grabRimAt = from; } }
         else if (rightFar <= SkateFlick.DeadZone * SkateFlick.DeadZone)
         {
             grabStick = 1;
-            if ((from - grabRimAt) / 1000000.0 <= SkateFlick.FlickSeconds) { SkateHud.Notice("No flip during a grab"); Say("flick in a grab: no flip"); }
+            if ((from - grabRimAt) / 1000000.0 <= SkateFlick.FlickSeconds)
+            {
+                if (fingerHeld && fingerArmed) { fingerRequest = RightTrigger > Pulled ? 1 : -1; fingerArmed = false; blockedSpecialBumpers |= LeftBumper; }
+                else { SkateHud.Notice("No flip during a grab"); Say("flick in a grab: no flip"); }
+            }
         }
         // The left stick goes along for the body varial (a full circle in the air), and whether this
         // flight was popped: only then does a right-stick composition in the air count as a late flip.
@@ -224,6 +235,10 @@ public static class SkatePad
                         composition = new SkatePop(composition.Kind, 0, 0, composition.Strength, special,
                             composition.FlipTurns < 0 ? -1 : 1);
                     }
+                    if (!air && SkateRide.On && !SkateRide.Handplant && composition.Special == SkateBoardTrickKind.None && composition.FlipTurns == 0 && composition.ShoveDegrees == 0 &&
+                        (Buttons & LeftStickClick) != 0 && !blockedStyleClick && bumpers == 0 && LeftTrigger <= Pulled && RightTrigger <= Pulled)
+                        composition = new SkatePop(composition.Kind, 0, 0, composition.Strength, SkateBoardTrickKind.None, 0,
+                            SkateOllieStyles.Select(true, (Buttons & A) != 0, (Buttons & X) != 0));
                     popped[poppedCount++] = composition;
                     if (!air && SkateRide.On && LeftTrigger <= Pulled && RightTrigger <= Pulled && !rightSuspended &&
                         composition.Special == SkateBoardTrickKind.None && r.Composition.Kind != SkatePopKind.None && Math.Abs(r.Composition.FlipTurns) == 1 &&
@@ -290,6 +305,7 @@ public static class SkatePad
 
     public static void SuspendGestures()
     {
+        fingerArmed = fingerChord = false; fingerRequest = 0; blockedStyleClick |= (Buttons & LeftStickClick) != 0;
         DropPops(); flick = default(SkateFlickState); Charging = Manual = NoseManual = false; Charge = 0;
         rightSuspended = RightX * RightX + RightY * RightY > SkateFlick.RearmZone * SkateFlick.RearmZone;
         wasGrabbing = false; grabStick = 0; LeftSweep = leftAngle = 0; leftOnRim = false; sweepFromUs = 0;

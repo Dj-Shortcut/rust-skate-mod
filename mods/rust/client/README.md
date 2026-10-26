@@ -98,6 +98,8 @@ game; see [The controller](#the-controller).
 | Right stick | The board: see below. Kept part of the way back or forward for 0.2 s: manual or nose manual. | Flicked to a side or a forward diagonal: a flip; after a pop, a whole composition (held back then flicked, or rolled) is a late flip or late shove on top of what is under way, when the jump still lasts long enough. Pulled back: set for the pop after the landing. |
 | `LT`, `RT` | Held going down a transition and let go through its bottom: a pump (speed, by how long it was held and how steep the descent, once a pass; nothing on the flat or let go on the slope itself). | Held: grab; with the right stick held, another grab. |
 | `LB` + `LT`, `RT`, or both while rolling | Frontside, Backside or Double Ground Grab. With both triggers and `A` + `X`: Coffin. An active push stroke finishes first; the chord owns the triggers and cannot pump or start a footplant/pop. | |
+| Left stick click + a plain Ollie/Nollie gesture | Boned Ollie/Nollie. Add `A` for front-foot One-Foot or `X` for back-foot One-Foot. The modifier owns push/No-Comply input and must be released after a menu. | |
+| Fresh `LB` + one trigger during an attained one-hand grab; right stick from centre to rim and back | | Finger Flip: hand throw, release, one full deck rotation and foot catch. Requires at least 1.11 s remaining flight; ordinary grab flicks still refuse a flip. |
 | Right stick click | View from behind or the game's first person | |
 | `Back` held on the board | Every controller trick and grab in a panel at the top left, for as long as it is held (the first seconds on the board show the short version). On foot with an ordinary building plan, `Back` opens the selected building mode; `X` switches between Skate and Rust building. Native validation pending for the new switch. | |
 | Left stick swept half round its rim, within 0.6 s of landing a trick (as in the skate. games; a hard steer alone is a carve) | Revert: the rider and the board pivot a half turn together on the ground and roll on the same way, the other end of the deck leading (fakie after a regular landing, regular again after a fakie one); it joins the combo. | |
@@ -135,6 +137,14 @@ Used bumpers must be released before they can request a handplant. Triggers reta
 Board rendering and native rider targets now share the actual deck-top frame, including its
 inverted orientation. These are source and cached-reference checks; Shadow visuals and feel
 remain unverified.
+
+Client source 0.18.57 adds Boned and anatomical front/back One-Foot Ollies/Nollies, plus
+intentional Finger Flips. These actions retain one measured pose and canonical board frame.
+A Finger Flip carries the actually reached grab pose into its throw, releases the hand during
+rotation and catches both feet before landing. Its grip/foot phases own the board; the held
+trigger cannot silently create another grab. Unrecovered feet or an unfinished action bail.
+Only a fully reached style receives its label; completed action metadata is consumed once.
+These are verified source behaviors; native controller timing, appearance and feel remain open.
 
 Client source 0.18.56 adds handplant variants using the captured coping anchor and a shared
 held board frame. The measured solver preserves attached feet, released-foot targets and
