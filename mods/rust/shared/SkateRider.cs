@@ -1226,10 +1226,9 @@ namespace Shortcut.RustMod
             double s = side * (input.Switch ? -1 : 1);
             double armLength = rig.UpperArmLength + rig.ForearmLength;
             double legLength = rig.ThighLength + rig.ShinLength;
-            // The edge's top is the ground under the board: the deck's top is DeckOffset above the
-            // ankles' plane that BoardPosition is, the wheels GroundDrop below that.
-            var edge = input.BoardPosition + up * (Math.Min(0, input.DeckOffset) - input.GroundDrop);
-            var ground = edge - up * 0.02;
+            // A capture may begin above the coping. Its observed hand support, rather than
+            // the still-settling movement body, sets the IK floor throughout the transition.
+            var ground = anchor - up * 0.02;
             // The body's angle over the hand: the lean of the side bend at the start, upside down at the end.
             // At the top the body is not quite vertical: it leans back over the edge by PlantOver, the
             // hips over the ramp, the knees the highest point and the feet with the board in front.
