@@ -234,17 +234,17 @@ public static class SkateSfx
             var deck = SkateRide.GrindKind == SkateGrindKind.Boardslide || SkateRide.GrindKind == SkateGrindKind.Lipslide ||
                 SkateRide.GrindKind == SkateGrindKind.Noseslide || SkateRide.GrindKind == SkateGrindKind.Tailslide ||
                 SkateRide.GrindKind == SkateGrindKind.Bluntslide || SkateRide.GrindKind == SkateGrindKind.Nosebluntslide || SkateRide.GrindKind == SkateGrindKind.Darkslide;
-            var rolling = on && SkateRide.Mode == RideMode.Ground;
+            var rolling = on && (SkateRide.Mode == RideMode.Ground || SkateSurfaceRide.Active);
             // A landing is heard on what it lands on, not on what the board left.
             if (SkateRide.Lands != lands) surfaceAt = -99f;
-            if (rolling) Feel(Time.time);
+            if (rolling && !SkateSurfaceRide.Active) Feel(Time.time);
             var rollShare = rolling ? SkateRide.Clamp(speed / 9f, 0f, 1f) : 0f;
             var wantRoll = rollShare * (Surface == Ground.Dirt ? 0.4f : Surface == Ground.Wood ? 0.45f : 0.55f);
             var wantHollow = Surface == Ground.Wood ? rollShare * 0.5f : 0f;
             var wantGrit = Surface == Ground.Dirt ? rollShare * 0.45f : 0f;
             // Off the ground the wheels spin on at the speed they rolled and wind down; back on, they
             // are the rolling sound again.
-            var airborne = on && SkateRide.Mode == RideMode.Air;
+            var airborne = on && SkateRide.Mode == RideMode.Air && !SkateSurfaceRide.Active;
             if (airborne && !wasAir) { whirrVolume = 0.08f + ratio * 0.22f; whirrPitch = 0.75f + ratio * 0.5f; }
             wasAir = airborne;
             var edgeVolume = 0.3f + ratio * 0.3f;

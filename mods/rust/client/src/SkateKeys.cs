@@ -59,6 +59,8 @@ public static class SkateKeys
     public static float Spin;
     public static SkateGrabKind Grab;
     public static SkateGroundGrabKind GroundGrab;
+    public static bool WallHeld, DropTap, WallPop; public static SkateBodyFlipKind BodyFlipRequest;
+    private static int surfaceBlocked; private const int SurfaceButtons = SkatePad.DpadUp | SkatePad.DpadDown | SkatePad.RightStickClick;
     public static bool HippieTap, CavemanTap; private static int oldschoolBlocked;
     public static SkateOllieStyle PopStyle; public static int FingerFlip;
     public static SkateHandplantKind HandplantVariant;
@@ -101,10 +103,10 @@ public static class SkateKeys
 
     public static void Reset()
     {
-        InputEpoch++; ControlsActive = false; oldschoolBlocked = SkatePad.Buttons & SkatePad.Y;
+        InputEpoch++; ControlsActive = false; WallHeld = false; surfaceBlocked = SkatePad.Buttons & SurfaceButtons; oldschoolBlocked = SkatePad.Buttons & SkatePad.Y;
         Push = Brake = Left = Right = Crouch = Jump = Manual = NoseManual = Analog = Charging = Help = false; Steer = Charge = Spin = wasSpin = 0f; PopScale = 1f;
         Grab = SkateGrabKind.None; PopKind = SkatePopKind.Ollie; Mongo = HandplantFront = HandplantBack = false; aTappedAt = -99f;
-        oldschoolBlocked |= SkatePad.Buttons & SkatePad.Y; GroundGrab = SkateGroundGrabKind.None; HandplantVariant = SkateHandplantKind.None; plantButtonsBlocked = SkateGrabCatalog.ModifierButtons; wasGroundChord = false;
+        WallHeld = false; surfaceBlocked |= SkatePad.Buttons & SurfaceButtons; oldschoolBlocked |= SkatePad.Buttons & SkatePad.Y; GroundGrab = SkateGroundGrabKind.None; HandplantVariant = SkateHandplantKind.None; plantButtonsBlocked = SkateGrabCatalog.ModifierButtons; wasGroundChord = false;
         EndStep(); SkatePad.SuspendGestures(); JumpTap = ToggleTap = CameraTap = CrouchTap = false;
         keyboardSuspended = true; keyboardHeld = 0; triggerBlocked = (SkatePad.LeftTrigger > SkatePad.Pulled ? 1 : 0) | (SkatePad.RightTrigger > SkatePad.Pulled ? 2 : 0); specialBumpers = SkatePad.Buttons & (SkatePad.LeftBumper | SkatePad.RightBumper); stickPushBlocked = SkatePad.LeftY > StickPush; pumpPushButtons = SkatePad.Buttons & (SkatePad.A | SkatePad.X); spinBlocked = SkatePad.LeftX * SkatePad.LeftX + SkatePad.LeftY * SkatePad.LeftY > SpinFrom * SpinFrom; stanceSince = -1f; HelpPage = 0; airGrabBlocked = SkateGrabCatalog.ModifierButtons;
     }
@@ -118,7 +120,7 @@ public static class SkateKeys
         SkatePad.Poll(now);
         if (padInputEpoch != SkatePad.InputEpoch)
         {
-            padInputEpoch = SkatePad.InputEpoch;
+            padInputEpoch = SkatePad.InputEpoch; surfaceBlocked |= SkatePad.Buttons & SurfaceButtons; WallHeld = false;
             if (Pad) InputEpoch++;
             EndStep(); SkatePad.SuspendGestures();
             keyboardSuspended = true; specialBumpers |= SkatePad.Buttons & (SkatePad.LeftBumper | SkatePad.RightBumper);
@@ -141,7 +143,7 @@ public static class SkateKeys
                 Push = Brake = Left = Right = Crouch = Jump = Manual = NoseManual = Charging = Help = false; Steer = Charge = Spin = wasSpin = 0f; Grab = SkateGrabKind.None;
                 wasPush = wasBrake = wasLeft = wasRight = wasJump = wasCrouch = wasToggle = wasCamera = false; EndStep(); SkatePad.SuspendGestures();
                 Mongo = HandplantFront = HandplantBack = false; aTappedAt = -99f; rawSide = 0; sideSince = movedAt = rimAt = -99f; onRim = false;
-                oldschoolBlocked |= SkatePad.Buttons & SkatePad.Y; GroundGrab = SkateGroundGrabKind.None; HandplantVariant = SkateHandplantKind.None; plantButtonsBlocked = SkateGrabCatalog.ModifierButtons; wasGroundChord = false;
+                WallHeld = false; surfaceBlocked |= SkatePad.Buttons & SurfaceButtons; oldschoolBlocked |= SkatePad.Buttons & SkatePad.Y; GroundGrab = SkateGroundGrabKind.None; HandplantVariant = SkateHandplantKind.None; plantButtonsBlocked = SkateGrabCatalog.ModifierButtons; wasGroundChord = false;
                 specialBumpers |= SkatePad.Buttons & (SkatePad.LeftBumper | SkatePad.RightBumper);
                 triggerBlocked = (SkatePad.LeftTrigger > SkatePad.Pulled ? 1 : 0) | (SkatePad.RightTrigger > SkatePad.Pulled ? 2 : 0);
                 // Held controller pushes must return after a menu; closing it is not a new stroke.
@@ -182,6 +184,11 @@ public static class SkateKeys
                 catch (Exception e) { helpKey = false; Out.Say("INPUT help key unavailable: " + e.GetType().Name + ": " + e.Message); }
             }
             Help = help || (SkatePad.Shared && SkateRide.On && (SkatePad.Buttons & SkatePad.Back) != 0);
+            if (Help)
+            {
+                WallHeld = DropTap = WallPop = false; BodyFlipRequest = SkateBodyFlipKind.None;
+                surfaceBlocked |= SkatePad.Buttons & SurfaceButtons;
+            }
             if (Help && SkatePad.Shared && SkateRide.On && (padDown & (SkatePad.DpadLeft | SkatePad.DpadRight)) != 0) HelpPage = (HelpPage + ((padDown & SkatePad.DpadRight) != 0 ? 1 : 2)) % 3;
             // The first readable frame establishes held keys; it cannot distinguish a new press
             // from one carried through chat, a missing keyboard or a ride reset.
@@ -211,12 +218,13 @@ public static class SkateKeys
             if (!SkatePad.Shared) Pad = false;
             else if (now - SkatePad.TouchedAt < 0.05f) Pad = true;
             else if (keyDown && now - SkatePad.TouchedAt > PadRest) Pad = false;
-            if (Pad != had) { InputEpoch++; Out.Say("INPUT the " + (Pad ? "controller" : "keyboard") + " rides"); }
+            if (Pad != had) { EndStep(); WallHeld = false; if (Pad) surfaceBlocked |= SkatePad.Buttons & SurfaceButtons & ~padDown; InputEpoch++; Out.Say("INPUT the " + (Pad ? "controller" : "keyboard") + " rides"); }
 
             if (toggle && !wasToggle) ToggleTap = true;
             if (camera && !wasCamera) CameraTap = true;
             // Two quick jumps get on the board, whoever rides: Steam sends the jump key for the controller too.
             if (jump && !wasJump) JumpTap = true;
+            if (!Pad) WallHeld = false;
             if (Pad)
             {
                 oldschoolBlocked &= SkatePad.Buttons;
@@ -228,7 +236,17 @@ public static class SkateKeys
                     { CavemanTap = true; ToggleTap = false; }
                     else ToggleTap = true;
                 }
-                if ((padDown & SkatePad.RightStickClick) != 0) CameraTap = true;
+                surfaceBlocked &= SkatePad.Buttons;
+                var surfaceDown = padDown & ~surfaceBlocked;
+                WallHeld = SkateRide.On && !Help && ((SkatePad.Buttons & ~surfaceBlocked) & SkatePad.DpadUp) != 0;
+                if (!Help && SkateRide.On && (surfaceDown & SkatePad.DpadDown) != 0)
+                {
+                    if (SkateRide.Mode == RideMode.Ground) DropTap = true;
+                    else if (SkateRide.Mode == RideMode.Air && Math.Abs(SkatePad.LeftY) > .6f)
+                        BodyFlipRequest = SkatePad.LeftY > 0 ? SkateBodyFlipKind.Front : SkateBodyFlipKind.Back;
+                }
+                if (!Help && (surfaceDown & SkatePad.RightStickClick) != 0)
+                { if (SkateSurfaceRide.Active) WallPop = true; else CameraTap = true; }
                 float x = SkatePad.LeftX, y = SkatePad.LeftY;
                 if (x * x + y * y < SkateFlick.RearmZone * SkateFlick.RearmZone) spinBlocked = false;
                 var straight = Math.Abs(x) < Straight;
@@ -302,7 +320,7 @@ public static class SkateKeys
                 while (SkatePad.TakePop(out pop))
                 {
                     var flips = (int)Math.Round(pop.FlipTurns);
-                    if (pop.Kind == SkatePopKind.None) { LateFlip += flips; LateShove += (float)pop.ShoveDegrees; }
+                    if (pop.Kind == SkatePopKind.None) { if (SkateSurfaceRide.Active) { if (!Help) WallPop = true; } else { LateFlip += flips; LateShove += (float)pop.ShoveDegrees; } }
                     else
                     {
                         JumpPressed = true; PopSpecial = pop.Special; PopSpecialDirection = pop.SpecialDirection;
@@ -330,6 +348,7 @@ public static class SkateKeys
             }
             else
             {
+                WallHeld = false;
                 GroundGrab = SkateGroundGrabKind.None; wasGroundChord = false;
                 stickPushBlocked = false; pumpPushButtons = 0; airGrabBlocked = SkateGrabCatalog.ModifierButtons;
                 SkatePad.SuspendGestures();
@@ -363,7 +382,7 @@ public static class SkateKeys
         return noComply ? SkatePopKind.NoComply : boneless ? SkatePopKind.Boneless : kind;
     }
 
-    public static void EndStep() { HippieTap = CavemanTap = false; PopStyle = SkateOllieStyle.None; FingerFlip = 0; JumpPressed = SpinPressed = false; PopFlip = LateFlip = HeldFlip = PopSpecialDirection = 0; PopSpecial = SkateBoardTrickKind.None; PopShove = LateShove = BodyVarial = 0f; }
+    public static void EndStep() { DropTap = WallPop = false; BodyFlipRequest = SkateBodyFlipKind.None; HippieTap = CavemanTap = false; PopStyle = SkateOllieStyle.None; FingerFlip = 0; JumpPressed = SpinPressed = false; PopFlip = LateFlip = HeldFlip = PopSpecialDirection = 0; PopSpecial = SkateBoardTrickKind.None; PopShove = LateShove = BodyVarial = 0f; }
 
     // Which grab the triggers and the right stick ask for. The triggers alone give the three plain
     // grabs; with the stick held up, down or to a side they give the others. The stick's sides are

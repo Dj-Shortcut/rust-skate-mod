@@ -30,6 +30,8 @@ Laatste speltest: client 0.18.45 / server 0.3.38 (21 okt). Geen testomgeving sin
 24. Alle tricks die Skate 3 heeft: alle flips (kickflip-familie), alle grabs, alle grinds en slides, manuals, enzovoort, elk met eigen animatie (Andy, 25 okt). Open.
 25. Controller werkt op het board en te voet. Open.
 26. Uitzoeken hoe Skate trick-, rijder- en boardanimaties koppelt. Deels onderzocht (privé).
+27. Herkenbare drop-inanimatie voor halfpipes: tail op coping, gewicht naar voren, knieën en board vloeiend de wand in; aparte animatie en spelcontrole open (Andy, 26 okt).
+28. Automatische rigging-showcase op platte grond: alle beschikbare trickposes met naam, pauze en volgende/vorige, zodat handen, voeten en board samen bekeken kunnen worden. In uitvoering (Andy, 26 okt).
 
 Per rit controleren: controller, eerste/derde persoon, kompas, hand-item, pose, geluid, put-backs. Halfpipe: drie beklimmingen en fakie-terugkeren zonder put-back.
 
@@ -46,8 +48,8 @@ Per rit controleren: controller, eerste/derde persoon, kompas, hand-item, pose, 
 - **Handplantvarianten:** alle genoemde FS/BS-varianten met gemeten hand-/voetcontact, gedeeld boardframe en invoerherstel: bron aanwezig in 0.18.56; native contact, beeld en gevoel open.
 - **Extra ollies en Finger Flip:** Boned en front/back-foot One-Foot Ollies/Nollies plus handgedreven Finger Flip met release/catch: bron aanwezig in 0.18.57; uitvoering en gevoel op Shadow open.
 - **Oldschool:** Caveman en Hippie Jump met daadwerkelijk afzonderlijk deck, release-kick flips/shoves, bodyspins, pickup/catch en steunverlies: bron aanwezig in 0.18.58; volledige uitvoering op Shadow open.
-- **Walltricks:** Wallie en FS/BS Wallride met werkelijk muurcontact, instap en uitstap. Open.
-- **Transitiontricks:** Drop-in en Front/Back Flip met grab, gekoppeld aan contact en voltooide landing. Open.
+- **Walltricks:** Wallie en FS/BS Wallride met verse muurwaarneming, gebonden beweging, gemeten pose en release: bron aanwezig in 0.18.59; native contact en gevoel open.
+- **Transitiontricks:** expliciete Drop-in na bevestigd transitioncontact en gekoppelde Front/Back Flip met bereikte grab, ruimte en voltooide landing: bron aanwezig in 0.18.59; aparte halfpipe-instapanimatie bij punt 27 en uitvoering op Shadow open.
 
 Deze blokken worden samen op Shadow getest. Bron gereed telt niet als gameplayacceptatie; de overige TODO-punten blijven afzonderlijk open. Claude bouwt het park in Unity; parkassets en parkbouw vallen buiten deze trickwijzigingen.
 

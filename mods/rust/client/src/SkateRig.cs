@@ -589,7 +589,7 @@ public class SkateRig : MonoBehaviour
         RiderRig.Prepare(frame);
         // An ollie pitches the board: nose up as it climbs, level at the top, nose a little down as
         // it falls; not held in a grab or a handplant, where the hands have the board.
-        var ollie = SkateRide.On && SkateRide.Mode == RideMode.Air && SkateRide.Jumped && !SkateRide.Grabbing && !SkateRide.Handplant && !SkateOldschoolRide.Active;
+        var ollie = SkateRide.On && SkateRide.Mode == RideMode.Air && SkateRide.Jumped && !SkateRide.Grabbing && !SkateRide.Handplant && !SkateOldschoolRide.Active && !SkateSurfaceRide.DisplayWall;
         var climb = SkateRide.Clamp(SkateRide.VSpeed / SkateRide.OlliePop, -1f, 1f);
         var airPitch = ollie ? (climb > 0f ? SkateBoard.OllieNoseUp : SkateBoard.OllieNoseDown) * climb : 0f;
         if (SkateRide.BoardPath.Known || SkateOldschoolRide.Active) airPitch = 0f;
@@ -598,7 +598,7 @@ public class SkateRig : MonoBehaviour
         // at the legs' full reach when it moves at take-off speed, going up or coming down. The
         // player itself is where the game has it; only the board and the feet are drawn higher.
         var rise = 0f;
-        if (SkateRide.On && SkateRide.Mode == RideMode.Air && SkateRide.Jumped && !SkateRide.Frozen && !SkateOldschoolRide.Active)
+        if (SkateRide.On && SkateRide.Mode == RideMode.Air && SkateRide.Jumped && !SkateRide.Frozen && !SkateOldschoolRide.Active && !SkateSurfaceRide.DisplayWall)
         {
             var v = SkateRide.VSpeed / SkateRide.OlliePop;
             rise = SkateBoard.PopMost * SkateRide.Clamp(1f - v * v, 0f, 1f);

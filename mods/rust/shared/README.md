@@ -408,3 +408,11 @@ missing support is never inferred from the rider. `SkateRider.TryCreateIndepende
 solves measured hand/foot targets at that frame while the body keeps its own carrier frame.
 Physical catch may fail on a bank as deck gravity diverges from the ballistic rider; callers
 must preserve that result rather than moving the board to create a catch. Existing APIs remain.
+
+`SkateWallTricks` consumes fresh wall/top/transition observations for bounded wall travel,
+Wallie and Drop-in. `TryBodyFlip` owns completed whole-body rotation and actual grab qualification;
+`TryFlipFrame`/`FlipPoint` apply one rigid map to deck and all solved joints. The native adapter
+must refresh support/collider identity and swept clearance, and keep physical wall contact
+separate from a brief display release. A canonical-up measured solve may be rigidly mapped to a
+vertical wall; existing general rider validation stays strict. Source checks cannot prove native
+mesh/capsule clearance or visible feel.
