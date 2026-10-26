@@ -43,7 +43,7 @@ Per rit controleren: controller, eerste/derde persoon, kompas, hand-item, pose, 
 ## Zes resterende trickblokken (Andy, 25 okt)
 
 - **Grondgrabs en Coffin:** bron aanwezig in 0.18.55, inclusief invoerprioriteit, gemeten poses, loslaten en scoring; native beeld, contact en botsingsruimte open.
-- **Handplantvarianten:** tweaks, one-foot, Judo, Frigid en Gymnast met geplante hand en boardcontact. In uitvoering.
+- **Handplantvarianten:** alle genoemde FS/BS-varianten met gemeten hand-/voetcontact, gedeeld boardframe en invoerherstel: bron aanwezig in 0.18.56; native contact, beeld en gevoel open.
 - **Extra ollies en Finger Flip:** Boned Ollie, front/back-foot One-Foot Ollie en bewuste handflip met release/catch. Open.
 - **Oldschool:** Caveman en Hippie Jump, inclusief flip/spin en afzonderlijke board-/rijderbeweging. Open.
 - **Walltricks:** Wallie en FS/BS Wallride met werkelijk muurcontact, instap en uitstap. Open.

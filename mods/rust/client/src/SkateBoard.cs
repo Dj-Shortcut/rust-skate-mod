@@ -18,6 +18,7 @@ public static class SkateBoard
     public static float ShowLift, Tip, Pop, WheelSpin;
     // Held: the board is where the rider's feet hold it (a handplant), at HeldAt with its grip toward HeldUp.
     public static bool Held;
+    public static SkateBoardPose HeldFrame;
     public static Vector3 HeldAt, HeldNose = Vector3.forward, HeldUp = Vector3.up;
     private static Transform[] trucks = new Transform[0], wheels = new Transform[0];
     private static Vector3[] truckAxes = new Vector3[0], wheelAxes = new Vector3[0];
@@ -222,6 +223,13 @@ public static class SkateBoard
         var at = Contact(playerT); var travel = OnFace(SkateRide.ViewNormal, SkateRide.Dir(SkateRide.Yaw));
         if (Held && SkateRide.Handplant)
         {
+            if (HeldFrame.Initialized)
+            {
+                var frameUp = V(HeldFrame.Up); var frameForward = V(HeldFrame.Forward);
+                board.transform.rotation = Quaternion.LookRotation(frameForward, frameUp);
+                board.transform.position = V(HeldFrame.Origin) - frameUp * RiderRig.DeckTop;
+                Parts(now, travel, frameForward); return;
+            }
             // Against the feet through the handplant: from where it rode as the body goes up, and
             // back to that as the body comes down, by how far the pose has gone over (the rig's blend).
             var heldUp = HeldUp.sqrMagnitude > 0.5f ? HeldUp : Vector3.up;

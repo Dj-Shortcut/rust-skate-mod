@@ -16,6 +16,8 @@ public static class SkateGrind
     public static bool Enabled = true;
     public static float Heading, Speed;
     public static Vector3 Target;
+    public static bool StallSupported { get; private set; }
+    public static Vector3 HandAnchor { get { return Target - new Vector3((float)edge.HighSide.X, 0, (float)edge.HighSide.Z) * Inset; } }
     public static int Scans, Finds, Captures;
     public static string Last = "";
     private static readonly double[] heights = new double[Rows * Cols];
@@ -27,6 +29,7 @@ public static class SkateGrind
     private static SkateScanState scan;
     private static void Fail(Exception e, string where)
     {
+        StallSupported = false;
         while (e is System.Reflection.TargetInvocationException && e.InnerException != null) e = e.InnerException;
         var name = e.GetType().Name;
         // The caller needs Heading and Speed to leave the grind with its existing momentum.
@@ -52,6 +55,7 @@ public static class SkateGrind
 
     public static void Reset()
     {
+        StallSupported = false;
         cooldown = 0; edge = stallEdge = default(SkateEdge); Speed = Heading = 0f; Target = default(Vector3);
         StallCandidate = StallSquare = false; NearAt = nearSaidAt = -99f;
         scan = SkateScanRecovery.Reset(scan); Last = Unavailable ? "scanner unavailable" : "";
@@ -103,6 +107,7 @@ public static class SkateGrind
 
     public static void Release(float dt)
     {
+        StallSupported = false;
         string error;
         if (!SkateEdges.TryCooldown(cooldown, true, StepSeconds(dt), out cooldown, out error)) cooldown = SkateMotion.RailRecaptureDelay;
     }
@@ -151,11 +156,26 @@ public static class SkateGrind
     {
         edge = stallEdge; Speed = 0f; Heading = YawOf(edge.Direction.X, edge.Direction.Z); Captures++;
         var off = Aim(pos);
+        StallSupported = true;
         Last = "stall top=" + edge.TopHeight.ToString("F2") + " off=" + off.ToString("F2") + (StallSquare ? " square" : " along");
         Out.Say("GRIND " + Last);
     }
 
-    public static void HoldStall(Vector3 pos) { Aim(pos); }
+    public static void HoldStall(Vector3 pos)
+    {
+        Aim(pos);
+        try
+        {
+            // Sample just inside the captured top, where the hand bears weight. A removed
+            // coping must not keep an inverted rider suspended on a remembered edge.
+            RaycastHit hit;
+            var inside = HandAnchor + new Vector3((float)edge.HighSide.X, 0, (float)edge.HighSide.Z) * .04f;
+            StallSupported = Enabled && SkateParks.Ray(inside + Vector3.up * .2f, Vector3.down, out hit, .4f, SkateRide.GroundMask)
+                && hit.m_Normal.y >= .65f && Math.Abs(hit.m_Point.y - Target.y) <= .12f
+                && (Target - pos).sqrMagnitude <= 1.44f;
+        }
+        catch (Exception e) { Fail(e, "stall support"); }
+    }
 
     public static bool TryContinue(Vector3 pos, float dt, out bool ended)
     {

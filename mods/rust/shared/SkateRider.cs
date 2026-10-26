@@ -442,7 +442,7 @@ namespace Shortcut.RustMod
             double ankle = SkatePose.FootLift - i.DeckOffset;
             var la = centre + travel * 0.34 - right * 0.07 + up * ankle;
             var ra = centre + travel * 0.34 + right * 0.07 + up * ankle;
-            var ls = chest - pr * (r.ShoulderWidth * 0.5); var rs = chest + pr * (r.ShoulderWidth * 0.5);
+            var ls = chest + pu * r.ShoulderRise - pr * (r.ShoulderWidth * 0.5); var rs = chest + pu * r.ShoulderRise + pr * (r.ShoulderWidth * 0.5);
             var lt = centre - right * 0.1 - travel * 0.1; var rt = centre + right * 0.1 - travel * 0.1;
             SkateVector lk, rk, le, re, lhand, rhand;
             if (!Limb(lh, la, r.ThighLength, r.ShinLength, up, floor, up, out lk) ||
@@ -469,7 +469,7 @@ namespace Shortcut.RustMod
         // Mix the complete free/held contact targets, then solve lengths again. Mixing independently
         // recomputed grab angles can switch an IK solution abruptly; mixing joints alone shortens limbs.
         private static bool BlendContact(SkateRiderRig r, SkateRiderInput input, SkateRiderPose free,
-                                         SkateRiderPose held, double weight, out SkateRiderPose pose, out string error)
+                                         SkateRiderPose held, double weight, out SkateRiderPose pose, out string error, SkateVector? supportFloor = null)
         {
             pose = default(SkateRiderPose); error = null;
             var p = Blend(free, held, weight);
@@ -478,9 +478,9 @@ namespace Shortcut.RustMod
             var cu = p.ChestUp; var cf = Unit(Project(p.ChestForward, cu)); var cr = Cross(cu, cf);
             var lh = p.Pelvis - pr * (r.HipWidth * 0.5); var rh = p.Pelvis + pr * (r.HipWidth * 0.5);
             var chest = p.Pelvis + cu * r.SpineLength; var neck = chest + cu * (r.SpineLength * 0.12);
-            var ls = chest - cr * (r.ShoulderWidth * 0.5); var rs = chest + cr * (r.ShoulderWidth * 0.5);
-            var floor = input.BoardPosition + up * (Math.Min(0, input.DeckOffset) - input.FootPlant * (input.GroundDrop + PlantDrop)
-                - Math.Abs(SkatePose.FootOffset * Math.Sin(input.DeckPitch)));
+            var ls = chest + cu * r.ShoulderRise - cr * (r.ShoulderWidth * 0.5); var rs = chest + cu * r.ShoulderRise + cr * (r.ShoulderWidth * 0.5);
+            var floor = supportFloor ?? (input.BoardPosition + up * (Math.Min(0, input.DeckOffset) - input.FootPlant * (input.GroundDrop + PlantDrop)
+                - Math.Abs(SkatePose.FootOffset * Math.Sin(input.DeckPitch))));
             SkateVector lk, rk, le, re, lhand, rhand;
             if (!Limb(lh, p.LeftAnkle, r.ThighLength, r.ShinLength, p.LeftKnee - lh, floor, up, out lk) ||
                 !Limb(rh, p.RightAnkle, r.ThighLength, r.ShinLength, p.RightKnee - rh, floor, up, out rk) ||
@@ -912,8 +912,8 @@ namespace Shortcut.RustMod
             var chest = pelvis + chestUp * rig.SpineLength;
             var neck = chest + chestUp * (rig.SpineLength * 0.12);
             var head = neck + chestUp * rig.NeckToHeadLength;
-            var leftShoulder = chest - chestRight * (rig.ShoulderWidth * 0.5);
-            var rightShoulder = chest + chestRight * (rig.ShoulderWidth * 0.5);
+            var leftShoulder = chest + chestUp * rig.ShoulderRise - chestRight * (rig.ShoulderWidth * 0.5);
+            var rightShoulder = chest + chestUp * rig.ShoulderRise + chestRight * (rig.ShoulderWidth * 0.5);
 
             double carving = Math.Min(1, Math.Abs(input.LeanDegrees) / SkatePose.MaximumLean);
             double air = input.Airborne ? 1 : 0;
@@ -1015,7 +1015,7 @@ namespace Shortcut.RustMod
                             double pitch = bend == 0 ? 0.6 : bend == 1 ? 1.0 : bend == 2 ? 1.3 : 1.48;
                             var cu = up * Math.Cos(pitch) + toward * Math.Sin(pitch);
                             var cf = Unit(Project(authored.ChestForward, cu)); if (cf.LengthSquared < 0.5) cf = Unit(Project(forward, cu));
-                            var cr = Cross(cu, cf); var c = p + cu * rig.SpineLength;
+                            var cr = Cross(cu, cf); var c = p + cu * (rig.SpineLength + rig.ShoulderRise);
                             var ls = c - cr * (rig.ShoulderWidth * 0.5); var rs = c + cr * (rig.ShoulderWidth * 0.5);
                             double d = ((leftFirst ? ls : rs) - first).Length;
                             if (d < armMin || d > armMax) continue;
@@ -1038,7 +1038,7 @@ namespace Shortcut.RustMod
                 var p = Blend(foundPelvis, authored.Pelvis, share);
                 var cu = Unit(Blend(foundUp, authored.ChestUp, share));
                 var cf = Unit(Project(Blend(foundForward, authored.ChestForward, share), cu));
-                var cr = Cross(cu, cf); var c = p + cu * rig.SpineLength;
+                var cr = Cross(cu, cf); var c = p + cu * (rig.SpineLength + rig.ShoulderRise);
                 double dl = (p - pr * (rig.HipWidth * 0.5) - authored.LeftAnkle).Length;
                 double dr = (p + pr * (rig.HipWidth * 0.5) - authored.RightAnkle).Length;
                 double legMin = Math.Abs(rig.ThighLength - rig.ShinLength) + ReachMargin;
@@ -1054,7 +1054,7 @@ namespace Shortcut.RustMod
                 !Limb(rightHip, authored.RightAnkle, rig.ThighLength, rig.ShinLength, authored.RightToe - authored.RightAnkle + pr * 0.15, floor, up, out rightKnee))
             { error = "Skate grab leg chain is unreachable."; return false; }
             var chest = pelvis + chestUp * rig.SpineLength; var neck = chest + chestUp * (rig.SpineLength * 0.12);
-            var chestRight = Cross(chestUp, chestForward); var leftShoulder = chest - chestRight * (rig.ShoulderWidth * 0.5); var rightShoulder = chest + chestRight * (rig.ShoulderWidth * 0.5);
+            var chestRight = Cross(chestUp, chestForward); var leftShoulder = chest + chestUp * rig.ShoulderRise - chestRight * (rig.ShoulderWidth * 0.5); var rightShoulder = chest + chestUp * rig.ShoulderRise + chestRight * (rig.ShoulderWidth * 0.5);
             var shift = chest - authored.Chest;
             var leftTarget = leftFirst ? first : both ? second : authored.LeftHand + shift;
             var rightTarget = !leftFirst ? first : both ? second : authored.RightHand + shift;
@@ -1174,15 +1174,54 @@ namespace Shortcut.RustMod
         // the board against them, are at the chest's front where the other hand holds the board.
         private static bool Handplant(SkateRiderRig rig, SkateRiderInput input, double h, out SkateRiderPose pose, out string error)
         {
-            pose = default(SkateRiderPose); error = null;
+            var up = input.BoardUp; var forward = input.BoardForward; var facing = Cross(up, forward) * (input.Stance == SkateStance.Regular ? 1 : -1);
+            var anchor = input.BoardPosition + up * (Math.Min(0, input.DeckOffset) - input.GroundDrop) + facing * PlantHandOut + forward * ((input.Switch ? -1 : 1) * PlantHandAhead);
+            SkateBoardPose board;
+            return Handplant(rig, input, h, default(SkateHandplantState), true, anchor, Cross(up, forward), out pose, out board, out error);
+        }
+
+        public static bool TryCreateHandplant(SkateRiderRig rig, SkateRiderInput input, SkateHandplantState style, bool frontside,
+            SkateVector anchor, SkateVector edgeDirection, out SkateRiderPose pose, out SkateBoardPose board, out string error)
+        {
+            pose = default(SkateRiderPose); board = default(SkateBoardPose); error = null;
+            if (!Valid(rig) || !Valid(input) || input.Bailed || input.Airborne || !SkateHandplants.Valid(style, frontside) || !Vector(anchor) ||
+                Math.Abs(anchor.X) > 100002 || Math.Abs(anchor.Y) > 100002 || Math.Abs(anchor.Z) > 100002 || !UnitVector(edgeDirection) || Math.Abs(SkateVector.Dot(edgeDirection, input.BoardUp)) > .0001)
+            { error = "Invalid handplant support."; return false; }
+            if (input.Handplant <= .001) return Riding(rig, input, out pose, out error);
+            SkateRiderPose held;
+            if (!Handplant(rig, input, input.Handplant, style, frontside, anchor, edgeDirection, out held, out board, out error)) return false;
+            if (input.Handplant >= PlantBlend) { pose = held; return true; }
+            SkateRiderPose free;
+            var i = input;
+            var plain = new SkateRiderInput(i.BoardPosition, i.BoardForward, i.BoardUp, i.Stance, i.Switch, i.Speed, i.LeanDegrees,
+                i.Crouch, false, false, 0, 0, SkateGrabKind.None, false, i.LookYawDegrees, i.DeckOffset, i.GroundDrop, 0,
+                false, 0, 0, 0, i.DeckPitch, 0, 0, 0, i.Landing, default(SkateRiderContactState), i.PushSeconds, i.DeckForward,
+                i.DeckPitchFrame, i.DeckRoll, i.DeckSupport, i.DeckFrame, default(SkateBoardPathSample));
+            if (!Riding(rig, plain, out free, out error)) return false;
+            double entry = Smooth(input.Handplant / PlantBlend);
+            if (!BlendContact(rig, input, free, held, entry, out pose, out error, anchor - input.BoardUp * .02)) return false;
+            var start = input.DeckFrame.Initialized ? input.DeckFrame : new SkateBoardPose(input.BoardPosition + input.BoardUp * input.DeckOffset, input.DeckForward.LengthSquared > .5 ? input.DeckForward : input.BoardForward, input.BoardUp);
+            var nose = Unit(Blend(start.Forward, board.Forward, entry));
+            var normal = Unit(Project(Blend(start.Up, board.Up, entry), nose));
+            board = new SkateBoardPose(Blend(start.Origin, board.Origin, entry), nose, normal);
+            return SkateBoardPath.Valid(board);
+        }
+
+        private static bool Handplant(SkateRiderRig rig, SkateRiderInput input, double h, SkateHandplantState style, bool frontside,
+            SkateVector anchor, SkateVector edgeDirection, out SkateRiderPose pose, out SkateBoardPose board, out string error)
+        {
+            pose = default(SkateRiderPose); board = default(SkateBoardPose); error = null;
             var up = Unit(input.BoardUp);
             var forward = Unit(Project(input.BoardForward, up));
             var right = Cross(up, forward);
             int side = input.Stance == SkateStance.Regular ? 1 : -1;
             var facing = right * side;
-            var travel = forward * (input.Switch ? -1 : 1);
+            var travel = forward * (input.Switch ? -1 : 1) * (frontside ? 1 : -1);
             bool backIsLeft = (input.Stance == SkateStance.Goofy) != input.Switch;
-            bool leadIsLeft = !backIsLeft;
+            bool leadIsLeft = frontside ? !backIsLeft : backIsLeft;
+            var profile = SkateHandplants.Get(style.Kind);
+            double styled = style.Weight * Smooth(Math.Min(1, h / .6));
+            double gymnast = profile.Gymnast ? styled * Smooth(Math.Max(0, (h - .6) / .4)) : 0;
             // Across the body at the top of the handplant, the lateral axis is travel (times this sign).
             double s = side * (input.Switch ? -1 : 1);
             double armLength = rig.UpperArmLength + rig.ForearmLength;
@@ -1194,13 +1233,15 @@ namespace Shortcut.RustMod
             // The body's angle over the hand: the lean of the side bend at the start, upside down at the end.
             // At the top the body is not quite vertical: it leans back over the edge by PlantOver, the
             // hips over the ramp, the knees the highest point and the feet with the board in front.
-            double theta = PlantLean + (Math.PI - PlantOver - PlantLean) * Smooth(Math.Max(0, Math.Min(1, (h - 0.08) / 0.92)));
+            double theta = PlantLean + (Math.PI - PlantOver * (1 - gymnast) - PlantLean) * Smooth(Math.Max(0, Math.Min(1, (h - 0.08) / 0.92)));
             var chestUp = up * Math.Cos(theta) + travel * Math.Sin(theta);
-            var chestForward = facing;
+            var towardGymnast = Unit(Cross(edgeDirection, chestUp));
+            if (SkateVector.Dot(Cross(chestUp, facing), edgeDirection) < 0) towardGymnast *= -1;
+            var chestForward = Unit(Project(Blend(facing, towardGymnast, gymnast), chestUp));
             var chestRight = Cross(chestUp, chestForward);
-            var hand = edge + facing * PlantHandOut + travel * PlantHandAhead;
+            var hand = anchor;
             // The planted arm's joint straight above the hand; the chest's shoulder point a rise below it.
-            var plantedJoint = hand + up * (armLength * 0.97) - travel * 0.06;
+            var plantedJoint = hand + up * (armLength * 0.97) + travel * 0.04;
             var plantedShoulder = plantedJoint - chestUp * rig.ShoulderRise;
             var shoulderCentre = plantedShoulder - chestRight * (rig.ShoulderWidth * 0.5 * (leadIsLeft ? -1 : 1));
             var leftShoulder = shoulderCentre - chestRight * (rig.ShoulderWidth * 0.5);
@@ -1230,51 +1271,84 @@ namespace Shortcut.RustMod
             var pelvis0 = plantedJoint - up0 * rig.ShoulderRise - right0 * (rig.ShoulderWidth * 0.5 * (leadIsLeft ? -1 : 1)) - up0 * rig.SpineLength;
             var leftLocal = Local(leftGround - pelvis0, up0, chestForward, right0);
             var rightLocal = Local(rightGround - pelvis0, up0, chestForward, right0);
-            var pikeLocal = new SkateVector(rig.SpineLength * PlantPikeUp, legLength * PlantPikeOut, 0);
+            var pikeLocal = new SkateVector(rig.SpineLength * PlantPikeUp + profile.Up * legLength * styled, legLength * PlantPikeOut + profile.Out * styled, 0);
             var leftFold = Blend(leftLocal, pikeLocal - new SkateVector(0, 0, SkatePose.FootOffset), f);
             var rightFold = Blend(rightLocal, pikeLocal + new SkateVector(0, 0, SkatePose.FootOffset), f);
             var leftAnkle = pelvis + chestUp * leftFold.X + chestForward * leftFold.Y + chestRight * leftFold.Z;
             var rightAnkle = pelvis + chestUp * rightFold.X + chestForward * rightFold.Y + chestRight * rightFold.Z;
             // Never below the ground: a foot still on the ground before the body passes the lean stays exactly there.
             if (f <= 0) { leftAnkle = leftGround; rightAnkle = rightGround; }
-            var leadAnkle = leadIsLeft ? leftAnkle : rightAnkle;
-            var backAnkle = leadIsLeft ? rightAnkle : leftAnkle;
+            var baseMid = (leftAnkle + rightAnkle) * .5;
+            var baseGrip = Unit(Blend(up, Unit(pelvis - baseMid), f));
+            if (baseGrip.LengthSquared < .5) baseGrip = up;
+            var baseAlong = Unit(leadIsLeft ? leftAnkle - rightAnkle : rightAnkle - leftAnkle);
+            if (baseAlong.LengthSquared < .5) baseAlong = travel;
+            baseGrip = Unit(Project(baseGrip, baseAlong));
+            if (baseGrip.LengthSquared < .5) baseGrip = Unit(Project(up, baseAlong));
+            double reversed = input.DeckForward.LengthSquared > .5 && SkateVector.Dot(input.DeckForward, travel) < 0 ? -1 : 1;
+            var baseBoard = new SkateBoardPose(baseMid - baseGrip * (SkatePose.FootLift - input.DeckOffset), baseAlong * reversed, baseGrip);
+            var pitchedForward = RotateAxis(baseBoard.Forward, baseBoard.Right, -profile.Pitch * styled * Math.PI / 180);
+            var pitchedUp = RotateAxis(baseBoard.Up, baseBoard.Right, -profile.Pitch * styled * Math.PI / 180);
+            var deckUp = RotateAxis(pitchedUp, pitchedForward, -profile.Roll * styled * Math.PI / 180);
+            board = new SkateBoardPose(baseBoard.Origin, pitchedForward, deckUp);
+            var leftOffset = LocalDeck(leftAnkle - baseBoard.Origin, baseBoard);
+            var rightOffset = LocalDeck(rightAnkle - baseBoard.Origin, baseBoard);
+            leftOffset = board.Rotate(leftOffset); rightOffset = board.Rotate(rightOffset);
+            var frontOffset = chestForward * profile.FrontFoot.X + chestUp * profile.FrontFoot.Y + chestRight * profile.FrontFoot.Z;
+            var backOffset = chestForward * profile.BackFoot.X + chestUp * profile.BackFoot.Y + chestRight * profile.BackFoot.Z;
+            if (input.Stance == SkateStance.Regular) { leftOffset += frontOffset * styled; rightOffset += backOffset * styled; }
+            else { rightOffset += frontOffset * styled; leftOffset += backOffset * styled; }
+            var freeJoint = (leadIsLeft ? rightShoulder : leftShoulder) + chestUp * rig.ShoulderRise;
+            double across = SkateVector.Dot(chestForward, board.Right) >= 0 ? .08 : -.08;
+            var handOffset = board.Rotate(new SkateVector(across, 0, -.2 * reversed));
+            var secondAnchor = hand + edgeDirection * (rig.ShoulderWidth * (leadIsLeft ? 1 : -1) * (SkateVector.Dot(chestRight, edgeDirection) >= 0 ? 1 : -1));
+            var centre = board.Origin;
+            // Project the shared deck centre into the measured leg/holding-arm reach bands.
+            // Contact targets stay exact; a clamped hand is not accepted as a grip.
+            for (int iteration = 0; iteration < 24; iteration++)
+                {
+                    centre = ReachBand(centre, leftHip - leftOffset, Math.Abs(rig.ThighLength - rig.ShinLength) + .00001, legLength - .00001);
+                    centre = ReachBand(centre, rightHip - rightOffset, Math.Abs(rig.ThighLength - rig.ShinLength) + .00001, legLength - .00001);
+                    if (f > .2 && gymnast < .999)
+                    {
+                        double share = 1 - gymnast;
+                        var armAnchor = (freeJoint - secondAnchor * gymnast) * (1 / share) - handOffset;
+                        centre = ReachBand(centre, armAnchor, (Math.Abs(rig.UpperArmLength - rig.ForearmLength) + .00001) / share, (armLength - .00001) / share);
+                    }
+                }
+            board = new SkateBoardPose(centre, board.Forward, board.Up);
+            leftAnkle = centre + leftOffset; rightAnkle = centre + rightOffset;
             var pole = facing - chestUp * f;
             SkateVector leftKnee, rightKnee;
             if (!Limb(leftHip, leftAnkle, rig.ThighLength, rig.ShinLength, pole, ground, up, out leftKnee) ||
                 !Limb(rightHip, rightAnkle, rig.ThighLength, rig.ShinLength, pole, ground, up, out rightKnee))
-            { error = "Skate rider legs cannot reach the board in a handplant."; return false; }
-            // The feet lie flat on the deck, whose top faces the pelvis; the toes across it, the lead
-            // foot's a little toward the nose.
-            var mid = (leadAnkle + backAnkle) * 0.5;
-            var grip = Unit(pelvis - mid);
-            if (grip.LengthSquared < 0.5) grip = up;
-            var deckNormal = Unit(Blend(up, grip, f));
-            var along = Unit(leadAnkle - backAnkle);
-            if (along.LengthSquared < 0.5) along = travel;
-            var leadToeDir = Unit(Project(facing + along * 0.45, deckNormal));
-            var backToeDir = Unit(Project(facing + along * 0.1, deckNormal));
-            if (leadToeDir.LengthSquared < 0.5) leadToeDir = facing;
-            if (backToeDir.LengthSquared < 0.5) backToeDir = facing;
-            var leadToe = Toe(leadAnkle, leadToeDir, up, rig.FootLength, 0);
-            var backToe = Toe(backAnkle, backToeDir, up, rig.FootLength, 0);
-            var leftToe = backIsLeft ? backToe : leadToe;
-            var rightToe = backIsLeft ? leadToe : backToe;
-            // The planted arm straight to the hand; the other hand on the deck's top at the back foot,
-            // a little toward the toe edge. Both from the arm joints.
-            var freeJoint = (leadIsLeft ? rightShoulder : leftShoulder) + chestUp * rig.ShoulderRise;
-            var freeTarget = backAnkle + grip * Math.Min(0, input.DeckOffset) + chestForward * PlantDeck;
+            { error = "Handplant legs cannot reach their contact targets."; return false; }
+            var toeDirection = Unit(Project(chestForward + board.Forward * .2, board.Up));
+            if (toeDirection.LengthSquared < .5) toeDirection = board.Right;
+            var leftToe = leftAnkle + toeDirection * rig.FootLength; var rightToe = rightAnkle + toeDirection * rig.FootLength;
+            var freeTarget = Blend(board.Origin + handOffset, secondAnchor, gymnast);
             SkateVector plantedElbow, plantedHand, freeElbow, freeHand;
             if (!Arm(plantedJoint, hand, rig, leadIsLeft ? -1 : 1, chestRight, chestForward, ground, up, out plantedElbow, out plantedHand) ||
                 !Arm(freeJoint, freeTarget, rig, leadIsLeft ? 1 : -1, chestRight, chestForward, ground, up, out freeElbow, out freeHand))
-            { error = "Skate rider arms cannot reach in a handplant."; return false; }
+            { error = "Handplant arms cannot reach their contact targets."; return false; }
+            if ((plantedHand - hand).Length > .015 || (h >= .95 && (freeHand - freeTarget).Length > .015))
+            { error = "Handplant hand lost its support or deck grip."; return false; }
             var leftElbow = leadIsLeft ? plantedElbow : freeElbow; var leftHand = leadIsLeft ? plantedHand : freeHand;
             var rightElbow = leadIsLeft ? freeElbow : plantedElbow; var rightHand = leadIsLeft ? freeHand : plantedHand;
             pose = new SkateRiderPose(pelvis, leftHip, rightHip, leftKnee, rightKnee, leftAnkle, rightAnkle,
-                leftToe, rightToe, chest, neck, head, leftShoulder, rightShoulder, leftElbow, rightElbow, leftHand, rightHand,
+                leftToe, rightToe, chest, neck, head, leftShoulder + chestUp * rig.ShoulderRise, rightShoulder + chestUp * rig.ShoulderRise, leftElbow, rightElbow, leftHand, rightHand,
                 pelvisForward, pelvisUp, chestForward, chestUp, chestForward);
-            if (!Finite(pose)) { pose = default(SkateRiderPose); error = "Skate rider pose exceeds the allowed bounds."; return false; }
+            if (!Finite(pose) || !SkateBoardPath.Valid(board)) { pose = default(SkateRiderPose); error = "Skate rider pose exceeds the allowed bounds."; return false; }
             return true;
+        }
+
+        private static SkateVector LocalDeck(SkateVector point, SkateBoardPose frame)
+        { return new SkateVector(SkateVector.Dot(point, frame.Right), SkateVector.Dot(point, frame.Up), SkateVector.Dot(point, frame.Forward)); }
+        private static SkateVector ReachBand(SkateVector point, SkateVector anchor, double minimum, double maximum)
+        {
+            var delta = point - anchor; double distance = delta.Length;
+            if (distance < .000001) return anchor + new SkateVector(0, Math.Max(minimum, .00001), 0);
+            return anchor + delta * (Math.Max(minimum, Math.Min(maximum, distance)) / distance);
         }
 
         // Two poses mixed: the joints between the two, the frame directions too and made unit.

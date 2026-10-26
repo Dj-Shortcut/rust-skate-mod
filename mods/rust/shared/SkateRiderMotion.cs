@@ -213,8 +213,8 @@ namespace Shortcut.RustMod
             if (chestUp.LengthSquared < 0.5 || chestRight.LengthSquared < 0.5) return false;
             var chestForward = Cross(chestRight, chestUp);
             var chest = pelvis + chestUp * rig.SpineLength;
-            var leftShoulder = chest - chestRight * (rig.ShoulderWidth * 0.5);
-            var rightShoulder = chest + chestRight * (rig.ShoulderWidth * 0.5);
+            var leftShoulder = chest + chestUp * rig.ShoulderRise - chestRight * (rig.ShoulderWidth * 0.5);
+            var rightShoulder = chest + chestUp * rig.ShoulderRise + chestRight * (rig.ShoulderWidth * 0.5);
             var leftHand = options.PinLeftHand ? target.LeftHand : Reach(leftShoulder, target.LeftHand + (leftTarget - target.LeftHand) * factor,
                 target.LeftHand - target.LeftShoulder, rig.UpperArmLength, rig.ForearmLength);
             var rightHand = options.PinRightHand ? target.RightHand : Reach(rightShoulder, target.RightHand + (rightTarget - target.RightHand) * factor,
@@ -318,8 +318,8 @@ namespace Shortcut.RustMod
                 Near(p.Chest, p.Pelvis + p.ChestUp * r.SpineLength) &&
                 Near(p.Neck, p.Chest + p.ChestUp * (r.SpineLength * 0.12)) &&
                 Near(p.Head, p.Neck + p.ChestUp * r.NeckToHeadLength) &&
-                Near(p.LeftShoulder, p.Chest - Cross(p.ChestUp, p.ChestForward) * (r.ShoulderWidth * 0.5)) &&
-                Near(p.RightShoulder, p.Chest + Cross(p.ChestUp, p.ChestForward) * (r.ShoulderWidth * 0.5)) &&
+                Near(p.LeftShoulder, p.Chest + p.ChestUp * r.ShoulderRise - Cross(p.ChestUp, p.ChestForward) * (r.ShoulderWidth * 0.5)) &&
+                Near(p.RightShoulder, p.Chest + p.ChestUp * r.ShoulderRise + Cross(p.ChestUp, p.ChestForward) * (r.ShoulderWidth * 0.5)) &&
                 Length(p.LeftHip, p.RightHip, r.HipWidth) && Length(p.Pelvis, p.Chest, r.SpineLength) &&
                 Length(p.Chest, p.Neck, r.SpineLength * 0.12) && Length(p.Neck, p.Head, r.NeckToHeadLength) &&
                 Length(p.LeftShoulder, p.RightShoulder, r.ShoulderWidth) &&
@@ -344,12 +344,12 @@ namespace Shortcut.RustMod
         private static bool Valid(SkateRiderRig r)
         { return Measurement(r.PelvisHeight) && Measurement(r.HipWidth) && Measurement(r.ThighLength) && Measurement(r.ShinLength) &&
             Measurement(r.FootLength) && Measurement(r.SpineLength) && Measurement(r.ShoulderWidth) && Measurement(r.UpperArmLength) &&
-            Measurement(r.ForearmLength) && Measurement(r.NeckToHeadLength); }
+            Measurement(r.ForearmLength) && Measurement(r.NeckToHeadLength) && Finite(r.ShoulderRise) && Math.Abs(r.ShoulderRise) <= SkateRider.MaximumMeasurement; }
         private static bool Same(SkateRiderRig a, SkateRiderRig b)
         { return a.PelvisHeight == b.PelvisHeight && a.HipWidth == b.HipWidth && a.ThighLength == b.ThighLength &&
             a.ShinLength == b.ShinLength && a.FootLength == b.FootLength && a.SpineLength == b.SpineLength &&
             a.ShoulderWidth == b.ShoulderWidth && a.UpperArmLength == b.UpperArmLength &&
-            a.ForearmLength == b.ForearmLength && a.NeckToHeadLength == b.NeckToHeadLength; }
+            a.ForearmLength == b.ForearmLength && a.NeckToHeadLength == b.NeckToHeadLength && a.ShoulderRise == b.ShoulderRise; }
         private static bool Zero(SkateRiderRig r)
         { return Same(r, default(SkateRiderRig)); }
         private static bool Zero(SkateRiderPose p)

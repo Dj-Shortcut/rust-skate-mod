@@ -104,6 +104,7 @@ game; see [The controller](#the-controller).
 | Right stick back or forward, on an edge | Along the edge: 5-0 or nosegrind instead of the 50-50. Across it on the tail, held back: bluntslide instead of the tailslide; on the nose, held forward: nosebluntslide. Let go, the slide goes back to the plain one. | |
 | A flip asked for coming down onto an edge, with room for half of it | Darkslide: the board is caught upside down on the edge, griptape on it; a pop finishes the flip the same way round (a kickflip lands as a kickflip); rolled off without a pop, the board comes down upside down and it is a bail. | |
 | Coming down on an edge square to it, or slowly along it | A stall: the board stops on the edge. Square: a board stall, with the right stick back a tail stall, forward a nose stall, with `LB` or `RB` held a frontside or backside handplant (the board goes from where it rode to the feet as the body goes up, and back as it comes down); slowly along it a 50-50 stall. A pop leaves it; after 2.5 s the board rolls off. Out of a stall the rider goes back the way he came, tail first; out of a handplant he comes round and rolls back nose first. | |
+| During a handplant: one trigger + right stick | Up/down: FS Tailbone/Tuck Knee or BS Tuck Knee/Crossbone. Left/right: FS Boned/Stiff or BS Method/Tweak, mirrored for goofy/fakie. Trigger + `A`: FS Frigid or BS One-Foot; trigger + `X`: FS One-Foot or BS Judo. Both triggers: Gymnast with both hands on the edge. Release triggers before popping out. | |
 | In a grind or a stall | The deck sits on the edge the way that grind does: a 5-0 on the back truck with the nose up, a nosegrind the other way round, a smith with the nose dipped past the edge, a feeble over it, a crooked on its edge, a bluntslide stands the deck up steeply on the tail (a nosebluntslide on the nose); a tail stall hangs the tail over the coping. The rider stands over the low end with the arms out. | |
 
 The right stick pops the board, and how it moves says what the board does in the jump, laid out as
@@ -134,6 +135,13 @@ Used bumpers must be released before they can request a handplant. Triggers reta
 Board rendering and native rider targets now share the actual deck-top frame, including its
 inverted orientation. These are source and cached-reference checks; Shadow visuals and feel
 remain unverified.
+
+Client source 0.18.56 adds handplant variants using the captured coping anchor and a shared
+held board frame. The measured solver preserves attached feet, released-foot targets and
+both planted hands in a Gymnast. Releasing the selector fades the current style before another
+enters. A lost coping ends the handplant; menus or input-reader changes cancel a queued exit.
+The existing half-turn exit and scoring retain the last fully reached variant. These are source
+behaviors; native reach, collision clearance, appearance and feel remain for Shadow.
 
 Client source 0.18.54 releases the previous grab before bringing in a different hand/foot
 contact, with a fresh entry clock. A grind exit retains its engaged truck while its remaining
@@ -223,7 +231,7 @@ The four diagonal positions extend those rows: `RB+LT` selects Frontside/Backsid
 on the upper diagonals and Shifty Crail on the lower ones; `RB+RT` selects Shifty Nose and
 Shifty Seatbelt. With both triggers, the upper diagonals select Stale Frontside/Backside Tuck
 Knee and the lower ones Stale Nosebone/Tailbone. Left/right are mirrored for goofy/fakie.
-Hold `Back` and tap D-pad Left/Right for the basic and extended control pages.
+Hold `Back` and tap D-pad Left/Right for the basic, extended grab and handplant control pages.
 
 These grabs share authored board/hand/foot definitions, including both hands at the nose and
 both feet on the tail for Rocket Air, and explicit foot release for one-foot/no-foot variants.
