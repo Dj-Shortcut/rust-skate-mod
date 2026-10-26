@@ -515,6 +515,287 @@
           0.4000000059604645
         ]
       ]
+    },
+    {
+      "name": "skate_qp_round_mini",
+      "file": "skate_qp_round_mini.glb",
+      "vertices": 1464,
+      "triangles": 2752,
+      "bounds": [
+        [
+          -1.5829999446868896,
+          -2.4637134075164795,
+          -0.14000000059604645
+        ],
+        [
+          1.5829999446868896,
+          0.0,
+          1.8599998950958252
+        ]
+      ],
+      "bounds_space": "Blender Z-up, forward -Y",
+      "animations": [],
+      "license": "CC0-1.0",
+      "source": "scripts/generate_skate_ramp_assets.py",
+      "generator_blender": "5.2.0 LTS",
+      "default_scene": "Visual",
+      "collision_scene": "CollisionProxies",
+      "collision": {
+        "vertices": 1096,
+        "triangles": 1828,
+        "bounds": [
+          [
+            -1.565000057220459,
+            -2.441713571548462,
+            -0.14000000059604645
+          ],
+          [
+            1.565000057220459,
+            0.0,
+            1.8599998950958252
+          ]
+        ]
+      },
+      "dimensions": {
+        "kind": "quarterpipe_round",
+        "pivot": "low-entry midpoint on riding plane",
+        "ride_width": 3.0,
+        "radius": 1.5,
+        "rise": 1.0,
+        "transition_angle_degrees": 70.52877936550931,
+        "vert_degrees": 70.52877936550931,
+        "transition_run": 1.414213562373095,
+        "platform_length": 1.0,
+        "ride_length": 2.414213562373095,
+        "profile_formula": "forward=R*sin(theta), height=R*(1-cos(theta))",
+        "arc_max_step_degrees": 0.9,
+        "profile_knots": 80,
+        "collision_skin_thickness": 0.14,
+        "collision_max_profile_error": 4.552315602662782e-05,
+        "profile_reference": "circular riding surface; horizontal tangent at entry",
+        "native_anchor_offset": {
+          "right": 0,
+          "up": 0,
+          "forward": 0
+        },
+        "coping_radius": 0.03,
+        "coping_above_deck": 0.005,
+        "coping_overhang": 0.01,
+        "wood_rib_max_spacing": 0.4
+      },
+      "sha256": "4d670b9ce2db010aeee80a6080c940d8d67e9cb8be1b83895c8c00e3130c64ec",
+      "bytes": 306760
+    },
+    {
+      "name": "skate_qp_round",
+      "file": "skate_qp_round.glb",
+      "vertices": 1624,
+      "triangles": 3040,
+      "bounds": [
+        [
+          -1.5829999446868896,
+          -3.9989895820617676,
+          -0.14000004529953003
+        ],
+        [
+          1.5829999446868896,
+          0.0,
+          2.8600001335144043
+        ]
+      ],
+      "bounds_space": "Blender Z-up, forward -Y",
+      "animations": [],
+      "license": "CC0-1.0",
+      "source": "scripts/generate_skate_ramp_assets.py",
+      "generator_blender": "5.2.0 LTS",
+      "default_scene": "Visual",
+      "collision_scene": "CollisionProxies",
+      "collision": {
+        "vertices": 1204,
+        "triangles": 2008,
+        "bounds": [
+          [
+            -1.565000057220459,
+            -3.97698974609375,
+            -0.14000004529953003
+          ],
+          [
+            1.565000057220459,
+            0.0,
+            2.8600001335144043
+          ]
+        ]
+      },
+      "dimensions": {
+        "kind": "quarterpipe_round",
+        "pivot": "low-entry midpoint on riding plane",
+        "ride_width": 3.0,
+        "radius": 2.5,
+        "rise": 2.0,
+        "transition_angle_degrees": 78.46304096718453,
+        "vert_degrees": 78.46304096718453,
+        "transition_run": 2.4494897427831783,
+        "platform_length": 1.5,
+        "ride_length": 3.9494897427831783,
+        "profile_formula": "forward=R*sin(theta), height=R*(1-cos(theta))",
+        "arc_max_step_degrees": 0.9,
+        "profile_knots": 89,
+        "collision_skin_thickness": 0.14,
+        "collision_max_profile_error": 7.567762486615504e-05,
+        "profile_reference": "circular riding surface; horizontal tangent at entry",
+        "native_anchor_offset": {
+          "right": 0,
+          "up": 0,
+          "forward": 0
+        },
+        "coping_radius": 0.03,
+        "coping_above_deck": 0.005,
+        "coping_overhang": 0.01,
+        "wood_rib_max_spacing": 0.4
+      },
+      "sha256": "426a20a65fea21984b964b2a751ad78133691bd99e7740416b17710c181f3417",
+      "bytes": 338828
+    },
+    {
+      "name": "skate_qp_round_large",
+      "file": "skate_qp_round_large.glb",
+      "vertices": 1992,
+      "triangles": 3728,
+      "bounds": [
+        [
+          -2.3329999446868896,
+          -5.049499988555908,
+          -0.1400001049041748
+        ],
+        [
+          2.3329999446868896,
+          0.0,
+          3.8600001335144043
+        ]
+      ],
+      "bounds_space": "Blender Z-up, forward -Y",
+      "animations": [],
+      "license": "CC0-1.0",
+      "source": "scripts/generate_skate_ramp_assets.py",
+      "generator_blender": "5.2.0 LTS",
+      "default_scene": "Visual",
+      "collision_scene": "CollisionProxies",
+      "collision": {
+        "vertices": 1348,
+        "triangles": 2248,
+        "bounds": [
+          [
+            -2.315000057220459,
+            -5.027500152587891,
+            -0.1400001049041748
+          ],
+          [
+            2.315000057220459,
+            0.0,
+            3.8600001335144043
+          ]
+        ]
+      },
+      "dimensions": {
+        "kind": "quarterpipe_round",
+        "pivot": "low-entry midpoint on riding plane",
+        "ride_width": 4.5,
+        "radius": 3.0,
+        "rise": 3.0,
+        "transition_angle_degrees": 90.0,
+        "vert_degrees": 90.0,
+        "transition_run": 3.0,
+        "platform_length": 2.0,
+        "ride_length": 5.0,
+        "profile_formula": "forward=R*sin(theta), height=R*(1-cos(theta))",
+        "arc_max_step_degrees": 0.9,
+        "profile_knots": 101,
+        "collision_skin_thickness": 0.14,
+        "collision_max_profile_error": 9.252706563100954e-05,
+        "profile_reference": "circular riding surface; horizontal tangent at entry",
+        "native_anchor_offset": {
+          "right": 0,
+          "up": 0,
+          "forward": 0
+        },
+        "coping_radius": 0.03,
+        "coping_above_deck": 0.005,
+        "coping_overhang": 0.01,
+        "wood_rib_max_spacing": 0.4
+      },
+      "sha256": "984f5fc51e68d03492429567f0293d5864e3bee57abff828158faf509cb7ce52",
+      "bytes": 392436
+    },
+    {
+      "name": "skate_mega_halfpipe",
+      "file": "skate_mega_halfpipe.glb",
+      "vertices": 5312,
+      "triangles": 9892,
+      "bounds": [
+        [
+          -4.583000183105469,
+          -9.54949951171875,
+          -0.14000000059604645
+        ],
+        [
+          4.583000183105469,
+          9.54949951171875,
+          4.460000038146973
+        ]
+      ],
+      "bounds_space": "Blender Z-up, forward -Y",
+      "animations": [],
+      "license": "CC0-1.0",
+      "source": "scripts/generate_skate_ramp_assets.py",
+      "generator_blender": "5.2.0 LTS",
+      "default_scene": "Visual",
+      "collision_scene": "CollisionProxies",
+      "collision": {
+        "vertices": 2720,
+        "triangles": 4532,
+        "bounds": [
+          [
+            -4.565000057220459,
+            -9.52750015258789,
+            -0.14000000059604645
+          ],
+          [
+            4.565000057220459,
+            9.52750015258789,
+            4.460000038146973
+          ]
+        ]
+      },
+      "dimensions": {
+        "kind": "halfpipe_round",
+        "pivot": "centre of 6m flat riding plane",
+        "ride_width": 9.0,
+        "radius": 3.5,
+        "rise": 3.6,
+        "arc_rise": 3.5,
+        "vertical_extension": 0.1,
+        "transition_angle_degrees": 90,
+        "vert_degrees": 90,
+        "transition_run": 3.5,
+        "flat_length": 6.0,
+        "platform_length": 3.0,
+        "ride_length": 19.0,
+        "arc_max_step_degrees": 0.9,
+        "collision_skin_thickness": 0.14,
+        "collision_max_profile_error": 0.0001079482432361778,
+        "profile_reference": "mirrored circular riding surfaces with 0.1m vertical extensions",
+        "native_anchor_offset": {
+          "right": 0,
+          "up": 0,
+          "forward": 0
+        },
+        "coping_radius": 0.03,
+        "coping_above_deck": 0.005,
+        "coping_overhang": 0.01,
+        "wood_rib_max_spacing": 0.4
+      },
+      "sha256": "ddfe0b0f0bcfd942f9d9a097dcd82333e022fd12c9d635fd26de24531461f2f3",
+      "bytes": 921192
     }
   ]
 }

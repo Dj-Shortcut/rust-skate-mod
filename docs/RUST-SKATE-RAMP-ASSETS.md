@@ -49,3 +49,18 @@ native overlay/contact, network placement, riding, Unity import or performance.
 Generate with [the authored commands](../assets/authored/README.md). The generator checks
 finite geometry, closed outward solids, triangle areas, transforms/budgets and records hashes.
 Original four: Blender4.3.2; ramps:5.2.0. Cross-version export equivalence is unproven.
+
+## Round transition assets
+
+Four additional original round models use the same axes, scenes and material conventions. The existing eight models and their entries are preserved. Asset kinds below are source metadata; native placement/matcher integration remains separate.
+
+| file stem / asset kind | riding dimensions, metres | origin |
+| --- | --- | --- |
+| `skate_qp_round_mini` / `quarterpipe_round` | width3; R1.5, rise1, angle70.529°; arc run1.414; deck1 | low-entry midpoint on riding plane |
+| `skate_qp_round` / `quarterpipe_round` | width3; R2.5, rise2, angle78.463°; arc run2.449; deck1.5 | low-entry midpoint on riding plane |
+| `skate_qp_round_large` / `quarterpipe_round` | width4.5; R3, rise3, angle90°; arc run3; deck2; no extra vert | low-entry midpoint on riding plane |
+| `skate_mega_halfpipe` / `halfpipe_round` | width9; flat6; R3.5 +0.1 vert, rise3.6; deck3 each end; total run19 | flat-bottom centre |
+
+The circular riding profile and normal-thickness closed proxy slabs use at most0.9degrees per segment. Coping is0.03m radius; backrails are0.86m. Mega has a6m flat bottom, mirrored walls, two decks and fully closed side cladding. Visible original timber studs are spaced at most0.4m along the side profiles.
+
+Generate only these into a separate output directory with `--only skate_qp_round_mini,skate_qp_round,skate_qp_round_large,skate_mega_halfpipe`; use `--preview-dir <absolute directory>` for daylight side and three-quarter previews. Formula/slope, chord/wheelbase, proxy, symmetry, frame recess, scene and triangle checks fail the background generator on error. The default run regenerates all twelve park pieces while preserving independent authored entries in place.
