@@ -559,6 +559,7 @@ public static class RiderRig
         SkateBoard.Held = false;
         SkateBoard.HeldFrame = default(SkateBoardPose);
         if (!SkateRide.On) { ResetPresentation(); return; }
+        if (SkateRiggingShowcase.Running) return;
         var now = Time.realtimeSinceStartup;
         var wall = SkateSurfaceRide.DisplayWall;
         var grab = SkateRide.Mode == RideMode.Air && !wall && !SkateActions.Owns && !SkateOldschoolRide.Active ? SkateRide.Grab : SkateGrabKind.None;
@@ -616,6 +617,7 @@ public static class RiderRig
         try
         {
             if (Pelvis == null) { Bound = false; return; }
+            if (SkateRiggingShowcase.Running) { FramePreview(frameSeconds); return; }
             var wall = SkateSurfaceRide.DisplayWall;
             var bodyFlip = SkateSurfaceRide.BodyFlip.Known;
             var wallDeck = default(SkateBoardPose);
@@ -895,6 +897,20 @@ public static class RiderRig
         catch (Exception e) { failed = true; Say("pose threw " + e.GetType().Name + ": " + e.Message); }
     }
 
+    // Reuse the measured production solver and the actual bone writer. The preview owns only
+    // rendered joints and board frame, with no gameplay rotations, inputs or score side effects.
+    private static void FramePreview(float frameSeconds)
+    {
+        SkateRiderPose pose; SkateBoardPose board; SkateVector riderUp, leftSole, rightSole; string error;
+        if (!SkateRiggingShowcase.TryCurrent(Rig, out pose, out board, out riderUp, out leftSole, out rightSole, out error))
+        { Refusals++; Error = error; SkateRiggingShowcase.ReportPoseFailure(error); return; }
+        Posed = Shown = pose; PosedPlane = V(board.Origin); Error = "";
+        pinHips = pinLeft = pinRight = true; motion = default(SkateRiderMotionState);
+        Ease(pose, V(board.Origin), V(board.Right), V(board.Up), V(board.Forward),
+            Time.realtimeSinceStartup, frameSeconds, true, true);
+        Apply(V(riderUp), false, V(leftSole), V(rightSole)); Applied++;
+    }
+
     // Shared upright poses keep their strict world-up validation. A wall is solved in its
     // own supported coordinates, then rigidly carried onto the exact observed wall plane.
     private static bool WallPose(SkateRiderInput input, out SkateRiderPose pose, out string error)
@@ -962,7 +978,7 @@ public static class RiderRig
             // a chest eased behind pinned hips would untwist the spine for a moment each stroke.
             // Keep a grab's solved hand target through the final filter too. The free hand and
             // the rest of the pose still ease; releasing starts from the last held hand and elbow targets.
-            var pinned = SkateSurfaceRide.DisplayWall || SkateSurfaceRide.BodyFlip.Known || SkateOldschoolRide.Active || SkateActions.Owns || (pinHips && (i == PelvisJ || i == LHipJ || i == RHipJ || i == PelvisForwardJ || i == PelvisUpJ ||
+            var pinned = SkateRiggingShowcase.Running || SkateSurfaceRide.DisplayWall || SkateSurfaceRide.BodyFlip.Known || SkateOldschoolRide.Active || SkateActions.Owns || (pinHips && (i == PelvisJ || i == LHipJ || i == RHipJ || i == PelvisForwardJ || i == PelvisUpJ ||
                     i == LShoulderJ || i == RShoulderJ || i == ChestForwardJ || i == ChestUpJ)) ||
                 (pinLeft && (i == LAnkleJ || i == LToeJ)) || (pinRight && (i == RAnkleJ || i == RToeJ)) ||
                 (pinLeftHand && (i == LHandJ || i == LElbowJ)) || (pinRightHand && (i == RHandJ || i == RElbowJ));

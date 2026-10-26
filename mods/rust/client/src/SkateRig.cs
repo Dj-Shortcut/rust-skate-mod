@@ -367,6 +367,7 @@ public class SkateRig : MonoBehaviour
         try { SkatePieces.Reset(); }
         catch (Exception e) { Out.Err("PIECES reset during rig teardown threw " + e.GetType().Name); }
         Say(why + "; looking again");
+        SkateRiggingShowcase.Stop("The player changed");
         SkateRide.Dismount(off);
         // Release only this ride's held-state ownership while its player/model
         // references still exist; a later Update is not guaranteed on teardown.
@@ -622,7 +623,9 @@ public class SkateRig : MonoBehaviour
             SkateClock.Add(SkateClock.Board, t0);
         }
         if (!SkateRide.On || LocalT == null) return;
-        var t3 = SkateClock.Now(); SkateCamera.Apply(at - Vector3.up * SkateBoard.Pop); SteadyView(); SkateClock.Add(SkateClock.Camera, t3);
+        var t3 = SkateClock.Now();
+        SkateCamera.Apply(SkateRiggingShowcase.Running ? SkateRiggingShowcase.Focus - Vector3.up * 1.05f : at - Vector3.up * SkateBoard.Pop);
+        SteadyView(); SkateClock.Add(SkateClock.Camera, t3);
         try { SkateWatch.Frame(LocalT, board, now); }
         catch (Exception e) { if (!watchFailed) { watchFailed = true; Say("watch threw " + e.GetType().Name + ": " + e.Message); } }
     }
@@ -634,6 +637,7 @@ public class SkateRig : MonoBehaviour
     // put away for it is taken in hand again here, as OnDestroy does.
     private void OnDisable()
     {
+        try { SkateRiggingShowcase.Stop("The skate rig was disabled"); } catch { }
         try { SkatePhysicsDiagnostic.Reset(); } catch { }
         try { SkatePieces.Reset(); }
         catch (Exception e) { Out.Err("PIECES reset during rig teardown threw " + e.GetType().Name); }
@@ -645,6 +649,7 @@ public class SkateRig : MonoBehaviour
 
     private void OnDestroy()
     {
+        try { SkateRiggingShowcase.Stop("The skate rig was removed"); } catch { }
         try { SkatePieces.Shutdown(); SkateBuildWheel.Clear(); }
         catch (Exception e) { Out.Err("PIECES teardown threw " + e.GetType().Name); }
         try { SkateRide.Dismount("the skate rig is gone"); }

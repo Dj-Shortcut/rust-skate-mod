@@ -186,7 +186,12 @@ public static class SkateBoard
         velocity = detached.Initialized ? detachedVelocity : rollingOut ? rollDir * rollSpeed : Vector3.zero; return true;
     }
 
-    public static SkateBoardPose PoseFor(Transform playerT) { return SkateSurfaceRide.FlipFrame(UnflippedFor(playerT)); }
+    public static SkateBoardPose PoseFor(Transform playerT)
+    {
+        if (SkateRiggingShowcase.Running && SkateRiggingShowcase.CurrentFrame.Initialized)
+            return SkateRiggingShowcase.CurrentFrame;
+        return SkateSurfaceRide.FlipFrame(UnflippedFor(playerT));
+    }
     public static SkateBoardPose CarrierFor(Transform playerT) { return PoseFor(playerT, true); }
     public static SkateBoardPose UnflippedFor(Transform playerT)
     {

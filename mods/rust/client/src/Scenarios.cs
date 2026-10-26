@@ -21,6 +21,7 @@ public static class Scenarios
 
     private static void Restore()
     {
+        if (SkateRiggingShowcase.Active) { SkateRiggingShowcase.Stop("Rigging preview ended"); return; }
         SkateKeys.Scripted = false; SkateKeys.Reset();
         SkateCamera.Fixed = false; SkateCamera.Chase = true; SkateRide.Frozen = false; SkateRide.Manual = SkateRide.NoseManual = false; SkateRide.ShoveDeg = 0; SkateBoard.ShowLift = 0f;
         SkateHud.Staged = false; SkateHud.Clear();
@@ -50,6 +51,12 @@ public static class Scenarios
 
     public static void Update(float now)
     {
+        // The visual inspection owns its lifecycle and can return to play without ending Rust.
+        if (Name == "rigging")
+        {
+            if (!SkateRiggingShowcase.Active) SkateRiggingShowcase.Start(now);
+            SkateRiggingShowcase.Update(now); return;
+        }
         if (done) return;
         if (startAt < 0f)
         {
