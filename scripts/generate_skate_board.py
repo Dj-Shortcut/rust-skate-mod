@@ -12,6 +12,7 @@ from mathutils.bvhtree import BVHTree
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--output', required=True)
+parser.add_argument('--no-previews', action='store_true', help='Export and validate the rig without render-only studio previews.')
 args = parser.parse_args(sys.argv[sys.argv.index('--')+1:] if '--' in sys.argv else [])
 OUT = Path(args.output).resolve(); OUT.mkdir(parents=True, exist_ok=True)
 bpy.ops.object.select_all(action='SELECT'); bpy.ops.object.delete(use_global=False)
@@ -246,13 +247,13 @@ bpy.ops.export_scene.gltf(filepath=str(OUT/'skate_board.glb'),export_format='GLB
 
 # Independently read the binary header, JSON and actual indexed primitive count after export.
 raw=(OUT/'skate_board.glb').read_bytes(); magic,version,total=struct.unpack_from('<III',raw)
-assert magic==0x46546c67 and version==2 and total==len(raw)
-size,kind=struct.unpack_from('<II',raw,12); assert kind==0x4e4f534a
+assert magic==int.from_bytes(b'glTF','little') and version==2 and total==len(raw)
+size,kind=struct.unpack_from('<II',raw,12); assert kind==int.from_bytes(b'JSON','little')
 j=json.loads(raw[20:20+size]); bins=[]; offset=12
 while offset<len(raw):
     ln,ty=struct.unpack_from('<II',raw,offset); bins.append((ty,ln)); offset+=8+ln
 assert len(j.get('buffers',[]))==1 and 'uri' not in j['buffers'][0]
-assert [ty for ty,ln in bins]==[0x4e4f534a,0x004e4942]
+assert [ty for ty,ln in bins]==[int.from_bytes(b'JSON','little'),int.from_bytes(b'BIN\0','little')]
 assert not any(j.get(k) for k in ['skins','animations','cameras','images','textures'])
 parents={c:n for n,node in enumerate(j['nodes']) for c in node.get('children',[])}
 name_index={n['name']:i for i,n in enumerate(j['nodes'])}
@@ -287,9 +288,60 @@ for n in required:assert n.name in name_index
 rig={'license':'CC0-1.0','asset':'skate_board.glb','units':'meters','axes':{'up':'+Y','nose':'+Z','right':'+X'},'root_origin':'ground, centered below deck','deck_length_m':.8,'deck_width_m':.204,'deck_top_center_m':.1,'truck_z_m':[-.245,.245],'wheel_radius_m':.027,'wheel_width_m':.032,'wheel_centres_abs_x_m':.082,'wheel_centres_y_m':.027,'triangles':exportedtris,'nodes':nodes,'bushing_exception':'Only bushings preserve a fixed quaternion aligning local +Y to the kingpin. Runtime scales bushings only; never overwrite their rotation. All other nodes have identity rest rotations and unit scales.','runtime_steering':'Set front hanger angle +0.8*L degrees about axis_local and rear -0.8*L; whole-board roll -L about +Z. Wheels spin about local +X.','clearance_check':clearance,'integration_boundary':'Standalone authored rig only. Current procedural runtime axle constant is 0.23m; this asset follows requested +/-0.245m and is not installed in the mod.'}
 (OUT/'skate_board_rig.json').write_text(json.dumps(rig,indent=2)+'\n')
 (OUT/'gltf_readback.json').write_text(json.dumps({'pass':True,'sha256':hashlib.sha256(raw).hexdigest(),'bytes':len(raw),'triangles':exportedtris,'nodes':len(nodes),'meshes':len(j['meshes']),'binary_chunks':bins,'checks':['one embedded binary buffer','one triangle primitive/material per mesh','POSITION and NORMAL','TRS only','identity non-bushing rotations','unit node scales','all extras.role exact','world pivots and nose axis','fixed local Y bushing kingpin alignment','no skins morph animation camera light textures']},indent=2)+'\n')
+# Register only this asset, preserving all other authored entries and their order.
+# Use exported world vertices: accessor bounds alone are local to their rig nodes.
+json_end=20+size
+binary_size,binary_kind=struct.unpack_from('<II',raw,json_end)
+assert binary_kind==int.from_bytes(b'BIN\0','little')
+binary=raw[json_end+8:json_end+8+binary_size]
+scene_index=j.get('scene',0); exported_scene=j['scenes'][scene_index]
+world_points=[]; exported_vertices=0
+pending=list(exported_scene.get('nodes',[])); scene_nodes=set()
+while pending:
+    node_index=pending.pop()
+    assert node_index not in scene_nodes, 'Repeated node in exported scene'
+    scene_nodes.add(node_index); node=j['nodes'][node_index]
+    pending.extend(node.get('children',[]))
+    if 'mesh' not in node: continue
+    for primitive in j['meshes'][node['mesh']]['primitives']:
+        accessor=j['accessors'][primitive['attributes']['POSITION']]
+        assert accessor['type']=='VEC3' and accessor['componentType']==5126 and 'sparse' not in accessor
+        view=j['bufferViews'][accessor['bufferView']]
+        begin=view.get('byteOffset',0)+accessor.get('byteOffset',0)
+        stride=view.get('byteStride',12); exported_vertices+=accessor['count']
+        for vertex_index in range(accessor['count']):
+            position=Vector(struct.unpack_from('<3f',binary,begin+vertex_index*stride))
+            world_points.append(wm(node_index) @ position)
+assert world_points, 'Exported scene has no mesh vertices'
+bounds=[[min(point[axis] for point in world_points) for axis in range(3)],
+        [max(point[axis] for point in world_points) for axis in range(3)]]
+manifest_path=OUT/'manifest.json'
+manifest=json.loads(manifest_path.read_text()) if manifest_path.is_file() else {
+    'schema':1,'license':'CC0-1.0','units':'meters','source':'scripts/generate_skate_board.py',
+    'generator_blender':bpy.app.version_string,'assets':[]}
+if not isinstance(manifest.get('assets'),list): raise ValueError('Existing asset manifest has no assets list')
+entry={'name':'skate_board','file':'skate_board.glb','vertices':exported_vertices,'triangles':exportedtris,
+    'bounds_space':'glTF Y-up, forward +Z (standalone rigid board)','animations':[],
+    'license':'CC0-1.0','source':'scripts/generate_skate_board.py','generator_blender':bpy.app.version_string,
+    'default_scene':exported_scene.get('name','Scene'),
+    'dimensions':{'kind':'skateboard_rig','pivot':'ground centre','length':.8,'width':.204,
+        'deck_top':.1,'axle_half_span':.245,'wheel_radius':.027},
+    'sha256':hashlib.sha256(raw).hexdigest(),'bytes':len(raw),'bounds':bounds}
+entries=[]; replaced=False
+for previous in manifest['assets']:
+    if previous.get('name')=='skate_board':
+        if not replaced: entries.append(entry); replaced=True
+    else: entries.append(previous)
+if not replaced: entries.append(entry)
+manifest['assets']=entries
+manifest_path.write_text(json.dumps(manifest,indent=2)+'\n')
+
 # Save editable rest source before adding render-only studio objects.
 scene['original_work_license']='CC0-1.0'; scene['units_axes']='meters; Blender x,-z,y from glTF x,y,z'
 bpy.ops.wm.save_as_mainfile(filepath=str(OUT/'skate_board.blend'))
+if args.no_previews:
+    print('SKATE_RIG PASS',exportedtris,'triangles',len(nodes),'nodes',len(raw),'bytes; previews skipped',flush=True)
+    raise SystemExit(0)
 
 # Render-only studio; none of these objects is in the exported GLB or saved editable asset.
 scene.render.engine='BLENDER_EEVEE'

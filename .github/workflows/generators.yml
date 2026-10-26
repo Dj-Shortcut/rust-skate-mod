@@ -53,8 +53,12 @@ jobs:
           sudo apt-get install -y --no-install-recommends libxi6 libxxf86vm1 libxfixes3 libxrender1 libgl1 libsm6 libxkbcommon0
       - name: Generate
         run: |
+          mkdir -p "$RUNNER_TEMP/models"
+          cp assets/authored/manifest.json "$RUNNER_TEMP/models/manifest.json"
           "$RUNNER_TEMP/$RAMP_BLENDER/blender" -b --factory-startup \
             --python scripts/generate_skate_ramp_assets.py -- --output "$RUNNER_TEMP/models"
+          "$RUNNER_TEMP/$RAMP_BLENDER/blender" -b --factory-startup \
+            --python scripts/generate_skate_board.py -- --output "$RUNNER_TEMP/models" --no-previews
       - name: Compare with the committed files
         run: |
           set -o pipefail
