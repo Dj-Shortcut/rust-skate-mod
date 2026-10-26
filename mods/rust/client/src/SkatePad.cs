@@ -174,7 +174,7 @@ public static class SkatePad
         if (seconds <= 0) return;
         if (seconds > MostCatchUp) seconds = MostCatchUp;
         var air = SkateRide.Mode == RideMode.Air;
-        var grabbing = (air || SkateRide.On && SkateRide.Mode == RideMode.Ground && (Buttons & LeftBumper) != 0) && (LeftTrigger > Pulled || RightTrigger > Pulled);
+        var grabbing = (air || SkateRide.Handplant || SkateRide.On && SkateRide.Mode == RideMode.Ground && (Buttons & LeftBumper) != 0) && (LeftTrigger > Pulled || RightTrigger > Pulled);
         var rightFar = RightX * RightX + RightY * RightY;
         // The right stick picked the grab; let go of the trigger with it still out, it is no flick:
         // it must come back to the middle before it moves the board again.
@@ -216,7 +216,7 @@ public static class SkatePad
                     var composition = r.Composition;
                     // Bumpers modify a popped stick gesture; naked bumpers still own handplants.
                     var bumpers = Buttons & ~blockedSpecialBumpers & (LeftBumper | RightBumper);
-                    if (!air && SkateRide.On && (SkateRide.Mode != RideMode.Grind || SkateRide.GrindKind != SkateGrindKind.Darkslide) && LeftTrigger <= Pulled && RightTrigger <= Pulled &&
+                    if (!air && SkateRide.On && !SkateRide.Handplant && (SkateRide.Mode != RideMode.Grind || SkateRide.GrindKind != SkateGrindKind.Darkslide) && LeftTrigger <= Pulled && RightTrigger <= Pulled &&
                         composition.Kind != SkatePopKind.None && composition.ShoveDegrees == 0 && bumpers != 0)
                     {
                         var special = bumpers == (LeftBumper | RightBumper) ? SkateBoardTrickKind.Underflip :
@@ -285,6 +285,9 @@ public static class SkatePad
 
     public static void DropPops() { poppedCount = heldFlips = 0; BodyVarialDegrees = 0f; EndHeldFlip(); }
     // Abandon the gesture too, not just its output queue. A held setup must come back to rest.
+    public static void BlockSpecialBumpers(int mask)
+    { blockedSpecialBumpers |= Buttons & mask & (LeftBumper | RightBumper); }
+
     public static void SuspendGestures()
     {
         DropPops(); flick = default(SkateFlickState); Charging = Manual = NoseManual = false; Charge = 0;

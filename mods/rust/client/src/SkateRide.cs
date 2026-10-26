@@ -92,9 +92,10 @@ public static class SkateRide
     // A handplant comes down before it leaves the edge: the body swings back onto the board over
     // HandDownSeconds, held still on the edge meanwhile.
     public const float HandDownSeconds = 0.4f;
-    private static float handDownAt = -99f; private static bool handDownPop;
+    private static float handDownAt = -99f; private static bool handDownPop; private static uint handDownInputEpoch;
     public static bool HandplantDown { get { return Stalling && handDownAt > 0f; } }
     public static bool Stalling;
+    public static SkateHandplantKind HandplantVariantUsed;
     public static int Stalls;
     private static float stallAt, stallSign = 1f;
     public static bool Handplant { get { return Stalling && GrindKind == SkateGrindKind.Handplant; } }
@@ -290,7 +291,7 @@ public static class SkateRide
         Speed = Vector3.Dot(v, Dir(yaw));
         if (SkateKeys.Scripted) SkateKeys.EndStep(); else SkateKeys.Reset();
         SkateBoard.BeginRide();
-        RiderRig.BeginRide();
+        RiderRig.BeginRide(); HandplantVariantUsed = SkateHandplantKind.None;
         hasLast = false; pastCount = 0; Steps = 0; Resets = 0; Top = 0f; Lean = 0f; SteerRate = 0f; Powerslide = 0f; PowerslideSide = 1f; lastPull = mountAt = Time.realtimeSinceStartup;
         // A cap from a ride a while ago says nothing about this one.
         if (mountAt - putBackAt > CapForget) ForgetServer();
@@ -321,7 +322,7 @@ public static class SkateRide
         SkateRig.ReleaseRootProxy();
         if (Mode == RideMode.Off) return;
         airViewFrom = Vector3.up; airViewAt = airViewRise = 0f; airView = default(SkateRiderAirFrameState);
-        Mode = RideMode.Off; GroundGrab = default(SkateGroundGrabState); BoardPath = default(SkateBoardPathSample); wantSpecial = SkateBoardTrickKind.None; wantSpecialDirection = 0; Pump = default(SkatePumpState); PumpHeld = RevertLeft = 0f; Stalling = false; grindClassified = airFromValid = false; OffReason = reason; Grab = SkateGrabKind.None; Manual = NoseManual = false;
+        Mode = RideMode.Off; HandplantVariantUsed = SkateHandplantKind.None; GroundGrab = default(SkateGroundGrabState); BoardPath = default(SkateBoardPathSample); wantSpecial = SkateBoardTrickKind.None; wantSpecialDirection = 0; Pump = default(SkatePumpState); PumpHeld = RevertLeft = 0f; Stalling = false; grindClassified = airFromValid = false; OffReason = reason; Grab = SkateGrabKind.None; Manual = NoseManual = false;
         if (SkateKeys.Scripted) SkateKeys.EndStep(); else SkateKeys.Reset();
     }
 
@@ -1224,6 +1225,8 @@ public static class SkateRide
 
     private static void Take(SkateTrickResult r)
     {
+        bool endedPlant = Trick.Grinding && Trick.GrindKind == SkateGrindKind.Handplant && (r.Events & SkateTrickEvents.GrindEnded) != 0;
+        var name = endedPlant ? SkateHandplants.Name(HandplantVariantUsed, Trick.GrindFrontside) : r.TrickName;
         Trick = r.State; ComboPoints = r.ComboPoints;
         if ((r.Events & SkateTrickEvents.Bailed) != 0) { Bail(); return; }
         // The landing hands the turns back rounded: an odd number of half shoves turned the board round.
@@ -1232,10 +1235,10 @@ public static class SkateRide
         if ((r.Events & SkateTrickEvents.Landed) != 0 && ((long)Math.Round(r.BodySpin / 180.0) & 1) != 0) DeckReversed = !DeckReversed;
         if ((r.Events & (SkateTrickEvents.Landed | SkateTrickEvents.GrindEnded | SkateTrickEvents.ManualEnded)) != 0)
         {
-            TrickName = r.TrickName;
+            TrickName = name;
             TrickPoints = r.Points; TrickAt = now;
-            if (r.Points > 0) SkateHud.Landed(r.TrickName, r.Points);
-            Out.Say("SKATE trick " + r.TrickName + " +" + r.Points + " combo=" + r.ComboPoints + " x" + Trick.ComboCount + " switch=" + Trick.Switch);
+            if (r.Points > 0) SkateHud.Landed(name, r.Points);
+            Out.Say("SKATE trick " + name + " +" + r.Points + " combo=" + r.ComboPoints + " x" + Trick.ComboCount + " switch=" + Trick.Switch);
         }
         if ((r.Events & SkateTrickEvents.ComboBanked) != 0)
         {
@@ -1255,7 +1258,7 @@ public static class SkateRide
         ComboPoints = 0; Manual = NoseManual = false;
         if (Mode == RideMode.Grind) { GrindEnds++; Yaw = SkateGrind.Heading; SkateGrind.Release(Time.fixedDeltaTime); }
         Speed = HorizontalSpeed;
-        Enter(RideMode.Bail); GroundGrab = default(SkateGroundGrabState); Bails++;
+        Enter(RideMode.Bail); HandplantVariantUsed = SkateHandplantKind.None; GroundGrab = default(SkateGroundGrabState); Bails++;
         TrickName = "Bail"; TrickPoints = 0; TrickAt = now;
         flipLeft = shoveLeft = 0f; BoardPath = default(SkateBoardPathSample); spinning = false; TrickAir = Jumped = false; Grab = SkateGrabKind.None;
         Out.Say("SKATE bail | " + LastAir);
@@ -1272,6 +1275,7 @@ public static class SkateRide
     // stick back or forward a tail or nose stall, otherwise a board stall; slowly along it, a 50-50 stall.
     private static void BeginStall(Vector3 pos, float dt)
     {
+        HandplantVariantUsed = SkateHandplantKind.None;
         LastAir = AirLine("stall");
         var impact = -VSpeed;
         stallSign = Speed < 0f ? -1f : 1f;
@@ -1300,12 +1304,14 @@ public static class SkateRide
     // (a rock to fakie), or nose first out of a handplant, which comes round.
     private static void StallStep(Vector3 pos, float dt)
     {
-        var popped = now - jumpWanted < 0.12f;
+        if (Handplant && !SkateGrind.StallSupported && !SkateKeys.Scripted) { Bail(); return; }
+        var popped = now - jumpWanted < 0.12f && (SkateKeys.Scripted || SkateKeys.ControlsActive) && jumpInputEpoch == SkateKeys.InputEpoch;
         var leaving = popped || now - stallAt > StallMax;
         if (GrindKind == SkateGrindKind.Handplant)
         {
             // The pop (or the time) starts the way down; the edge is left once the body is back on the board.
-            if (leaving && handDownAt < 0f) { handDownAt = now; handDownPop = popped; jumpWanted = -99f; }
+            if (leaving && handDownAt < 0f) { handDownAt = now; handDownPop = popped; handDownInputEpoch = SkateKeys.InputEpoch; jumpWanted = -99f; }
+            if (!(SkateKeys.Scripted || SkateKeys.ControlsActive) || handDownInputEpoch != SkateKeys.InputEpoch) handDownPop = false;
             leaving = handDownAt > 0f && now - handDownAt >= HandDownSeconds;
             popped = leaving && handDownPop;
         }

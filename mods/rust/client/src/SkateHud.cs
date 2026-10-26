@@ -264,7 +264,7 @@ public static class SkateHud
         s.Score = t.TotalPoints; s.Base = t.ComboBasePoints; s.Count = t.ComboCount;
         s.Window = (float)(t.RollingSeconds / SkateTricks.ComboRollingTimeout);
         var grinding = SkateRide.Mode == RideMode.Grind;
-        s.Live = SkateRide.GroundGrab.Active ? SkateGroundGrabs.Name(SkateRide.GroundGrab.Kind).ToUpperInvariant() : grinding ? SkateTricks.GrindName(SkateRide.GrindKind, SkateRide.GrindFrontside).ToUpperInvariant() : !t.Manualing ? "" : t.NoseManualing ? "NOSE MANUAL" : "MANUAL";
+        s.Live = SkateRide.GroundGrab.Active ? SkateGroundGrabs.Name(SkateRide.GroundGrab.Kind).ToUpperInvariant() : SkateRide.Handplant ? SkateHandplants.Name(RiderRig.HandplantStyle.Kind, SkateRide.GrindFrontside).ToUpperInvariant() : grinding ? SkateTricks.GrindName(SkateRide.GrindKind, SkateRide.GrindFrontside).ToUpperInvariant() : !t.Manualing ? "" : t.NoseManualing ? "NOSE MANUAL" : "MANUAL";
         s.LiveSeconds = SkateRide.GroundGrab.Active ? (float)SkateRide.GroundGrab.Seconds : grinding ? (float)t.GrindSeconds : (float)t.ManualSeconds;
         s.LivePoints = (long)Math.Round(s.LiveSeconds * (SkateRide.GroundGrab.Active ? 80 : grinding ? SkateTricks.GrindRate(SkateRide.GrindKind) : SkateTricks.ManualPointsPerSecond));
         if (s.Speed > TopSpeed) TopSpeed = s.Speed;
@@ -445,7 +445,7 @@ public static class SkateHud
     {
         if (SkateGrabCatalog.IsNamedGrab(name) || string.Equals(name, "Coffin", StringComparison.OrdinalIgnoreCase)) return Good;
         var n = name.ToLowerInvariant();
-        if (n.Contains("grind") || n.Contains("slide") || n.Contains("50-50") || n.Contains("5-0")) return Cool;
+        if (n.Contains("handplant") || n.Contains("grind") || n.Contains("slide") || n.Contains("50-50") || n.Contains("5-0")) return Cool;
         if (n.Contains("manual") || n.Contains("revert")) return Warm;
         if (n.Contains("grab") || n.Contains("stalefish") || n.Contains("melon") || n.Contains("method") || n.Contains("crail") || n.Contains("seatbelt") || n.Contains("bone")) return Good;
         return Ink;
@@ -524,9 +524,21 @@ public static class SkateHud
         "Buttons held from a ground plant or a menu must be released first. A naked bumper still asks for a handplant."
     };
 
+    private static readonly string[] PlantTricks = {
+        "@HANDPLANTS   Enter with naked LB (Frontside) / RB (Backside) on a captured edge",
+        "Hold one trigger while planted; the right stick selects a variant without popping.",
+        "@FRONTSIDE   right stick up / down / left / right",
+        "#Tailbone / #Tuck Knee / #Boned / #Stiff   trigger + A: #Frigid   trigger + X: #One-Foot",
+        "@BACKSIDE   right stick up / down / left / right",
+        "#Tuck Knee / #Crossbone / #Method / #Tweak   trigger + A: #One-Foot   trigger + X: #Judo",
+        "Both triggers: #Gymnast (both hands planted). Regular nose-first sides; goofy/fakie mirror them.",
+        "Release triggers and centre the stick before flicking to pop out; used A/X buttons need release.",
+        "A held variant fades before another one starts. The captured edge anchors the planted hand."
+    };
+
     private static void Tricks(float w, float k)
     {
-        var lines = SkateKeys.HelpPage == 0 ? PadTricks : ExtendedGrabs;
+        var lines = SkateKeys.HelpPage == 0 ? PadTricks : SkateKeys.HelpPage == 1 ? ExtendedGrabs : PlantTricks;
         float x = 40f * k, y = 96f * k, step = 25f * k, width = Math.Min(w - 80f * k, 1320f * k);
         Box(x - 14f * k, y - 10f * k, width + 28f * k, (lines.Length * 25f + 18f) * k, Fade(Dark, 0.72f));
         for (var i = 0; i < lines.Length; i++, y += step)

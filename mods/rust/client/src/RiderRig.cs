@@ -53,6 +53,9 @@ public static class RiderRig
     public const float EaseSeconds = 0.07f;
     private static bool pinLeft, pinRight, pinHips;
     private static SkateRiderContactState contact;
+    private static SkateHandplantState plantStyle;
+    private static int plantId = -1;
+    public static SkateHandplantState HandplantStyle { get { return plantStyle; } }
     private static string contactError;
     public static SkateRiderContactState Contact { get { return contact; } }
     public static SkateGrabKind ShownGrab { get { return contact.Initialized
@@ -543,6 +546,7 @@ public static class RiderRig
     {
         grabSince = grabHold = -1f; plantBlend = chestLead = crouchSpeed = 0f; Crouch = 0.18f;
         contact = default(SkateRiderContactState);
+        plantStyle = default(SkateHandplantState); plantId = -1; SkateBoard.HeldFrame = default(SkateBoardPose);
         pinLeft = pinRight = pinHips = false;
         motion = default(SkateRiderMotionState); easedAt = -99f;
         SkateBoard.GrabFold = SkateBoard.Plant = 0f; SkateBoard.Held = false;
@@ -552,6 +556,7 @@ public static class RiderRig
     public static void Prepare(float frameSeconds)
     {
         SkateBoard.Held = false;
+        SkateBoard.HeldFrame = default(SkateBoardPose);
         if (!SkateRide.On) { ResetPresentation(); return; }
         var now = Time.realtimeSinceStartup;
         var grab = SkateRide.Mode == RideMode.Air ? SkateRide.Grab : SkateGrabKind.None;
@@ -590,11 +595,20 @@ public static class RiderRig
         var plantWant = SkateRide.Handplant && !SkateRide.HandplantDown ? 1f : 0f;
         var plantStep = SkateRide.Clamp(frameSeconds / PlantSeconds, 0f, 1f);
         plantBlend = SkateRide.Mode == RideMode.Bail ? 0f : SkateRide.Clamp(plantBlend + SkateRide.Clamp(plantWant - plantBlend, -plantStep, plantStep), 0f, 1f);
+        if (!SkateRide.Handplant || plantId != SkateRide.Stalls) plantStyle = default(SkateHandplantState);
+        plantId = SkateRide.Stalls;
+        if (SkateRide.Handplant && frameSeconds > 0 && !float.IsInfinity(frameSeconds))
+        {
+            SkateHandplantState nextStyle; string styleError;
+            var request = SkateRide.HandplantDown ? SkateHandplantKind.None : SkateKeys.HandplantVariant;
+            if (SkateHandplants.TryStep(plantStyle, request, SkateRide.GrindFrontside, true, Math.Min(.05, frameSeconds), out nextStyle, out styleError)) plantStyle = nextStyle;
+        }
     }
 
     public static void Frame(Vector3 feet, Vector3 up, bool legsOnly, float frameSeconds)
     {
         if (!Bound || failed) return;
+        if (SkateRide.Handplant) up = Vector3.up;
         try
         {
             if (Pelvis == null) { Bound = false; return; }
@@ -667,9 +681,20 @@ public static class RiderRig
                 noseSlide, chestLead, mode == RideMode.Air ? SkateRide.ShoveDeg : 0.0, landing, contact, SkateRide.PushPeriod, new SkateVector(deckFace.x, deckFace.y, deckFace.z),
                 SkateBoard.SupportTruck != 0, SkateBoard.GrindRoll * Math.PI / 180.0,
                 SkateBoard.SupportTruck * SkateBoard.Axle * SkateBoard.SupportWeight,
-                SkateRig.LocalT != null && handplant <= 0.001f && mode != RideMode.Bail ? SkateBoard.PoseFor(SkateRig.LocalT) : default(SkateBoardPose), SkateRide.BoardPath);
+                SkateRig.LocalT != null && mode != RideMode.Bail ? SkateBoard.PoseFor(SkateRig.LocalT) : default(SkateBoardPose), SkateRide.BoardPath);
             SkateRiderPose pose; string error;
-            if (!(groundGrab ? SkateRider.TryCreateGroundGrab(Rig, input, SkateRide.GroundGrab, out pose, out error) : SkateRider.TryCreate(Rig, input, out pose, out error)))
+            SkateBoardPose plantBoard = default(SkateBoardPose);
+            bool posed;
+            if (groundGrab) posed = SkateRider.TryCreateGroundGrab(Rig, input, SkateRide.GroundGrab, out pose, out error);
+            else if (handplant > .001f && SkateRide.Handplant)
+            {
+                var edgeWay = SkateGrind.StallSupported ? SkateRide.Dir(SkateGrind.Heading) : Vector3.Cross(upV, face);
+                var anchor = SkateGrind.StallSupported ? SkateGrind.HandAnchor : plane + upV * (Math.Min(0, (float)input.DeckOffset) - DeckTop) + toToes * .22f + face * (SkateRide.TailFirst ? -.1f : .1f);
+                posed = SkateRider.TryCreateHandplant(Rig, input, plantStyle, SkateRide.GrindFrontside, new SkateVector(anchor.x, anchor.y, anchor.z),
+                    new SkateVector(edgeWay.x, edgeWay.y, edgeWay.z), out pose, out plantBoard, out error);
+            }
+            else posed = SkateRider.TryCreate(Rig, input, out pose, out error);
+            if (!posed)
             {
                 var withoutPush = pushing ? new SkateRiderInput(input.BoardPosition, input.BoardForward, input.BoardUp, input.Stance, input.Switch,
                     speed, lean, Crouch, false, false, 0, SkateRide.FlipDeg, grab, false, SkateKeys.LookYaw % 360f, SkatePose.FootLift - AnkleHeight,
@@ -696,6 +721,7 @@ public static class RiderRig
             if (hardContact || (mode != motionMode && !flowing)) motion = default(SkateRiderMotionState);
             motionMode = mode;
             bool pinL = false, pinR = false;
+            if (plantBoard.Initialized) pinL = pinR = true;
             if (groundGrab)
             {
                 var groundKind = SkateRide.GroundGrab.Kind;
@@ -721,6 +747,11 @@ public static class RiderRig
             // In a handplant the board is against the feet, held: the board follows the pose, from
             // the first of the way up to the last of the way down.
             SkateBoard.Held = handplant > 0.001f;
+            if (SkateBoard.Held && plantBoard.Initialized)
+            {
+                SkateBoard.HeldFrame = plantBoard;
+                if (handplant >= .95 && plantStyle.Weight >= .99) SkateRide.HandplantVariantUsed = plantStyle.Kind;
+            }
             if (SkateBoard.Held)
             {
                 // Under the feet, its top toward them: flat on the ground while they are still on it
@@ -742,8 +773,8 @@ public static class RiderRig
             var pushLeft = SkateRide.PushLead ? !trailingIsLeft : trailingIsLeft;
             // A gripping hand must remain reachable from the solved upper body. Its shared
             // secondary motion is already contact-aware; another independent trunk lag is not.
-            pinHips = groundGrab || pushing || pinL || pinR || SkateRide.BoardPath.Known;
-            pinLeft = groundGrab || SkateRide.BoardPath.Known || pushing && (!pushLeft || footDown); pinRight = groundGrab || SkateRide.BoardPath.Known || pushing && (pushLeft || footDown);
+            pinHips = plantBoard.Initialized || groundGrab || pushing || pinL || pinR || SkateRide.BoardPath.Known;
+            pinLeft = plantBoard.Initialized || groundGrab || SkateRide.BoardPath.Known || pushing && (!pushLeft || footDown); pinRight = plantBoard.Initialized || groundGrab || SkateRide.BoardPath.Known || pushing && (pushLeft || footDown);
             Shown = pose;
             Ease(pose, plane, toToes, upV, new Vector3((float)fx, (float)fy, (float)fz), now, frameSeconds, pinL, pinR);
             Shape(upV);
@@ -780,6 +811,14 @@ public static class RiderRig
                 var definition = SkateGrabCatalog.Get(grab); var tweak = SkateBoard.GrabTweak(upV);
                 if (!(input.Stance == SkateStance.Regular ? definition.FrontReleased : definition.BackReleased)) leftSole = tweak * leftSole;
                 if (!(input.Stance == SkateStance.Regular ? definition.BackReleased : definition.FrontReleased)) rightSole = tweak * rightSole;
+            }
+            if (plantBoard.Initialized)
+            {
+                var profile = SkateHandplants.Get(plantStyle.Kind); var deckUp = V(plantBoard.Up);
+                bool leftReleased = SkateRide.Goofy ? profile.BackFoot.LengthSquared > 0 : profile.FrontFoot.LengthSquared > 0;
+                bool rightReleased = SkateRide.Goofy ? profile.FrontFoot.LengthSquared > 0 : profile.BackFoot.LengthSquared > 0;
+                leftSole = Vector3.Lerp(deckUp, upV, leftReleased ? (float)plantStyle.Weight : 0).normalized;
+                rightSole = Vector3.Lerp(deckUp, upV, rightReleased ? (float)plantStyle.Weight : 0).normalized;
             }
             Apply(upV, legsOnly, leftSole, rightSole);
             Applied++;

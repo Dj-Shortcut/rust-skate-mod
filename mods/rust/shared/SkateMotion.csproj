@@ -25,6 +25,7 @@
     <Compile Include="SkateTricks.cs" />
     <Compile Include="SkateGrabCatalog.cs" />
     <Compile Include="SkateGroundGrabs.cs" />
+    <Compile Include="SkateHandplants.cs" />
     <Compile Include="SkateBoardPath.cs" />
     <Compile Include="SkateFlick.cs" />
     <Compile Include="SkateRider.cs" />

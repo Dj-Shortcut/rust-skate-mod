@@ -16,6 +16,11 @@ public static class SkateGrind
     public static bool Enabled = true;
     public static float Heading, Speed;
     public static Vector3 Target;
+    public static bool StallSupported { get; private set; }
+    public static Vector3 HandAnchor { get { return stallAnchor; } }
+    private static Vector3 stallAnchor, stallNormal;
+    private static Collider stallCollider;
+    private static int stallColliderId;
     public static int Scans, Finds, Captures;
     public static string Last = "";
     private static readonly double[] heights = new double[Rows * Cols];
@@ -27,6 +32,7 @@ public static class SkateGrind
     private static SkateScanState scan;
     private static void Fail(Exception e, string where)
     {
+        ClearStall();
         while (e is System.Reflection.TargetInvocationException && e.InnerException != null) e = e.InnerException;
         var name = e.GetType().Name;
         // The caller needs Heading and Speed to leave the grind with its existing momentum.
@@ -50,8 +56,15 @@ public static class SkateGrind
     public static float NearAt = -99f;
     private static SkateEdge stallEdge;
 
+    private static void ClearStall()
+    {
+        StallSupported = false; stallAnchor = stallNormal = default(Vector3);
+        stallCollider = null; stallColliderId = 0;
+    }
+
     public static void Reset()
     {
+        ClearStall();
         cooldown = 0; edge = stallEdge = default(SkateEdge); Speed = Heading = 0f; Target = default(Vector3);
         StallCandidate = StallSquare = false; NearAt = nearSaidAt = -99f;
         scan = SkateScanRecovery.Reset(scan); Last = Unavailable ? "scanner unavailable" : "";
@@ -103,6 +116,7 @@ public static class SkateGrind
 
     public static void Release(float dt)
     {
+        ClearStall();
         string error;
         if (!SkateEdges.TryCooldown(cooldown, true, StepSeconds(dt), out cooldown, out error)) cooldown = SkateMotion.RailRecaptureDelay;
     }
@@ -149,13 +163,49 @@ public static class SkateGrind
     // The board stops on the edge last met too square or too slowly; HoldStall keeps it there.
     public static void BeginStall(Vector3 pos)
     {
+        ClearStall();
         edge = stallEdge; Speed = 0f; Heading = YawOf(edge.Direction.X, edge.Direction.Z); Captures++;
         var off = Aim(pos);
-        Last = "stall top=" + edge.TopHeight.ToString("F2") + " off=" + off.ToString("F2") + (StallSquare ? " square" : " along");
+        try
+        {
+            RaycastHit hit;
+            var highSide = new Vector3((float)edge.HighSide.X, 0, (float)edge.HighSide.Z);
+            var candidate = Target - highSide * (Inset - .04f);
+            if (edge.Found && Enabled && SkateParks.Ray(candidate + Vector3.up * .2f, Vector3.down, out hit, .4f, SkateRide.GroundMask)
+                && hit.m_Normal.y >= .65f && Math.Abs(hit.m_Point.y - Target.y) <= .025f && (Target - pos).sqrMagnitude <= 1.44f)
+            {
+                var collider = hit.collider;
+                if (collider != null)
+                {
+                    // Both the hand and the body target belong to this actual capture-time hit.
+                    // Later body corrections must not drag a planted hand along the coping.
+                    stallAnchor = hit.m_Point; stallNormal = hit.m_Normal;
+                    stallCollider = collider; stallColliderId = collider.GetInstanceID();
+                    Target = stallAnchor + highSide * Inset; StallSupported = true;
+                }
+            }
+        }
+        catch (Exception e) { Fail(e, "stall capture"); return; }
+        Last = "stall top=" + edge.TopHeight.ToString("F2") + " off=" + off.ToString("F2") + (StallSquare ? " square" : " along") + " supported=" + StallSupported;
         Out.Say("GRIND " + Last);
     }
 
-    public static void HoldStall(Vector3 pos) { Aim(pos); }
+    public static void HoldStall(Vector3 pos)
+    {
+        if (!StallSupported) return;
+        try
+        {
+            // Revalidate the same hand contact on the same collider. An adjacent lower deck
+            // cannot replace removed coping, even when it lies within the old loose tolerance.
+            RaycastHit hit;
+            StallSupported = Enabled && stallCollider != null && SkateParks.Ray(stallAnchor + Vector3.up * .2f, Vector3.down, out hit, .4f, SkateRide.GroundMask)
+                && hit.collider != null && hit.collider == stallCollider && hit.collider.GetInstanceID() == stallColliderId
+                && hit.m_Normal.y >= .65f && Vector3.Dot(hit.m_Normal, stallNormal) >= .98f
+                && (hit.m_Point - stallAnchor).sqrMagnitude <= .025f * .025f
+                && (Target - pos).sqrMagnitude <= 1.44f;
+        }
+        catch (Exception e) { Fail(e, "stall support"); }
+    }
 
     public static bool TryContinue(Vector3 pos, float dt, out bool ended)
     {

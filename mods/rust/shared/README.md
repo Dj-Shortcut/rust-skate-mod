@@ -385,3 +385,10 @@ an independent new native measurement.
 `SharesNominalEdge` classifies floor seams from yaw-only centers and unpitched X/Z extents.
 A carrier pitch or its bounds-center Y does not shrink or shift its nominal cell.
 Physical overlap detection remains separate and uses the pitched bounds.
+
+`SkateHandplants` supplies the side-specific selector, profiles and release-before-change state.
+`SkateRider.TryCreateHandplant(rig,input,style,frontside,anchor,edgeDirection,out pose,out board,out error)`
+uses a captured world coping point and returns one board frame shared by attached feet and display.
+Gymnast plants both hands along the supplied edge. Existing rider overloads retain their signatures.
+Measured shoulder rise is retained through contact solves and secondary motion. The pure helpers
+require the adapter to refresh physical support; they do not establish native contact or appearance.
