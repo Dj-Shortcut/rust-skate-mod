@@ -4,7 +4,7 @@ Skate-mod voor Andy's Rust-server, in Andy's volgorde. Eén regel per punt; deta
 Klaar = in het spel gezien of gereden, met versie. Bron, CI of een build alleen is niet klaar.
 Laatste speltest: client 0.18.45 / server 0.3.38 (21 okt). Geen testomgeving sinds Shadow weg is.
 
-1. Bouwplan-wiel: één knop wisselt tussen Skate- en Rust-bouwen, steeds één wiel zichtbaar. Actief: na Low Ledge kiezen volgt ongevraagd `off` (fix in .46, ongetest).
+1. Bouwplan-wiel: één knop wisselt tussen Skate- en Rust-bouwen, steeds één wiel zichtbaar. Actief: na Low Ledge kiezen volgt ongevraagd `off` (fix in .46, ongetest); de actuele Rust-build vraagt de menucompatibiliteit uit .62, native wisselen/plaatsen open.
 2. MEGA-halfpipe plaatsen op vrije grond en op funderingen. Open.
 3. Echte ronde quarterpipes (mini, normaal, groot). Open.
 4. Alle twaalf skatestukken plaatsen met het gewone bouwplan, ook vanuit inventory (Andy, opnieuw 25 okt). Open.

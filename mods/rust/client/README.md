@@ -355,6 +355,14 @@ the corrected selection, actual placement and controller operation remain unveri
 Version .47 preserves an unresolved placement when the wheel is reopened to choose another piece.
 Compilation and controlled input checks do not close those gameplay gates.
 
+The updated Rust client changed the generated construction-menu registry type. Client .62
+reads only the two known registry layouts and requires Foundation, Wall and Floor choices
+to identify the newer layout before closing it. On that build, open Rust's ordinary building
+wheel once before switching to Skate building. Missing or unrecognizable menu data leaves
+the native wheel alone and reports the limitation. The same verified menu may finish its
+close animation after its choices are cleared; another plan, player or lifetime cannot reuse
+that permission. Native switching and placement still require a gameplay check.
+
 A server line can reach the client without a hook only as text: `SkateInbox` reads the BepInEx log
 (`LogOutput.log`, written with `UnityLogListening` on: `sv plisten 1` before `zz play`) and logs every
 line carrying `SKATE-PROBE` as an `INBOX` line. It acts on nothing; it shows whether a server
