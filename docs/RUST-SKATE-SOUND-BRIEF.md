@@ -73,6 +73,8 @@ afspeelpad.
 
 De standaard launcher en het gewone spelpakket plaatsen de geluidsmap nog niet.
 Een private staging-adapter is voorbereid, maar niet op Windows/PowerShell
-uitgevoerd. Bestandsselectie en verpakking, daadwerkelijke installatie, volumebalans,
-timing en gezamenlijk luisteren op Shadow blijven open. Deze productiebrief is
-geen bewijs van een geïnstalleerd of goedgekeurd geluidspakket.
+uitgevoerd. Alle 18 gekozen bestanden zijn privé voorbereid: 44,1 kHz mono PCM16,
+veilige pieken, gecontroleerde onsets en loopnaden, en volledige decode met de
+werkelijke clientlezer. De absolute LUFS-doelen en de gevraagde drop/landing-verhouding
+worden niet allemaal gehaald. Daadwerkelijke installatie, volumebalans, timing en
+gezamenlijk luisteren op Shadow blijven open; het pakket is niet in-game goedgekeurd.

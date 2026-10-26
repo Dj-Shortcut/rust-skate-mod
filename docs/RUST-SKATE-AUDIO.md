@@ -97,6 +97,10 @@ and its separately authored assets retain their own existing licences.
 
 Offline reader/playback fixtures and a genuine cached-reference C# compile cover
 their stated source scope. Historical procedural-audio tests remain API coverage;
-they do not validate these sounds. Installed-build interop, native upload,
+they do not validate these sounds. All 18 selected private WAVs now pass format,
+peak/clipping, DC, onset/tail and repeated loop-join checks. The actual client
+reader decoded the full pack with float samples matching the PCM bytes. Absolute
+LUFS targets and the requested drop/landing level difference remain unmet; no
+compressor or limiter was used to conceal those limits. Installed-build interop, native upload,
 actual pack staging, teardown, performance, repeated-loop artifacts, output mix
 and heard quality remain open until the replacement pack is tested on Shadow.
