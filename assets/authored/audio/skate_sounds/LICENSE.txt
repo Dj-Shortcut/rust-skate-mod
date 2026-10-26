@@ -1,0 +1,13 @@
+CC0 1.0 Universal
+
+To the extent possible under law, the author dedicates all copyright and related
+rights in these original synthesized skateboard sounds, the demonstration and
+generate_skate_sounds.py to the public domain under CC0 1.0 Universal.
+
+No attribution is required. The sounds may be copied, modified and used commercially.
+No game recordings, commercial packs or external sound recordings were used.
+No warranty is provided. This dedication does not change the licenses of Python,
+NumPy, SciPy or pyloudnorm, which are tools and are not embedded in the WAV data.
+
+Full CC0 terms: https://creativecommons.org/publicdomain/zero/1.0/legalcode
+SPDX-License-Identifier: CC0-1.0
