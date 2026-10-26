@@ -44,3 +44,6 @@ mods/rust/shared/SkateRiderMotion.cs
 mods/rust/shared/SkateModel.cs
 mods/rust/shared/SkatePark.cs
 mods/rust/shared/SkateParkBuildItems.cs
+
+mods/rust/shared/SkateOllieStyles.cs
+mods/rust/client/src/SkateActions.cs

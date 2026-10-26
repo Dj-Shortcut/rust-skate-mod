@@ -429,6 +429,134 @@ namespace Shortcut.RustMod
             return BlendContact(rig, input, free, held, Smooth(ground.Weight), out pose, out error);
         }
 
+        // Retarget an airborne foot/hand action with one measured pelvis solve. Board and rider
+        // consume the returned frame together; an unreachable contact rejects the action.
+        public static bool TryCreateAction(SkateRiderRig rig, SkateRiderInput input, SkateRiderPose basis,
+            SkateOllieStyleState style, SkateFingerFlipState finger, out SkateRiderPose pose, out SkateBoardPose frame, out string error)
+        { return TryCreateAction(rig, input, basis, style, finger, null, default(SkateBoardPose), out pose, out frame, out error); }
+        public static bool TryCreateAction(SkateRiderRig rig, SkateRiderInput input, SkateRiderPose basis,
+            SkateOllieStyleState style, SkateFingerFlipState finger, SkateRiderPose? captured, SkateBoardPose capturedCarrier,
+            out SkateRiderPose pose, out SkateBoardPose frame, out string error)
+        {
+            pose = basis; frame = input.DeckFrame; error = null;
+            if (!Valid(rig) || !Finite(basis) || !SkateOllieStyles.Valid(style) || !SkateOllieStyles.Valid(finger) ||
+                !frame.Initialized || !SkateBoardPath.Valid(frame) || !input.Airborne || style.Known && finger.Initialized)
+            { error = "Invalid airborne action pose."; return false; }
+            if (finger.Initialized && captured.HasValue)
+            {
+                SkateRiderPose carried;
+                if (!TryTransformPose(captured.Value, capturedCarrier, frame, out carried)) { error = "Invalid captured action pose."; return false; }
+                double hold = 1 - Smooth(Math.Max(0, Math.Min(1, (finger.Seconds - SkateOllieStyles.FingerReleaseAt) / .16)));
+                if (hold >= 1) basis = carried;
+                else if (hold > 0 && !BlendContact(rig, input, basis, carried, hold, out basis, out error,
+                    input.BoardPosition - input.BoardUp * (rig.ThighLength + rig.ShinLength + .5))) return false;
+            }
+            SkateOllieTargets targets;
+            SkateVector? lh = null, rh = null;
+            if (finger.Initialized)
+            {
+                SkateFingerFlipSample sample;
+                if (!SkateOllieStyles.TrySampleFinger(finger, frame, out sample, out error)) return false;
+                frame = sample.Frame;
+                double ankle = SkatePose.FootLift - input.DeckOffset;
+                var la = Blend(basis.LeftAnkle + input.BoardUp * (.18 * sample.FootClearance), frame.Project(basis.LeftAnkle, ankle), sample.FrontContact);
+                var ra = Blend(basis.RightAnkle + input.BoardUp * (.18 * sample.FootClearance), frame.Project(basis.RightAnkle, ankle), sample.BackContact);
+                var sole = Unit(Blend(input.BoardUp, frame.Up, sample.FrontContact));
+                var lt = la + Unit(Project(basis.LeftToe - basis.LeftAnkle, sole)) * rig.FootLength;
+                var rt = ra + Unit(Project(basis.RightToe - basis.RightAnkle, sole)) * rig.FootLength;
+                targets = new SkateOllieTargets(frame, la, ra, lt, rt, sole, sole, sample.FrontContact, sample.BackContact, 0);
+                double follow = 1 - Smooth(Math.Max(0, Math.Min(1, (finger.Seconds - SkateOllieStyles.FingerReleaseAt) / .16)));
+                if (sample.HandContact > .99 || follow > 0)
+                {
+                    var goal = Blend(sample.LeftHand ? basis.LeftHand : basis.RightHand, sample.HandTarget, follow);
+                    if (sample.LeftHand) lh = goal; else rh = goal;
+                }
+            }
+            else if (!SkateOllieStyles.TryTargets(style, rig, input.Stance, frame, basis, out targets, out error)) return false;
+            frame = targets.Frame;
+            SkateVector shift, lk, rk;
+            if (!SkateOllieStyles.TryLegs(rig, input.Stance, basis, targets, out shift, out lk, out rk, out error)) return false;
+            var leftShoulder = basis.LeftShoulder + shift; var rightShoulder = basis.RightShoulder + shift;
+            var leftHand = basis.LeftHand + shift; var rightHand = basis.RightHand + shift;
+            SkateVector le, re;
+            if (!SkateOllieStyles.TryLimb(leftShoulder, leftHand, rig.UpperArmLength, rig.ForearmLength, basis.LeftElbow - basis.LeftShoulder, out le, out error) ||
+                !SkateOllieStyles.TryLimb(rightShoulder, rightHand, rig.UpperArmLength, rig.ForearmLength, basis.RightElbow - basis.RightShoulder, out re, out error)) return false;
+            pose = new SkateRiderPose(basis.Pelvis + shift, basis.LeftHip + shift, basis.RightHip + shift, lk, rk,
+                targets.LeftAnkle, targets.RightAnkle, targets.LeftToe, targets.RightToe, basis.Chest + shift, basis.Neck + shift, basis.Head + shift,
+                leftShoulder, rightShoulder, le, re, leftHand, rightHand, basis.PelvisForward, basis.PelvisUp, basis.ChestForward, basis.ChestUp, basis.HeadForward);
+            if (lh.HasValue || rh.HasValue)
+                return ActionHandPose(rig, pose, lh ?? rh.Value, lh.HasValue, out pose, out error);
+            return Finite(pose);
+        }
+
+        // Move the chest by the smallest orbital angle that makes the hand reachable, retaining
+        // both solved feet/pelvis. A changing throwing-hand target cannot switch coarse IK rings.
+        private static bool ActionHandPose(SkateRiderRig rig, SkateRiderPose basis, SkateVector hand, bool left,
+            out SkateRiderPose pose, out string error)
+        {
+            pose = basis; error = null;
+            var shoulder = left ? basis.LeftShoulder : basis.RightShoulder;
+            var a = shoulder - basis.Pelvis; var b = hand - basis.Pelvis;
+            double radius = a.Length, reach = b.Length;
+            double near = Math.Abs(rig.UpperArmLength - rig.ForearmLength) + .000001;
+            double far = rig.UpperArmLength + rig.ForearmLength - .000001;
+            if (radius < .000001 || reach < .000001 || Math.Abs(radius - reach) > far || radius + reach < near)
+            { error = "Action hand orbit is unreachable."; return false; }
+            var axis = Unit(Cross(a, b));
+            if (axis.LengthSquared < .5) axis = Unit(Cross(a, basis.ChestForward));
+            if (axis.LengthSquared < .5) axis = Unit(Cross(a, basis.ChestUp));
+            double distance = (shoulder - hand).Length;
+            double bound = Math.Max(near, Math.Min(far, distance));
+            double cosine = Math.Max(-1, Math.Min(1, SkateVector.Dot(a, b) / (radius * reach)));
+            double wanted = Math.Max(-1, Math.Min(1, (radius * radius + reach * reach - bound * bound) / (2 * radius * reach)));
+            double angle = (Math.Acos(cosine) - Math.Acos(wanted)) * 180 / Math.PI;
+            SkateVector Point(SkateVector v) { return basis.Pelvis + SkateBoardPath.Turn(v - basis.Pelvis, axis, angle); }
+            SkateVector Direction(SkateVector v) { return SkateBoardPath.Turn(v, axis, angle); }
+            var ls = Point(basis.LeftShoulder); var rs = Point(basis.RightShoulder);
+            var le = Point(basis.LeftElbow); var re = Point(basis.RightElbow);
+            var lh = left ? hand : Point(basis.LeftHand); var rh = left ? Point(basis.RightHand) : hand;
+            SkateVector elbow;
+            if (!SkateOllieStyles.TryLimb(left ? ls : rs, hand, rig.UpperArmLength, rig.ForearmLength,
+                Direction((left ? basis.LeftElbow - basis.LeftShoulder : basis.RightElbow - basis.RightShoulder)), out elbow, out error)) return false;
+            if (left) le = elbow; else re = elbow;
+            pose = new SkateRiderPose(basis.Pelvis, basis.LeftHip, basis.RightHip, basis.LeftKnee, basis.RightKnee,
+                basis.LeftAnkle, basis.RightAnkle, basis.LeftToe, basis.RightToe, Point(basis.Chest), Point(basis.Neck), Point(basis.Head),
+                ls, rs, le, re, lh, rh, basis.PelvisForward, basis.PelvisUp, Direction(basis.ChestForward), Direction(basis.ChestUp), Direction(basis.HeadForward));
+            return Finite(pose);
+        }
+
+        public static bool TryTransformPose(SkateRiderPose source, SkateBoardPose from, SkateBoardPose to, out SkateRiderPose pose)
+        {
+            pose = default(SkateRiderPose);
+            if (!Finite(source) || !from.Initialized || !to.Initialized || !SkateBoardPath.Valid(from) || !SkateBoardPath.Valid(to)) return false;
+            pose = new SkateRiderPose(to.Point(PoseLocal(source.Pelvis - from.Origin, from)),
+                to.Point(PoseLocal(source.LeftHip - from.Origin, from)),
+                to.Point(PoseLocal(source.RightHip - from.Origin, from)),
+                to.Point(PoseLocal(source.LeftKnee - from.Origin, from)),
+                to.Point(PoseLocal(source.RightKnee - from.Origin, from)),
+                to.Point(PoseLocal(source.LeftAnkle - from.Origin, from)),
+                to.Point(PoseLocal(source.RightAnkle - from.Origin, from)),
+                to.Point(PoseLocal(source.LeftToe - from.Origin, from)),
+                to.Point(PoseLocal(source.RightToe - from.Origin, from)),
+                to.Point(PoseLocal(source.Chest - from.Origin, from)),
+                to.Point(PoseLocal(source.Neck - from.Origin, from)),
+                to.Point(PoseLocal(source.Head - from.Origin, from)),
+                to.Point(PoseLocal(source.LeftShoulder - from.Origin, from)),
+                to.Point(PoseLocal(source.RightShoulder - from.Origin, from)),
+                to.Point(PoseLocal(source.LeftElbow - from.Origin, from)),
+                to.Point(PoseLocal(source.RightElbow - from.Origin, from)),
+                to.Point(PoseLocal(source.LeftHand - from.Origin, from)),
+                to.Point(PoseLocal(source.RightHand - from.Origin, from)),
+                to.Rotate(PoseLocal(source.PelvisForward, from)),
+                to.Rotate(PoseLocal(source.PelvisUp, from)),
+                to.Rotate(PoseLocal(source.ChestForward, from)),
+                to.Rotate(PoseLocal(source.ChestUp, from)),
+                to.Rotate(PoseLocal(source.HeadForward, from)));
+            return Finite(pose);
+        }
+        private static SkateVector PoseLocal(SkateVector v, SkateBoardPose frame)
+        { return new SkateVector(SkateVector.Dot(v, frame.Right), SkateVector.Dot(v, frame.Up), SkateVector.Dot(v, frame.Forward)); }
+
         private static bool Coffin(SkateRiderRig r, SkateRiderInput i, out SkateRiderPose pose, out string error)
         {
             pose = default(SkateRiderPose); error = null;

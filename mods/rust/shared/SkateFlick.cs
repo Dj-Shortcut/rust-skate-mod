@@ -12,11 +12,14 @@ namespace Shortcut.RustMod
         public readonly double Strength;
         public readonly SkateBoardTrickKind Special;
         public readonly int SpecialDirection;
+        public readonly SkateOllieStyle Style;
         public bool Late { get { return Kind == SkatePopKind.None && (FlipTurns != 0 || ShoveDegrees != 0 || Special != SkateBoardTrickKind.None); } }
         public SkatePop(SkatePopKind kind, double flipTurns, double shoveDegrees, double strength)
             : this(kind, flipTurns, shoveDegrees, strength, SkateBoardTrickKind.None, 0) { }
         public SkatePop(SkatePopKind kind, double flipTurns, double shoveDegrees, double strength, SkateBoardTrickKind special, int specialDirection)
-        { Kind = kind; FlipTurns = flipTurns; ShoveDegrees = shoveDegrees; Strength = strength; Special = special; SpecialDirection = specialDirection; }
+         : this(kind, flipTurns, shoveDegrees, strength, special, specialDirection, SkateOllieStyle.None) { }
+        public SkatePop(SkatePopKind kind, double flipTurns, double shoveDegrees, double strength, SkateBoardTrickKind special, int specialDirection, SkateOllieStyle style)
+        { Kind = kind; FlipTurns = flipTurns; ShoveDegrees = shoveDegrees; Strength = strength; Special = special; SpecialDirection = specialDirection; Style = style; }
     }
 
     [Flags]

@@ -392,3 +392,12 @@ uses a captured world coping point and returns one board frame shared by attache
 Gymnast plants both hands along the supplied edge. Existing rider overloads retain their signatures.
 Measured shoulder rise is retained through contact solves and secondary motion. The pure helpers
 require the adapter to refresh physical support; they do not establish native contact or appearance.
+
+`SkateOllieStyles` keeps Boned/front/back one-foot metadata separate from the original pop end.
+`TryTargets`/`TryLegs` use anatomical feet and both branches of the measured leg-height bands.
+Finger Flip state retains a captured deck/grip relative to a moving carrier, then exposes hand
+throw, release, rotation and catch phases; the scorer receives one complete legal flip.
+`SkateRider.TryCreateAction` returns the same action frame as the measured pose. Its captured-pose
+overload carries the attained grab before measured release blending; the hand uses minimal chest
+rotation for reach. Existing constructors/overloads retain defaults. Native clearance and gameplay
+remain adapter and Shadow responsibilities.
