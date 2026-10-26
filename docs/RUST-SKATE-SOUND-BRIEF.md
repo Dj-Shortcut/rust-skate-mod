@@ -64,8 +64,15 @@ bronnenlijst en licentie worden gepubliceerd. Gebruik geen geluid uit andere gam
 
 ## Inbouwen en acceptatie
 
-De huidige clientcode maakt zijn geluiden zelf; hij laadt de losse WAV-set nog
-niet. Na selectie moeten de gekozen bestanden nog
-worden aangesloten op de events en oppervlakken in de mod. Daarna volgen
-volumebalans, timing en een gezamenlijke spelcontrole op Shadow. Deze lijst is
-een productiebrief, geen bewijs dat het vervangende geluid al in de game zit.
+Clientbron `0.18.61` heeft een WAV-loader voor deze 18 gekozen `_01.wav`-bestanden
+in `BepInEx/plugins/skate_sounds/`, met koppelingen aan de bestaande events en
+oppervlakken. Ontbreekt een vereist bestand of gaat laden mis, dan blijft rijden
+mogelijk zonder skateboardgeluid. De [audiodocumentatie](RUST-SKATE-AUDIO.md)
+beschrijft die bronintegratie; de historische synthesizers zijn niet het actieve
+afspeelpad.
+
+De standaard launcher en het gewone spelpakket plaatsen de geluidsmap nog niet.
+Een private staging-adapter is voorbereid, maar niet op Windows/PowerShell
+uitgevoerd. Bestandsselectie en verpakking, daadwerkelijke installatie, volumebalans,
+timing en gezamenlijk luisteren op Shadow blijven open. Deze productiebrief is
+geen bewijs van een geïnstalleerd of goedgekeurd geluidspakket.

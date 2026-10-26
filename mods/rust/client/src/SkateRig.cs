@@ -344,6 +344,11 @@ public class SkateRig : MonoBehaviour
             catch (Exception e) { Say("scenario threw " + e.GetType().Name + ": " + e.Message); Scenarios.Abort(); }
         }
         SkateSfx.Update(Time.deltaTime);
+        if (SkateSfx.Failed && audioNoticeState != SkateSfx.State)
+        {
+            audioNoticeState = SkateSfx.State;
+            SkateHud.Notice("Skateboard sound pack is unavailable. See skate.log.");
+        }
         if (now < nextTick) return;
         nextTick = now + 1f;
         try { Tick(now); }
@@ -635,8 +640,17 @@ public class SkateRig : MonoBehaviour
 
     // Disabled without being destroyed, Update no longer runs the cleanup after the ride: the item
     // put away for it is taken in hand again here, as OnDestroy does.
+    private static string audioNoticeState;
+    private void OnEnable()
+    {
+        audioNoticeState = null;
+        SkateSfx.Resume();
+    }
+
     private void OnDisable()
     {
+        try { SkateSfx.Suspend(); }
+        catch (Exception e) { Out.Err("AUDIO suspend threw " + e.GetType().Name); }
         try { SkateRiggingShowcase.Stop("The skate rig was disabled"); } catch { }
         try { SkatePhysicsDiagnostic.Reset(); } catch { }
         try { SkatePieces.Reset(); }

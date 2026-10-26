@@ -15,7 +15,7 @@ Laatste speltest: client 0.18.45 / server 0.3.38 (21 okt). Geen testomgeving sin
 9. Camera na afstappen horizontaal in rijrichting. Open.
 10. Flip/shuv en grab sluiten elkaar uit. Open.
 11. Handen leeg op het board, item terug na afstappen. Bron klaar, ongetest.
-12. Skateboardgeluid klinkt echt. Huidige klank afgekeurd als grotendeels ruis; [18 vervangende geluiden](docs/RUST-SKATE-SOUND-BRIEF.md) via ElevenLabs in werk, één keuze per soort; WAV-integratie en spelcontrole open (26 okt).
+12. Skateboardgeluid klinkt echt. Huidige klank afgekeurd als ruis; WAV-loader in clientbron .61 voor [18 gekozen geluiden](docs/RUST-SKATE-SOUND-BRIEF.md), één per soort; pakket/installatie, mix en Shadow-spelcontrole open (26 okt).
 13. Bouwplan zichtbaar in de hand. Open.
 14. MEGA volledig zichtbaar met beide ronde zijden. Open.
 15. Altijd dag op de server. Serverinstelling staat; duurtest open.
