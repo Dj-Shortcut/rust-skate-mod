@@ -55,9 +55,9 @@ jobs:
         run: |
           mkdir -p "$RUNNER_TEMP/models"
           cp assets/authored/manifest.json "$RUNNER_TEMP/models/manifest.json"
-          "$RUNNER_TEMP/$RAMP_BLENDER/blender" -b --factory-startup \
+          "$RUNNER_TEMP/$RAMP_BLENDER/blender" -b --factory-startup --python-exit-code 1 \
             --python scripts/generate_skate_ramp_assets.py -- --output "$RUNNER_TEMP/models"
-          "$RUNNER_TEMP/$RAMP_BLENDER/blender" -b --factory-startup \
+          "$RUNNER_TEMP/$RAMP_BLENDER/blender" -b --factory-startup --python-exit-code 1 \
             --python scripts/generate_skate_board.py -- --output "$RUNNER_TEMP/models" --no-previews
       - name: Compare with the committed files
         run: |
