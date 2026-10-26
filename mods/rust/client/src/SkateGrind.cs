@@ -168,19 +168,32 @@ public static class SkateGrind
         var off = Aim(pos);
         try
         {
-            RaycastHit hit;
             var highSide = new Vector3((float)edge.HighSide.X, 0, (float)edge.HighSide.Z);
-            var candidate = Target - highSide * (Inset - .04f);
-            if (edge.Found && Enabled && SkateParks.Ray(candidate + Vector3.up * .2f, Vector3.down, out hit, .4f, SkateRide.GroundMask)
-                && hit.m_Normal.y >= .65f && Math.Abs(hit.m_Point.y - Target.y) <= .025f && (Target - pos).sqrMagnitude <= 1.44f)
+            var estimated = Target - highSide * Inset;
+            // The scanner's interpolated boundary has up to half a grid cell of error.
+            // Bracket the real top, then refine the contact instead of trusting that estimate.
+            float low = -(RowStep + ColStep) * .5f - .04f, high = -low;
+            RaycastHit hit, outside;
+            if (edge.Found && Enabled && StallTop(estimated + highSide * high, out hit)
+                && !StallTop(estimated + highSide * low, out outside) && (Target - pos).sqrMagnitude <= 1.44f)
             {
                 var collider = hit.collider;
                 if (collider != null)
                 {
-                    // Both the hand and the body target belong to this actual capture-time hit.
-                    // Later body corrections must not drag a planted hand along the coping.
+                    var identity = collider.GetInstanceID();
+                    for (int i = 0; i < 8; i++)
+                    {
+                        var middle = (low + high) * .5f; RaycastHit top;
+                        if (StallTop(estimated + highSide * middle, out top))
+                        {
+                            if (top.collider == null || top.collider.GetInstanceID() != identity) { ClearStall(); return; }
+                            high = middle;
+                        }
+                        else low = middle;
+                    }
+                    if (!StallTop(estimated + highSide * (high + .004f), out hit) || hit.collider == null || hit.collider.GetInstanceID() != identity) return;
                     stallAnchor = hit.m_Point; stallNormal = hit.m_Normal;
-                    stallCollider = collider; stallColliderId = collider.GetInstanceID();
+                    stallCollider = collider; stallColliderId = identity;
                     Target = stallAnchor + highSide * Inset; StallSupported = true;
                 }
             }
@@ -188,6 +201,12 @@ public static class SkateGrind
         catch (Exception e) { Fail(e, "stall capture"); return; }
         Last = "stall top=" + edge.TopHeight.ToString("F2") + " off=" + off.ToString("F2") + (StallSquare ? " square" : " along") + " supported=" + StallSupported;
         Out.Say("GRIND " + Last);
+    }
+
+    private static bool StallTop(Vector3 point, out RaycastHit hit)
+    {
+        return SkateParks.Ray(point + Vector3.up * .2f, Vector3.down, out hit, .4f, SkateRide.GroundMask)
+            && hit.m_Normal.y >= .65f && Math.Abs(hit.m_Point.y - edge.TopHeight) <= .025f;
     }
 
     public static void HoldStall(Vector3 pos)
