@@ -529,7 +529,6 @@ def main():
         "generator_blender": bpy.app.version_string, "assets": []}
     if not isinstance(manifest.get("assets"), list):
         raise ValueError("Existing asset manifest has no assets list")
-    preserved = [entry for entry in manifest["assets"] if entry.get("name") not in NAMES]
     entries = []
     for name in NAMES:
         mats = clear()
@@ -569,7 +568,11 @@ def main():
             "bytes": destination.stat().st_size}
         entries.append(entry)
         print("SKATE_ASSET", json.dumps(entry, sort_keys=True))
-    manifest["assets"] = preserved + entries
+    # Keep independently generated assets in their existing slots when regenerating parks.
+    regenerated = {entry["name"]: entry for entry in entries}
+    previous_names = {entry.get("name") for entry in manifest["assets"]}
+    manifest["assets"] = [regenerated.get(entry.get("name"), entry) for entry in manifest["assets"]]
+    manifest["assets"].extend(entry for entry in entries if entry["name"] not in previous_names)
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
     print("Generated eight original skate park assets:", args.output.resolve())
 
