@@ -1,0 +1,1386 @@
+{
+  "license": "CC0-1.0",
+  "asset": "skate_board.glb",
+  "units": "meters",
+  "axes": {
+    "up": "+Y",
+    "nose": "+Z",
+    "right": "+X"
+  },
+  "root_origin": "ground, centered below deck",
+  "deck_length_m": 0.8,
+  "deck_width_m": 0.204,
+  "deck_top_center_m": 0.1,
+  "truck_z_m": [
+    -0.245,
+    0.245
+  ],
+  "wheel_radius_m": 0.027,
+  "wheel_width_m": 0.032,
+  "wheel_centres_abs_x_m": 0.082,
+  "wheel_centres_y_m": 0.027,
+  "triangles": 6626,
+  "nodes": [
+    {
+      "name": "bushing_front_bottom",
+      "parent": "deck",
+      "origin_gltf_m": [
+        0.0,
+        0.04627208,
+        0.257727921
+      ],
+      "translation_local_m": [
+        0,
+        -0.0457279197871685,
+        0.2577279210090637
+      ],
+      "rest_rotation_xyzw": [
+        -0.3826833963394165,
+        0,
+        0,
+        0.9238795638084412
+      ],
+      "axis_local": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.707106829,
+        -0.707106709
+      ],
+      "allowed_range": {
+        "compression": [
+          0,
+          0.35
+        ],
+        "bulge": "0.4 * compression",
+        "runtime_rotation": "never; preserve fixed rest quaternion"
+      }
+    },
+    {
+      "name": "bushing_front_top",
+      "parent": "deck",
+      "origin_gltf_m": [
+        0.0,
+        0.072435029,
+        0.231564969
+      ],
+      "translation_local_m": [
+        0,
+        -0.019564971327781677,
+        0.2315649688243866
+      ],
+      "rest_rotation_xyzw": [
+        -0.3826833963394165,
+        0,
+        0,
+        0.9238795638084412
+      ],
+      "axis_local": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.707106829,
+        -0.707106709
+      ],
+      "allowed_range": {
+        "compression": [
+          0,
+          0.35
+        ],
+        "bulge": "0.4 * compression",
+        "runtime_rotation": "never; preserve fixed rest quaternion"
+      }
+    },
+    {
+      "name": "bushing_rear_bottom",
+      "parent": "deck",
+      "origin_gltf_m": [
+        0.0,
+        0.04627208,
+        -0.257727921
+      ],
+      "translation_local_m": [
+        0,
+        -0.0457279197871685,
+        -0.2577279210090637
+      ],
+      "rest_rotation_xyzw": [
+        0.3826833963394165,
+        0,
+        0,
+        0.9238795638084412
+      ],
+      "axis_local": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.707106829,
+        0.707106709
+      ],
+      "allowed_range": {
+        "compression": [
+          0,
+          0.35
+        ],
+        "bulge": "0.4 * compression",
+        "runtime_rotation": "never; preserve fixed rest quaternion"
+      }
+    },
+    {
+      "name": "bushing_rear_top",
+      "parent": "deck",
+      "origin_gltf_m": [
+        0.0,
+        0.072435029,
+        -0.231564969
+      ],
+      "translation_local_m": [
+        0,
+        -0.019564971327781677,
+        -0.2315649688243866
+      ],
+      "rest_rotation_xyzw": [
+        0.3826833963394165,
+        0,
+        0,
+        0.9238795638084412
+      ],
+      "axis_local": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.707106829,
+        0.707106709
+      ],
+      "allowed_range": {
+        "compression": [
+          0,
+          0.35
+        ],
+        "bulge": "0.4 * compression",
+        "runtime_rotation": "never; preserve fixed rest quaternion"
+      }
+    },
+    {
+      "name": "deck_graphic_lightning",
+      "parent": "deck",
+      "origin_gltf_m": [
+        0.0,
+        0.092,
+        0.0
+      ],
+      "translation_local_m": [
+        0,
+        0,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "deck_graphic_slash_0",
+      "parent": "deck",
+      "origin_gltf_m": [
+        0.0,
+        0.092,
+        0.0
+      ],
+      "translation_local_m": [
+        0,
+        0,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "deck_graphic_slash_1",
+      "parent": "deck",
+      "origin_gltf_m": [
+        0.0,
+        0.092,
+        0.0
+      ],
+      "translation_local_m": [
+        0,
+        0,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "deck_graphic_slash_2",
+      "parent": "deck",
+      "origin_gltf_m": [
+        0.0,
+        0.092,
+        0.0
+      ],
+      "translation_local_m": [
+        0,
+        0,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "deck_graphic_slash_3",
+      "parent": "deck",
+      "origin_gltf_m": [
+        0.0,
+        0.092,
+        0.0
+      ],
+      "translation_local_m": [
+        0,
+        0,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "deck_graphic_turquoise",
+      "parent": "deck",
+      "origin_gltf_m": [
+        0.0,
+        0.092,
+        0.0
+      ],
+      "translation_local_m": [
+        0,
+        0,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "deck_grip",
+      "parent": "deck",
+      "origin_gltf_m": [
+        0.0,
+        0.092,
+        0.0
+      ],
+      "translation_local_m": [
+        0,
+        0,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "deck_ply_1",
+      "parent": "deck",
+      "origin_gltf_m": [
+        0.0,
+        0.092,
+        0.0
+      ],
+      "translation_local_m": [
+        0,
+        0,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "deck_ply_2",
+      "parent": "deck",
+      "origin_gltf_m": [
+        0.0,
+        0.092,
+        0.0
+      ],
+      "translation_local_m": [
+        0,
+        0,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "deck_ply_3",
+      "parent": "deck",
+      "origin_gltf_m": [
+        0.0,
+        0.092,
+        0.0
+      ],
+      "translation_local_m": [
+        0,
+        0,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "deck_ply_4",
+      "parent": "deck",
+      "origin_gltf_m": [
+        0.0,
+        0.092,
+        0.0
+      ],
+      "translation_local_m": [
+        0,
+        0,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "deck_ply_5",
+      "parent": "deck",
+      "origin_gltf_m": [
+        0.0,
+        0.092,
+        0.0
+      ],
+      "translation_local_m": [
+        0,
+        0,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "deck_ply_6",
+      "parent": "deck",
+      "origin_gltf_m": [
+        0.0,
+        0.092,
+        0.0
+      ],
+      "translation_local_m": [
+        0,
+        0,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "deck_ply_7",
+      "parent": "deck",
+      "origin_gltf_m": [
+        0.0,
+        0.092,
+        0.0
+      ],
+      "translation_local_m": [
+        0,
+        0,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "truck_front_bolts",
+      "parent": "truck_front_base",
+      "origin_gltf_m": [
+        0.0,
+        0.082999997,
+        0.245000005
+      ],
+      "translation_local_m": [
+        0,
+        0,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "truck_front_kingpin_nut",
+      "parent": "truck_front_base",
+      "origin_gltf_m": [
+        0.0,
+        0.07597056,
+        0.228029445
+      ],
+      "translation_local_m": [
+        0,
+        -0.007029436528682709,
+        -0.01697055995464325
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "truck_front_base",
+      "parent": "deck",
+      "origin_gltf_m": [
+        0.0,
+        0.082999997,
+        0.245000005
+      ],
+      "translation_local_m": [
+        0,
+        -0.009000003337860107,
+        0.24500000476837158
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "bearing_front_left",
+      "parent": "wheel_front_left",
+      "origin_gltf_m": [
+        -0.082000002,
+        0.027000003,
+        0.245000005
+      ],
+      "translation_local_m": [
+        0,
+        0,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "wheel_mark_front_left",
+      "parent": "wheel_front_left",
+      "origin_gltf_m": [
+        -0.082000002,
+        0.027000003,
+        0.245000005
+      ],
+      "translation_local_m": [
+        0,
+        0,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "wheel_front_left",
+      "parent": "truck_front_hanger",
+      "origin_gltf_m": [
+        -0.082000002,
+        0.027000003,
+        0.245000005
+      ],
+      "translation_local_m": [
+        -0.0820000022649765,
+        -0.03199999779462814,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "axis_world_rest": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "degrees": "unlimited"
+      }
+    },
+    {
+      "name": "bearing_front_right",
+      "parent": "wheel_front_right",
+      "origin_gltf_m": [
+        0.082000002,
+        0.027000003,
+        0.245000005
+      ],
+      "translation_local_m": [
+        0,
+        0,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "wheel_mark_front_right",
+      "parent": "wheel_front_right",
+      "origin_gltf_m": [
+        0.082000002,
+        0.027000003,
+        0.245000005
+      ],
+      "translation_local_m": [
+        0,
+        0,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "wheel_front_right",
+      "parent": "truck_front_hanger",
+      "origin_gltf_m": [
+        0.082000002,
+        0.027000003,
+        0.245000005
+      ],
+      "translation_local_m": [
+        0.0820000022649765,
+        -0.03199999779462814,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "axis_world_rest": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "degrees": "unlimited"
+      }
+    },
+    {
+      "name": "truck_front_hanger",
+      "parent": "deck",
+      "origin_gltf_m": [
+        0.0,
+        0.059,
+        0.245000005
+      ],
+      "translation_local_m": [
+        0,
+        -0.032999999821186066,
+        0.24500000476837158
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0.0,
+        0.7071067690849304,
+        -0.7071067690849304
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.707106769,
+        -0.707106769
+      ],
+      "allowed_range": {
+        "degrees": [
+          -20,
+          20
+        ]
+      }
+    },
+    {
+      "name": "truck_rear_bolts",
+      "parent": "truck_rear_base",
+      "origin_gltf_m": [
+        0.0,
+        0.082999997,
+        -0.245000005
+      ],
+      "translation_local_m": [
+        0,
+        0,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "truck_rear_kingpin_nut",
+      "parent": "truck_rear_base",
+      "origin_gltf_m": [
+        0.0,
+        0.07597056,
+        -0.228029445
+      ],
+      "translation_local_m": [
+        0,
+        -0.007029436528682709,
+        0.01697055995464325
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "truck_rear_base",
+      "parent": "deck",
+      "origin_gltf_m": [
+        0.0,
+        0.082999997,
+        -0.245000005
+      ],
+      "translation_local_m": [
+        0,
+        -0.009000003337860107,
+        -0.24500000476837158
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "bearing_rear_left",
+      "parent": "wheel_rear_left",
+      "origin_gltf_m": [
+        -0.082000002,
+        0.027000003,
+        -0.245000005
+      ],
+      "translation_local_m": [
+        0,
+        0,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "wheel_mark_rear_left",
+      "parent": "wheel_rear_left",
+      "origin_gltf_m": [
+        -0.082000002,
+        0.027000003,
+        -0.245000005
+      ],
+      "translation_local_m": [
+        0,
+        0,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "wheel_rear_left",
+      "parent": "truck_rear_hanger",
+      "origin_gltf_m": [
+        -0.082000002,
+        0.027000003,
+        -0.245000005
+      ],
+      "translation_local_m": [
+        -0.0820000022649765,
+        -0.03199999779462814,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "axis_world_rest": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "degrees": "unlimited"
+      }
+    },
+    {
+      "name": "bearing_rear_right",
+      "parent": "wheel_rear_right",
+      "origin_gltf_m": [
+        0.082000002,
+        0.027000003,
+        -0.245000005
+      ],
+      "translation_local_m": [
+        0,
+        0,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "wheel_mark_rear_right",
+      "parent": "wheel_rear_right",
+      "origin_gltf_m": [
+        0.082000002,
+        0.027000003,
+        -0.245000005
+      ],
+      "translation_local_m": [
+        0,
+        0,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "wheel_rear_right",
+      "parent": "truck_rear_hanger",
+      "origin_gltf_m": [
+        0.082000002,
+        0.027000003,
+        -0.245000005
+      ],
+      "translation_local_m": [
+        0.0820000022649765,
+        -0.03199999779462814,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "axis_world_rest": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "degrees": "unlimited"
+      }
+    },
+    {
+      "name": "truck_rear_hanger",
+      "parent": "deck",
+      "origin_gltf_m": [
+        0.0,
+        0.059,
+        -0.245000005
+      ],
+      "translation_local_m": [
+        0,
+        -0.032999999821186066,
+        -0.24500000476837158
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0.0,
+        0.7071067690849304,
+        0.7071067690849304
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.707106769,
+        0.707106769
+      ],
+      "allowed_range": {
+        "degrees": [
+          -20,
+          20
+        ]
+      }
+    },
+    {
+      "name": "deck",
+      "parent": "skate_board",
+      "origin_gltf_m": [
+        0.0,
+        0.092,
+        0.0
+      ],
+      "translation_local_m": [
+        0,
+        0.09200000017881393,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    },
+    {
+      "name": "skate_board",
+      "parent": null,
+      "origin_gltf_m": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "translation_local_m": [
+        0,
+        0,
+        0
+      ],
+      "rest_rotation_xyzw": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "axis_local": [
+        0,
+        0,
+        0
+      ],
+      "axis_world_rest": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "allowed_range": {
+        "motion": "fixed to parent"
+      }
+    }
+  ],
+  "bushing_exception": "Only bushings preserve a fixed quaternion aligning local +Y to the kingpin. Runtime scales bushings only; never overwrite their rotation. All other nodes have identity rest rotations and unit scales.",
+  "runtime_steering": "Set front hanger angle +0.8*L degrees about axis_local and rear -0.8*L; whole-board roll -L about +Z. Wheels spin about local +X.",
+  "clearance_check": {
+    "pass": true,
+    "method": "Actual world-space triangulated BVHTree overlap at every 0.5 degree from -20 to +20; each wheel incl bearing/mark and hanger vs all fixed deck/base/kingpin/bolts. Compliant bushings excluded from hard-contact test.",
+    "samples": 486,
+    "angles_per_truck": 81,
+    "minimum_sampled_vertex_surface_gap_m": 0.003999986220151186,
+    "minimum_at": {
+      "angle_degrees": -7.5,
+      "part": "front_hanger"
+    },
+    "failures": []
+  },
+  "integration_boundary": "Standalone authored rig only. Current procedural runtime axle constant is 0.23m; this asset follows requested +/-0.245m and is not installed in the mod."
+}

@@ -480,6 +480,41 @@
       },
       "sha256": "70d3a48ba21012dfdfed0a590b910dfb97a865de2e164fa2aa16dc4c1a16fe57",
       "bytes": 540932
+    },
+    {
+      "name": "skate_board",
+      "file": "skate_board.glb",
+      "vertices": 5567,
+      "triangles": 6626,
+      "bounds_space": "glTF Y-up, forward +Z (standalone rigid board)",
+      "animations": [],
+      "license": "CC0-1.0",
+      "source": "scripts/generate_skate_board.py",
+      "generator_blender": "5.2.0 LTS",
+      "default_scene": "Scene",
+      "dimensions": {
+        "kind": "skateboard_rig",
+        "pivot": "ground centre",
+        "length": 0.8,
+        "width": 0.204,
+        "deck_top": 0.1,
+        "axle_half_span": 0.245,
+        "wheel_radius": 0.027
+      },
+      "sha256": "94825d8dfd502e8c378faf521e69365a383c68c30c3c02056806d125be98d8f4",
+      "bytes": 190136,
+      "bounds": [
+        [
+          -0.10399999469518661,
+          1.862645149230957e-09,
+          -0.4000000059604645
+        ],
+        [
+          0.10399999469518661,
+          0.13515903055667877,
+          0.4000000059604645
+        ]
+      ]
     }
   ]
 }
