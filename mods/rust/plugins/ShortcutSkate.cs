@@ -1863,7 +1863,7 @@ namespace Shortcut.RustMod
 
 namespace Oxide.Plugins
 {
-    [Info("ShortcutSkate", "Dj-Shortcut", "0.3.39")]
+    [Info("ShortcutSkate", "Dj-Shortcut", "0.3.40")]
     [Description("Player-scoped skateboard movement bounds and saved park assemblies.")]
     public sealed class ShortcutSkate : RustPlugin
     {
@@ -5491,11 +5491,13 @@ namespace Oxide.Plugins
                     BaseEntity entity = GameManager.server.CreateEntity(ParkFoundationPrefab, new Vector3(centre.x, lift, centre.z), rotation, true);
                     BuildingBlock block = entity as BuildingBlock;
                     if (block == null) { if (entity != null) entity.Kill(); throw new InvalidDataException("Foundation creation failed."); }
+                    // Tracked before attachment and Spawn, as the park assemblies and the practice area
+                    // do: if either throws, the catch below can still remove this foundation.
+                    slab.Add(block);
                     block.OwnerID = player.userID;
                     block.grounded = true;
                     block.AttachToBuilding(building);
                     block.Spawn();
-                    slab.Add(block);
                     if (block.IsDestroyed || block.net == null || !HorizontalParkFoundation(block))
                         throw new InvalidDataException("A slab foundation did not spawn level.");
                     block.SetGrade(BuildingGrade.Enum.Stone);
