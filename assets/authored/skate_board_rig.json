@@ -19,7 +19,7 @@
   "wheel_width_m": 0.032,
   "wheel_centres_abs_x_m": 0.082,
   "wheel_centres_y_m": 0.027,
-  "triangles": 6626,
+  "triangles": 6830,
   "nodes": [
     {
       "name": "bushing_front_bottom",

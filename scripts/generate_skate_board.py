@@ -9,6 +9,7 @@ from pathlib import Path
 import bpy, bmesh
 from mathutils import Vector, Quaternion, Matrix
 from mathutils.bvhtree import BVHTree
+from mathutils.geometry import tessellate_polygon
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--output', required=True)
@@ -125,13 +126,57 @@ for i in range(7):
 g=Geo(); deck_surface(g,True,.978,.00035)
 o=obj('deck_grip',g,grip,deck,(0,.092,0),smooth=True); fixed.append(o)
 # Authored geometric underside graphic, original construction rather than image textures.
-def graphic(name,points,material):
-    g=Geo(); v=[(x,top(x,z)-.008-.00035,z) for x,z in points]; g.add(v,[tuple(range(len(v)))])
-    o=obj(name,g,material,deck,(0,.092,0)); fixed.append(o)
+# Clip each painted polygon to the actual triangulated underside. Each resulting
+# face lies on one deck plane, rather than bridging across its concave curvature.
+def underside_triangles():
+    result=[]
+    for face in deck.data.polygons:
+        points=[Vector(G(deck.matrix_world @ deck.data.vertices[i].co)) for i in face.vertices]
+        if len(points)==3 and all(abs(v.y-(top(v.x,v.z)-.008))<.000001 for v in points):
+            result.append(points)
+    return result
+bottom_triangles=underside_triangles()
+def cross2(a,b,c): return (b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0])
+def clip_triangle(poly,triangle):
+    sign=1 if cross2(*triangle)>0 else -1
+    if abs(cross2(*triangle))<1e-12: return []
+    for a,b in zip(triangle,triangle[1:]+triangle[:1]):
+        output=[]
+        if not poly: break
+        previous=poly[-1]; before=cross2(a,b,previous)*sign
+        for current in poly:
+            after=cross2(a,b,current)*sign
+            if (before>=-1e-12)!=(after>=-1e-12):
+                t=before/(before-after)
+                output.append((previous[0]+t*(current[0]-previous[0]),previous[1]+t*(current[1]-previous[1])))
+            if after>=-1e-12: output.append(current)
+            previous=current;before=after
+        poly=output
+    return poly
+def triangle_height(triangle,point):
+    a,b,c=triangle; det=cross2((a.x,a.z),(b.x,b.z),(c.x,c.z))
+    w1=cross2((a.x,a.z),point,(c.x,c.z))/det
+    w2=cross2((a.x,a.z),(b.x,b.z),point)/det
+    return a.y*(1-w1-w2)+b.y*w1+c.y*w2
+painted=[]
+def graphic(name,points,material,offset=.00035):
+    g=Geo()
+    vertices=[Vector((x,z,0)) for x,z in points]
+    for original in tessellate_polygon([vertices]):
+        triangle_points=[vertices[p] if isinstance(p,int) else p for p in original]
+        subject=[(p.x,p.y) for p in triangle_points]
+        for triangle in bottom_triangles:
+            polygon=clip_triangle(subject,[(p.x,p.z) for p in triangle])
+            if len(polygon)<3: continue
+            area=abs(sum(a[0]*b[1]-a[1]*b[0] for a,b in zip(polygon,polygon[1:]+polygon[:1])))/2
+            if area<1e-12: continue
+            g.add([(x,triangle_height(triangle,(x,z))-offset,z) for x,z in polygon],[tuple(range(len(polygon)))])
+    if not g.f: raise ValueError('The underside graphic has no surface: '+name)
+    o=obj(name,g,material,deck,(0,.092,0)); o['surface_offset_m']=offset; fixed.append(o);painted.append((o,offset))
 graphic('deck_graphic_turquoise',[(-.084,-.21),(.075,-.15),(.087,.205),(-.066,.15)],cyan)
-graphic('deck_graphic_lightning',[(-.027,-.17),(.049,-.03),(.008,-.025),(.057,.15),(-.057,-.012),(-.012,-.012)],red)
+graphic('deck_graphic_lightning',[(-.027,-.17),(.049,-.03),(.008,-.025),(.057,.15),(-.057,-.012),(-.012,-.012)],red,.00060)
 for i,z in enumerate([-.11,-.07,.085,.125]):
-    graphic('deck_graphic_slash_'+str(i),[(-.073,z),(-.031,z+.012),(-.033,z+.024),(-.075,z+.012)],plylight)
+    graphic('deck_graphic_slash_'+str(i),[(-.073,z),(-.031,z+.012),(-.033,z+.024),(-.075,z+.012)],plylight,.00080)
 
 for side,sign in [('front',1),('rear',-1)]:
     z=sign*.245; pivot=Vector((0,.059,z)); axis=Vector((0,math.sqrt(.5),-sign*math.sqrt(.5)))
@@ -194,6 +239,22 @@ for side,sign in [('front',1),('rear',-1)]:
         bush['axis']=[0.,1.,0.]; bush['fixed_rest_rotation']=True; bush['runtime']='scale_only'
         axes[bush.name]=[0,1,0]; required.append(bush)
 
+# Check every exported graphic triangle centroid against the actual deck planes.
+graphic_checks=[]
+for painted_mesh,offset in painted:
+    worst=0.; minimum=1.
+    for face in painted_mesh.data.polygons:
+        centre=sum((painted_mesh.matrix_world @ painted_mesh.data.vertices[i].co for i in face.vertices),Vector())/len(face.vertices)
+        point=Vector(G(centre)); heights=[]
+        for triangle in bottom_triangles:
+            clip=[(v.x,v.z) for v in triangle];sign=1 if cross2(*clip)>0 else -1
+            if abs(cross2(*clip))>1e-12 and all(cross2(a,b,(point.x,point.z))*sign>=-1e-8 for a,b in zip(clip,clip[1:]+clip[:1])):
+                heights.append(triangle_height(triangle,(point.x,point.z)))
+        if not heights: raise ValueError('Graphic centroid is outside the actual deck: '+painted_mesh.name)
+        gap=min(heights)-point.y;minimum=min(minimum,gap);worst=max(worst,abs(gap-offset))
+    if minimum<offset-.000002 or worst>.000002: raise ValueError('Graphic is buried in the deck: '+painted_mesh.name)
+    graphic_checks.append({'name':painted_mesh.name,'triangles':len(painted_mesh.data.polygons),'outward_offset_m':offset,'minimum_gap_m':minimum,'maximum_offset_error_m':worst})
+(OUT/'graphic_surface_check.json').write_text(json.dumps({'pass':True,'checks':graphic_checks},indent=2)+'\n')
 # The exporter must see only original rig objects, with one material and triangulated data each.
 bpy.context.view_layer.update()
 for o in asset:

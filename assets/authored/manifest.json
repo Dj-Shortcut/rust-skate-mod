@@ -484,8 +484,8 @@
     {
       "name": "skate_board",
       "file": "skate_board.glb",
-      "vertices": 5567,
-      "triangles": 6626,
+      "vertices": 5768,
+      "triangles": 6830,
       "bounds_space": "glTF Y-up, forward +Z (standalone rigid board)",
       "animations": [],
       "license": "CC0-1.0",
@@ -501,8 +501,8 @@
         "axle_half_span": 0.245,
         "wheel_radius": 0.027
       },
-      "sha256": "94825d8dfd502e8c378faf521e69365a383c68c30c3c02056806d125be98d8f4",
-      "bytes": 190136,
+      "sha256": "c308f859e48bf354d89577372e468ff4a69ac94192d531850d31ee90636eb3a2",
+      "bytes": 196596,
       "bounds": [
         [
           -0.10399999469518661,
