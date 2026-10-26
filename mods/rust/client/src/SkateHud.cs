@@ -264,9 +264,9 @@ public static class SkateHud
         s.Score = t.TotalPoints; s.Base = t.ComboBasePoints; s.Count = t.ComboCount;
         s.Window = (float)(t.RollingSeconds / SkateTricks.ComboRollingTimeout);
         var grinding = SkateRide.Mode == RideMode.Grind;
-        s.Live = SkateRide.GroundGrab.Active ? SkateGroundGrabs.Name(SkateRide.GroundGrab.Kind).ToUpperInvariant() : SkateRide.Handplant ? SkateHandplants.Name(RiderRig.HandplantStyle.Kind, SkateRide.GrindFrontside).ToUpperInvariant() : grinding ? SkateTricks.GrindName(SkateRide.GrindKind, SkateRide.GrindFrontside).ToUpperInvariant() : !t.Manualing ? "" : t.NoseManualing ? "NOSE MANUAL" : "MANUAL";
-        s.LiveSeconds = SkateRide.GroundGrab.Active ? (float)SkateRide.GroundGrab.Seconds : grinding ? (float)t.GrindSeconds : (float)t.ManualSeconds;
-        s.LivePoints = (long)Math.Round(s.LiveSeconds * (SkateRide.GroundGrab.Active ? 80 : grinding ? SkateTricks.GrindRate(SkateRide.GrindKind) : SkateTricks.ManualPointsPerSecond));
+        s.Live = SkateOldschoolRide.Active ? (SkateOldschoolRide.Kind == SkateOldschoolKind.Caveman ? "CAVEMAN" : "HIPPIE JUMP") : SkateActions.Finger.Initialized ? "FINGER FLIP" : SkateActions.Style.Known ? SkateOllieStyles.Name(SkateActions.Style.Kind).ToUpperInvariant() : SkateRide.GroundGrab.Active ? SkateGroundGrabs.Name(SkateRide.GroundGrab.Kind).ToUpperInvariant() : SkateRide.Handplant ? SkateHandplants.Name(RiderRig.HandplantStyle.Kind, SkateRide.GrindFrontside).ToUpperInvariant() : grinding ? SkateTricks.GrindName(SkateRide.GrindKind, SkateRide.GrindFrontside).ToUpperInvariant() : !t.Manualing ? "" : t.NoseManualing ? "NOSE MANUAL" : "MANUAL";
+        s.LiveSeconds = SkateOldschoolRide.Active ? (float)SkateOldschoolRide.State.Seconds : SkateActions.Finger.Initialized ? (float)SkateActions.Finger.Seconds : SkateActions.Style.Known ? (float)SkateActions.Style.Seconds : SkateRide.GroundGrab.Active ? (float)SkateRide.GroundGrab.Seconds : grinding ? (float)t.GrindSeconds : (float)t.ManualSeconds;
+        s.LivePoints = SkateOldschoolRide.Active || SkateActions.Owns ? 0 : (long)Math.Round(s.LiveSeconds * (SkateRide.GroundGrab.Active ? 80 : grinding ? SkateTricks.GrindRate(SkateRide.GrindKind) : SkateTricks.ManualPointsPerSecond));
         if (s.Speed > TopSpeed) TopSpeed = s.Speed;
         if (grinding && s.LiveSeconds > LongestGrind) LongestGrind = s.LiveSeconds;
         if (t.Manualing && s.LiveSeconds > LongestManual) LongestManual = s.LiveSeconds;
@@ -525,6 +525,8 @@ public static class SkateHud
     };
 
     private static readonly string[] PlantTricks = {
+        "LS click + Y: Hippie Jump; release-kick RS flick: flip/shove; LS: body turn",
+        "On foot beside loose board: LB + Y Caveman; release LB to throw/catch",
         "LS click + Ollie/Nollie: Boned; + A: Front Foot; + X: Back Foot One-Foot",
         "Finger Flip: held one-hand grab + fresh LB, RS out and back (high air)",
         "@HANDPLANTS   Enter with naked LB (Frontside) / RB (Backside) on a captured edge",

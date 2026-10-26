@@ -45,7 +45,7 @@ Per rit controleren: controller, eerste/derde persoon, kompas, hand-item, pose, 
 - **Grondgrabs en Coffin:** bron aanwezig in 0.18.55, inclusief invoerprioriteit, gemeten poses, loslaten en scoring; native beeld, contact en botsingsruimte open.
 - **Handplantvarianten:** alle genoemde FS/BS-varianten met gemeten hand-/voetcontact, gedeeld boardframe en invoerherstel: bron aanwezig in 0.18.56; native contact, beeld en gevoel open.
 - **Extra ollies en Finger Flip:** Boned en front/back-foot One-Foot Ollies/Nollies plus handgedreven Finger Flip met release/catch: bron aanwezig in 0.18.57; uitvoering en gevoel op Shadow open.
-- **Oldschool:** Caveman en Hippie Jump, inclusief flip/spin en afzonderlijke board-/rijderbeweging. Open.
+- **Oldschool:** Caveman en Hippie Jump met daadwerkelijk afzonderlijk deck, release-kick flips/shoves, bodyspins, pickup/catch en steunverlies: bron aanwezig in 0.18.58; volledige uitvoering op Shadow open.
 - **Walltricks:** Wallie en FS/BS Wallride met werkelijk muurcontact, instap en uitstap. Open.
 - **Transitiontricks:** Drop-in en Front/Back Flip met grab, gekoppeld aan contact en voltooide landing. Open.
 

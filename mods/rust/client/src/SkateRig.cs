@@ -311,7 +311,8 @@ public class SkateRig : MonoBehaviour
             {
                 var twice = false;
                 if (SkateKeys.JumpTap) { twice = now - lastJumpTap < 0.4f; lastJumpTap = twice ? -1f : now; }
-                if (SkateKeys.ToggleTap || twice)
+                if (SkateKeys.CavemanTap) CavemanMount();
+                else if (SkateKeys.ToggleTap || twice)
                 {
                     if (CanMount) MountNow(SkateCamera.LookYaw);
                     else if (!MountPrepared) SkateHud.Notice(prepareStage == 7 ? "Waiting for client frame recovery... press again when ready" : "Preparing skateboard... press again when ready");
@@ -463,6 +464,22 @@ public class SkateRig : MonoBehaviour
         catch (Exception e) { Out.Say("SKATE view " + what + " threw " + e.GetType().Name + ": " + e.Message); return false; }
     }
 
+    private static void CavemanMount()
+    {
+        var fresh = SkateKeys.CaptureCavemanMount(); SkateKeys.CavemanTap = false;
+        Shortcut.RustMod.SkateBoardPose loose; Vector3 motion;
+        if (!fresh || !CanMount || !SkateBoard.TryLoosePose(board, out loose, out motion))
+        { SkateHud.Notice("Step off near your skateboard before a Caveman"); return; }
+        MountNow((float)(Math.Atan2(loose.Forward.X, loose.Forward.Z) * 180 / Math.PI));
+        if (!SkateRide.On || !SkateKeys.ResumeCavemanMount() || !SkateOldschoolRide.BeginCaveman(loose, motion))
+        { if (SkateRide.On) SkateRide.Dismount("Caveman pickup unavailable"); return; }
+        var applied = RiderRig.Applied;
+        RiderRig.Frame(SkateBoard.Contact(LocalT), SkateRide.Normal, false, .001f);
+        if (SkateRide.Mode == RideMode.Bail || RiderRig.Applied == applied)
+        { SkateRide.Dismount("Caveman hand could not reach the skateboard"); return; }
+        SkateKeys.CavemanTap = false;
+    }
+
     public static void MountNow(float yaw)
     {
         if (Body == null || SkateRide.On || !MountPrepared || !AcquireRootProxy()) return;
@@ -572,16 +589,16 @@ public class SkateRig : MonoBehaviour
         RiderRig.Prepare(frame);
         // An ollie pitches the board: nose up as it climbs, level at the top, nose a little down as
         // it falls; not held in a grab or a handplant, where the hands have the board.
-        var ollie = SkateRide.On && SkateRide.Mode == RideMode.Air && SkateRide.Jumped && !SkateRide.Grabbing && !SkateRide.Handplant;
+        var ollie = SkateRide.On && SkateRide.Mode == RideMode.Air && SkateRide.Jumped && !SkateRide.Grabbing && !SkateRide.Handplant && !SkateOldschoolRide.Active;
         var climb = SkateRide.Clamp(SkateRide.VSpeed / SkateRide.OlliePop, -1f, 1f);
         var airPitch = ollie ? (climb > 0f ? SkateBoard.OllieNoseUp : SkateBoard.OllieNoseDown) * climb : 0f;
-        if (SkateRide.BoardPath.Known) airPitch = 0f;
+        if (SkateRide.BoardPath.Known || SkateOldschoolRide.Active) airPitch = 0f;
         SkateBoard.AirPitch += (airPitch - SkateBoard.AirPitch) * SkateRide.Clamp(frame * 14f, 0f, 1f);
         // In a jump the knees come up: the board rises toward the rider around the top and is back
         // at the legs' full reach when it moves at take-off speed, going up or coming down. The
         // player itself is where the game has it; only the board and the feet are drawn higher.
         var rise = 0f;
-        if (SkateRide.On && SkateRide.Mode == RideMode.Air && SkateRide.Jumped && !SkateRide.Frozen)
+        if (SkateRide.On && SkateRide.Mode == RideMode.Air && SkateRide.Jumped && !SkateRide.Frozen && !SkateOldschoolRide.Active)
         {
             var v = SkateRide.VSpeed / SkateRide.OlliePop;
             rise = SkateBoard.PopMost * SkateRide.Clamp(1f - v * v, 0f, 1f);

@@ -283,7 +283,7 @@ namespace Shortcut.RustMod
           ChestUp = chestUp; HeadForward = headForward; }
     }
 
-    public static class SkateRider
+    public static partial class SkateRider
     {
         public const double MinimumMeasurement = 0.01;
         public const double MaximumMeasurement = 5;

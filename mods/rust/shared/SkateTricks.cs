@@ -237,7 +237,7 @@ namespace Shortcut.RustMod
           ComboPoints = SkateTricks.LiveComboValue(state); BankedPoints = banked; BodySpin = bodySpin; }
     }
 
-    public static class SkateTricks
+    public static partial class SkateTricks
     {
         public const double FlipTolerance = 25;
         public const double SpinTolerance = 25;

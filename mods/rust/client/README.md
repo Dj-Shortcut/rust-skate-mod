@@ -100,6 +100,8 @@ game; see [The controller](#the-controller).
 | `LB` + `LT`, `RT`, or both while rolling | Frontside, Backside or Double Ground Grab. With both triggers and `A` + `X`: Coffin. An active push stroke finishes first; the chord owns the triggers and cannot pump or start a footplant/pop. | |
 | Left stick click + a plain Ollie/Nollie gesture | Boned Ollie/Nollie. Add `A` for front-foot One-Foot or `X` for back-foot One-Foot. The modifier owns push/No-Comply input and must be released after a menu. | |
 | Fresh `LB` + one trigger during an attained one-hand grab; right stick from centre to rim and back | | Finger Flip: hand throw, release, one full deck rotation and foot catch. Requires at least 1.11 s remaining flight; ordinary grab flicks still refuse a flip. |
+| Left stick click + fresh `Y` while riding | Hippie Jump: rider jumps while the actual deck rolls on the ground. A right-stick flip/shove during the initial release kick rotates that separate deck; a late request is refused. A left-stick body varial or held turn rotates the rider. The descending catch must reach the actual board. | |
+| Fresh `LB` + `Y` on foot beside your visible loose board | Caveman: reach and pick up that board, jump, then release `LB` to throw/catch it. Flick with the release for a flip/shove. A missing or unreachable board refuses entry; ordinary `Y` still mounts. | |
 | Right stick click | View from behind or the game's first person | |
 | `Back` held on the board | Every controller trick and grab in a panel at the top left, for as long as it is held (the first seconds on the board show the short version). On foot with an ordinary building plan, `Back` opens the selected building mode; `X` switches between Skate and Rust building. Native validation pending for the new switch. | |
 | Left stick swept half round its rim, within 0.6 s of landing a trick (as in the skate. games; a hard steer alone is a carve) | Revert: the rider and the board pivot a half turn together on the ground and roll on the same way, the other end of the deck leading (fakie after a regular landing, regular again after a fakie one); it joins the combo. | |
@@ -137,6 +139,14 @@ Used bumpers must be released before they can request a handplant. Triggers reta
 Board rendering and native rider targets now share the actual deck-top frame, including its
 inverted orientation. These are source and cached-reference checks; Shadow visuals and feel
 remain unverified.
+
+Client source 0.18.58 adds Caveman and Hippie Jump with an independently observed deck.
+Both axles need real support while rolling; deck travel and rotation are swept through the
+world. A missed/obstructed/unfinished catch bails, leaving that actual deck to settle rather
+than placing another board under the rider. Caveman transfers only its fresh mount intent
+across the normal input reset. Measured hand/feet and the physical deck orientation hand back
+to the ordinary ride on landing. Steep banks may honestly move the rolling deck out of reach.
+Cached compilation and headless probes remain separate from native appearance and feel.
 
 Client source 0.18.57 adds Boned and anatomical front/back One-Foot Ollies/Nollies, plus
 intentional Finger Flips. These actions retain one measured pose and canonical board frame.
