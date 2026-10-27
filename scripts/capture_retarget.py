@@ -50,7 +50,7 @@ def camera_curve(spec, duration):
     curve = RotationCurve(dict(kind='quaternion', keys=rotations), duration)
     return lambda t:qmatrix(curve(t))@reflection
 
-def confidence_track(raw, first, last, options, actor_expected=False):
+def confidence_track(raw, first, last, options, actor_expected=False, frame_times=None):
     indexed = {}
     for f in raw['frames']:
         i = f['frame_index']
@@ -58,6 +58,7 @@ def confidence_track(raw, first, last, options, actor_expected=False):
         if first <= i <= last: indexed[i] = f
     if len(indexed) != last-first+1: raise ValueError('Source frame window is incomplete')
     n = last-first+1; world = np.full((n,33,3), np.nan); good = np.zeros((n,33), bool); retained = np.zeros((n,33), bool)
+    timing = None if frame_times is None else finite(frame_times, (n,))
     reasons = {}; visibility = float(options.get('visibility', .5)); presence = float(options.get('presence', .5))
     if not 0 <= visibility <= 1 or not 0 <= presence <= 1: raise ValueError('Confidence thresholds outside0..1')
     occluded=options.get('occludedPolicy','interpolate');retain_presence=float(options.get('retainModelPresence',.8));margin=float(options.get('roiEdgeMargin',.01))
@@ -132,7 +133,8 @@ def confidence_track(raw, first, last, options, actor_expected=False):
                 span=int(right[0]-left[-1]-1) if not at_edge else int(right[0]-run[0]) if len(right) else int(run[-1]-left[-1])
                 if len(run)>gap_limit or span>gap_limit or (at_edge and edge=='fail'):
                     raise CaptureError('Unrecoverable confidence gap for landmark'+str(j),dict(landmark=j,sourceFrames=[int(first+x) for x in run],edge=at_edge,confidenceFlags=reasons))
-            for k in range(3): world[bad,j,k] = np.interp(bad,valid,world[valid,j,k])
+            for k in range(3):
+                world[bad,j,k] = np.interp(bad,valid,world[valid,j,k]) if timing is None else np.interp(timing[bad],timing[valid],world[valid,j,k])
             corrections[str(j)] = [int(first+x) for x in bad]
     estimates={str(j):[int(first+x) for x in np.flatnonzero(retained[:,j])] for j in REQUIRED if retained[:,j].any()}
     return world, dict(requiredLandmarks=REQUIRED,thresholds=dict(visibility=visibility,presence=presence,confidencePolicy='Both image and world must satisfy both thresholds (equivalent to their minimum)',crop='normalized x/y inside0..1'),
@@ -185,7 +187,7 @@ def retarget(raw, job, provenance):
     head_provenance=job.get('body',{}).get('headAnchorProvenance')
     if head_anchor=='ears' and (not isinstance(head_provenance,str) or not head_provenance.strip()):
         raise ValueError('Ear-mid head anchor requires headAnchorProvenance')
-    world,confidence=confidence_track(raw,first,last,opts,isinstance(actor,dict) and bool(actor.get('hipAndHeightSourceKeys')))
+    world,confidence=confidence_track(raw,first,last,opts,isinstance(actor,dict) and bool(actor.get('hipAndHeightSourceKeys')),frame_times=frame_times)
     basis=camera_curve(job['camera'],duration)
     for i in range(len(world)): world[i]=world[i]@basis(i/fps if frame_times is None else frame_times[i]).T
     source_indices=np.arange(len(world)) if frame_times is not None else None
