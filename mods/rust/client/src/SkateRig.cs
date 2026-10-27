@@ -144,7 +144,7 @@ public class SkateRig : MonoBehaviour
     private static bool wasOn;
     private float holsterSaidAt = -99f; private int restoreSlot = -1;
     private string lastHolster = "";
-    private float nextTick, nextLog, lateRetryAt, lastJumpTap = -1f, crouchSince = -1f;
+    private float nextTick, nextLog, lateRetryAt, nextHeldRestoreAt, lastJumpTap = -1f, crouchSince = -1f;
     private int standTicks, lyingTicks, lateFailures;
     public const float LyingEye = 0.6f, LyingReach = 0.8f, DownSeconds = 0.5f;
     private static float downSince = -1f;
@@ -178,6 +178,7 @@ public class SkateRig : MonoBehaviour
     // A rejected mount used to lose its call site at the IL2CPP boundary. Keep one bounded
     // trace for each changed failure, while every new press still gets visible feedback.
     private static string lastMountFailure;
+    [HideFromIl2Cpp]
     private static void MountFailure(string step, Exception error)
     {
         SkateHud.Notice("Cannot get on the skateboard: client check failed (" + step + "). See skate.log");
@@ -348,6 +349,15 @@ public class SkateRig : MonoBehaviour
         SyncRootProxy(1);
         SkateClock.Frame();
         var t0 = SkateClock.Now(); SkateKeys.Poll(); SkateConsole.Update(Time.realtimeSinceStartup); SkateClock.Add(SkateClock.Keys, t0);
+        // An individual object may have been unavailable at the dismount edge. Retry only
+        // during ordinary on-foot control, never over a wheel or another cursor owner.
+        if (!SkateRide.On && !Scenarios.Active && SkateKeys.ControlsActive &&
+            !SkatePieces.BlocksControls && !SkatePieces.OwnsCursor && SkateHeld.HasPendingRestore && now >= nextHeldRestoreAt)
+        {
+            nextHeldRestoreAt = now + 1f;
+            var restored = SkateHeld.Show();
+            if (restored > 0) Say("UNHOLSTER recovered " + restored + " pending held objects");
+        }
         if (SkateRide.On)
         {
             // The game switches its walk component off when something else moves the player (a seat, a vehicle).
@@ -451,6 +461,7 @@ public class SkateRig : MonoBehaviour
     // The player's input is told the new view (SetViewVars); the route is logged once.
     private static bool viewLooked; private static System.Reflection.MethodInfo setView; private static System.Reflection.MemberInfo inputMember;
     public static string ViewState { get; private set; } = "not checked";
+    [HideFromIl2Cpp]
     private static void ResetViewRoute()
     {
         viewLooked = false; setView = null; inputMember = null; viewArgs[0] = null;
