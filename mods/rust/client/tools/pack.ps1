@@ -4,8 +4,8 @@
 # installer (install.ps1 of this branch) that a friend runs on his own PC without any of the
 # development tools. Nothing is built or downloaded; the pack is exactly what this PC plays.
 # $pserver = 0 leaves server.txt out of the pack (by default it goes in when it is there, so that
-# the friend's launcher can show the address to join). The owner's sound pack (sounds\ in the
-# staging folder, 18 WAV files that are never committed) goes in when it is complete; an incomplete
+# the friend's launcher can show the address to join). The configured local sound pack (otherwise
+# sounds\, 18 WAV files that are never committed) goes in when it is complete; an incomplete
 # one refuses the pack, since the plugin plays nothing then; $psounds = 0 packs without sounds.
 $ErrorActionPreference = 'Stop'
 $dl = "$HOME\Downloads"; $probe = "$dl\claude-loader-probe"; $L = "$probe\launcher"
@@ -25,15 +25,10 @@ $missing = @($need | ? { -not (Test-Path -LiteralPath $_) })
 if ($missing) { 'ABORT: not on this PC: ' + (($missing | % { $_.Replace($dl, '~') }) -join ', '); return }
 . "$L\diagnostics.ps1"
 $icons = @(Get-SkateArtworkFiles "$probe\play\artwork.txt" "$probe\play")
-# The 18 file names mirror SkateSoundPack.cs in the client source; the plugin needs every one.
-$stems = 'skate_rolling_smooth', 'skate_rolling_rough', 'skate_rolling_wood', 'skate_grit', 'skate_whirr', 'skate_push', 'skate_ollie', 'skate_landing', 'skate_drop', 'skate_seam', 'skate_grind_in', 'skate_grind', 'skate_grind_out', 'skate_slide_in', 'skate_deckslide', 'skate_scrape', 'skate_slam', 'skate_bail'
-$sounds = $false
-if ($null -eq $psounds -or $psounds) {
-  if (Test-Path "$probe\sounds") {
-    $absent = @($stems | ? { -not (Test-Path -LiteralPath "$probe\sounds\$($_)_01.wav") })
-    if ($absent) { 'ABORT: the sound pack in ~\claude-loader-probe\sounds is incomplete (missing ' + (($absent | % { $_ + '_01.wav' }) -join ', ') + '); complete it, or sv psounds 0 for a pack without sounds'; return }
-    $sounds = $true
-  }
+$sounds = $false; $soundSource = $null
+if ("$psounds" -notin '0', 'false') {
+  $soundSource = Resolve-SkateSoundSource $probe -Strict
+  $sounds = $soundSource.Files.Count -eq 18
 }
 # The installer is taken from this branch, like every other script: it is not part of the launcher.
 $enc = New-Object Text.UTF8Encoding($false)
@@ -64,8 +59,11 @@ if ((Test-Path -LiteralPath "$probe\play\skate_captures.skmc" -PathType Leaf) -a
 }
 foreach ($f in 'session.ps1', 'skate.ps1', 'watch.ps1', 'clean.ps1', 'sticks.ps1', 'diagnostics.ps1', 'version.txt') { Copy-Item "$L\$f" "$to\launcher" }
 if (Test-Path -LiteralPath "$L\candidate.txt" -PathType Leaf) { Copy-Item -LiteralPath "$L\candidate.txt" -Destination "$to\launcher" }
-# Only the 18 WAV files the plugin reads; anything else in sounds\ stays on this PC.
-if ($sounds) { New-Item -ItemType Directory -Force "$to\sounds" | Out-Null; $stems | % { Copy-Item -LiteralPath "$probe\sounds\$($_)_01.wav" "$to\sounds" } }
+# Package the eighteen WAVs, never the private source pointer or its machine-specific path.
+if ($sounds) {
+  New-Item -ItemType Directory -Force "$to\sounds" | Out-Null
+  foreach ($file in $soundSource.Files) { Copy-Item -LiteralPath (Join-Path $soundSource.Directory $file) -Destination "$to\sounds" }
+}
 $server = ''
 if (($null -eq $pserver -or $pserver) -and (Test-Path "$probe\server.txt")) { Copy-Item "$probe\server.txt" "$to\server.txt"; $server = (gc "$probe\server.txt" -First 1).Trim() }
 [IO.File]::WriteAllText("$stage\install.ps1", $inst, $enc)

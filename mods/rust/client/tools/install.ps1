@@ -29,6 +29,8 @@ if ($missing) { abort ('The pack is incomplete (missing ' + ($missing -join ', '
 . "$from\launcher\diagnostics.ps1"
 try { $icons = @(Get-SkateArtworkFiles "$from\play\artwork.txt" "$from\play") }
 catch { abort 'The declared menu artwork is incomplete or invalid. Unpack the complete prepared pack again.'; return }
+try { $soundFiles = @(Get-SkateSoundFiles "$from\sounds" -RequireComplete:(Test-Path -LiteralPath "$from\sounds" -PathType Container)) }
+catch { abort 'The pack has an incomplete sound set. Unpack the complete prepared pack again.'; return }
 $free = [int]((Get-PSDrive C).Free / 1MB)
 $mb = [int]((ls $from -Recurse -File | measure Length -Sum).Sum / 1MB)
 if ($free -lt $mb + 1024) { abort "The pack needs about $mb MB on C: and only $free MB are free."; return }
@@ -49,6 +51,9 @@ if (Test-Path "$from\server.txt") { Copy-Item "$from\server.txt" "$probe\server.
 else { Remove-Item -LiteralPath "$probe\server.txt" -Force -ErrorAction SilentlyContinue }
 Remove-Item -LiteralPath "$probe\sounds" -Recurse -Force -ErrorAction SilentlyContinue
 if (Test-Path "$from\sounds") { Copy-Item -LiteralPath "$from\sounds" -Destination "$probe\sounds" -Recurse }
+# Applying a portable pack selects its own sounds\ (or its explicit lack of audio), not an old
+# private source on this PC. Preflight failures above leave the existing pointer untouched.
+if (Test-Path -LiteralPath "$probe\sounds-source.txt" -PathType Leaf) { Remove-Item -LiteralPath "$probe\sounds-source.txt" -Force -ErrorAction Stop }
 $desk = [Environment]::GetFolderPath('Desktop')
 $start = "@echo off`r`ntitle Rust Skate`r`npowershell -NoProfile -ExecutionPolicy Bypass -File `"%USERPROFILE%\Downloads\claude-loader-probe\launcher\skate.ps1`"`r`necho.`r`npause`r`n"
 $clean = "@echo off`r`ntitle Rust Skate - remove mod files`r`npowershell -NoProfile -ExecutionPolicy Bypass -File `"%USERPROFILE%\Downloads\claude-loader-probe\launcher\clean.ps1`"`r`necho.`r`npause`r`n"

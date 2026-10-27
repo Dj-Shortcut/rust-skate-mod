@@ -3,6 +3,7 @@
 # on the desktop: "Rust Skate.cmd" and "Rust Skate - remove mod files.cmd". The launcher itself
 # needs no network and never builds anything, so what the owner plays is exactly this commit.
 # Explicit developer override: $pcandidate is a complete commit SHA. It never changes release.txt.
+# Optional $psoundpath selects an existing complete WAV folder; its pointer stays local to this PC.
 $ErrorActionPreference = 'Stop'
 $probe = "$HOME\Downloads\claude-loader-probe"; $L = "$probe\launcher"
 $candidate = "$pcandidate"
@@ -27,6 +28,7 @@ foreach ($f in 'session.ps1', 'skate.ps1', 'watch.ps1', 'clean.ps1', 'sticks.ps1
 }
 . ([scriptblock]::Create($files['diagnostics.ps1']))
 $icons = @(Get-SkateArtworkFiles "$probe\plugin\artwork.txt" "$probe\plugin")
+$soundSource = Resolve-SkateSoundSource $probe "$psoundpath"
 New-Item -ItemType Directory -Force $L, "$probe\play" | Out-Null
 # Sessions use the plugin, current models and the exact declared icon list from play\.
 # Unrelated staged files are retained; session.ps1 stages only DLLs/models and declared icons.
@@ -55,6 +57,7 @@ $pb = ((gc 'C:\Program Files (x86)\Steam\steamapps\appmanifest_252490.acf' | sls
 # Mark development installs without changing the accepted release pin.
 if ($candidate) { $rel | Set-Content -LiteralPath "$L\candidate.txt" -Encoding ASCII }
 else { Remove-Item -LiteralPath "$L\candidate.txt" -ErrorAction SilentlyContinue }
+if ("$psoundpath") { $soundSource.Directory | Set-Content -LiteralPath "$probe\sounds-source.txt" -Encoding UTF8 }
 $desk = [Environment]::GetFolderPath('Desktop')
 $start = "@echo off`r`ntitle Rust Skate`r`npowershell -NoProfile -ExecutionPolicy Bypass -File `"%USERPROFILE%\Downloads\claude-loader-probe\launcher\skate.ps1`"`r`necho.`r`npause`r`n"
 $clean = "@echo off`r`ntitle Rust Skate - remove mod files`r`npowershell -NoProfile -ExecutionPolicy Bypass -File `"%USERPROFILE%\Downloads\claude-loader-probe\launcher\clean.ps1`"`r`necho.`r`npause`r`n"
@@ -62,9 +65,7 @@ $clean = "@echo off`r`ntitle Rust Skate - remove mod files`r`npowershell -NoProf
 [IO.File]::WriteAllText("$desk\Rust Skate - remove mod files.cmd", $clean, [Text.Encoding]::ASCII)
 'launcher files: ' + ((ls $L -File | % { "{0} {1}" -f $_.Name, $_.Length }) -join ', ')
 $mode + ' plugin: ' + (gc "$L\version.txt" -First 1) + ' | ' + (gi "$probe\play\ShortcutSkateClient.dll").Length + ' bytes | play folder: ' + ((ls "$probe\play" | % Name) -join ', ')
-# The sound pack is not built or fetched: the owner keeps his 18 WAV files in sounds\ himself.
-# The launcher and every session stage that folder (session.ps1); a missing file is said there.
-$wavs = @(ls "$probe\sounds" -File -Filter *_01.wav -ErrorAction SilentlyContinue).Count
-'sounds: ' + $(if ($wavs -ge 18) { "$wavs WAV files in sounds\" } elseif ($wavs) { "$wavs of 18 WAV files in sounds\ - incomplete, the ride is silent until all 18 are there" } else { 'none (no sounds\ folder) - the ride is silent' })
+# The WAVs are neither built nor fetched; an explicit private folder is not duplicated locally.
+'sounds: ' + $soundSource.Files.Count + '/18 files from ' + $(if ($soundSource.Configured) { 'the configured local folder' } else { 'the default sounds folder' })
 'menu artwork: ' + $icons.Count + ' declared PNGs; diagnostics: powershell -NoProfile -File "' + "$L\skate.ps1" + '" -Diagnostics (does not start Rust)'
 'desktop: ' + ((ls $desk -Filter 'Rust Skate*' | % Name) -join ', ')

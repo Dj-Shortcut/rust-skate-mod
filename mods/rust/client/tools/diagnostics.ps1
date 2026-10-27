@@ -1,5 +1,52 @@
 # Shared launcher checks and private log recovery. Dot-source for the functions; running this
 # file alone only copies existing logs and prints bounded checks. It never starts or stops Rust.
+function Get-SkateSoundFileNames {
+  $stems = 'skate_rolling_smooth', 'skate_rolling_rough', 'skate_rolling_wood', 'skate_grit', 'skate_whirr', 'skate_push', 'skate_ollie', 'skate_landing', 'skate_drop', 'skate_seam', 'skate_grind_in', 'skate_grind', 'skate_grind_out', 'skate_slide_in', 'skate_deckslide', 'skate_scrape', 'skate_slam', 'skate_bail'
+  $stems | ForEach-Object { $_ + '_01.wav' }
+}
+
+function Get-SkateSoundFiles([string]$Directory, [switch]$RequireComplete) {
+  $names = @(Get-SkateSoundFileNames)
+  if (-not (Test-Path -LiteralPath $Directory -PathType Container)) {
+    if ($RequireComplete) { throw 'The configured sound folder is unavailable; all eighteen WAV files are required.' }
+    return
+  }
+  foreach ($name in $names) {
+    $stream = $null
+    try {
+      $path = Join-Path $Directory $name
+      if (-not (Test-Path -LiteralPath $path -PathType Leaf) -or (Get-Item -LiteralPath $path).Length -le 0) { throw 'Missing sound file.' }
+      $stream = [IO.File]::OpenRead($path)
+    } catch {
+      if ($RequireComplete) { throw ('The sound pack is incomplete or unreadable: ' + $name + '. All eighteen WAV files are required.') }
+      return
+    } finally { if ($stream) { $stream.Dispose() } }
+  }
+  # The client still validates and decodes the native WAV format. Staging never converts it.
+  return $names
+}
+
+function Resolve-SkateSoundSource([string]$ProbePath, [string]$Override = '', [switch]$Strict) {
+  $pointer = Join-Path $ProbePath 'sounds-source.txt'
+  $configured = [bool]$Override
+  $directory = $Override
+  if (-not $configured -and (Test-Path -LiteralPath $pointer -PathType Leaf)) {
+    $lines = @(Get-Content -LiteralPath $pointer)
+    if ($lines.Count -ne 1 -or -not $lines[0]) { throw 'The local sound source receipt is invalid; configure psoundpath again.' }
+    $directory = $lines[0]; $configured = $true
+  }
+  if ($configured) {
+    if (-not [IO.Path]::IsPathRooted($directory) -or
+      ([IO.Path]::DirectorySeparatorChar -eq '\' -and $directory -notmatch '\A(?:[A-Za-z]:[\\/]|\\\\[^\\/]+[\\/][^\\/]+(?:[\\/]|$))')) {
+      throw 'psoundpath must be a complete folder path containing the eighteen WAV files.'
+    }
+    $directory = [IO.Path]::GetFullPath($directory)
+  } else { $directory = Join-Path $ProbePath 'sounds' }
+  $required = $configured -or ($Strict -and (Test-Path -LiteralPath $directory -PathType Container))
+  $files = @(Get-SkateSoundFiles $directory -RequireComplete:$required)
+  return [pscustomobject]@{ Directory = $directory; Files = $files; Configured = $configured }
+}
+
 function Get-SkateArtworkFiles([string]$Manifest, [string]$Directory = '') {
   if (-not (Test-Path -LiteralPath $Manifest -PathType Leaf)) { return }
   $names = @()
@@ -94,6 +141,10 @@ function Show-SkateChecks([string]$RustPath, [string]$ProbePath) {
     (Test-Path -LiteralPath "$ProbePath/gen-$build/gen.log") -and
     (Select-String -LiteralPath "$ProbePath/gen-$build/gen.log" -Pattern 'GEN DONE.* errors=0( |$)' -Quiet)
   Write-Host ('  Rust build: ' + $(if ($build) { $build } else { 'not found' }) + '; matching interop: ' + $(if ($complete) { 'ready' } else { 'not ready' }))
+  try {
+    $soundSource = Resolve-SkateSoundSource $ProbePath
+    Write-Host ('  Sounds: ' + $soundSource.Files.Count + '/18 files from ' + $(if ($soundSource.Configured) { 'the configured local folder' } else { 'the default sounds folder' }) + '; WAV format is checked by the client.')
+  } catch { Write-Host '  Sounds: the configured local source is incomplete or unavailable; configure psoundpath again.' }
   $manifest = Join-Path $ProbePath 'play/artwork.txt'
   try { $icons = @(Get-SkateArtworkFiles $manifest (Join-Path $ProbePath 'play')); Write-Host ('  Menu artwork: ' + $icons.Count + '/12 installed; missing artwork uses the built-in icons.') }
   catch { Write-Host '  Menu artwork: incomplete or invalid; reinstall the prepared client package.' }
