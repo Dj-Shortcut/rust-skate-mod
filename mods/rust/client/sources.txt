@@ -18,6 +18,7 @@ mods/rust/client/src/SkateFoley.cs
 mods/rust/client/src/Scenarios.cs
 mods/rust/client/src/SkateRiggingShowcase.cs
 mods/rust/client/src/SkateRiggingShowcase.Poses.cs
+mods/rust/client/src/SkateRiggingShowcase.Captures.cs
 mods/rust/client/src/SkatePad.cs
 mods/rust/client/src/SkatePadLog.cs
 mods/rust/client/src/SkatePieces.cs
@@ -39,6 +40,10 @@ mods/rust/shared/SkateGroundGrabs.cs
 mods/rust/shared/SkateHandplants.cs
 mods/rust/shared/SkateBoardPath.cs
 mods/rust/shared/SkateRider.cs
+mods/rust/shared/SkateOllieCaptureData.cs
+mods/rust/shared/SkateOllieCapture.cs
+mods/rust/shared/SkateCapture.cs
+mods/rust/shared/SkateCapturePack.cs
 mods/rust/shared/SkateEdges.cs
 mods/rust/shared/SkateAudio.cs
 mods/rust/shared/SkateFlick.cs

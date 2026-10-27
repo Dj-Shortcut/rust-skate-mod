@@ -4,7 +4,7 @@ Skate-mod voor Andy's Rust-server, in Andy's volgorde. Eén regel per punt; deta
 Klaar = in het spel gezien of gereden, met versie. Bron, CI of een build alleen is niet klaar.
 Laatste speltest: client 0.18.45 / server 0.3.38 (21 okt). Geen testomgeving sinds Shadow weg is.
 
-1. Bouwplan-wiel: één knop wisselt tussen Skate- en Rust-bouwen, steeds één wiel zichtbaar. Actief: na Low Ledge kiezen volgt ongevraagd `off` (fix in .46, ongetest).
+1. Bouwplan-wiel: één knop wisselt tussen Skate- en Rust-bouwen, steeds één wiel zichtbaar. Actief: na Low Ledge kiezen volgt ongevraagd `off` (fix in .46, ongetest); de actuele Rust-build vraagt de menucompatibiliteit uit .62, native wisselen/plaatsen open.
 2. MEGA-halfpipe plaatsen op vrije grond en op funderingen. Open.
 3. Echte ronde quarterpipes (mini, normaal, groot). Open.
 4. Alle twaalf skatestukken plaatsen met het gewone bouwplan, ook vanuit inventory (Andy, opnieuw 25 okt). Open.
@@ -31,7 +31,7 @@ Laatste speltest: client 0.18.45 / server 0.3.38 (21 okt). Geen testomgeving sin
 25. Controller werkt op het board en te voet. Open.
 26. Uitzoeken hoe Skate trick-, rijder- en boardanimaties koppelt. Deels onderzocht (privé).
 27. Herkenbare drop-inanimatie voor halfpipes: tail op coping, gewicht naar voren, knieën en board vloeiend de wand in; aparte animatie en spelcontrole open (Andy, 26 okt).
-28. Automatische rigging-showcase op platte grond: alle beschikbare trickposes met naam, pauze en volgende/vorige, zodat handen, voeten en board samen bekeken kunnen worden. Bron aanwezig in 0.18.60; eerste visuele controle op Shadow open (Andy, 26 okt).
+28. Automatische rigging-showcase op platte grond: alle beschikbare trickposes met naam, pauze en volgende/vorige, zodat handen, voeten en board samen bekeken kunnen worden. Bron aanwezig in 0.18.60; [batchpipeline met volledige boardrotatie](docs/RUST-SKATE-MOTION-CAPTURE.md) en externe capturebibliotheek toegevoegd. Eerste Berrics-referenties privé verwerkt; normale trickroute, bewegingsacceptatie en native beeldcontrole open (Andy, 27 okt).
 
 Per rit controleren: controller, eerste/derde persoon, kompas, hand-item, pose, geluid, put-backs. Halfpipe: drie beklimmingen en fakie-terugkeren zonder put-back.
 

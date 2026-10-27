@@ -11,7 +11,7 @@ public static partial class SkateRiggingShowcase
     private static readonly SkateVector PreviewUp = new SkateVector(0, 1, 0);
     private static readonly SkateVector PreviewForward = new SkateVector(0, 0, 1);
     private static readonly SkateBoardPose PreviewStage = new SkateBoardPose(new SkateVector(0, PreviewDeckTop, 0), new SkateVector(0, 0, 1), new SkateVector(0, 1, 0));
-    private enum PreviewKind { Riding, Air, Grab, GroundGrab, Grind, Handplant, Style, Finger, Oldschool, Wall, Wallie, Drop, BodyFlip }
+    private enum PreviewKind { Riding, Air, Grab, GroundGrab, Grind, Handplant, Style, Finger, Oldschool, Wall, Wallie, Drop, BodyFlip, VideoCapture, LibraryCapture }
     private readonly struct PreviewEntry
     {
         public readonly PreviewKind Kind;
@@ -38,6 +38,7 @@ public static partial class SkateRiggingShowcase
         var entries = new List<PreviewEntry>(224);
         string[] riding = { "Cruising", "Push", "Mongo push", "Manual", "Nose manual", "Pump posture", "Brake posture", "Frontside revert", "Backside revert", "Fakie roll", "Bail and recovery pose" };
         for (int i = 0; i < riding.Length; i++) entries.Add(new PreviewEntry(PreviewKind.Riding, riding[i], "Riding", i));
+        entries.Add(new PreviewEntry(PreviewKind.VideoCapture, "Ollie - video capture", "Observed motion replay"));
         for (int pop = 1; pop <= 2; pop++)
         {
             string prefix = pop == 1 ? "Ollie" : "Nollie";
@@ -101,6 +102,7 @@ public static partial class SkateRiggingShowcase
         entries.Add(new PreviewEntry(PreviewKind.Drop, "Drop-in (current transition preview)", "Wall and transition"));
         entries.Add(new PreviewEntry(PreviewKind.BodyFlip, "Front flip with frontside grab", "Body flip", (int)SkateBodyFlipKind.Front));
         entries.Add(new PreviewEntry(PreviewKind.BodyFlip, "Back flip with frontside grab", "Body flip", (int)SkateBodyFlipKind.Back));
+        AppendCaptureEntries(entries);
         return entries.ToArray();
     }
 
@@ -166,6 +168,17 @@ public static partial class SkateRiggingShowcase
     {
         s = PreviewBase(0, reversed); pose = default(SkateRiderPose); board = s.Frame;
         up = left = right = PreviewUp; error = null;
+        if (entry.Kind == PreviewKind.VideoCapture)
+        {
+            if (sw || reversed)
+            { error = "Video-captured Ollie replay supports regular or goofy with a normal deck only."; return false; }
+            // Preserve the captured timing within the existing five-second inspection slot;
+            // once complete, hold its actual last pose rather than stretching the whole Ollie.
+            return SkateOllieCapture.TrySample(Math.Min(SkateOllieCapture.Duration, p * CycleSeconds), rig, stance,
+                out pose, out board, out up, out left, out right, out error);
+        }
+        if (entry.Kind == PreviewKind.LibraryCapture)
+            return TryLibraryCapture(entry, p, rig, stance, sw, reversed, out pose, out board, out up, out left, out right, out error);
         bool solved = false;
         double w = PreviewWindow(p, .12, .30, .65, .90);
         if (entry.Kind == PreviewKind.Riding) PreviewRiding(entry.A, p, stance, sw, reversed, ref s);

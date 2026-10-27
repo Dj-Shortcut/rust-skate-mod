@@ -18,6 +18,25 @@ validates placement and charges the price.
 
 ## Development verification
 
+The guarded `rigging` scenario includes **Ollie - video capture**: a one-second,
+24 fps source motion retargeted to the measured native Humanoid chains, with
+separate sole rotation. Select it with Dpad left/right; A pauses and B/Y/Back
+stops the showcase. `zz rigging` builds and starts a diagnostic session, so it
+is not a read-only check. The replay does not replace normal Ollie riding or
+drive the physical player. Native skin/playback remain unverified. See
+[capture provenance and limitations](../../../assets/authored/animation/ollie-video/README.md).
+This earlier built-in prototype is retained as a reference; its movement was
+not accepted as a finished animation.
+
+The same guarded catalogue also loads an optional external
+`BepInEx/plugins/skate_captures.skmc` library. The shared capture sampler supports
+full board quaternions, measured rig retargeting, regular/goofy mirroring and
+explicit phase/contact states. Python batch tooling creates packs from local
+video or retained pose detections and declarative reconstruction recipes. Entries
+show their review status; normal riding does not automatically consume these
+reference captures. Missing or invalid packs leave the built-in catalogue usable.
+See the [motion capture pipeline](../../../docs/RUST-SKATE-MOTION-CAPTURE.md).
+
 Client 0.18.34 retains the displayed support frame when contact is lost at a transition
 take-off. Held grabs keep their hand and elbow targets through pose easing and shaping;
 during a single grab the free hand stays within its measured arm reach. Controller crouching interrupts a foot stroke,
@@ -354,6 +373,14 @@ matching selection. The native Rust preview still remained visible in .45. Two-w
 the corrected selection, actual placement and controller operation remain unverified in .46/.47.
 Version .47 preserves an unresolved placement when the wheel is reopened to choose another piece.
 Compilation and controlled input checks do not close those gameplay gates.
+
+The updated Rust client changed the generated construction-menu registry type. Client .62
+reads only the two known registry layouts and requires Foundation, Wall and Floor choices
+to identify the newer layout before closing it. On that build, open Rust's ordinary building
+wheel once before switching to Skate building. Missing or unrecognizable menu data leaves
+the native wheel alone and reports the limitation. The same verified menu may finish its
+close animation after its choices are cleared; another plan, player or lifetime cannot reuse
+that permission. Native switching and placement still require a gameplay check.
 
 A server line can reach the client without a hook only as text: `SkateInbox` reads the BepInEx log
 (`LogOutput.log`, written with `UnityLogListening` on: `sv plisten 1` before `zz play`) and logs every

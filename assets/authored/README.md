@@ -5,6 +5,10 @@ game files, imported meshes, texture packs, sound packs or model libraries
 are inputs. Source code is Apache-2.0; the generated models are
 [CC0-1.0](CC0-1.0.txt).
 
+The separately documented [video-derived ollie motion](animation/ollie-video/README.md)
+is **CC BY-SA 3.0**, not CC0. It contains retargeted animation data with source
+attribution; no source footage, detector model or imported game mesh is bundled.
+
 Regenerate the ramps with Blender 5.2.0. Replace the example executable path
 with the matching installation:
 

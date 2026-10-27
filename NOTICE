@@ -104,6 +104,23 @@ Ghidra — https://github.com/NationalSecurityAgency/ghidra
   committed here or distributed with IW4L. Licensed under Apache 2.0.
 
 --------------------------------------------------------------------------------
+Video-derived ollie motion
+--------------------------------------------------------------------------------
+
+Medvedev — Ollie 1 (16 June 2012)
+  https://commons.wikimedia.org/wiki/File:Ollie_1.ogv
+  CC BY-SA 3.0: https://creativecommons.org/licenses/by-sa/3.0/
+  Source frames 24–48 were analysed with MediaPipe and retargeted with explicit
+  board/contact/anatomical corrections. Derived motion/data are distributed in
+  assets/authored/animation/ollie-video and SkateOllieCaptureData.cs under the
+  same licence, not CC0. Source footage/audio are not bundled. This attribution
+  does not imply endorsement by the author.
+
+MediaPipe — https://github.com/google-ai-edge/mediapipe
+  Used offline to estimate image/world body landmarks. The detector, model
+  bundle and Python environment are not distributed with the mod. Apache 2.0.
+
+--------------------------------------------------------------------------------
 Game content
 --------------------------------------------------------------------------------
 

@@ -1,0 +1,223 @@
+{
+  "version": 1,
+  "jobs": [
+    {
+      "id": "example-kickflip",
+      "label": "Example kickflip",
+      "movementKind": "kickflip",
+      "reviewed": false,
+      "source": {
+        "poseJson": "private/kickflip-poses.json",
+        "url": "https://example.invalid/reference",
+        "author": "Replace with the source author",
+        "rights": "Replace with the source rights and reconstruction scope"
+      },
+      "window": {
+        "firstFrame": 0,
+        "lastFrame": 60,
+        "fps": 30
+      },
+      "stance": "regular",
+      "keySpace": "canonical",
+      "camera": {
+        "mode": "static",
+        "basis": [
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            0,
+            -1,
+            0
+          ],
+          [
+            0,
+            0,
+            1
+          ]
+        ],
+        "provenance": "Authored schema example; replace with source calibration"
+      },
+      "body": {
+        "pelvisKeys": [
+          {
+            "t": 0,
+            "value": [
+              0,
+              0.95,
+              0
+            ]
+          },
+          {
+            "t": 0.3,
+            "value": [
+              0,
+              0.7,
+              0
+            ]
+          },
+          {
+            "t": 0.9,
+            "value": [
+              0,
+              1.2,
+              0
+            ]
+          },
+          {
+            "t": 1.5,
+            "value": [
+              0,
+              0.8,
+              0
+            ]
+          },
+          {
+            "t": 2,
+            "value": [
+              0,
+              0.95,
+              0
+            ]
+          }
+        ]
+      },
+      "board": {
+        "provenance": "authored",
+        "positionKeys": [
+          {
+            "t": 0,
+            "value": [
+              0,
+              0.092,
+              0
+            ]
+          },
+          {
+            "t": 0.35,
+            "value": [
+              0,
+              0.092,
+              0
+            ]
+          },
+          {
+            "t": 0.9,
+            "value": [
+              0,
+              0.6,
+              0
+            ]
+          },
+          {
+            "t": 1.5,
+            "value": [
+              0,
+              0.092,
+              0
+            ]
+          },
+          {
+            "t": 2,
+            "value": [
+              0,
+              0.092,
+              0
+            ]
+          }
+        ],
+        "orientation": {
+          "kind": "euler",
+          "order": "XYZ",
+          "keys": [
+            {
+              "t": 0,
+              "value": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "t": 0.35,
+              "value": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "t": 1.4,
+              "value": [
+                0,
+                0,
+                360
+              ]
+            },
+            {
+              "t": 2,
+              "value": [
+                0,
+                0,
+                360
+              ]
+            }
+          ]
+        },
+        "notes": "Authored schema example, not measured motion"
+      },
+      "events": [
+        {
+          "t": 0,
+          "phase": "load",
+          "contacts": [
+            "LeftFoot",
+            "RightFoot"
+          ]
+        },
+        {
+          "t": 0.35,
+          "phase": "pop",
+          "contacts": []
+        },
+        {
+          "t": 0.45,
+          "phase": "air",
+          "contacts": []
+        },
+        {
+          "t": 1.4,
+          "phase": "catch",
+          "contacts": [
+            "LeftFoot",
+            "RightFoot"
+          ]
+        },
+        {
+          "t": 1.5,
+          "phase": "land",
+          "contacts": [
+            "LeftFoot",
+            "RightFoot"
+          ]
+        },
+        {
+          "t": 1.7,
+          "phase": "recovery",
+          "contacts": [
+            "LeftFoot",
+            "RightFoot"
+          ]
+        }
+      ],
+      "retarget": {
+        "maxGapFrames": 6,
+        "edgePolicy": "fail",
+        "maxReachCorrectionM": 0
+      },
+      "sampleHz": 120
+    }
+  ]
+}

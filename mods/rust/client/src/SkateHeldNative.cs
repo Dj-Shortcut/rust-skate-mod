@@ -100,6 +100,105 @@ public static partial class SkateHeld
     private static string cursorReleaseNotice = "";
     public static string RustWheelGate { get; private set; } = "not-checked";
     private static string wheelBindingNotice = "";
+    private static bool constructionRegistryLooked, constructionRegistryNeedsIdentity;
+    private static PropertyInfo constructionRegistry;
+    private static PropertyInfo[] constructionLabels;
+    private static Type constructionPhraseType;
+    private static PieMenu verifiedConstructionWheel;
+    private static Planner verifiedConstructionPlanner;
+    private static object verifiedConstructionPlayer, verifiedConstructionBody;
+    private static float verifiedConstructionAwakeAt;
+
+    private static bool ReadConstructionWheel(out Il2CppSystem.Object native, out string why)
+    {
+        native = null; why = "";
+        if (!constructionRegistryLooked)
+        {
+            constructionRegistryLooked = true;
+            const BindingFlags nested = BindingFlags.Public | BindingFlags.NonPublic;
+            var owner = typeof(PieMenu).GetNestedType("ObjectNPublicAbstractSealedBoObBoObBoObBoObBoObUnique", nested);
+            if (owner == null)
+            {
+                owner = typeof(PieMenu).GetNestedType("ObjectNPublicAbstractSealedObBoObBoObBoObBoObBoUnique", nested);
+                constructionRegistryNeedsIdentity = true;
+            }
+            if (owner != null && owner.IsAbstract && owner.IsSealed)
+            {
+                var field = owner.GetProperty("field_Public_Static_Object_15", BindingFlags.Public | BindingFlags.Static);
+                var getter = field == null ? null : field.GetGetMethod();
+                if (getter != null && getter.IsStatic && field.PropertyType == typeof(Il2CppSystem.Object) && field.GetIndexParameters().Length == 0)
+                    constructionRegistry = field;
+            }
+        }
+        if (constructionRegistry == null)
+        { why = "Rust's construction-wheel binding is unavailable for this build."; return false; }
+        native = (Il2CppSystem.Object)constructionRegistry.GetValue(null, null);
+        if (!constructionRegistryNeedsIdentity) return true;
+        var candidate = ReferenceEquals(native, null) ? null : native.TryCast<PieMenu>();
+        if (candidate != null && ConstructionOptions(candidate))
+        {
+            verifiedConstructionWheel = candidate; verifiedConstructionPlanner = wheelPlanner;
+            verifiedConstructionPlayer = SkateRig.Local; verifiedConstructionBody = SkateRig.Body;
+            verifiedConstructionAwakeAt = SkateRig.AwakeAt;
+            return true;
+        }
+        // Close may clear its option list before the fade finishes. Continue only that exact
+        // already-verified close, with input capture off and the same plan/player/lifetime.
+        if (candidate != null && candidate == closingWheel && candidate == verifiedConstructionWheel &&
+            candidate.escapeCapture != null && !candidate.escapeCapture.enabled && wheelPlanner == verifiedConstructionPlanner &&
+            ReferenceEquals(verifiedConstructionPlayer, SkateRig.Local) && ReferenceEquals(closingPlayer, SkateRig.Local) &&
+            ReferenceEquals(verifiedConstructionBody, SkateRig.Body) && ReferenceEquals(closingBody, SkateRig.Body) &&
+            verifiedConstructionAwakeAt == SkateRig.AwakeAt && closingAwakeAt == SkateRig.AwakeAt)
+            return true;
+        else
+        { why = "Open Rust's building wheel once, then switch to Skate building."; return false; }
+    }
+
+    // The regenerated registry name alone does not establish which radial its object slot owns.
+    // Require three distinct construction choices before allowing it to close or own our cursor.
+    // Read only the known string-data getters; never invoke a translated-label method.
+    private static bool ConstructionOptions(PieMenu menu)
+    {
+        var options = menu.options;
+        if (options == null) return false;
+        var count = options.Count;
+        if (count < 3 || count > 64) return false;
+        bool foundation = false, wall = false, floor = false;
+        for (var i = 0; i < count; i++)
+        {
+            var option = options[i];
+            object phrase = option == null ? null : option.name;
+            if (phrase == null) continue;
+            var type = phrase.GetType();
+            if (type != constructionPhraseType)
+            {
+                constructionPhraseType = type;
+                var names = new[] { "token", "legacyEnglish", "field_Private_String_0" };
+                constructionLabels = new PropertyInfo[names.Length];
+                for (var j = 0; j < names.Length; j++)
+                {
+                    var label = type.GetProperty(names[j], BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                    if (label != null && label.PropertyType == typeof(string) && label.GetIndexParameters().Length == 0 && label.GetGetMethod() != null)
+                        constructionLabels[j] = label;
+                }
+            }
+            var choice = -1;
+            for (var j = 0; j < constructionLabels.Length; j++)
+            {
+                var label = constructionLabels[j];
+                var text = label == null ? null : label.GetValue(phrase, null) as string;
+                var kind = string.Equals(text, "Foundation", StringComparison.OrdinalIgnoreCase) ? 0 :
+                    string.Equals(text, "Wall", StringComparison.OrdinalIgnoreCase) ? 1 :
+                    string.Equals(text, "Floor", StringComparison.OrdinalIgnoreCase) ? 2 : -1;
+                if (kind < 0) continue;
+                if (choice >= 0 && choice != kind) return false;
+                choice = kind;
+            }
+            foundation |= choice == 0; wall |= choice == 1; floor |= choice == 2;
+            if (foundation && wall && floor) return true;
+        }
+        return foundation && wall && floor;
+    }
 
     private static bool WheelPlannerCurrent(object player)
     {
@@ -146,9 +245,9 @@ public static partial class SkateHeld
             !plan.transform.parent.name.EndsWith("_prop", StringComparison.Ordinal))
         { why = "Hold your ordinary building plan first."; return false; }
         wheelPlanner = plan; wheelPlayer = player; wheelBody = SkateRig.Body; wheelAwakeAt = SkateRig.AwakeAt;
-        // This is the same construction-menu registry member that the native planner reads.
-        // Its intact static-field getter and checked IL2CPP cast do not invoke an erased method.
-        var native = PieMenu.ObjectNPublicAbstractSealedBoObBoObBoObBoObBoObUnique.field_Public_Static_Object_15;
+        // Read only a known registry layout. A missing or unverified binding is not an absent UI.
+        Il2CppSystem.Object native;
+        if (!ReadConstructionWheel(out native, out why)) return false;
         if (ReferenceEquals(native, null))
         { registryAbsent = true; why = "Rust's construction wheel is not available yet."; return false; }
         menu = native.TryCast<PieMenu>();

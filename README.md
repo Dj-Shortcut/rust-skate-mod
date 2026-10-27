@@ -33,5 +33,10 @@ statische inspectie van managed code. Deze projecten zijn bestudeerd; hun code
 en assets worden niet meegeleverd. Zie [NOTICE](NOTICE) voor credits en
 [de eerste demo-acceptatie](docs/archive/RUST-SKATE-DEMO.md) voor de toepassing en grenzen.
 
+De afzonderlijke [video-ollie](assets/authored/animation/ollie-video/README.md)
+gebruikt bewegingsdata afgeleid van Medvedevs *Ollie 1* (CC BY-SA 3.0), met
+MediaPipe als offline detectiegereedschap. Die animatiedata zijn geen CC0;
+de bronvideo en detectiemodellen worden niet meegeleverd.
+
 De oude MW2/Bevy-rewrite is uit main gehaald en staat nog in de git-branch
 `archive/mw2-rewrite`. Credits en licenties: [NOTICE](NOTICE) en [LICENSE](LICENSE).

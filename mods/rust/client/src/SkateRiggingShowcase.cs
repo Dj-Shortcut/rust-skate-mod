@@ -12,7 +12,8 @@ public static partial class SkateRiggingShowcase
     public const string ControlsText = "Dpad L/R: previous/next | A: pause | B/Y/Back: stop | LB/RB: view | X: stance | Up: switch | Down: reverse | RS click: zoom";
     private static bool active, running, paused, goofy, ridingSwitch, reversed, snapshot;
     private static int index, version, cacheVersion = -1, endApplied = -1, completedCount;
-    private static float elapsed, lastAt, waitingAt = -1, lastAppliedAt, checkAt;
+    private static double elapsed;
+    private static float lastAt, waitingAt = -1, lastAppliedAt, checkAt;
     private static int lastApplied, stageCell, monitorCell;
     private static bool candidate, inputPrimed;
     private static bool[] completed;
@@ -43,7 +44,7 @@ public static partial class SkateRiggingShowcase
     public static bool Running { get { return running; } }
     public static bool Paused { get { return paused; } }
     public static int Index { get { return index; } }
-    public static double Progress { get { return Math.Max(0, Math.Min(1, elapsed / CycleSeconds)); } }
+    public static double Progress { get { return Math.Max(0, Math.Min(1, elapsed / PlaybackSeconds(index))); } }
     public static SkateBoardPose StageFrame { get { return stageFrame; } }
     public static SkateBoardPose CurrentFrame { get { return running ? currentFrame : default(SkateBoardPose); } }
     public static Vector3 Focus { get { return focus; } }
@@ -113,14 +114,14 @@ public static partial class SkateRiggingShowcase
             var dt = Math.Max(0, Math.Min(.25f, now - lastAt)); lastAt = now;
             if (!paused)
             {
-                if (elapsed >= CycleSeconds && endApplied >= 0 && RiderRig.Applied > endApplied)
+                if (elapsed >= PlaybackSeconds(index) && endApplied >= 0 && RiderRig.Applied > endApplied)
                 {
                     if (!completed[index]) { completed[index] = true; completedCount++; }
                     if (index + 1 >= Count)
                     { Stop("Rigging preview finished: " + completedCount + "/" + Count + " entries displayed"); return; }
                     Select(index + 1, now);
                 }
-                else if (elapsed < CycleSeconds) { elapsed = Math.Min(CycleSeconds, elapsed + dt); version++; }
+                else if (elapsed < PlaybackSeconds(index)) { elapsed = Math.Min(PlaybackSeconds(index), elapsed + dt); version++; }
             }
         }
         catch (Exception e) { Stop("Rigging preview unavailable: " + e.GetType().Name); }
@@ -182,7 +183,7 @@ public static partial class SkateRiggingShowcase
         SetView(90f, 4.5f);
         SkateHud.Staged = true; SkateHud.Stage = new SkateHud.Shown { Riding = true, Live = "Rigging preview", Pad = SkatePad.Shared };
         BlockHeld(SkatePad.Buttons, ReadKeys(Keyboard.current));
-        Describe(); SkateHud.Notice("Rigging preview: Dpad L/R next/previous, A pause, B stop");
+        Describe(); SkateHud.Notice("Rigging preview: Dpad L/R next/previous, A pause, B stop. " + CaptureStatus);
     }
 
     private static bool LeaseCurrent()
@@ -242,13 +243,14 @@ public static partial class SkateRiggingShowcase
         SkateCamera.FixedDistance = ownedDistance; SkateCamera.FixedHeight = ownedHeight;
     }
     private static void Select(int to, float now)
-    { index = to; elapsed = paused ? CycleSeconds * .5f : 0; lastAt = now; Invalidate(); Describe(); }
+    { index = to; elapsed = paused ? PlaybackSeconds(index) * .5 : 0; lastAt = now; Invalidate(); Describe(); }
     private static void Invalidate() { version++; cacheVersion = endApplied = -1; currentFrame = default(SkateBoardPose); }
     private static void Describe()
     {
         Scenarios.Phase = "RIGGING " + (index + 1) + "/" + Count + " " + Label(index) + " | " + Group(index) + " | " +
-            (goofy ? "Goofy" : "Regular") + (ridingSwitch ? " Switch/Fakie" : "") + (reversed ? " Reversed deck" : "") + (paused ? " | PAUSED" : " | AUTO 5s");
+            (goofy ? "Goofy" : "Regular") + (ridingSwitch ? " Switch/Fakie" : "") + (reversed ? " Reversed deck" : "") + (paused ? " | PAUSED" : " | AUTO " + PlaybackSeconds(index).ToString("0.##", System.Globalization.CultureInfo.InvariantCulture) + "s") + " | " + CaptureStatus;
         Out.Say(Scenarios.Phase);
+        DescribeCaptureSource();
     }
     private static bool Down(KeyControl key) { return key != null && key.isPressed; }
     private static int ReadKeys(Keyboard keyboard)
@@ -283,7 +285,7 @@ public static partial class SkateRiggingShowcase
             focus = (U(cachePose.Head) + U(cachePose.Pelvis) + (U(cachePose.LeftAnkle) + U(cachePose.RightAnkle)) * .5f) / 3;
         }
         pose = cachePose; board = currentFrame; riderUp = cacheUp; leftSoleUp = cacheLeft; rightSoleUp = cacheRight;
-        if (elapsed >= CycleSeconds && endApplied < 0) endApplied = RiderRig.Applied;
+        if (elapsed >= PlaybackSeconds(index) && endApplied < 0) endApplied = RiderRig.Applied;
         return true;
     }
     public static void ReportPoseFailure(string error)
