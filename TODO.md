@@ -2,20 +2,21 @@
 
 Skate-mod voor Andy's Rust-server, in Andy's volgorde. Eén regel per punt; details en bewijs horen in het issue of de PR, niet hier.
 Klaar = in het spel gezien of gereden, met versie. Bron, CI of een build alleen is niet klaar.
-Laatste speltest: client 0.18.45 / server 0.3.38 (21 okt). Geen testomgeving sinds Shadow weg is.
+Laatste native controle: client 0.18.62 / server 0.3.38 (26 okt): verbinden en 18 WAVs laden bevestigd; opstappen weigert een niet-beschikbare Unity-aanroep. Shadow is niet beschikbaar voor een nieuwe rit.
+Eerst deze opstapblokkade oplossen. De afzonderlijke gecombineerde kandidaat .64 neemt de .63-foutstap- en stackdiagnostiek mee; dit is nog geen bewezen reparatie. [Stand en volgende speltest](docs/RUST-SKATE-PLAYTEST-064.md).
 
-1. Bouwplan-wiel: één knop wisselt tussen Skate- en Rust-bouwen, steeds één wiel zichtbaar. Actief: na Low Ledge kiezen volgt ongevraagd `off` (fix in .46, ongetest); de actuele Rust-build vraagt de menucompatibiliteit uit .62, native wisselen/plaatsen open.
+1. Bouwplan-wiel: één knop wisselt tussen Skate- en Rust-bouwen, steeds één wiel zichtbaar. Menucompatibiliteit .62 en X/Back-bevestiging .63 bronmatig gecontroleerd; native wisselen, plaatsen en de eerdere ongevraagde `off` blijven open.
 2. MEGA-halfpipe plaatsen op vrije grond en op funderingen. Open.
-3. Echte ronde quarterpipes (mini, normaal, groot). Open.
+3. Echte ronde quarterpipes (mini, normaal, groot). Assets aanwezig; maten wijken af van de huidige native bouwdelen. Versiegebonden migratie en spelcontrole open; geen incompatibele modelwissel in .63.
 4. Alle twaalf skatestukken plaatsen met het gewone bouwplan, ook vanuit inventory (Andy, opnieuw 25 okt). Open.
 5. Parkstukken staan op grond of fundering, zweven niet. Bron klaar, ongetest.
 6. Snappen en preview zoals Rust-bouwen. Bron klaar, ongetest.
 7. Niet bouwen of items gebruiken tijdens rijden. Bron klaar, ongetest.
-8. Kompas blijft stabiel tijdens rijden. Open.
-9. Camera na afstappen horizontaal in rijrichting. Open.
+8. Kompas blijft stabiel tijdens rijden. Geblokkeerd: huidige Rust-wrapper mist de gebruikte view-methode; .63 meldt de ontbrekende route. Vervangende binding en spelcontrole open.
+9. Camera na afstappen horizontaal in rijrichting. Zelfde ontbrekende view-binding; .63 verwerpt schijnsucces en reset de binding bij een nieuwe speler. Herstel en spelcontrole open.
 10. Flip/shuv en grab sluiten elkaar uit. Open.
-11. Handen leeg op het board, item terug na afstappen. Bron klaar, ongetest.
-12. Skateboardgeluid klinkt echt. WAV-loader in clientbron .61; [18 gekozen geluiden](docs/RUST-SKATE-SOUND-BRIEF.md) privé voorbereid en met de clientlezer gecontroleerd, één per soort; plaatsing door sessie, launcher en vriendenpakket vanuit `sounds\` als scriptbron aanwezig, ongetest; mix en Shadow-spelcontrole open (27 okt).
+11. Handen leeg op het board, item terug na afstappen. .63 bewaart oorspronkelijke rendererstatus en herstelt onafhankelijke held-objecten met begrensde herpogingen. Native slotselectie en volledige spelcontrole open.
+12. Skateboardgeluid klinkt echt. [18 gekozen geluiden](docs/RUST-SKATE-SOUND-BRIEF.md) in .62 native geladen (26 okt), één per soort. .63 bewaart de ingestelde private geluidsbron bij installatie; bron gecontroleerd, native installatie, hoorbare mix en spelcontrole open.
 13. Bouwplan zichtbaar in de hand. Open.
 14. MEGA volledig zichtbaar met beide ronde zijden. Open.
 15. Altijd dag op de server. Serverinstelling staat; duurtest open.
@@ -30,7 +31,7 @@ Laatste speltest: client 0.18.45 / server 0.3.38 (21 okt). Geen testomgeving sin
 24. Alle tricks die Skate 3 heeft: alle flips (kickflip-familie), alle grabs, alle grinds en slides, manuals, enzovoort, elk met eigen animatie (Andy, 25 okt). Open.
 25. Controller werkt op het board en te voet. Open.
 26. Uitzoeken hoe Skate trick-, rijder- en boardanimaties koppelt. Deels onderzocht (privé).
-27. Herkenbare drop-inanimatie voor halfpipes: tail op coping, gewicht naar voren, knieën en board vloeiend de wand in; aparte animatie en spelcontrole open (Andy, 26 okt).
+27. Herkenbare drop-inanimatie voor halfpipes: afzonderlijk bronvoorstel met gewichtsverplaatsing en knieabsorptie bij bevestigd rampcontact; tail-op-coping voorfase, native uitvoering en beeld blijven open (Andy, 26 okt).
 28. Automatische rigging-showcase op platte grond: alle beschikbare trickposes met naam, pauze en volgende/vorige, zodat handen, voeten en board samen bekeken kunnen worden. Bron aanwezig in 0.18.60; [batchpipeline met volledige boardrotatie](docs/RUST-SKATE-MOTION-CAPTURE.md) en externe capturebibliotheek toegevoegd. Normale presentatiecode in 0.18.64 gekoppeld met exacte variantselectie en aparte goedgekeurde pack; eerste vijf Berrics-captures krijgen bron-, voetpad- en continuïteitsherstel. Bewegingsacceptatie, overige batches en native Shadow-beeldcontrole open (Andy, 27 okt).
 
 Per rit controleren: controller, eerste/derde persoon, kompas, hand-item, pose, geluid, put-backs. Halfpipe: drie beklimmingen en fakie-terugkeren zonder put-back.

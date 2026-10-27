@@ -218,7 +218,7 @@ public static class SkatePieces
         if (rustBuilding && switchPressed && !cancelKey && offboard)
         {
             BlocksControls = true; cancelledHold = true;
-            Begin(Entry.Keyboard, now, uiBlocked);
+            Begin((padDown & SkatePad.X) != 0 && back ? Entry.ControllerHold : Entry.Keyboard, now, uiBlocked);
             wasP = p; wasBack = back; wasRight = right;
             return 0;
         }

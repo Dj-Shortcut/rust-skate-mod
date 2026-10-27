@@ -11,7 +11,7 @@
 #   $pcaptures optional directory with a private reviewed capture pair (default
 #             captures\ in staging); a pair already in $pplug also works
 #   $psounds  directory with the plugin's WAV sound pack, copied to plugins\skate_sounds (default
-#             sounds\ in the staging folder when it is there; 0 stages none). The plugin needs all
+#             the local sounds-source.txt pointer, otherwise sounds\; 0 stages none). The plugin needs all
 #             18 files (docs/RUST-SKATE-AUDIO.md) or it rides without skateboard audio and says so.
 #   $psteps   comma separated plugin steps written to plugins\steps.txt
 #   $ppreload PreloadIL2CPPInteropAssemblies (default false)
@@ -38,16 +38,14 @@ $probe = "$dl\claude-loader-probe"
 $zip = "$dl\BepInEx-Unity.IL2CPP-win-x64-6.0.0-be.788+5b766a3.zip"
 # The sound pack is the owner's private set of 18 WAV files (never committed); the plugin reads it
 # from plugins\skate_sounds. Its file names mirror SkateSoundPack.cs in the client source.
-$sounds = if ($null -eq $psounds) { "$probe\sounds" } else { "$psounds" }
-if ($sounds -in '0', 'false') { $sounds = '' }
-$stems = 'skate_rolling_smooth', 'skate_rolling_rough', 'skate_rolling_wood', 'skate_grit', 'skate_whirr', 'skate_push', 'skate_ollie', 'skate_landing', 'skate_drop', 'skate_seam', 'skate_grind_in', 'skate_grind', 'skate_grind_out', 'skate_slide_in', 'skate_deckslide', 'skate_scrape', 'skate_slam', 'skate_bail'
+$sounds = ''; $soundSource = $null; $soundsDisabled = "$psounds" -in '0', 'false'
 # The interop set must have been generated for the installed Steam build. A set from another build
 # resolves wrappers to the wrong native methods and crashes the client, so there is no fallback:
 # generate first with `zz interop`.
 $pb = ((gc 'C:\Program Files (x86)\Steam\steamapps\appmanifest_252490.acf' | sls '"buildid"').Line -split '"')[3]
 $gen = "$dl\claude-loader-probe\gen-$pb\out"
 if (-not ((Test-Path "$gen\Assembly-CSharp.dll") -and (sls -Path "$dl\claude-loader-probe\gen-$pb\gen.log" -Pattern 'GEN DONE.* errors=0( |$)' -Quiet))) { Write-Host "ABORT: no complete, error-free interop set for installed build $pb; run zz interop first"; return }
-$run = "$probe\run-$ptag-" + (Get-Date -Format 'HHmmss')
+$run = "$probe\run-$ptag-" + (Get-Date -Format 'yyyyMMdd-HHmmssfff') + '-' + [Guid]::NewGuid().ToString('N').Substring(0, 8)
 $roots = 'BepInEx','dotnet','winhttp.dll','doorstop_config.ini','.doorstop_version','changelog.txt'
 # While this file exists, a loader in the Rust folder is one that these tools put there. clean.ps1
 # moves a loader out only then: one that somebody installed for another mod is left alone. The
@@ -107,6 +105,20 @@ function Find-Shortcut($name) {
   }
 }
 if (Get-Process RustClient -ErrorAction SilentlyContinue) { say 'ABORT: RustClient is already running'; return }
+# Preserve an interrupted session before any new loader, plugin or log can replace its files.
+$diagnostics = if ($PSScriptRoot) { Join-Path $PSScriptRoot 'diagnostics.ps1' } else { "$probe\launcher\diagnostics.ps1" }
+if (-not (Test-Path -LiteralPath $diagnostics) -and (Get-Command zg -ErrorAction SilentlyContinue)) {
+  $diagnostics = "$probe\diagnostics.ps1"
+  [IO.File]::WriteAllText($diagnostics, ("" + (zg 'diagnostics.ps1')), (New-Object Text.UTF8Encoding($false)))
+}
+if (-not (Test-Path -LiteralPath $diagnostics)) { throw 'Log recovery tools are missing; nothing was staged or started. Install the prepared launcher again.' }
+. $diagnostics
+$recovered = Save-SkateLogSnapshot $rust $probe 'before-session'
+if ($recovered.Count) { say ('preserved existing client logs: ' + $recovered.Directory) }
+if (-not $soundsDisabled) {
+  $soundSource = Resolve-SkateSoundSource $probe $(if ($null -eq $psounds) { '' } else { "$psounds" })
+  if ($soundSource.Files.Count -eq 18) { $sounds = $soundSource.Directory }
+}
 $present = $roots | ? { Test-Path (Join-Path $rust $_) }
 if ($present) { say ('ABORT: loader files already in the Rust folder: ' + ($present -join ',')); return }
 if (-not (Get-Process steam -ErrorAction SilentlyContinue)) { say 'ABORT: Steam is not running'; return }
@@ -133,7 +145,19 @@ try {
   say ('interop files: ' + (ls "$bx\interop").Count + ' from ' + $gen.Replace($dl,'~'))
   if ($prt) { Copy-Item "$prt\*" "$bx\core" -Force; say ('overlay core: ' + ((ls $prt | % Name) -join ',')) }
   if ($psteps) { Set-Content "$bx\plugins\steps.txt" $psteps }
-  if ($pplug) { Copy-Item "$pplug\*" "$bx\plugins" -Force; say ('plugins: ' + ((ls $pplug | % Name) -join ',')) }
+  if ($pplug) {
+    # Only declared artwork may enter the live plugin folder; unrelated PNGs/logs stay staged.
+    $icons = @(Get-SkateArtworkFiles (Join-Path $pplug 'artwork.txt') $pplug)
+    Get-ChildItem -LiteralPath $pplug -File | Where-Object { $_.Extension -in '.dll', '.glb' } |
+      ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination "$bx\plugins" -Force }
+    foreach ($icon in $icons) { Copy-Item -LiteralPath (Join-Path $pplug $icon) -Destination "$bx\plugins" -Force }
+    foreach ($file in 'skate_captures.skmc', 'skate_captures.approved.txt') {
+      if (Test-Path -LiteralPath (Join-Path $pplug $file) -PathType Leaf) {
+        Copy-Item -LiteralPath (Join-Path $pplug $file) -Destination "$bx\plugins" -Force
+      }
+    }
+    say ('plugins: DLLs and models staged; declared menu icons=' + $icons.Count)
+  }
   $captureSource = if ($pcaptures) { $pcaptures } else { "$probe\captures" }
   $capturePack = Join-Path $captureSource 'skate_captures.skmc'
   $captureApproval = Join-Path $captureSource 'skate_captures.approved.txt'
@@ -154,18 +178,19 @@ try {
     Remove-Item -LiteralPath $stagedCaptureFiles -Force
     say 'private capture pair incomplete in plugin directory; built-in normal-riding poses remain active'
   }
-  # The sound pack goes in whole when it is complete. A partial set is staged all the same, so that
-  # the plugin's log names what it misses, and is said out loud here.
-  if ($sounds -and (Test-Path -LiteralPath $sounds) -and @(ls -LiteralPath $sounds -File -Filter *.wav).Count -gt 0) {
+  # Copy only the exact eighteen names the client reads, from the validated local source.
+  if ($sounds) {
     New-Item -ItemType Directory -Force "$bx\plugins\skate_sounds" | Out-Null
-    Copy-Item "$sounds\*.wav" "$bx\plugins\skate_sounds" -Force
-    $absent = @($stems | ? { -not (Test-Path -LiteralPath "$sounds\$($_)_01.wav") })
-    if ($absent.Count -eq 0) { say ('sounds: all 18 from ' + $sounds.Replace($dl, '~')) }
-    else { say ('WARNING: sound pack incomplete, no skateboard audio: missing ' + (($absent | % { $_ + '_01.wav' }) -join ',') + ' in ' + $sounds.Replace($dl, '~')) }
-  } elseif ($sounds) { say ('no sound pack in ' + $sounds.Replace($dl, '~') + ': the plugin rides without skateboard audio') }
-  else { say 'sound pack left out ($psounds = 0)' }
+    foreach ($file in $soundSource.Files) { Copy-Item -LiteralPath (Join-Path $sounds $file) -Destination "$bx\plugins\skate_sounds" -Force }
+    say 'sounds: all 18 staged from the validated local source'
+  } elseif ($soundsDisabled) { say 'sound pack left out ($psounds = 0)' }
+  else { say 'no complete default sound pack: the plugin rides without skateboard audio' }
   $cfg = "[IL2CPP]`r`nUpdateInteropAssemblies = false`r`nPreloadIL2CPPInteropAssemblies = " + ([bool]$ppreload).ToString().ToLower() + "`r`n`r`n[Logging]`r`nUnityLogListening = " + $plisten.ToString().ToLower() + "`r`n`r`n[Logging.Disk]`r`nLogLevels = All`r`n`r`n[Logging.Console]`r`nEnabled = false`r`n"
   [IO.File]::WriteAllText("$bx\config\BepInEx.cfg", $cfg)
+  $plugin = Join-Path $bx 'plugins\ShortcutSkateClient.dll'
+  [ordered]@{ startedUtc = [DateTime]::UtcNow.ToString('o'); rustBuild = $pb;
+    pluginSha256 = $(if (Test-Path -LiteralPath $plugin) { (Get-FileHash -LiteralPath $plugin -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }) } |
+    ConvertTo-Json | Set-Content -LiteralPath (Join-Path $run 'session.json') -Encoding UTF8
   # The controller's reader runs beside the client as a process of its own: Steam must not have
   # started it, or it would see no more of the controller than the game does.
   $sticks = "$psticks"
@@ -175,8 +200,10 @@ try {
   }
   if ($sticks -and (Test-Path -LiteralPath $sticks)) {
     $env:SKATE_PAD_SERVE = 'RustClient'
-    $reader = Start-Process powershell -WindowStyle Hidden -PassThru -ArgumentList '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$sticks`""
+    $reader = Start-Process powershell -WindowStyle Hidden -PassThru -RedirectStandardOutput "$run\controller-reader.out.log" -RedirectStandardError "$run\controller-reader.err.log" -ArgumentList '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$sticks`""
     $env:SKATE_PAD_SERVE = $null
+    [ordered]@{ startedUtc = [DateTime]::UtcNow.ToString('o'); readerSha256 = (Get-FileHash -LiteralPath $sticks -Algorithm SHA256).Hash.ToLowerInvariant() } |
+      ConvertTo-Json | Set-Content -LiteralPath (Join-Path $run 'controller-reader.json') -Encoding UTF8
     say 'controller reader started'
   } else { say 'no controller reader: keyboard only' }
   if ($psteam) {
@@ -264,15 +291,7 @@ try {
 }
 $global:plast = $run
 say "run dir: $run"
-if (Test-Path "$run\LogOutput.log") {
-  $l = Get-Content "$run\LogOutput.log"
-  say ('log lines=' + $l.Count)
-  $l | ? { $_ -notmatch 'DobbyDetour|NativeDetour' } | select -Last $(if ($ptail) { $ptail } else { 26 }) | % { if ($_.Length -gt 1500) { $_.Substring(0,1500) } else { $_ } }
-} else { say 'no LogOutput.log' }
 if (Test-Path "$run\skate.log") {
-  $pl = @(Get-Content "$run\skate.log" | % { if ($_.Length -gt 1900) { $_.Substring(0,1900) } else { $_ } })
-  say ('--- skate.log lines=' + $pl.Count)
-  if ($pl.Count -le 34) { $pl } else { $pl | select -First 8; '...'; $pl | select -Last 24 }
   $global:pfile = "$run\skate.log"; $global:poff = 0
 }
-if (Test-Path "$run\ErrorLog.log") { say '--- ErrorLog'; Get-Content "$run\ErrorLog.log" | select -First 12 }
+Show-SkateChecks $rust $probe

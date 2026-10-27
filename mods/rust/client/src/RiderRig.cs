@@ -240,8 +240,25 @@ public static class RiderRig
                     // without that setter switches the part itself off and remembers how it was.
                     if (heldForced)
                     {
-                        try { t.Part.forceRenderingOff = true; t.Forced = true; t.Changed = true; continue; }
-                        catch (Exception e) { heldForced = false; Say("held item: no rendering switch in this client (" + e.GetType().Name + "); the parts are switched off instead"); }
+                        try
+                        {
+                            t.Was = t.Part.forceRenderingOff;
+                            t.Forced = true; t.Changed = true;
+                            t.Part.forceRenderingOff = true;
+                            continue;
+                        }
+                        catch (Exception e)
+                        {
+                            heldForced = false;
+                            Say("held item: no rendering switch in this client (" + e.GetType().Name + "); the parts are switched off instead");
+                            // A native setter may throw after writing. Release that exact flag
+                            // before taking an enabled-state lease; retain it for retries on failure.
+                            if (t.Changed)
+                            {
+                                try { RestoreHeldPart(t); t.Changed = false; t.Tries = 0; }
+                                catch (Exception restore) { t.Old = true; HeldTrouble(t, "putting it back", restore); continue; }
+                            }
+                        }
                     }
                     t.Was = t.Part.enabled; t.Forced = false; t.Changed = true; t.Part.enabled = false;
                 }
@@ -260,7 +277,7 @@ public static class RiderRig
             try
             {
                 if (!ReferenceEquals(t.Root, null)) { if (t.Root != null) t.Root.localScale = t.Size; }
-                else if (t.Part != null) { if (t.Forced) t.Part.forceRenderingOff = false; else t.Part.enabled = t.Was; }
+                else if (t.Part != null) RestoreHeldPart(t);
                 t.Changed = false; t.Tries = 0;
             }
             catch (Exception e)
@@ -269,6 +286,25 @@ public static class RiderRig
                 // Given up: an object the engine no longer lets anyone touch has nothing left to put back.
                 if (t.Tries >= HeldTries) t.Changed = false;
             }
+        }
+    }
+
+    private static void RestoreHeldPart(HeldThing thing)
+    {
+        // Restore only the value this lease changed. A later owner that already changed the
+        // renderer away from our hidden state keeps its value; pre-hidden parts stay hidden.
+        if (thing.Forced)
+        {
+            if (thing.Part.forceRenderingOff && !thing.Was)
+            {
+                thing.Part.forceRenderingOff = false;
+                if (thing.Part.forceRenderingOff) throw new InvalidOperationException("held rendering flag restoration did not verify");
+            }
+        }
+        else if (!thing.Part.enabled && thing.Was)
+        {
+            thing.Part.enabled = true;
+            if (!thing.Part.enabled) throw new InvalidOperationException("held renderer restoration did not verify");
         }
     }
 
@@ -758,9 +794,18 @@ public static class RiderRig
                 pose = freePose;
             }
             if (!SkateActions.Pose(Rig, input, ref pose)) return;
+            var dropping = false;
+            if (!wall && !bodyFlip && !SkateActions.Owns && !SkateOldschoolRide.Active && !groundGrab &&
+                handplant <= .001f && mode == RideMode.Ground && SkateSurfaceRide.DropInMotion.Active)
+            {
+                SkateRiderPose entryPose;
+                if (SkateRider.TryCreateDropIn(Rig, input, pose, SkateSurfaceRide.DropInMotion, out entryPose, out error))
+                { pose = entryPose; dropping = true; }
+                else if (error != Error) { Error = error; Say("drop-in pose refused: " + error); }
+            }
             Posed = pose; PosedPlane = plane;
             SkateActions.Record(pose, SkateActions.DisplayFrame.Initialized ? SkateActions.DisplayFrame : input.DeckFrame, SkateRig.LocalT != null ? SkateBoard.CarrierFor(SkateRig.LocalT) : input.DeckFrame, grab);
-            var hardContact = wall || bodyFlip || SkateOldschoolRide.Active || SkateActions.Owns || handplant > 0.001f || mode == RideMode.Bail || groundGrab;
+            var hardContact = wall || bodyFlip || SkateOldschoolRide.Active || SkateActions.Owns || handplant > 0.001f || mode == RideMode.Bail || groundGrab || dropping;
             // Between the air and the ground the lag carries on, so the chest and the hands follow
             // through the catch into the landing instead of jumping onto the pose; into and out of a
             // grind or a bail the motion starts over.
@@ -821,11 +866,11 @@ public static class RiderRig
             var pushLeft = SkateRide.PushLead ? !trailingIsLeft : trailingIsLeft;
             // A gripping hand must remain reachable from the solved upper body. Its shared
             // secondary motion is already contact-aware; another independent trunk lag is not.
-            pinHips = wall || bodyFlip || SkateOldschoolRide.Active || SkateActions.Owns || plantBoard.Initialized || groundGrab || pushing || pinL || pinR || SkateRide.BoardPath.Known;
-            pinLeft = wall || bodyFlip || SkateOldschoolRide.Active || SkateActions.Owns || plantBoard.Initialized || groundGrab || SkateRide.BoardPath.Known || pushing && (!pushLeft || footDown); pinRight = wall || bodyFlip || SkateOldschoolRide.Active || SkateActions.Owns || plantBoard.Initialized || groundGrab || SkateRide.BoardPath.Known || pushing && (pushLeft || footDown);
+            pinHips = wall || bodyFlip || SkateOldschoolRide.Active || SkateActions.Owns || plantBoard.Initialized || groundGrab || dropping || pushing || pinL || pinR || SkateRide.BoardPath.Known;
+            pinLeft = wall || bodyFlip || SkateOldschoolRide.Active || SkateActions.Owns || plantBoard.Initialized || groundGrab || dropping || SkateRide.BoardPath.Known || pushing && (!pushLeft || footDown); pinRight = wall || bodyFlip || SkateOldschoolRide.Active || SkateActions.Owns || plantBoard.Initialized || groundGrab || dropping || SkateRide.BoardPath.Known || pushing && (pushLeft || footDown);
             Shown = pose;
             Ease(pose, plane, toToes, upV, new Vector3((float)fx, (float)fy, (float)fz), now, frameSeconds, pinL, pinR);
-            if (!wall && !bodyFlip && !SkateActions.Owns && !SkateOldschoolRide.Active) Shape(upV);
+            if (!wall && !bodyFlip && !SkateActions.Owns && !SkateOldschoolRide.Active && !dropping) Shape(upV);
             // Pitch/grind balance shapes the free arm, never the hand already holding the board.
             if (pinL) { joint[LHandJ] = V(pose.LeftHand); joint[LElbowJ] = V(pose.LeftElbow); }
             if (pinR) { joint[RHandJ] = V(pose.RightHand); joint[RElbowJ] = V(pose.RightElbow); }

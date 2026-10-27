@@ -1,5 +1,6 @@
 # Compile the skate client plugin with the staged SDK's compiler. The sources are those listed in
 # mods/rust/client/sources.txt at the head of the branch in $pref, or at the commit in $pcommit.
+$ErrorActionPreference = 'Stop'
 $dl = "$HOME\Downloads"; $probe = "$dl\claude-loader-probe"
 # $pnext is used once, also by a build that stops early: a later build on its own must not start
 # the session that an earlier attempt asked for.
@@ -60,6 +61,28 @@ foreach ($line in $modelList) {
   try { Invoke-WebRequest -Uri (zu $t $head) -OutFile $dst -UseBasicParsing; $models += (Split-Path $t -Leaf) } catch { Write-Host ("no model " + $t + " at this commit") }
 }
 "models: " + $models.Count + " " + ($models -join ', ')
+# Menu PNGs are declared separately from active collision-compatible models. Both the list and
+# its files come from this same fixed commit; no other staged PNG is picked up by a wildcard.
+$artwork = ''
+try { $artwork = "" + (irm (zu 'mods/rust/client/artwork.txt' $head)) }
+catch { if (-not $_.Exception.Response -or [int]$_.Exception.Response.StatusCode -ne 404) { throw } }
+$artworkManifest = "$probe\plugin\artwork.txt"
+if (Test-Path -LiteralPath $artworkManifest) {
+  Move-Item -LiteralPath $artworkManifest -Destination ("$probe\src\artwork-previous-" + [Guid]::NewGuid().ToString('N') + '.txt')
+}
+$icons = @()
+if ($artwork) {
+  $helper = "$probe\src\diagnostics.ps1"
+  Invoke-WebRequest -Uri (zu 'mods/rust/client/tools/diagnostics.ps1' $head) -OutFile $helper -UseBasicParsing
+  . $helper
+  [IO.File]::WriteAllText($artworkManifest, $artwork, (New-Object Text.UTF8Encoding($false)))
+  $icons = @(Get-SkateArtworkFiles $artworkManifest)
+  foreach ($icon in $icons) {
+    Invoke-WebRequest -Uri (zu ("assets/authored/skate_icons/" + $icon) $head) -OutFile (Join-Path "$probe\plugin" $icon) -UseBasicParsing
+  }
+  $icons = @(Get-SkateArtworkFiles $artworkManifest "$probe\plugin")
+}
+"menu artwork: " + $icons.Count + ' declared PNGs'
 $rsp = "$probe\src\client.rsp"
 (@('-nologo','-target:library','-nostdlib','-optimize+','-nowarn:CS1701,CS1702,CS8632',"-out:`"$probe\plugin\ShortcutSkateClient.dll`"") + ($refs | % { "-r:`"$_`"" }) + ($files | % { "`"$_`"" })) | Out-File $rsp -Encoding ascii
 $csc = (ls "$sdk\sdk" -Directory | select -First 1).FullName + '\Roslyn\bincore\csc.dll'

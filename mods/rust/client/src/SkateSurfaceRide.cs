@@ -15,7 +15,7 @@ public static class SkateSurfaceRide
     private static Vector3 wallPoint, wallNormal, flipOffset, flipAxis, recordedPosition, dropPoint, dropNormal;
     private static SkateRiderPose recordedPose;
     private static SkateGrabKind recordedGrab;
-    private static float recordedAt = -99f, wallieAt = -99f, dropAt = -99f, noticeAt = -99f;
+    private static float recordedAt = -99f, wallieAt = -99f, dropAt = -99f, dropPresentationAt = -99f, noticeAt = -99f;
     private static uint wallEpoch, flipEpoch, recordedEpoch;
     private static bool wallie, wallQualified, wallFrontside, dropPending, dropVerified, flipFailed, named;
     private static double wallSeconds;
@@ -33,6 +33,7 @@ public static class SkateSurfaceRide
     public static SkateBodyFlipState BodyFlip { get { return flip; } }
     public static bool LandingReady { get { return !flipFailed && (!flip.Known || flip.Qualified); } }
     public static bool DropInVerified { get { return dropVerified; } }
+    public static SkateDropInFrame DropInMotion { get; private set; }
     public static long LandingBonus
     { get { return named ? 0 : (flip.Qualified ? 250 : 0) + (wallQualified ? 100 + (long)Math.Round(Math.Min(SkateWallTricks.RideMaximumSeconds, wallSeconds) * 80) : 0) + (wallie ? 100 : 0); } }
     public static float WallieWeight { get { return wallie ? SkateRide.Clamp(1 - (Time.realtimeSinceStartup - wallieAt) / .18f, 0, 1) : 0; } }
@@ -43,7 +44,8 @@ public static class SkateSurfaceRide
         wallFrame = recordedFrame = default(SkateBoardPose); wallCollider = dropCollider = null; wallColliderId = dropColliderId = 0;
         wallPoint = wallNormal = flipOffset = flipAxis = recordedPosition = dropPoint = dropNormal = default(Vector3);
         recordedPose = default(SkateRiderPose); recordedGrab = SkateGrabKind.None;
-        recordedAt = wallieAt = dropAt = -99f; wallie = wallQualified = wallFrontside = dropPending = dropVerified = flipFailed = haveShownFlipPoints = named = false; wallSeconds = 0;
+        recordedAt = wallieAt = dropAt = dropPresentationAt = -99f; wallie = wallQualified = wallFrontside = dropPending = dropVerified = flipFailed = haveShownFlipPoints = named = false; wallSeconds = 0;
+        DropInMotion = default(SkateDropInFrame);
         WallPopped = false;
         releaseFrame = default(SkateBoardPose); releasePosition = lastWallPosition = default(Vector3); releaseSeconds = .2;
     }
@@ -127,6 +129,7 @@ public static class SkateSurfaceRide
 
     public static void ConfirmDropIn(Vector3 pos)
     {
+        UpdateDropInMotion(pos);
         if (!dropPending || SkateRide.Mode != RideMode.Ground) return;
         if (Time.realtimeSinceStartup - dropAt > 1.2f || dropCollider == null || !SkateRide.On || (pos - dropPoint).sqrMagnitude > 6.25f) { dropPending = false; return; }
         try
@@ -135,9 +138,35 @@ public static class SkateSurfaceRide
             if (SkateRide.TryObservedRamp(pos, out hit) &&
                 Same(hit.collider, dropCollider, dropColliderId) && SkateParks.IsRamp(hit) && !SkateParks.IsCoping(hit) &&
                 hit.m_Normal.y > .015f && hit.m_Normal.y < .9f && Vector3.Dot(hit.m_Normal, dropNormal) >= .5f)
-            { dropVerified = true; dropPending = false; Notice("Drop-in"); }
+            {
+                dropVerified = true; dropPending = false; dropPresentationAt = Time.realtimeSinceStartup;
+                UpdateDropInMotion(pos); Notice("Drop-in");
+            }
         }
         catch (Exception) { dropPending = false; }
+    }
+
+    private static void UpdateDropInMotion(Vector3 pos)
+    {
+        DropInMotion = default(SkateDropInFrame);
+        if (dropPresentationAt < 0) return;
+        var elapsed = Time.realtimeSinceStartup - dropPresentationAt;
+        if (!SkateRide.On || SkateRide.Mode != RideMode.Ground || !SkateRide.Grounded || !SkateRide.OnRamp ||
+            OtherAction || SkateRide.PushPhase > 0 || SkateRide.RevertLeft != 0 || DisplayWall || flip.Known ||
+            elapsed < 0 || elapsed >= SkateDropInPresentation.Duration)
+        { dropPresentationAt = -99f; return; }
+        try
+        {
+            RaycastHit hit;
+            SkateDropInFrame frame; string error;
+            // Every displayed sample still requires current native ramp support. Adjacent ramp
+            // segments may change collider; the presentation never attaches or moves the body.
+            if (!SkateRide.TryObservedRamp(pos, out hit) ||
+                !SkateDropInPresentation.TrySample(elapsed, Contact(hit), out frame, out error) || !frame.Initialized)
+            { dropPresentationAt = -99f; return; }
+            DropInMotion = frame;
+        }
+        catch (Exception) { dropPresentationAt = -99f; }
     }
 
     public static bool ConsumeDropIn()

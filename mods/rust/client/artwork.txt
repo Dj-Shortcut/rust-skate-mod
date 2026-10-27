@@ -1,0 +1,14 @@
+# Original CC0 white-alpha build-menu icons, downloaded at the same commit as the client.
+# Stage each file next to ShortcutSkateClient.dll, preserving its basename.
+assets/authored/skate_icons/skate_icon_bank_128.png
+assets/authored/skate_icons/skate_icon_kicker_128.png
+assets/authored/skate_icons/skate_icon_quarterpipe_128.png
+assets/authored/skate_icons/skate_icon_ledge-low_128.png
+assets/authored/skate_icons/skate_icon_ledge-high_128.png
+assets/authored/skate_icons/skate_icon_long-ledge_128.png
+assets/authored/skate_icons/skate_icon_funbox_128.png
+assets/authored/skate_icons/skate_icon_halfpipe_128.png
+assets/authored/skate_icons/skate_icon_mini-quarterpipe_128.png
+assets/authored/skate_icons/skate_icon_large-quarterpipe_128.png
+assets/authored/skate_icons/skate_icon_half-wall-kicker_128.png
+assets/authored/skate_icons/skate_icon_mega-halfpipe_128.png

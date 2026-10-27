@@ -4,16 +4,23 @@
 # Rust through the Steam shortcut "RustClient" (so that the controller layout of that shortcut
 # applies), waits until Rust is closed and takes everything out of the Rust folder again.
 # Nothing is downloaded. The window must stay open while playing.
+param([switch]$Diagnostics)
+$ErrorActionPreference = 'Stop'
 $probe = "$HOME\Downloads\claude-loader-probe"; $L = "$probe\launcher"
 $rust = 'C:\Program Files (x86)\Steam\steamapps\common\Rust'
 function line($m) { Write-Host $m }
 line ''
 line '  RUST SKATE'
 line '  ----------'
-if (Test-Path "$L\version.txt") { line ('  ' + (Get-Content "$L\version.txt" -First 1)) }
+. "$L\diagnostics.ps1"
+$recovered = Save-SkateLogSnapshot $rust $probe 'before-launcher-clean'
+if ($recovered.Count) { line ('  Preserved existing client logs: ' + $recovered.Directory) }
+Show-SkateChecks $rust $probe
 line ''
+if ($Diagnostics) { line '  Diagnostics finished. Rust was not started.'; return }
 if (Get-Process RustClient -ErrorAction SilentlyContinue) { line '  Rust is already running. Quit Rust first, then start this again.'; return }
 if (-not (Test-Path "$probe\play\ShortcutSkateClient.dll")) { line '  The skate plugin is not installed here. Install it again (zz launcher, or the pack''s "Install Rust Skate").'; return }
+$soundSource = Resolve-SkateSoundSource $probe
 # A session that was cut off (window closed, PC stopped) can have left the loader in the Rust folder.
 . "$L\clean.ps1" | % { line "  $_" }
 $there = @('BepInEx','dotnet','winhttp.dll','doorstop_config.ini','.doorstop_version','changelog.txt' | ? { Test-Path -LiteralPath (Join-Path $rust $_) })
@@ -44,12 +51,12 @@ line '  Starting Rust with the skate mod.'
 if (Test-Path "$probe\server.txt") { line ('  To join the server: in the main menu press F1 and type   connect ' + (Get-Content "$probe\server.txt" -First 1).Trim() + '   then Enter.') }
 else { line '  In the main menu pick the server under QUICK JOIN, or press F1 and type   connect <address>   then Enter.' }
 line '  On the server: Y on the controller, K, or two quick jumps gets you on the board; Y or K again gets you off.'
-if (-not (Test-Path "$probe\sounds\skate_ollie_01.wav")) { line '  No skateboard sounds are installed here: the ride is silent. A pack with sounds fixes that.' }
+if ($soundSource.Files.Count -ne 18) { line '  No complete skateboard sound pack is installed here: the ride is silent. A pack with sounds fixes that.' }
 line '  Keep this window open. When you quit Rust, the mod is removed from the Rust folder again.'
 line ''
 # A second, hidden helper takes the loader out after Rust closes even if this window is closed first.
 Start-Process powershell -WindowStyle Hidden -ArgumentList '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$L\watch.ps1`""
-$global:ptag = 'P'; $global:plisten = $false; $global:prt = "$probe\rt"; $global:pplug = "$probe\play"; $global:psounds = "$probe\sounds"; $global:psteps = 'skate'
+$global:ptag = 'P'; $global:plisten = $false; $global:prt = "$probe\rt"; $global:pplug = "$probe\play"; $global:psounds = $null; $global:psteps = 'skate'
 $global:pwait = 30; $global:pdone = 43200; $global:ppreload = $false; $global:ptail = 3; $global:psteam = $true; $global:pshortcut = $null; $global:pconnect = $false; $global:pkeep = $false; $global:psticks = "$L\sticks.ps1"
 . "$L\session.ps1"
 line ''

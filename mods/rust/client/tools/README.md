@@ -157,6 +157,11 @@ Select-String -Path $manifest -Pattern '"buildid"'
    development candidate is not an accepted release; its candidate receipt also follows the
    optional friend pack.
 
+After these tools are installed, `launcher\skate.ps1 -Diagnostics` preserves existing logs and
+shows bounded version, interop and mount checks without starting or stopping Rust. Every normal
+start also preserves interrupted logs before cleanup. The private `run-recovered-*` folders are
+never automatically purged. See the [focused candidate test](../../../../docs/RUST-SKATE-PLAYTEST-063.md).
+
 `interop.ps1` and `Gen.cs` name the Unity version of the client (6000.3.15). A Rust update that
 moves to another Unity version needs both changed, and the base libraries for that version.
 
@@ -165,10 +170,12 @@ moves to another Unity version needs both changed, and the base libraries for th
 1. Verify the head of the branch in the game.
 2. Put that commit in `release.txt` and push.
 3. `zz launcher` builds exactly that commit, keeps the plugin in `play\`, saves `skate.ps1`,
-   `session.ps1`, `watch.ps1`, `clean.ps1` and `sticks.ps1` of that commit in `launcher\` and writes
+   `session.ps1`, `watch.ps1`, `clean.ps1`, `sticks.ps1` and `diagnostics.ps1` of that commit in `launcher\` and writes
    two files on the desktop. The launcher uses only these local copies, so later changes in the repository do
-   not reach the owner until the next `zz launcher`. It reports whether `sounds\` holds the 18 WAV
-   files; the launcher stages that folder as it is on every start, nothing is built or fetched for it.
+   not reach the owner until the next `zz launcher`. It reports whether the configured local sound
+   source (otherwise `sounds\`) holds the 18 WAV files. Set `$psoundpath` to an existing complete
+   folder before installation to retain that source without another permanent copy. The launcher
+   stages only those eighteen names on each start; it does not build or fetch audio.
 4. `zz launchertest`.
 
 ## Settings
@@ -181,11 +188,12 @@ Set by the scripts for one another; `sv name value` sets one by hand.
 | `$pto` | `ref` | The branch to switch to, written without its dashes and slashes. |
 | `$pcommit` | `build` | Build this commit instead of the head of the branch. |
 | `$pcandidate` | `launcher` | Explicit full commit SHA for a development install; does not change `release.txt`. Clear it to install the accepted release again. |
+| `$psoundpath` | `launcher` | Existing complete WAV folder, given as a full path. Validated before install and retained in the private local `sounds-source.txt`; omitted overrides preserve that pointer. Portable friends' packs include the eighteen files, never this path or pointer. |
 | `$pnext` | `build`, `runtime` | Script to run after a successful build; used once, also when the build stops early. |
 | `$ptag` | `session` | Label in the session folder's name. |
 | `$psteps` | `session` | Steps for the plugin. |
 | `$pplug`, `$prt` | `session` | Folder with the plugin, folder with the changed runtime. |
-| `$psounds` | `session`, `pack` | Folder with the plugin's 18 WAV sounds, copied to `BepInEx\plugins\skate_sounds` (default `sounds\` in the staging folder when it is there; `0` stages none). `session` says when a file is missing; `pack` with `0` leaves the sounds out of the friend's pack. |
+| `$psounds` | `session`, `pack` | `session` accepts a complete WAV folder override; otherwise it follows the retained local pointer, then the default staging `sounds\`. `0` stages none. `pack` follows that same retained/default source; `0` omits audio from the friends' pack. Only the eighteen declared names are copied. |
 | `$pdone` | `session` | Seconds after which a session in a world is ended. |
 | `$plimit`, `$pquiet`, `$pdirect`, `$plisten` | `play` | End the session that many seconds after its start; turn the sound down; start the client directly with `+connect` instead of through the Steam shortcut; with `1`, keep `UnityLogListening` on (the inbox probe needs it; `sv plisten 0` turns it off again). |
 | `$pgentest` | `interop` | Generate into a folder of its own instead of the one sessions use. |
