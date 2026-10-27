@@ -80,7 +80,7 @@ PC reliably from a distance.
 | `last` | Makes the newest session folder the one that `log`, `logall` and `file` show, and sums up its ride: seconds on the board, top speed, the lowest speed cap, how often the server put the rider back or held it back, tricks and bails, every trick name the scorer gave with its count, the presses in the air that were refused for want of air by what was asked, and why the rider stepped off. For a session of the owner's launcher, which runs in a window of its own. |
 | `clean` | Moves a loader that these tools left in the Rust folder out of it. A file still held by a closing client or its crash handler is tried again for a minute; what is left is named. |
 | `survey` | Lists what the interop set of the installed build offers for given type names. |
-| `launcher` | Installs or updates the owner's launcher from the commit in [`release.txt`](release.txt). |
+| `launcher` | Installs or updates the owner's launcher from [`release.txt`](release.txt), or an explicit full-SHA `$pcandidate` without changing that release pin. |
 | `launchertest` | Starts the installed launcher, kills it while Rust runs, closes Rust and reports whether the Rust folder was cleaned all the same. |
 | `pack` | Zips the installed launcher for a friend: the loader, the interop set of the installed build, the changed runtime, the released plugin with its models, the launcher's scripts, the 18 files of `sounds\` (unless `$psounds` is 0; an incomplete `sounds\` refuses the pack, a missing one is packed without sounds and said) and (unless `$pserver` is 0) `server.txt`, with `install.ps1` of the branch as its installer. Refuses without a launcher prepared for the installed build. [What the friend does](../FRIEND.md). Not yet run on the owner's PC. |
 | `install` | Not a `zz` script: the friend's installer, carried inside the pack and started there by `Install Rust Skate.cmd`. Checks Steam, Rust's default library, the matching Rust build, free space and the `RustClient` shortcut; copies the pack to `Downloads\claude-loader-probe` and writes the two desktop files. |
@@ -147,8 +147,15 @@ Select-String -Path $manifest -Pattern '"buildid"'
 3. When ready to play, `zz play` uses the Steam shortcut and controller reader with sound on.
    The build and visible/native behavior still need verification against the new Rust build;
    `survey` shows what its interop set offers if compilation fails.
-4. Update `release.txt` and run `zz launcher` only after the candidate's in-game acceptance.
-   A source-verified development candidate does not replace the accepted launcher automatically.
+4. To install an explicitly selected development candidate, set `$pcandidate` and `$pref` to
+   the same full 40-character commit, then run `zz launcher`. It builds and fetches its local
+   launcher files at that exact commit, writes `launcher\candidate.txt`, and leaves `release.txt`
+   unchanged. Invalid input or a failed build leaves the installed launcher untouched. Clear
+   `$pcandidate` and return `$pref` to `main` afterwards to use the current accepted release
+   pin again.
+5. Update `release.txt` only after the candidate's in-game acceptance. A source-verified
+   development candidate is not an accepted release; its candidate receipt also follows the
+   optional friend pack.
 
 `interop.ps1` and `Gen.cs` name the Unity version of the client (6000.3.15). A Rust update that
 moves to another Unity version needs both changed, and the base libraries for that version.
@@ -170,9 +177,10 @@ Set by the scripts for one another; `sv name value` sets one by hand.
 
 | Variable | Used by | Meaning |
 | --- | --- | --- |
-| `$pref` | `zz`, `zg`, `build` | Branch to work from (default `main`). |
+| `$pref` | `zz`, `zg`, `build` | Branch or full tools commit to work from (default `main`). |
 | `$pto` | `ref` | The branch to switch to, written without its dashes and slashes. |
 | `$pcommit` | `build` | Build this commit instead of the head of the branch. |
+| `$pcandidate` | `launcher` | Explicit full commit SHA for a development install; does not change `release.txt`. Clear it to install the accepted release again. |
 | `$pnext` | `build`, `runtime` | Script to run after a successful build; used once, also when the build stops early. |
 | `$ptag` | `session` | Label in the session folder's name. |
 | `$psteps` | `session` | Steps for the plugin. |

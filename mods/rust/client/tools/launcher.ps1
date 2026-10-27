@@ -2,18 +2,27 @@
 # that plugin in play\, saves the launcher's own scripts locally in launcher\ and writes two files
 # on the desktop: "Rust Skate.cmd" and "Rust Skate - remove mod files.cmd". The launcher itself
 # needs no network and never builds anything, so what the owner plays is exactly this commit.
+# Explicit developer override: $pcandidate is a complete commit SHA. It never changes release.txt.
+$ErrorActionPreference = 'Stop'
 $probe = "$HOME\Downloads\claude-loader-probe"; $L = "$probe\launcher"
-$rel = ("" + (zg 'release.txt')).Trim() -split "`n" | ? { $_ -match '^[0-9a-f]{40}$' } | select -First 1
+$candidate = "$pcandidate"
+if ($candidate -and $candidate -notmatch '\A[0-9a-fA-F]{40}\z') { 'ABORT: pcandidate must be a complete 40-character hexadecimal commit; the launcher was left as it was'; return }
+$mode = if ($candidate) { 'candidate' } else { 'release' }
+$rel = if ($candidate) { $candidate.ToLowerInvariant() } else {
+  ("" + (zg 'release.txt')).Trim() -split "`n" | ? { $_ -match '^[0-9a-f]{40}$' } | select -First 1
+}
 if (-not $rel) { 'ABORT: release.txt names no commit'; return }
-$global:pcommit = $rel; $global:pnext = $null
-zz build
-$global:pcommit = $null
-if ($pbuilt -ne $rel) { 'ABORT: the released commit did not build; the launcher was left as it was'; return }
+'Preparing ' + $mode + ' ' + $rel + $(if ($candidate) { ' (in-game acceptance pending; release.txt is unchanged).' } else { '.' })
+$previousCommit = $global:pcommit
+$global:pbuilt = $null; $global:pnext = $null
+try { $global:pcommit = $rel; zz build }
+finally { $global:pcommit = $previousCommit }
+if ($pbuilt -ne $rel) { 'ABORT: the requested ' + $mode + ' commit did not build; the launcher was left as it was'; return }
 $enc = New-Object Text.UTF8Encoding($false)
 $files = @{}
 foreach ($f in 'session.ps1', 'skate.ps1', 'watch.ps1', 'clean.ps1', 'sticks.ps1') {
   $t = "" + (irm (zu "mods/rust/client/tools/$f" $rel))
-  if ($t.Length -lt 200) { "ABORT: could not fetch $f at the released commit; the launcher was left as it was"; return }
+  if ($t.Length -lt 200) { "ABORT: could not fetch $f at the requested commit; the launcher was left as it was"; return }
   $files[$f] = $t
 }
 New-Item -ItemType Directory -Force $L, "$probe\play" | Out-Null
@@ -39,13 +48,16 @@ if ((Test-Path -LiteralPath "$captureSource\skate_captures.skmc" -PathType Leaf)
 foreach ($f in $files.Keys) { [IO.File]::WriteAllText("$L\$f", $files[$f], $enc) }
 $pb = ((gc 'C:\Program Files (x86)\Steam\steamapps\appmanifest_252490.acf' | sls '"buildid"').Line -split '"')[3]
 "Skate mod " + $rel.Substring(0, 7) + ", prepared " + (Get-Date -Format 'yyyy-MM-dd HH:mm') + " for Rust build $pb" | Out-File "$L\version.txt" -Encoding utf8
+# Mark development installs without changing the accepted release pin.
+if ($candidate) { $rel | Set-Content -LiteralPath "$L\candidate.txt" -Encoding ASCII }
+else { Remove-Item -LiteralPath "$L\candidate.txt" -ErrorAction SilentlyContinue }
 $desk = [Environment]::GetFolderPath('Desktop')
 $start = "@echo off`r`ntitle Rust Skate`r`npowershell -NoProfile -ExecutionPolicy Bypass -File `"%USERPROFILE%\Downloads\claude-loader-probe\launcher\skate.ps1`"`r`necho.`r`npause`r`n"
 $clean = "@echo off`r`ntitle Rust Skate - remove mod files`r`npowershell -NoProfile -ExecutionPolicy Bypass -File `"%USERPROFILE%\Downloads\claude-loader-probe\launcher\clean.ps1`"`r`necho.`r`npause`r`n"
 [IO.File]::WriteAllText("$desk\Rust Skate.cmd", $start, [Text.Encoding]::ASCII)
 [IO.File]::WriteAllText("$desk\Rust Skate - remove mod files.cmd", $clean, [Text.Encoding]::ASCII)
 'launcher files: ' + ((ls $L -File | % { "{0} {1}" -f $_.Name, $_.Length }) -join ', ')
-'released plugin: ' + (gc "$L\version.txt" -First 1) + ' | ' + (gi "$probe\play\ShortcutSkateClient.dll").Length + ' bytes | play folder: ' + ((ls "$probe\play" | % Name) -join ', ')
+$mode + ' plugin: ' + (gc "$L\version.txt" -First 1) + ' | ' + (gi "$probe\play\ShortcutSkateClient.dll").Length + ' bytes | play folder: ' + ((ls "$probe\play" | % Name) -join ', ')
 # The sound pack is not built or fetched: the owner keeps his 18 WAV files in sounds\ himself.
 # The launcher and every session stage that folder (session.ps1); a missing file is said there.
 $wavs = @(ls "$probe\sounds" -File -Filter *_01.wav -ErrorAction SilentlyContinue).Count

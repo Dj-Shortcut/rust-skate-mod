@@ -1,5 +1,5 @@
 # Pack the installed launcher for a friend. Takes what `zz launcher` put on this PC - the unpacked
-# loader, the interop set for the installed Rust build, the changed runtime, the released plugin
+# loader, the interop set for the installed Rust build, the changed runtime, the released plugin or explicit candidate
 # with its park models, the sound pack and the launcher's own scripts - and writes one zip in Downloads with an
 # installer (install.ps1 of this branch) that a friend runs on his own PC without any of the
 # development tools. Nothing is built or downloaded; the pack is exactly what this PC plays.
@@ -58,6 +58,7 @@ if ((Test-Path -LiteralPath "$probe\play\skate_captures.skmc" -PathType Leaf) -a
   }
 }
 foreach ($f in 'session.ps1', 'skate.ps1', 'watch.ps1', 'clean.ps1', 'sticks.ps1', 'version.txt') { Copy-Item "$L\$f" "$to\launcher" }
+if (Test-Path -LiteralPath "$L\candidate.txt" -PathType Leaf) { Copy-Item -LiteralPath "$L\candidate.txt" -Destination "$to\launcher" }
 # Only the 18 WAV files the plugin reads; anything else in sounds\ stays on this PC.
 if ($sounds) { New-Item -ItemType Directory -Force "$to\sounds" | Out-Null; $stems | % { Copy-Item -LiteralPath "$probe\sounds\$($_)_01.wav" "$to\sounds" } }
 $server = ''
