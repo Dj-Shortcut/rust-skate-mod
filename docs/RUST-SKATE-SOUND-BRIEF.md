@@ -71,9 +71,9 @@ mogelijk zonder skateboardgeluid. De [audiodocumentatie](RUST-SKATE-AUDIO.md)
 beschrijft die bronintegratie; de historische synthesizers zijn niet het actieve
 afspeelpad.
 
-De standaard launcher en het gewone spelpakket plaatsen de geluidsmap nog niet.
-Een private staging-adapter is voorbereid, maar niet op Windows/PowerShell
-uitgevoerd. Alle 18 gekozen bestanden zijn privé voorbereid: 44,1 kHz mono PCM16,
+De launcher, een `zz`-sessie en het vriendenpakket plaatsen de geluidsmap vanuit
+`Downloads\claude-loader-probe\sounds\` ([clienttools](../mods/rust/client/tools/README.md#settings));
+dat is scriptbron, nog niet op Windows/PowerShell uitgevoerd. Alle 18 gekozen bestanden zijn privé voorbereid: 44,1 kHz mono PCM16,
 veilige pieken, gecontroleerde onsets en loopnaden, en volledige decode met de
 werkelijke clientlezer. De absolute LUFS-doelen en de gevraagde drop/landing-verhouding
 worden niet allemaal gehaald. Daadwerkelijke installatie, volumebalans, timing en

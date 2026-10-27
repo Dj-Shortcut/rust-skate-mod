@@ -40,9 +40,12 @@ foreach ($d in 'bep788', "gen-$pb", 'rt', 'play', 'launcher') {
   Remove-Item -LiteralPath "$probe\$d" -Recurse -Force -ErrorAction SilentlyContinue
   Copy-Item -LiteralPath "$from\$d" -Destination "$probe\$d" -Recurse
 }
-# The server address follows the pack: a pack made without it takes an older one away too.
+# The server address and the sound pack follow the pack: a pack made without them takes older ones
+# away too, so that what plays here is what the pack holds.
 if (Test-Path "$from\server.txt") { Copy-Item "$from\server.txt" "$probe\server.txt" -Force }
 else { Remove-Item -LiteralPath "$probe\server.txt" -Force -ErrorAction SilentlyContinue }
+Remove-Item -LiteralPath "$probe\sounds" -Recurse -Force -ErrorAction SilentlyContinue
+if (Test-Path "$from\sounds") { Copy-Item -LiteralPath "$from\sounds" -Destination "$probe\sounds" -Recurse }
 $desk = [Environment]::GetFolderPath('Desktop')
 $start = "@echo off`r`ntitle Rust Skate`r`npowershell -NoProfile -ExecutionPolicy Bypass -File `"%USERPROFILE%\Downloads\claude-loader-probe\launcher\skate.ps1`"`r`necho.`r`npause`r`n"
 $clean = "@echo off`r`ntitle Rust Skate - remove mod files`r`npowershell -NoProfile -ExecutionPolicy Bypass -File `"%USERPROFILE%\Downloads\claude-loader-probe\launcher\clean.ps1`"`r`necho.`r`npause`r`n"
@@ -50,6 +53,8 @@ $clean = "@echo off`r`ntitle Rust Skate - remove mod files`r`npowershell -NoProf
 [IO.File]::WriteAllText("$desk\Rust Skate - remove mod files.cmd", $clean, [Text.Encoding]::ASCII)
 line ('  Installed: ' + (gc "$probe\launcher\version.txt" -First 1) + " ($mb MB in Downloads\claude-loader-probe).")
 line '  On the desktop: "Rust Skate" and "Rust Skate - remove mod files".'
+if (Test-Path "$probe\sounds\skate_ollie_01.wav") { line ('  Skateboard sounds: ' + @(ls "$probe\sounds" -File -Filter *_01.wav).Count + ' files.') }
+else { line '  This pack has no skateboard sounds: the ride is silent. Ask the owner for a pack with sounds.' }
 # The launcher starts Rust through a Steam shortcut named RustClient, so that the controller
 # layout made for it applies on foot as well. Steam keeps those shortcuts in a binary file; the
 # installer only reads it, it does not make the shortcut.
