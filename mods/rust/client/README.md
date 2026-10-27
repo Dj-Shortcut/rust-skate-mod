@@ -18,6 +18,14 @@ validates placement and charges the price.
 
 ## Development verification
 
+The guarded `rigging` scenario includes **Ollie - video capture**: a one-second,
+24 fps source motion retargeted to the measured native Humanoid chains, with
+separate sole rotation. Select it with Dpad left/right; A pauses and B/Y/Back
+stops the showcase. `zz rigging` builds and starts a diagnostic session, so it
+is not a read-only check. The replay does not replace normal Ollie riding or
+drive the physical player. Native skin/playback remain unverified. See
+[capture provenance and limitations](../../../assets/authored/animation/ollie-video/README.md).
+
 Client 0.18.34 retains the displayed support frame when contact is lost at a transition
 take-off. Held grabs keep their hand and elbow targets through pose easing and shaping;
 during a single grab the free hand stays within its measured arm reach. Controller crouching interrupts a foot stroke,

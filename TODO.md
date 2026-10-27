@@ -31,7 +31,7 @@ Laatste speltest: client 0.18.45 / server 0.3.38 (21 okt). Geen testomgeving sin
 25. Controller werkt op het board en te voet. Open.
 26. Uitzoeken hoe Skate trick-, rijder- en boardanimaties koppelt. Deels onderzocht (privé).
 27. Herkenbare drop-inanimatie voor halfpipes: tail op coping, gewicht naar voren, knieën en board vloeiend de wand in; aparte animatie en spelcontrole open (Andy, 26 okt).
-28. Automatische rigging-showcase op platte grond: alle beschikbare trickposes met naam, pauze en volgende/vorige, zodat handen, voeten en board samen bekeken kunnen worden. Bron aanwezig in 0.18.60; eerste visuele controle op Shadow open (Andy, 26 okt).
+28. Automatische rigging-showcase op platte grond: alle beschikbare trickposes met naam, pauze en volgende/vorige, zodat handen, voeten en board samen bekeken kunnen worden. Bron aanwezig in 0.18.60; één video-afgeleide ollie toegevoegd voor de gemeten Humanoid-rig, normale poproute en native beeldcontrole open (Andy, 26 okt).
 
 Per rit controleren: controller, eerste/derde persoon, kompas, hand-item, pose, geluid, put-backs. Halfpipe: drie beklimmingen en fakie-terugkeren zonder put-back.
 
