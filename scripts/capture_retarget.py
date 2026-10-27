@@ -54,6 +54,10 @@ def confidence_track(raw, first, last, options, actor_expected=False):
                or len(group[0])!=33 or any(not isinstance(point,dict) for point in group[0]) for group in groups):
             raise CaptureError('Expected one complete33-point world/image landmark array',dict(frame=i))
         w, im = groups[0][0], groups[1][0]
+        roi=f.get('roi')
+        if roi is not None and (not isinstance(roi,list) or len(roi)!=4 or any(type(v) is not int for v in roi)
+                                or min(roi[:2])<0 or min(roi[2:])<1):
+            raise CaptureError('Invalid retained ROI array',dict(frame=i))
         for j in range(33):
             try: xyz = finite([w[j][a] for a in ('x','y','z')], (3,))
             except (KeyError,ValueError): xyz = np.full(3,np.nan)
@@ -68,7 +72,6 @@ def confidence_track(raw, first, last, options, actor_expected=False):
             except (KeyError,ValueError): why.append('invalid_image')
             if not np.isfinite(xyz).all(): why.append('invalid_world')
             if im[j].get('roi_cropped'): why.append('roi_edge_or_crop')
-            roi = f.get('roi')
             if roi is not None:
                 px, py = im[j].get('x', -1)*f['width'], im[j].get('y', -1)*f['height']
                 if not (roi[0]+roi[2]*margin <= px <= roi[0]+roi[2]*(1-margin) and roi[1]+roi[3]*margin <= py <= roi[1]+roi[3]*(1-margin)):

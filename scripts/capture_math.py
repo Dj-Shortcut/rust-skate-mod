@@ -41,6 +41,7 @@ def euler_quat(degrees):
     return quaternion(qmul(parts[2], qmul(parts[1], parts[0])))
 
 def qangle(a, b):
+    a, b = quaternion(a), quaternion(b)
     return math.degrees(2 * math.acos(float(np.clip(abs(np.dot(a, b)), -1, 1))))
 
 def slerp(a, b, weight):
