@@ -1,5 +1,8 @@
 using System;
+using System.IO;
+using System.IO.Compression;
 using System.Text;
+using BepInEx;
 using UnityEngine;
 using Shortcut.RustMod;
 
@@ -17,7 +20,7 @@ public static class SkateWheelChoice
 
 public static class SkateWheelArtwork
 {
-    private const uint Cream = 0xf2eee3f5, Red = 0xc43f32ff, White = 0xfffbf3ff;
+    private const uint Cream = 0xf2eee3f5, Red = 0xc43f32ff, White = 0xffffffff;
 
     public static uint[] Pixels(int size, int selected)
     {
@@ -43,6 +46,29 @@ public static class SkateWheelArtwork
 
     private static void Icon(uint[] p, int size, int kind, double cx, double cy, double width, uint ink)
     {
+        var mask = SkateWheelIcons.Mask(kind);
+        if (mask != null)
+        {
+            // The same white silhouette is tinted by the wheel; PNG rows are top to bottom,
+            // whereas Unity's pixel array starts at the bottom of the texture.
+            double tile = size * 0.15;
+            int fromX = Math.Max(0, (int)Math.Floor(cx - tile / 2)), toX = Math.Min(size - 1, (int)Math.Ceiling(cx + tile / 2));
+            int fromY = Math.Max(0, (int)Math.Floor(cy - tile / 2)), toY = Math.Min(size - 1, (int)Math.Ceiling(cy + tile / 2));
+            for (int y = fromY; y <= toY; y++) for (int x = fromX; x <= toX; x++)
+            {
+                double sx = (x + 0.5 - cx + tile / 2) * SkateWheelIcons.Size / tile - 0.5;
+                double sy = (cy + tile / 2 - y - 0.5) * SkateWheelIcons.Size / tile - 0.5;
+                int alpha = SkateWheelIcons.Sample(mask, sx, sy);
+                if (alpha == 0) continue;
+                int at = y * size + x; uint under = p[at];
+                int below = (int)(under & 255) * (255 - alpha) / 255, total = alpha + below;
+                uint red = (uint)(((ink >> 24) * alpha + (under >> 24) * below) / total);
+                uint green = (uint)((((ink >> 16) & 255) * alpha + ((under >> 16) & 255) * below) / total);
+                uint blue = (uint)((((ink >> 8) & 255) * alpha + ((under >> 8) & 255) * below) / total);
+                p[at] = red << 24 | green << 16 | blue << 8 | (uint)total;
+            }
+            return;
+        }
         double[] profile;
         switch (kind)
         {
@@ -118,6 +144,149 @@ public static class SkateWheelArtwork
             double rx = x - ax - t * dx, ry = y - ay - t * dy;
             if (rx * rx + ry * ry <= width * width) p[y * size + x] = ink;
         }
+    }
+}
+
+// Read the exact authored white-alpha PNGs without relying on Unity's optional ImageConversion
+// wrappers. This deliberately accepts only the small, non-interlaced RGBA8 format in artwork.txt.
+public static class SkateWheelIcons
+{
+    public const int Size = 128, MaximumBytes = 256 * 1024;
+    private static readonly string[] names = { "bank", "kicker", "quarterpipe", "ledge-low", "ledge-high", "long-ledge", "funbox", "halfpipe", "mini-quarterpipe", "large-quarterpipe", "half-wall-kicker", "mega-halfpipe" };
+    private static readonly byte[][] masks = new byte[SkateWheelChoice.Count][];
+    private static bool loaded;
+
+    public static byte[] Mask(int kind)
+    {
+        if (kind < 0 || kind >= masks.Length) return null;
+        if (!loaded)
+        {
+            loaded = true; int count = 0;
+            for (int i = 0; i < masks.Length; i++)
+            {
+                try
+                {
+                    var path = Path.Combine(Paths.PluginPath, "skate_icon_" + names[i] + "_128.png");
+                    var file = new FileInfo(path);
+                    if (!file.Exists || file.Length <= 0 || file.Length > MaximumBytes) continue;
+                    byte[] alpha;
+                    if (TryAlpha(File.ReadAllBytes(path), out alpha)) { masks[i] = alpha; count++; }
+                }
+                catch (Exception) { } // Optional artwork never disables the build controls.
+            }
+            Out.Say("PIECES authored icons loaded=" + count + "/" + masks.Length + "; missing or invalid icons use the built-in silhouettes");
+        }
+        return masks[kind];
+    }
+
+    public static void Clear()
+    {
+        Array.Clear(masks, 0, masks.Length); loaded = false;
+    }
+
+    public static int Sample(byte[] mask, double x, double y)
+    {
+        if (mask == null || mask.Length != Size * Size || x < 0 || y < 0 || x > Size - 1 || y > Size - 1) return 0;
+        int ax = (int)x, ay = (int)y, bx = Math.Min(Size - 1, ax + 1), by = Math.Min(Size - 1, ay + 1);
+        double dx = x - ax, dy = y - ay;
+        return (int)Math.Round((mask[ay * Size + ax] * (1 - dx) + mask[ay * Size + bx] * dx) * (1 - dy) +
+            (mask[by * Size + ax] * (1 - dx) + mask[by * Size + bx] * dx) * dy);
+    }
+
+    public static bool TryAlpha(byte[] png, out byte[] alpha)
+    {
+        alpha = null;
+        if (png == null || png.Length < 57 || png.Length > MaximumBytes ||
+            Big(png, 0) != 0x89504e47 || Big(png, 4) != 0x0d0a1a0a) return false;
+        try
+        {
+            bool header = false, ended = false, image = false, imageEnded = false;
+            using (var compressed = new MemoryStream())
+            {
+                int at = 8;
+                while (at <= png.Length - 12)
+                {
+                    uint length = Big(png, at), kind = Big(png, at + 4);
+                    if (length > MaximumBytes || at + 12L + length > png.Length) return false;
+                    int n = (int)length, data = at + 8;
+                    if (Crc(png, at + 4, n + 4) != Big(png, data + n)) return false;
+                    if (!header && kind != 0x49484452) return false;
+                    if (kind == 0x49484452) // IHDR
+                    {
+                        if (header || n != 13 || Big(png, data) != Size || Big(png, data + 4) != Size ||
+                            png[data + 8] != 8 || png[data + 9] != 6 || png[data + 10] != 0 || png[data + 11] != 0 || png[data + 12] != 0) return false;
+                        header = true;
+                    }
+                    else if (kind == 0x49444154) // IDAT
+                    {
+                        if (imageEnded) return false;
+                        compressed.Write(png, data, n); image = true;
+                    }
+                    else
+                    {
+                        if (image) imageEnded = true;
+                        if (kind == 0x49454e44) { if (n != 0 || !image || at + 12 != png.Length) return false; ended = true; break; }
+                        if ((png[at + 4] & 32) == 0) return false; // Unknown critical chunk.
+                    }
+                    at += n + 12;
+                }
+                if (!header || !ended || compressed.Length < 6) return false;
+                var zlib = compressed.ToArray();
+                if ((zlib[0] & 15) != 8 || (zlib[0] >> 4) > 7 || (zlib[1] & 32) != 0 || (zlib[0] * 256 + zlib[1]) % 31 != 0) return false;
+                const int stride = Size * 4;
+                var raw = new byte[Size * (stride + 1)];
+                using (var input = new MemoryStream(zlib, 2, zlib.Length - 6))
+                using (var deflate = new DeflateStream(input, CompressionMode.Decompress))
+                {
+                    int read = 0, got;
+                    while (read < raw.Length && (got = deflate.Read(raw, read, raw.Length - read)) > 0) read += got;
+                    if (read != raw.Length || deflate.ReadByte() != -1) return false;
+                }
+                uint a = 1, b = 0;
+                foreach (byte value in raw) { a = (a + value) % 65521; b = (b + a) % 65521; }
+                if ((b << 16 | a) != Big(zlib, zlib.Length - 4)) return false;
+                var rows = new byte[Size * stride]; var result = new byte[Size * Size];
+                for (int y = 0; y < Size; y++)
+                {
+                    int filter = raw[y * (stride + 1)]; if (filter > 4) return false;
+                    for (int x = 0; x < stride; x++)
+                    {
+                        int index = y * stride + x, left = x >= 4 ? rows[index - 4] : 0, up = y > 0 ? rows[index - stride] : 0;
+                        int corner = y > 0 && x >= 4 ? rows[index - stride - 4] : 0, add = 0;
+                        if (filter == 1) add = left;
+                        else if (filter == 2) add = up;
+                        else if (filter == 3) add = (left + up) / 2;
+                        else if (filter == 4)
+                        {
+                            int p = left + up - corner, dl = Math.Abs(p - left), du = Math.Abs(p - up), dc = Math.Abs(p - corner);
+                            add = dl <= du && dl <= dc ? left : du <= dc ? up : corner;
+                        }
+                        rows[index] = (byte)((raw[y * (stride + 1) + x + 1] + add) & 255);
+                    }
+                    for (int x = 0; x < Size; x++)
+                    {
+                        int index = y * stride + x * 4;
+                        if (rows[index] != 255 || rows[index + 1] != 255 || rows[index + 2] != 255) return false;
+                        result[y * Size + x] = rows[index + 3];
+                    }
+                }
+                alpha = result; return true;
+            }
+        }
+        catch (Exception) { return false; }
+    }
+
+    private static uint Big(byte[] bytes, int at)
+    { return (uint)bytes[at] << 24 | (uint)bytes[at + 1] << 16 | (uint)bytes[at + 2] << 8 | bytes[at + 3]; }
+    private static uint Crc(byte[] bytes, int at, int length)
+    {
+        uint crc = 0xffffffff;
+        for (int i = at; i < at + length; i++)
+        {
+            crc ^= bytes[i];
+            for (int bit = 0; bit < 8; bit++) crc = (crc >> 1) ^ ((crc & 1) != 0 ? 0xedb88320u : 0u);
+        }
+        return crc ^ 0xffffffff;
     }
 }
 
@@ -229,6 +398,7 @@ public static class SkateBuildWheel
     {
         for (int i = 0; i < wheel.Length; i++) if (wheel[i] != null) { UnityEngine.Object.Destroy(wheel[i]); wheel[i] = null; }
         if (dot != null) { UnityEngine.Object.Destroy(dot); dot = null; }
+        SkateWheelIcons.Clear();
         title = body = footer = null;
         titleText.Clear(); bodyText.Clear(); footerText.Clear();
     }
