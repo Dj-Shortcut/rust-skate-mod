@@ -1,0 +1,139 @@
+{
+  "source_url": "https://commons.wikimedia.org/wiki/File:Ollie_1.ogv",
+  "author": "Medvedev",
+  "license": "CC-BY-SA-3.0",
+  "source_sha256": "e09dadde533909bf104a724621ef86496d8f1f8711d5967587363c4b34da4529",
+  "source_fps": 24,
+  "first_frame": 24,
+  "last_frame": 48,
+  "captured_stance": "goofy",
+  "canonical_stance": "regular",
+  "board_length_m": 0.8,
+  "ground_deck_top_m": 0.092,
+  "ground_board_pixels": [
+    [
+      24,
+      148
+    ],
+    [
+      42,
+      240
+    ],
+    [
+      48,
+      272
+    ]
+  ],
+  "ground_center_y_pixels": [
+    [
+      24,
+      396.5
+    ],
+    [
+      42,
+      460.5
+    ],
+    [
+      48,
+      486
+    ]
+  ],
+  "ground_nose_minus_tail_y_pixels": 20,
+  "board_endpoint_keys": [
+    [
+      24,
+      851,
+      405,
+      998,
+      388
+    ],
+    [
+      28,
+      719,
+      415,
+      899,
+      402
+    ],
+    [
+      30,
+      674,
+      402,
+      850,
+      424
+    ],
+    [
+      32,
+      668,
+      309,
+      801,
+      436
+    ],
+    [
+      34,
+      612,
+      285,
+      755,
+      393
+    ],
+    [
+      36,
+      507,
+      309,
+      706,
+      335
+    ],
+    [
+      38,
+      405,
+      364,
+      637,
+      315
+    ],
+    [
+      40,
+      322,
+      421,
+      561,
+      397
+    ],
+    [
+      42,
+      261,
+      470,
+      500,
+      451
+    ],
+    [
+      44,
+      201,
+      478,
+      449,
+      451
+    ],
+    [
+      46,
+      119,
+      490,
+      381,
+      461
+    ],
+    [
+      48,
+      36,
+      502,
+      306,
+      470
+    ]
+  ],
+  "annotations": [
+    "Board nose/tail endpoints manually estimated from original 1024x576 source pixels; not MediaPipe output.",
+    "Metric jump height and pitch are approximate perspective-calibrated estimates, not multi-camera measurements.",
+    "Source begins at an already compressed crouch. No missing anticipation frames are invented.",
+    "World body33 is hip-relative; it cannot supply the board/root trajectory.",
+    "Canonical regular is mirrored across X with anatomical left/right exchange from the captured goofy stance.",
+    "Foot/deck contact and front-foot side/instep roll are explicit retarget constraints, not measured finger/sole capture.",
+    "Retarget foot headings are constrained to the anatomical forward hemisphere: 70 percent hip-frame direction, 30 percent captured heel/toe direction.",
+    "Knee bend poles retain the captured lateral direction within the anatomical forward hemisphere; monocular depth is not treated as authoritative knee anatomy.",
+    "The 58-degree front-foot roll envelope is an authored side/instep contact correction during source frames 30 through 39, not measured sole orientation."
+  ]
+}
