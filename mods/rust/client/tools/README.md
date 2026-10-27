@@ -165,7 +165,7 @@ and point its `$probe` at a separate empty staging folder. In that folder, creat
 folder containing a `skate.log` with `SKATE MOUNT yaw=90`, followed by a newer `run-recovered-*`
 folder containing a log with no mount. Dot-source the copied script: it must report the `run-P-*`
 folder and `mounts=1`; setting `$prun` to the recovered folder before dot-sourcing must still select
-it. With only recovered folders, it reports no session. See the
+it. With only recovered folders, it reports no session and clears the previous `$plast`. See the
 [focused candidate test](../../../../docs/RUST-SKATE-PLAYTEST-063.md).
 
 `interop.ps1` and `Gen.cs` name the Unity version of the client (6000.3.15). A Rust update that
