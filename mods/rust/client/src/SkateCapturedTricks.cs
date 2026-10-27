@@ -141,7 +141,9 @@ public static class SkateCapturedTricks
         {
             var approaching = SkateCapturePlayback.Transport(previous, previousCarrier, carrier);
             var newlyCaught = frame.Observation.Contacts & ~previous.Observation.Contacts;
-            double limit = .025 + 4 * Math.Max(.001, Math.Min(.05, now - previousAt));
+            // Rotation observations advance at the physics cadence even between faster render frames.
+            double observedDelta = Math.Max(now - previousAt, SkateRide.PresentationStepSeconds);
+            double limit = .025 + 4 * Math.Max(.001, Math.Min(.05, observedDelta));
             if (!approaching.Board.Initialized ||
                 (newlyCaught & SkateCaptureContacts.LeftFoot) != 0 && (frame.Pose.LeftAnkle - approaching.Pose.LeftAnkle).Length > limit ||
                 (newlyCaught & SkateCaptureContacts.RightFoot) != 0 && (frame.Pose.RightAnkle - approaching.Pose.RightAnkle).Length > limit)

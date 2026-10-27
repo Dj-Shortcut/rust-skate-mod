@@ -276,6 +276,8 @@ public static class SkateRide
     public static bool Rotating { get { return BoardPath.Active || spinning || Math.Abs(flipLeft) > 0.001f || Math.Abs(shoveLeft) > 0.001f || Math.Abs(bodyLeft) > 0.001f; } }
     // Read-only presentation observations. These do not request or advance a trick.
     public static bool PresentationQueued { get { return Mode == RideMode.Ground && now - jumpWanted >= 0 && now - jumpWanted < .12f && jumpInputEpoch == SkateKeys.InputEpoch; } }
+    public static float PresentationStepSeconds
+    { get { var step = Time.fixedDeltaTime; return step > .001f && step <= .05f ? step : .03125f; } }
     public static double PresentationBodyTarget { get { return BodyDeg + bodyLeft; } }
     public static SkateCaptureTrickSignature PresentationSignature
     {
