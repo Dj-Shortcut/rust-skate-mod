@@ -758,9 +758,18 @@ public static class RiderRig
                 pose = freePose;
             }
             if (!SkateActions.Pose(Rig, input, ref pose)) return;
+            var dropping = false;
+            if (!wall && !bodyFlip && !SkateActions.Owns && !SkateOldschoolRide.Active && !groundGrab &&
+                handplant <= .001f && mode == RideMode.Ground && SkateSurfaceRide.DropInMotion.Active)
+            {
+                SkateRiderPose entryPose;
+                if (SkateRider.TryCreateDropIn(Rig, input, pose, SkateSurfaceRide.DropInMotion, out entryPose, out error))
+                { pose = entryPose; dropping = true; }
+                else if (error != Error) { Error = error; Say("drop-in pose refused: " + error); }
+            }
             Posed = pose; PosedPlane = plane;
             SkateActions.Record(pose, SkateActions.DisplayFrame.Initialized ? SkateActions.DisplayFrame : input.DeckFrame, SkateRig.LocalT != null ? SkateBoard.CarrierFor(SkateRig.LocalT) : input.DeckFrame, grab);
-            var hardContact = wall || bodyFlip || SkateOldschoolRide.Active || SkateActions.Owns || handplant > 0.001f || mode == RideMode.Bail || groundGrab;
+            var hardContact = wall || bodyFlip || SkateOldschoolRide.Active || SkateActions.Owns || handplant > 0.001f || mode == RideMode.Bail || groundGrab || dropping;
             // Between the air and the ground the lag carries on, so the chest and the hands follow
             // through the catch into the landing instead of jumping onto the pose; into and out of a
             // grind or a bail the motion starts over.
@@ -821,11 +830,11 @@ public static class RiderRig
             var pushLeft = SkateRide.PushLead ? !trailingIsLeft : trailingIsLeft;
             // A gripping hand must remain reachable from the solved upper body. Its shared
             // secondary motion is already contact-aware; another independent trunk lag is not.
-            pinHips = wall || bodyFlip || SkateOldschoolRide.Active || SkateActions.Owns || plantBoard.Initialized || groundGrab || pushing || pinL || pinR || SkateRide.BoardPath.Known;
-            pinLeft = wall || bodyFlip || SkateOldschoolRide.Active || SkateActions.Owns || plantBoard.Initialized || groundGrab || SkateRide.BoardPath.Known || pushing && (!pushLeft || footDown); pinRight = wall || bodyFlip || SkateOldschoolRide.Active || SkateActions.Owns || plantBoard.Initialized || groundGrab || SkateRide.BoardPath.Known || pushing && (pushLeft || footDown);
+            pinHips = wall || bodyFlip || SkateOldschoolRide.Active || SkateActions.Owns || plantBoard.Initialized || groundGrab || dropping || pushing || pinL || pinR || SkateRide.BoardPath.Known;
+            pinLeft = wall || bodyFlip || SkateOldschoolRide.Active || SkateActions.Owns || plantBoard.Initialized || groundGrab || dropping || SkateRide.BoardPath.Known || pushing && (!pushLeft || footDown); pinRight = wall || bodyFlip || SkateOldschoolRide.Active || SkateActions.Owns || plantBoard.Initialized || groundGrab || dropping || SkateRide.BoardPath.Known || pushing && (pushLeft || footDown);
             Shown = pose;
             Ease(pose, plane, toToes, upV, new Vector3((float)fx, (float)fy, (float)fz), now, frameSeconds, pinL, pinR);
-            if (!wall && !bodyFlip && !SkateActions.Owns && !SkateOldschoolRide.Active) Shape(upV);
+            if (!wall && !bodyFlip && !SkateActions.Owns && !SkateOldschoolRide.Active && !dropping) Shape(upV);
             // Pitch/grind balance shapes the free arm, never the hand already holding the board.
             if (pinL) { joint[LHandJ] = V(pose.LeftHand); joint[LElbowJ] = V(pose.LeftElbow); }
             if (pinR) { joint[RHandJ] = V(pose.RightHand); joint[RElbowJ] = V(pose.RightElbow); }
