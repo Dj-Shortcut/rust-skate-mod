@@ -2,7 +2,7 @@
 import math
 import numpy as np
 from capture_math import (UP, JOINTS, DIRS, Curve, RotationCurve, finite, unit,
-                          qmatrix, matrix_quat, slerp, contact_events)
+                          quaternion, qangle, qmatrix, matrix_quat, slerp, contact_events)
 
 PAIRS = [(11,12),(13,14),(15,16),(17,18),(19,20),(21,22),(23,24),
          (25,26),(27,28),(29,30),(31,32),(7,8),(1,4),(2,5),(3,6),(9,10)]
@@ -169,6 +169,79 @@ def interpolate_direction(a, b, weight):
     angle=math.acos(dot)
     return (a*math.sin((1-weight)*angle)+b*math.sin(weight*angle))/math.sin(angle)
 
+class AuthoredHead:
+    """Explicit uncertain chest-local reconstruction; never a confidence repair."""
+    def __init__(self,spec,duration,reflect_keys):
+        if not isinstance(spec,dict) or set(spec)!={'blendTimes','orientation','provenance','uncertainty'}:
+            raise ValueError('authoredHead requires blendTimes, orientation, provenance and uncertainty')
+        for key in ('provenance','uncertainty'):
+            if not isinstance(spec[key],str) or not spec[key].strip() or len(spec[key])>4096:
+                raise ValueError('authoredHead requires explicit bounded '+key)
+        blend=spec['blendTimes']
+        if not isinstance(blend,list) or len(blend)!=4 or any(type(t) not in (int,float) for t in blend):
+            raise ValueError('authoredHead blendTimes requires four numeric clip times')
+        self.blend=finite(blend,(4,));start,full_in,full_out,end=self.blend
+        if not 0<=start<full_in<=full_out<end<=duration:
+            raise ValueError('authoredHead blendTimes must order start < fullIn <= fullOut < end within the clip')
+        orientation=spec['orientation']
+        if not isinstance(orientation,dict) or set(orientation)!={'kind','keys'} or orientation['kind']!='quaternion':
+            raise ValueError('authoredHead requires explicit quaternion orientation keys')
+        keys=orientation['keys']
+        if not isinstance(keys,list) or len(keys)!=2 or any(not isinstance(k,dict) or set(k)!={'t','value'} for k in keys):
+            raise ValueError('authoredHead requires exactly two chest-local frame anchors')
+        if any(type(k['t']) not in (int,float) or not isinstance(k['value'],list) or len(k['value'])!=4
+               or any(type(v) not in (int,float) for v in k['value']) for k in keys):
+            raise ValueError('authoredHead anchors require numeric times and unit XYZW values')
+        self.times=finite([k['t'] for k in keys],(2,))
+        if not start<=self.times[0]<self.times[1]<=end:
+            raise ValueError('authoredHead anchor times must increase within the blend window')
+        self.values=np.array([quaternion(k['value']) for k in keys])
+        if qangle(*self.values)>150:raise ValueError('authoredHead anchor arc exceeds 150 degrees')
+        if reflect_keys:self.values*=np.array([1,-1,-1,1])
+        self.spec=spec;self.reflected=reflect_keys;self.applied=[]
+
+    @staticmethod
+    def ease(t):
+        t=float(np.clip(t,0,1));return t*t*t*(10+t*(-15+6*t))
+
+    @staticmethod
+    def direction(v):
+        v=finite(v,(3,));length=np.linalg.norm(v)
+        if length<1e-9:raise CaptureError('Degenerate authored head frame direction')
+        return v/length
+
+    def apply(self,t,j,dirs,head_length):
+        start,full_in,full_out,end=self.blend
+        if t<=start or t>=end:return
+        weight=self.ease((t-start)/(full_in-start))*(1-self.ease((t-full_out)/(end-full_out)))
+        up=self.direction(dirs['ChestUp'])
+        forward=self.direction(dirs['ChestForward']-up*np.dot(up,dirs['ChestForward']))
+        chest=np.column_stack([np.cross(up,forward),up,forward])
+        head_up=self.direction(j['Head']-j['Neck']);aim=self.direction(dirs['HeadForward'])
+        head_forward=self.direction(aim-head_up*np.dot(aim,head_up))
+        local=matrix_quat(chest.T@np.column_stack([np.cross(head_up,head_forward),head_up,head_forward]))
+        progress=self.ease((t-self.times[0])/(self.times[1]-self.times[0]))
+        authored=slerp(*self.values,progress)
+        if weight<1 and qangle(local,authored)>150:
+            raise CaptureError('Authored head blend arc exceeds 150 degrees; review its window and anchors')
+        frame=chest@qmatrix(slerp(local,authored,weight))
+        if np.dot(aim,frame[:,2])<-.9995:raise CaptureError('Ambiguous opposing authored head aim directions')
+        secondary=interpolate_direction(aim,frame[:,2],weight)
+        if np.linalg.norm(np.cross(frame[:,1],secondary))<1e-4:
+            raise CaptureError('Authored head secondary is parallel to its up axis')
+        j['Head']=j['Neck']+head_length*frame[:,1];dirs['HeadForward']=secondary
+        self.applied.append(t)
+
+    def report(self):
+        return dict(mode='authored reconstruction for source occlusion; not measured mocap',
+                    provenance=self.spec['provenance'],uncertainty=self.spec['uncertainty'],
+                    blendTimes=self.blend.tolist(),orientation=self.spec['orientation'],
+                    coordinates='Chest-local right/up/forward frame; quaternion XYZW; follows recipe keySpace',
+                    reflectedToCanonical=self.reflected,
+                    interpolation='Quintic C2 short-arc anchor progress and correction envelope; head secondary shares the envelope',
+                    affectedFields=['Head','HeadForward'],outsideWindow='Exact original targets and directions',
+                    confidence='Original confidence/rejection gates unchanged; authoring is not a trusted observation')
+
 def retarget(raw, job, provenance):
     window=job['window'];first,last,fps,duration,frame_times=window_timing(window)
     source_fps=raw.get('source',{}).get('fps')
@@ -194,6 +267,7 @@ def retarget(raw, job, provenance):
     stance=job['stance']; key_space=job.get('keySpace','canonical')
     if stance not in ('regular','goofy') or key_space not in ('canonical','captured'): raise ValueError('Explicit stance/keySpace required')
     goofy=stance=='goofy'; reflect_keys=goofy and key_space=='captured'
+    authored_head=AuthoredHead(job['body']['authoredHead'],duration,reflect_keys) if 'authoredHead' in job['body'] else None
     if goofy:
         world[:,:,0]*=-1
         for l,r in PAIRS: world[:,[l,r]]=world[:,[r,l]]
@@ -308,6 +382,7 @@ def retarget(raw, job, provenance):
                 maximum_chain_error=max(maximum_chain_error,abs(float(np.linalg.norm(j[side+a]-j[side+b]))-length))
         pelvis_up=unit(torso*.45+UP*.55);pelvis_up=unit(pelvis_up-hip_axis*np.dot(pelvis_up,hip_axis),UP)
         directions=dict(zip(DIRS,(unit(np.cross(hip_axis,pelvis_up)),pelvis_up,unit(np.cross(shoulder_axis,torso)),torso,unit(w[0]-(w[7]+w[8])*.5,anatomy))))
+        if authored_head is not None:authored_head.apply(t,j,directions,rig['head'])
         frames.append(dict(t=t,sourceFrame=first+t*fps if frame_times is None else first+source_pos,board=dict(origin=origin.tolist(),quaternion=q.tolist()),joints={k:finite(j[k],(3,)).tolist() for k in JOINTS},dirs={k:unit(directions[k]).tolist() for k in DIRS},soleUp={k:v.tolist() for k,v in soles.items()},phase=events[event_index]['phase'],contacts=mask))
     if maximum_chain_error>1e-6:raise CaptureError('Retarget chain length error',dict(maxChainErrorM=maximum_chain_error))
     metadata=dict(id=job['id'],label=job['label'],sourceUrl=job['source']['url'],sourceAuthor=job['source']['author'],movementKind=job['movementKind'],reviewed=job['reviewed'],rights=job['source'].get('rights','No publication/relicensing permission asserted'),canonicalStance='regular',capturedStance=stance,keySpace=key_space,coordinateFrame='Y up, +Z nose, +X right; right-handed quaternion XYZW; origin=deck top',toeContract='Physical toe endpoints include soleUp*toeDrop once; native sampler reconstructs flat toe targets before writer drop',sourceFps=fps,firstSourceFrame=first,lastSourceFrame=last,provenance=provenance,boardProvenance=board_spec['provenance'],boardLimit='Observed keys mean recipe observations/estimates, not calibrated measured3D board mocap',footOrientationLimit='Soles default to board-up in contact and world-up in air unless per-foot keys supplied. Captured heel/toe heading is projected onto that sole; degenerate projections use a perpendicular basis. Not measured shoe orientation.',rootLimit='Pelvis/board trajectory supplied explicitly by recipe; MediaPipe world33 is hip-relative; no player-root/physics authority',sampleLimit='Dense retarget interpolation, not additional measured source frames',camera=job['camera'],rig=rig,metricScale=scale)
@@ -319,7 +394,9 @@ def retarget(raw, job, provenance):
     if head_anchor=='ears':
         metadata['headAnchor']=head_anchor
         metadata['headAnchorProvenance']=head_provenance
+    if authored_head is not None:metadata['authoredHead']=authored_head.report()
     metadata['freeFootPaths']={side:dict(coordinates='Absolute authoring frame, same as pelvisKeys; reflected with captured keySpace',provenance=feet[('Right' if side=='Left' else 'Left') if reflect_keys else side]['airPositionProvenance']) for side in ('Left','Right') if 'airPositionKeys' in foot_curves[side]}
     selection_frames=[dict(frame=f['frame_index'],selection=f['target_selection']) for f in raw['frames'] if first<=f['frame_index']<=last and f.get('target_selection') is not None]
     quality=dict(status='validated transport/kinematics; visual/native acceptance remains open',reviewed=job['reviewed'],confidence=confidence,actorSelection=selection_frames,cutAudit=dict(declaredOrDetectedFrames=sorted(cuts),startsAtDeclaredCut=first in cuts,limit='No automatic visual cut detector; absent markers are not proof of a continuous shot'),boardRotation=rot_quality,boardFloor=dict(policy=floor_policy,minUncorrectedCornerY=minimum_floor,corrections=floor_corrections),invertedFootContactException=dict(explicitlyAllowed=allow_inverted,sampleTimes=inverted_contacts),reachCorrections=reaches,maxChainErrorM=maximum_chain_error,feetDefaultOffsetsEstimated=[s for s in ('Left','Right') if not foot_curves[s].get('positionKeys')],bodyYaw='Preserved in declared camera basis; no per-frame inferred hip-facing normalization',sourceFrames=last-first+1,outputSamples=len(frames))
+    if authored_head is not None:quality['authoredHead']={**authored_head.report(),'sampleTimes':authored_head.applied}
     return dict(format='skate-capture-clip/1',fps=hz,duration=duration,stride=83,jointOrder=JOINTS,directionOrder=DIRS,metadata=metadata,events=events,frames=frames),quality
