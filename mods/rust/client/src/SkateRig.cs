@@ -175,6 +175,27 @@ public class SkateRig : MonoBehaviour
     private static bool ProxySame(Vector3 a, Vector3 b) { return a.x == b.x && a.y == b.y && a.z == b.z; }
     private static bool ProxySame(Quaternion a, Quaternion b) { return a.x == b.x && a.y == b.y && a.z == b.z && a.w == b.w; }
 
+    // A rejected mount used to lose its call site at the IL2CPP boundary. Keep one bounded
+    // trace for each changed failure, while every new press still gets visible feedback.
+    private static string lastMountFailure;
+    private static void MountFailure(string step, Exception error)
+    {
+        SkateHud.Notice("Cannot get on the skateboard: client check failed (" + step + "). See skate.log");
+        var failure = step + ": " + error.GetType().Name + ": " + error.Message;
+        if (failure == lastMountFailure) return;
+        lastMountFailure = failure;
+        Say("MOUNT failure step=" + step + " type=" + error.GetType().Name);
+        // Stack frames identify code, never player state. Do not dump objects or native payloads.
+        var trace = error.StackTrace;
+        if (string.IsNullOrEmpty(trace)) { Say("MOUNT trace unavailable"); return; }
+        var lines = trace.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        for (var i = 0; i < lines.Length && i < 10; i++)
+        {
+            var line = lines[i].Trim();
+            Say("MOUNT trace " + (i + 1) + ": " + (line.Length > 320 ? line.Substring(0, 320) : line));
+        }
+    }
+
     private static bool ProxyCurrent(RootProxyLease p)
     {
         return p != null && Local == p.Player && LocalT == p.Root && Body == p.Physical && Walk == p.Movement && AwakeAt == p.Life &&
@@ -187,38 +208,75 @@ public class SkateRig : MonoBehaviour
     private static bool AcquireRootProxy()
     {
         ReleaseRootProxy();
-        if (rootProxy != null) { Say("ROOTSYNC mount refused: collision restoration is pending"); return false; }
+        if (rootProxy != null)
+        {
+            Say("ROOTSYNC mount refused: collision restoration is pending");
+            SkateHud.Notice("Cannot get on the skateboard while collision restoration is pending");
+            return false;
+        }
+        var step = "player identity";
         try
         {
             if (!Ready || Local == null || LocalT == null || LocalT != Local.transform || LocalT.parent != null ||
-                Local.lifestate != BaseCombatEntity.LifeState.Alive || Walk == null || !Walk.enabled || Body == null || Body.isKinematic || !Body.detectCollisions)
+                Local.lifestate != BaseCombatEntity.LifeState.Alive || Walk == null || !Walk.enabled || Body == null)
                 throw new InvalidOperationException("player is not ready");
-            var frame = Body.transform; var proxy = LocalT.GetComponent<Rigidbody>();
+            step = "physical body mode";
+            if (Body.isKinematic) throw new InvalidOperationException("player is not ready");
+            step = "physical collision flag";
+            if (!Body.detectCollisions) throw new InvalidOperationException("player is not ready");
+            step = "physical body transform";
+            var frame = Body.transform;
+            step = "root Rigidbody lookup";
+            var proxy = LocalT.GetComponent<Rigidbody>();
+            step = "independent root proxy";
             if (frame != Walk.transform || frame == LocalT || frame.IsChildOf(LocalT) || LocalT.IsChildOf(frame) ||
                 proxy == null || proxy == Body || proxy.transform != LocalT || !proxy.isKinematic)
                 throw new InvalidOperationException("player proxy is not independent");
             // This lease owns only this proxy, never another Rigidbody or a joint-driven body.
+            step = "root Rigidbody children";
             var bodies = LocalT.GetComponentsInChildren<Rigidbody>(true);
-            if (bodies.Length != 1 || bodies[0] != proxy || LocalT.GetComponentsInChildren<Joint>(true).Length != 0 ||
-                frame.GetComponentsInChildren<Joint>(true).Length != 0)
+            if (bodies.Length != 1 || bodies[0] != proxy)
                 throw new InvalidOperationException("player proxy has other physical owners");
-            var position = Body.position; var velocity = Body.linearVelocity; var world = frame.position; var rotation = frame.rotation;
+            step = "root Joint children";
+            if (LocalT.GetComponentsInChildren<Joint>(true).Length != 0)
+                throw new InvalidOperationException("player proxy has other physical owners");
+            step = "physical Joint children";
+            if (frame.GetComponentsInChildren<Joint>(true).Length != 0)
+                throw new InvalidOperationException("player proxy has other physical owners");
+            step = "physical body position";
+            var position = Body.position;
+            step = "physical body velocity";
+            var velocity = Body.linearVelocity;
+            step = "physical transform position";
+            var world = frame.position;
+            step = "physical transform rotation";
+            var rotation = frame.rotation;
+            step = "root proxy distance";
             if (!ProxyFinite(position) || !ProxyFinite(velocity) || !ProxyFinite(world) || !ProxyFinite(rotation) || !ProxyFinite(LocalT.position) || (LocalT.position - position).sqrMagnitude > 1f)
                 throw new InvalidOperationException("player proxy is too far from the body");
+            step = "root proxy collision flag";
+            var originalCollisions = proxy.detectCollisions;
+            step = "root proxy parent";
+            var parent = frame.parent;
             rootProxy = new RootProxyLease { Player = Local, Root = LocalT, Proxy = proxy, Physical = Body, Movement = Walk,
-                Frame = frame, Parent = frame.parent, Life = AwakeAt, OriginalCollisions = proxy.detectCollisions };
+                Frame = frame, Parent = parent, Life = AwakeAt, OriginalCollisions = originalCollisions };
             // Record ownership before the setter: even a later readback failure must restore it.
+            step = "root collision disable";
             if (rootProxy.OriginalCollisions) { rootProxy.Changed = true; proxy.detectCollisions = false; }
+            step = "collision lease readback";
             if (!ProxyCurrent(rootProxy) || !ProxySame(Body.position, position) || !ProxySame(Body.linearVelocity, velocity) ||
                 !ProxySame(frame.position, world) || !ProxySame(frame.rotation, rotation))
                 throw new InvalidOperationException("player proxy collision lease did not verify");
             Say("ROOTSYNC acquired kinematic=True collisions=False physical-unchanged=True");
+            lastMountFailure = null;
             return true;
         }
         catch (Exception e)
         {
             Say("ROOTSYNC mount refused: " + e.GetType().Name + ": " + e.Message);
-            ReleaseRootProxy(); return false;
+            ReleaseRootProxy();
+            MountFailure(step, e);
+            return false;
         }
     }
 
@@ -495,7 +553,12 @@ public class SkateRig : MonoBehaviour
             SkateHud.MountedAt = Time.realtimeSinceStartup;
             Say("MOUNT yaw=" + SkateRide.Yaw.ToString("F0") + " speed=" + SkateRide.Speed.ToString("F1") + " rider=" + RiderRig.Bound + " audio=" + SkateSfx.State);
         }
-        catch { SkateRide.Dismount("the skate mount failed"); ReleaseRootProxy(); throw; }
+        catch (Exception error)
+        {
+            SkateRide.Dismount("the skate mount failed"); ReleaseRootProxy();
+            MountFailure("ride initialization", error);
+            throw;
+        }
     }
 
     [HideFromIl2Cpp]
