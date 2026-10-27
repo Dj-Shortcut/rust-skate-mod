@@ -192,6 +192,13 @@ The existing charge pose remains authoritative before the requested trick is
 known. Catch and recovery cannot cause an early gameplay landing. A changed
 trick or interruption relinquishes capture presentation.
 
+Presentation events may repeat a phase to describe individual foot contacts.
+The initial load has both feet attached; load/pop may release them separately,
+and air has neither foot attached. Catch contacts may accumulate separately;
+land and recovery require both feet. Reattachment before catch, contact loss
+after catch, reversed phases and simultaneous conflicting events are refused.
+The first event of each phase remains its timing anchor.
+
 The approval file is strict UTF-8 (at most 32 KiB), with these lines and one to
 256 unique canonical clip ids:
 

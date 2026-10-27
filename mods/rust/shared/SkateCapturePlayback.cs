@@ -104,15 +104,26 @@ namespace Shortcut.RustMod
             playback = null; error = null;
             if (clip == null || !clip.Ready) { error = "Capture is unavailable."; return false; }
             var times = new double[7]; var seen = new bool[7];
+            const SkateCaptureContacts feet = SkateCaptureContacts.LeftFoot | SkateCaptureContacts.RightFoot;
+            var previousContacts = feet; int previousPhase = 0; double previousTime = -1;
             for (int n = 0; n < clip.EventCount; n++)
             {
                 var e = clip.GetEvent(n); int phase = (int)e.Phase;
-                if (phase == 0 || seen[phase] || (e.Contacts & (SkateCaptureContacts.LeftHand | SkateCaptureContacts.RightHand)) != 0)
-                { error = "Capture has unsupported or repeated presentation phases."; return false; }
-                seen[phase] = true; times[phase] = e.Time;
-                if ((phase == 1 || phase >= 4) && e.Contacts != (SkateCaptureContacts.LeftFoot | SkateCaptureContacts.RightFoot) ||
-                    (phase == 2 || phase == 3) && e.Contacts != SkateCaptureContacts.None)
+                if (phase < 1 || phase > 6 || phase < previousPhase || e.Time <= previousTime ||
+                    (e.Contacts & ~feet) != 0 || n == 0 && (phase != 1 || e.Contacts != feet))
+                { error = "Capture has unsupported or unordered presentation events."; return false; }
+                // A sliding/flick foot may leave before the pop foot. Keep each
+                // source-observed release instead of requiring a simultaneous detach.
+                // Catch contacts may then accumulate, but never drop before landing.
+                if (phase < 4 && (e.Contacts & ~previousContacts) != 0 ||
+                    phase >= 4 && (previousContacts & ~e.Contacts) != 0 ||
+                    phase == 1 && e.Contacts == SkateCaptureContacts.None ||
+                    phase == 3 && e.Contacts != SkateCaptureContacts.None ||
+                    phase == 4 && e.Contacts == SkateCaptureContacts.None ||
+                    phase >= 5 && e.Contacts != feet)
                 { error = "Capture foot contacts do not match its presentation phases."; return false; }
+                if (!seen[phase]) { seen[phase] = true; times[phase] = e.Time; }
+                previousContacts = e.Contacts; previousPhase = phase; previousTime = e.Time;
             }
             for (int n = 1; n <= 6; n++) if (!seen[n] || n > 1 && times[n] <= times[n - 1])
             { error = "Capture needs ordered load, pop, air, catch, land and recovery phases."; return false; }
