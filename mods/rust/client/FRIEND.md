@@ -35,15 +35,18 @@ zz pack
 It writes `Downloads\RustSkate-<commit>-build<build>.zip` from `Downloads\claude-loader-probe`:
 the unpacked loader (`bep788\`), the interop set of the installed build (`gen-<build>\out`, its
 log), the changed runtime (`rt\`), the released plugin and its park models (`play\`), the
-launcher's own scripts and `version.txt` (`launcher\`), and `server.txt` when it is there
+launcher's own scripts and `version.txt` (`launcher\`), the 18 skateboard sounds (`sounds\`, the
+owner's private WAV files; a `sounds\` folder with files missing refuses the pack, none at all packs
+a silent ride and says so, `sv psounds 0` leaves them out), and `server.txt` when it is there
 (`sv pserver 0` leaves it out). Next to them: `install.ps1` from the branch the tools were loaded
 from, `Install Rust Skate.cmd`, `pack.txt` (what is inside) and `README.txt` with the steps below
 in plain text. It refuses when the launcher is missing, was prepared for another build than the
 installed one, or the interop set is incomplete.
 
-The pack holds files made from the owner's own installed game (the interop set) and the loader.
-It is handed to the friends it was made for and is not published; nothing of it belongs in this
-repository.
+The pack holds files made from the owner's own installed game (the interop set), the loader and
+the owner's sound pack, whose files are not relicensed for publication
+([rights](../../../docs/RUST-SKATE-SOUND-BRIEF.md)). It is handed to the friends it was made for
+and is not published; nothing of it belongs in this repository.
 
 ## The friend: installing and playing
 
@@ -57,7 +60,9 @@ repository.
 3. Double-click `Install Rust Skate.cmd`. It checks Steam, Rust, the Rust build, free space and
    the shortcut, copies the pack to `Downloads\claude-loader-probe` and puts two files on the
    desktop: **Rust Skate** and **Rust Skate - remove mod files**. It refuses with a plain
-   sentence when something is missing, and installs nothing then.
+   sentence when something is missing, and installs nothing then. It says whether the pack brought
+   the skateboard sounds; without them the ride is silent and the game shows "Skateboard sound pack
+   is unavailable" once.
 4. Start **Rust Skate** from the desktop and keep its window open while playing. Steam is started
    when it is not running. In Rust's main menu press `F1` and type `connect <address>` (the
    window shows the address when it was packed in), then `Enter`.
@@ -80,13 +85,17 @@ the same way; it must be unpacked into a folder of its own, not straight into `D
 ## Status
 
 - Code present: `tools/pack.ps1`, `tools/install.ps1`, the launcher's messages for a friend
-  (`tools/skate.ps1`). The three scripts parse; `pack.ps1` and `install.ps1` were run on Linux
-  against a stand-in folder tree with the Windows paths swapped: the zip holds the expected files
-  and nothing else from `play\`, `pack.txt` carries the build, the installer copies the tree,
-  writes the desktop files, reports a missing Steam shortcut and refuses another Rust build.
+  (`tools/skate.ps1`). The three scripts parsed before the sound pack was added; `pack.ps1` and
+  `install.ps1` were then run on Linux against a stand-in folder tree with the Windows paths
+  swapped: the zip holds the expected files and nothing else from `play\`, `pack.txt` carries the
+  build, the installer copies the tree, writes the desktop files, reports a missing Steam shortcut
+  and refuses another Rust build. The sound-pack lines (`sounds\` in the pack, `session.ps1`
+  staging it into `BepInEx\plugins\skate_sounds`, the installer carrying it over) were added
+  without a PowerShell to parse or run them: reviewed only.
 - Not verified: no real pack has been made on the owner's PC; nothing has been installed on a
   second PC; no friend has started Rust through the installed launcher, joined the server or
-  ridden. The size of a real pack, Windows PowerShell 5.1 running these two scripts, Steam Input
+  ridden; no session has yet staged the sound pack, so whether the plugin finds and plays the 18
+  files from a pack is unseen. The size of a real pack, Windows PowerShell 5.1 running these two scripts, Steam Input
   on the friend's shortcut and two clients on the owner's server are all still to be seen.
 - Known limits: Rust in a Steam library other than `C:` is refused, the Steam shortcut is made by
   hand, and the owner's server must accept the second rider (its ShortcutSkate plugin, or its

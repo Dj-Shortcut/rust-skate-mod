@@ -34,4 +34,8 @@ $clean = "@echo off`r`ntitle Rust Skate - remove mod files`r`npowershell -NoProf
 [IO.File]::WriteAllText("$desk\Rust Skate - remove mod files.cmd", $clean, [Text.Encoding]::ASCII)
 'launcher files: ' + ((ls $L -File | % { "{0} {1}" -f $_.Name, $_.Length }) -join ', ')
 'released plugin: ' + (gc "$L\version.txt" -First 1) + ' | ' + (gi "$probe\play\ShortcutSkateClient.dll").Length + ' bytes | play folder: ' + ((ls "$probe\play" | % Name) -join ', ')
+# The sound pack is not built or fetched: the owner keeps his 18 WAV files in sounds\ himself.
+# The launcher and every session stage that folder (session.ps1); a missing file is said there.
+$wavs = @(ls "$probe\sounds" -File -Filter *_01.wav -ErrorAction SilentlyContinue).Count
+'sounds: ' + $(if ($wavs -ge 18) { "$wavs WAV files in sounds\" } elseif ($wavs) { "$wavs of 18 WAV files in sounds\ - incomplete, the ride is silent until all 18 are there" } else { 'none (no sounds\ folder) - the ride is silent' })
 'desktop: ' + ((ls $desk -Filter 'Rust Skate*' | % Name) -join ', ')
