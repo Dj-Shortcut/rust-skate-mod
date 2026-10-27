@@ -11,7 +11,7 @@ public static partial class SkateRiggingShowcase
     private static readonly SkateVector PreviewUp = new SkateVector(0, 1, 0);
     private static readonly SkateVector PreviewForward = new SkateVector(0, 0, 1);
     private static readonly SkateBoardPose PreviewStage = new SkateBoardPose(new SkateVector(0, PreviewDeckTop, 0), new SkateVector(0, 0, 1), new SkateVector(0, 1, 0));
-    private enum PreviewKind { Riding, Air, Grab, GroundGrab, Grind, Handplant, Style, Finger, Oldschool, Wall, Wallie, Drop, BodyFlip, VideoCapture }
+    private enum PreviewKind { Riding, Air, Grab, GroundGrab, Grind, Handplant, Style, Finger, Oldschool, Wall, Wallie, Drop, BodyFlip, VideoCapture, LibraryCapture }
     private readonly struct PreviewEntry
     {
         public readonly PreviewKind Kind;
@@ -102,6 +102,7 @@ public static partial class SkateRiggingShowcase
         entries.Add(new PreviewEntry(PreviewKind.Drop, "Drop-in (current transition preview)", "Wall and transition"));
         entries.Add(new PreviewEntry(PreviewKind.BodyFlip, "Front flip with frontside grab", "Body flip", (int)SkateBodyFlipKind.Front));
         entries.Add(new PreviewEntry(PreviewKind.BodyFlip, "Back flip with frontside grab", "Body flip", (int)SkateBodyFlipKind.Back));
+        AppendCaptureEntries(entries);
         return entries.ToArray();
     }
 
@@ -176,6 +177,8 @@ public static partial class SkateRiggingShowcase
             return SkateOllieCapture.TrySample(Math.Min(SkateOllieCapture.Duration, p * CycleSeconds), rig, stance,
                 out pose, out board, out up, out left, out right, out error);
         }
+        if (entry.Kind == PreviewKind.LibraryCapture)
+            return TryLibraryCapture(entry, p, rig, stance, sw, reversed, out pose, out board, out up, out left, out right, out error);
         bool solved = false;
         double w = PreviewWindow(p, .12, .30, .65, .90);
         if (entry.Kind == PreviewKind.Riding) PreviewRiding(entry.A, p, stance, sw, reversed, ref s);

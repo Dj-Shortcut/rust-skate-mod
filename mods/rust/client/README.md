@@ -25,6 +25,17 @@ stops the showcase. `zz rigging` builds and starts a diagnostic session, so it
 is not a read-only check. The replay does not replace normal Ollie riding or
 drive the physical player. Native skin/playback remain unverified. See
 [capture provenance and limitations](../../../assets/authored/animation/ollie-video/README.md).
+This earlier built-in prototype is retained as a reference; its movement was
+not accepted as a finished animation.
+
+The same guarded catalogue also loads an optional external
+`BepInEx/plugins/skate_captures.skmc` library. The shared capture sampler supports
+full board quaternions, measured rig retargeting, regular/goofy mirroring and
+explicit phase/contact states. Python batch tooling creates packs from local
+video or retained pose detections and declarative reconstruction recipes. Entries
+show their review status; normal riding does not automatically consume these
+reference captures. Missing or invalid packs leave the built-in catalogue usable.
+See the [motion capture pipeline](../../../docs/RUST-SKATE-MOTION-CAPTURE.md).
 
 Client 0.18.34 retains the displayed support frame when contact is lost at a transition
 take-off. Held grabs keep their hand and elbow targets through pose easing and shaping;
