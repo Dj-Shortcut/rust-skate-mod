@@ -9,12 +9,17 @@ public static class SkateCapturedTricks
 {
     private static readonly string[] Kinds = { "switch-heelflip", "nollie-heelflip", "fakie-kickflip", "nollie-backside-180-heelflip", "nollie-360-flip" };
     private static readonly SkateCapturePlayback[] clips = new SkateCapturePlayback[Kinds.Length];
+    private static readonly SkateCaptureFootSupport[] supports = new SkateCaptureFootSupport[Kinds.Length * 2];
+    private static readonly int[] supportVersions = new int[Kinds.Length * 2];
+    private static readonly string[] supportErrors = new string[Kinds.Length * 2];
     private static bool loaded, airSeen, landed;
     private static double beganAt, landedAt, caughtAt = -1, previousAt;
     private static SkateCaptureFrame previous, landingFrom;
     private static SkateBoardPose previousCarrier, landingCarrier;
     private static int token = -1, refusedToken = -1, lands;
     private static SkateCapturePlayback active;
+    private static SkateCaptureFootSupport footSupport;
+    private static int footVersion;
     private static SkateCaptureTrickSignature signature;
     private static SkateStance activeStance;
     private static SkateBoardPose displayed;
@@ -24,7 +29,7 @@ public static class SkateCapturedTricks
     public static string Status { get; private set; } = "Captured riding not loaded";
     public static void ClearFrame() { displayed = default(SkateBoardPose); }
     public static void Reset()
-    { active = null; token = refusedToken = -1; airSeen = landed = false; caughtAt = -1; previous = landingFrom = default(SkateCaptureFrame); ClearFrame(); }
+    { active = null; footSupport = null; token = refusedToken = -1; airSeen = landed = false; caughtAt = -1; previous = landingFrom = default(SkateCaptureFrame); ClearFrame(); }
     public static void Preload()
     {
         if (loaded) return;
@@ -75,7 +80,7 @@ public static class SkateCapturedTricks
     }
     private static void Refuse(int pop, string reason)
     {
-        active = null; refusedToken = pop; ClearFrame();
+        active = null; footSupport = null; refusedToken = pop; ClearFrame();
         if (reason != lastRefusal) { lastRefusal = reason; Out.Say("CAPTURE fallback: " + reason); }
     }
     private static bool Eligible()
@@ -92,6 +97,35 @@ public static class SkateCapturedTricks
             SkateRide.ViewNormal.y >= .98f && SkateRide.Normal.y >= .98f && !SkateRide.OnRamp &&
             Math.Abs(SkateBoard.Tip) < .001f && Math.Abs(SkateBoard.GrindPitch) < .01f && Math.Abs(SkateBoard.GrindRoll) < .01f &&
             SkateRide.RevertLeft == 0 && SkateRide.Powerslide <= .001f && SkateRide.PushPhase <= .001f;
+    }
+
+    private static bool PrepareSupport(int index, SkateRiderRig rig, SkateStance stance, out SkateCaptureFootSupport support, out string error)
+    {
+        support = null; error = SkateFootContacts.Status;
+        if (!SkateFootContacts.Ready) return false;
+        int slot = index * 2 + (stance == SkateStance.Goofy ? 1 : 0);
+        if (supports[slot] == null && supportErrors[slot] == null || supportVersions[slot] != SkateFootContacts.Version)
+        {
+            SkateCaptureFootSupport.TryCreate(clips[index], rig, stance, SkateFootContacts.LeftFitter,
+                SkateFootContacts.RightFitter, out supports[slot], out supportErrors[slot]);
+            supportVersions[slot] = SkateFootContacts.Version;
+        }
+        support = supports[slot]; error = supportErrors[slot]; return support != null;
+    }
+
+    // At most one cold preparation per ordinary ground frame, never a whole
+    // library rebuild on pop. Geometry/version changes invalidate cached fits.
+    public static void WarmFootSupport(SkateRiderRig rig, SkateStance stance)
+    {
+        if (!loaded || !SkateFootContacts.Ready) return;
+        for (int n = 0; n < clips.Length; n++)
+        {
+            if (clips[n] == null) continue;
+            int slot = n * 2 + (stance == SkateStance.Goofy ? 1 : 0);
+            if (supportVersions[slot] == SkateFootContacts.Version && (supports[slot] != null || supportErrors[slot] != null)) continue;
+            SkateCaptureFootSupport ignored; string error;
+            PrepareSupport(n, rig, stance, out ignored, out error); return;
+        }
     }
     public static bool TryFrame(SkateRiderRig rig, Transform player, SkateRiderPose baseline, SkateVector baselineLeftUp, SkateVector baselineRightUp, out SkateCaptureFrame frame)
     {
@@ -111,7 +145,13 @@ public static class SkateCapturedTricks
             int index = Array.IndexOf(Kinds, kind);
             if (index < 0 || clips[index] == null) { if (airborne) refusedToken = nextToken; return false; }
             active = clips[index]; signature = requested; activeStance = SkateRide.Goofy ? SkateStance.Goofy : SkateStance.Regular; token = nextToken; lands = SkateRide.Lands; airSeen = landed = false; beganAt = Time.realtimeSinceStartup; caughtAt = -1; previous = default(SkateCaptureFrame);
+            string supportError = null;
+            if (!PrepareSupport(index, rig, activeStance, out footSupport, out supportError))
+            { Refuse(nextToken, supportError); return false; }
+            footVersion = SkateFootContacts.Version;
         }
+        if (!SkateFootContacts.Ready || footVersion != SkateFootContacts.Version)
+        { Refuse(nextToken, "the visible foot geometry changed or is unavailable"); return false; }
         if (activeStance != (SkateRide.Goofy ? SkateStance.Goofy : SkateStance.Regular))
         { Refuse(nextToken, "the rider stance changed"); return false; }
         if ((airborne || queued) && !signature.Same(SkateRide.PresentationSignature))
@@ -136,7 +176,7 @@ public static class SkateCapturedTricks
         var up = SkateRide.ViewNormal; var heading = SkateBoard.OnFace(up, SkateRide.Dir(SkateRide.NoseYaw));
         var board = SkateBoard.PoseFor(player); string error;
         if (!active.TrySample(phase, value, rig, SkateRide.Goofy ? SkateStance.Goofy : SkateStance.Regular,
-            board, V(heading), V(up), out frame, out error)) { Refuse(nextToken, error); return false; }
+            board, V(heading), V(up), out frame, out error, footSupport)) { Refuse(nextToken, error); return false; }
         double now = Time.realtimeSinceStartup;
         var carrier = new SkateBoardPose(board.Origin, V(heading), V(up));
         if (phase == SkateCapturePhase.Catch && previous.Board.Initialized)
@@ -164,6 +204,8 @@ public static class SkateCapturedTricks
         if (weight <= 0) return false; // The first live pop frame keeps the exact procedural pose.
         if (!SkateCapturePlayback.TryBlend(rig, baseline, baselineLeftUp, baselineRightUp, frame, weight, out frame, out error))
         { Refuse(nextToken, error); return false; }
+        if (!footSupport.TryConform(rig, frame, out frame, out error))
+        { Refuse(nextToken, error ?? "the blended foot frame cannot follow the shaped deck"); return false; }
         previous = frame; previousCarrier = carrier; previousAt = now;
         displayed = board; return true;
     }

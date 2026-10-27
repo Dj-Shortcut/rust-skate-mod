@@ -8,7 +8,7 @@ selections are reference material, not a limit or a count of finished animations
 
 | Batch | Coverage | Current gate |
 | --- | --- | --- |
-| 1 | Switch Heelflip, Nollie Heelflip, Fakie Kickflip, Nollie Backside 180 Heelflip, Nollie 360 Flip | Normal-route source exists. Inverse rotation timing and explicit head-authoring support added. Foot/contact quality, complete visual review and native acceptance remain open; no capture is approved by this change. |
+| 1 | Switch Heelflip, Nollie Heelflip, Fakie Kickflip, Nollie Backside 180 Heelflip, Nollie 360 Flip | Normal-route source, inverse rotation clock and explicit head/heading reconstruction exist. Detailed-deck support and per-visible-shoe profile collection added; source compilation and managed geometry checks do not approve motion. Free-foot clearance, complete visual review and native acceptance remain open; no capture is approved by this change. |
 | 2 | Riding, steering, crouch, normal/mongo push, ollie/nollie, braking, powerslide, revert, kickturn, both manuals, landing and upright roll-away | Existing procedural routes need visual review. Dedicated manual-revert, speed-check and kickturn actions are still missing. |
 | 3 | All requested flip/shove families, fakie/switch/nollie variants, late/held flips, one-foot ollies, body spins, impossibles, underflip, dark catch and finger flip | Existing trick descriptors are not completed clips. Capture selection currently covers only batch 1. |
 | 4 | All requested air grabs, tweaks and one-foot/no-foot variants | Existing grab catalogue and procedural presentation need hand/foot and motion review. Review airs above a halfpipe, including entry, hold, release, catch and landing. |

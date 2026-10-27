@@ -65,3 +65,6 @@ mods/rust/client/src/SkateSurfaceRide.cs
 
 mods/rust/shared/SkateCapturePlayback.cs
 mods/rust/client/src/SkateCapturedTricks.cs
+mods/rust/client/src/SkateFootContacts.cs
+mods/rust/shared/SkateDeckContacts.cs
+mods/rust/shared/SkateCaptureFootSupport.cs
