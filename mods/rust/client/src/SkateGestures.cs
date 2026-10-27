@@ -49,7 +49,8 @@ public static class SkateGestures
                 if (g == null) continue;
                 var gt = g.GetType();
                 var phrase = Get(g, gt, "gestureName");
-                var english = phrase == null ? null : Get(phrase, phrase.GetType(), "english") as string;
+                var english = phrase == null ? null : (Get(phrase, phrase.GetType(), "english") ??
+                    Get(phrase, phrase.GetType(), "legacyEnglish")) as string;
                 var token = phrase == null ? null : Get(phrase, phrase.GetType(), "token") as string;
                 var convar = Get(g, gt, "convarName") as string;
                 var command = Get(g, gt, "gestureCommand") as string;
