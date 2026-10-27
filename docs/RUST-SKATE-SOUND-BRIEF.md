@@ -1,6 +1,6 @@
 # Geluidenbrief voor het skateboard
 
-De huidige geluiden in de game zijn door Andy beluisterd en afgekeurd als
+De eerdere synthetische geluiden in de game zijn door Andy beluisterd en afgekeurd als
 grotendeels ruis. Andy heeft vervanging via ElevenLabs Sound Effects gevraagd. Het doel is herkenbaar,
 droog skateboardgeluid: wielen, hout, schoenen en metaal moeten te onderscheiden
 zijn. De bestaande gegenereerde WAV-set geldt niet als goedgekeurd eindresultaat.

@@ -1,6 +1,6 @@
 # Selected WAV skateboard audio
 
-Client source `0.18.61` loads **18 selected WAV sounds**, one `_01.wav` per
+Since client source `0.18.61`, the loader uses **18 selected WAV sounds**, one `_01.wav` per
 sound type, from `Path.Combine(BepInEx.Paths.PluginPath, "skate_sounds")`. In an
 active Rust loader this is `BepInEx/plugins/skate_sounds/`. The public source does
 not include the replacement sounds. The historical `SkateAudio` and
@@ -84,15 +84,21 @@ claim.
 
 ## Packaging, rights and verification
 
-The client tools stage the folder from `sounds\` in the owner's staging folder
-(`Downloads\claude-loader-probe\sounds\`, never committed): `session.ps1` copies
-its WAV files into `BepInEx\plugins\skate_sounds` for every session and the
-launcher, names a missing file, and the loader folder goes out again with the
-rest; `pack.ps1` carries the 18 files to a friend and `install.ps1` puts them in
-the same place ([tools](../mods/rust/client/tools/README.md#settings),
-[FRIEND.md](../mods/rust/client/FRIEND.md)). This is script source only: no
-session, pack or install has yet run with it on Windows, so an installed
-replacement sound pack is still unseen. The managed DLL/GLB inventory is unchanged.
+The client tools default to `sounds\` in the owner's staging folder
+(`Downloads\claude-loader-probe\sounds\`, never committed). For an existing private
+folder elsewhere, set `$psoundpath` before `zz launcher`: it validates the eighteen
+named files before applying the install and retains only a local `sounds-source.txt`
+pointer. Later installs preserve that pointer when no override is requested.
+`session.ps1` copies only those eighteen files into `BepInEx\plugins\skate_sounds`
+for a session; the loader folder is removed with the rest during cleanup. Staging
+checks readable, nonempty files; the client performs the WAV-format checks.
+`pack.ps1` includes the same eighteen WAVs in a portable `sounds\`, without the
+owner's pointer or private path. Applying a valid friends' pack selects its own
+sounds instead of an old local pointer ([tools](../mods/rust/client/tools/README.md#settings),
+[FRIEND.md](../mods/rust/client/FRIEND.md)). On 26 October the owner's private staging
+adapter installed the selected pack and native client 0.18.62 reported all 18 WAVs
+ready at 44100 Hz. The public session/launcher/pack pipeline still requires its own
+Windows check; that earlier private installation does not validate the new scripts.
 
 The chosen ElevenLabs-generated sounds and raw downloads stay outside public GitHub.
 They are not relicensed as CC0. Keep provenance and applicable usage terms with
@@ -105,6 +111,7 @@ they do not validate these sounds. All 18 selected private WAVs now pass format,
 peak/clipping, DC, onset/tail and repeated loop-join checks. The actual client
 reader decoded the full pack with float samples matching the PCM bytes. Absolute
 LUFS targets and the requested drop/landing level difference remain unmet; no
-compressor or limiter was used to conceal those limits. Installed-build interop, native upload,
-actual pack staging, teardown, performance, repeated-loop artifacts, output mix
-and heard quality remain open until the replacement pack is tested on Shadow.
+compressor or limiter was used to conceal those limits. Current-build startup and
+native loading of all eighteen clips are evidenced for 0.18.62. Actual event playback,
+public-tool staging, teardown, performance, repeated-loop artifacts, output mix and
+heard quality remain open. Boarding failed before a ride could establish those results.
