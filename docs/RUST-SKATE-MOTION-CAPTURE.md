@@ -87,6 +87,31 @@ working capture. Replace the source paths and calibrate each actual attempt.
   existing confidence rules remain unchanged. This is an estimated head-center
   reconstruction; it does not make occluded ears measured or replace whole-clip
   visual review. A degenerate ear direction fails the job.
+- `body.authoredHead`: optional, explicitly uncertain head reconstruction for an
+  occluded interval. It requires `provenance` and `uncertainty` strings, each
+  nonempty and at most 4096 characters. `blendTimes: [start, fullIn, fullOut, end]`
+  are clip-relative seconds with `0 <= start < fullIn <= fullOut < end <= duration`.
+  `orientation` must have `kind: "quaternion"` and exactly two `{t, value}` keys
+  inside that window, with increasing times and unit XYZW quaternions at most
+  150 degrees apart. These describe a chest-local right/up/forward frame, not
+  world head positions. For example, neutral schematic anchors could use
+  `"orientation": {"kind": "quaternion", "keys": [{"t": 0.9, "value": [0,0,0,1]},
+  {"t": 1.7, "value": [0,0,0,1]}]}` within `blendTimes: [0.8, 1.0, 1.6, 1.8]`.
+  Anchor progress and entry/exit correction use quintic C2 easing; the head aim
+  shares the correction envelope. Only `Head` and `HeadForward` change inside
+  the open window. Outside it both remain exact; neck position, fixed head
+  length, all other joints, board, contacts and raw confidence remain unchanged.
+  The existing source/actor/rejection gates run first: authoring cannot fill an
+  otherwise refused gap or lower `maxGapFrames`. Degenerate or opposing head
+  frames fail for review; entry/exit blends also reject a baseline-to-authored
+  frame arc above 150 degrees, including ambiguous roll. The frame follows
+  `keySpace`; captured goofy keys use
+  the full axial quaternion reflection `(qx, -qy, -qz, qw)` into canonical space.
+  Clip metadata and quality retain the authoring provenance and uncertainty;
+  quality also lists affected sample times. Keep those JSON receipts with the
+  unchanged-format pack; the binary does not add an authoring field. This option never promotes
+  confidence or grants visual/native approval. Omitting it preserves the
+  existing reconstruction path.
 - `board.positionKeys`: board deck-top origin, in meters.
 - `board.orientation`: full quaternion XYZW or unwrapped Euler degree keys.
   `order` declares Euler order. Continuous 360/720-degree keys preserve complete
@@ -220,6 +245,25 @@ after catch, reversed phases and simultaneous conflicting events are refused.
 The first event of each phase remains its timing anchor.
 The normal air clock starts at the recorded air phase, after both source feet
 have released. The first live pop frame retains the procedural pose.
+For the five known single-turn variants, playback precomputes an inverse of the
+source board's unwrapped Y*X*Z rotation progress. The pose follows the last
+unfinished live rotation instead of assuming a linear source-time relationship.
+Each active source axis must advance without reversing; a plateau in the limiting
+progress, a large rotation step, a turn more than five degrees from its expected
+endpoint or a near-gimbal pitch keeps
+the previous linear clock. The startup status reports how many inverse clocks
+were accepted. The arrays are built during loading; lookup does not allocate.
+
+The first trusted air sample can already be partway through its rotation. It is
+held until live progress reaches that fraction, rather than moving back into a
+foot-supported pop pose. An unfinished source endpoint is likewise held before
+catch; it is not rescaled into a fictitious complete turn. Catch and landing
+still follow live state. Matching the limiting component does not independently
+match every source/live flip and yaw angle or prove foot clearance. Inspect the
+actual skin and runtime board shape before approving a pack.
+
+The [full animation-library batches](RUST-SKATE-ANIMATION-LIBRARY.md) keep code,
+capture quality and native gameplay acceptance separate.
 
 The approval file is strict UTF-8 (at most 32 KiB), with these lines and one to
 256 unique canonical clip ids:

@@ -28,7 +28,7 @@ Eerst deze opstapblokkade oplossen. De afzonderlijke gecombineerde kandidaat .64
 21. Spel bevriest niet en invoer blijft werken. Open.
 22. Lichaam trekt in de lucht niet horizontaal recht. Bron klaar, ongetest.
 23. Volledige, samenhangende rijdersanimatie. Bron klaar, ongetest.
-24. Alle tricks die Skate 3 heeft: alle flips (kickflip-familie), alle grabs, alle grinds en slides, manuals, enzovoort, elk met eigen animatie (Andy, 25 okt). Open.
+24. Alle tricks die Skate 3 heeft: alle flips (kickflip-familie), alle grabs, alle grinds en slides, manuals, enzovoort, elk met eigen animatie (Andy, 25 okt). [Volledige bibliotheek in zeven batches](docs/RUST-SKATE-ANIMATION-LIBRARY.md); eerste vijf nog in herstel, geen nieuwe bewegings- of gameplayacceptatie.
 25. Controller werkt op het board en te voet. Open.
 26. Uitzoeken hoe Skate trick-, rijder- en boardanimaties koppelt. Deels onderzocht (privé).
 27. Herkenbare drop-inanimatie voor halfpipes: afzonderlijk bronvoorstel met gewichtsverplaatsing en knieabsorptie bij bevestigd rampcontact; tail-op-coping voorfase, native uitvoering en beeld blijven open (Andy, 26 okt).
