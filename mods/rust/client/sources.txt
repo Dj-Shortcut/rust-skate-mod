@@ -39,6 +39,8 @@ mods/rust/shared/SkateGroundGrabs.cs
 mods/rust/shared/SkateHandplants.cs
 mods/rust/shared/SkateBoardPath.cs
 mods/rust/shared/SkateRider.cs
+mods/rust/shared/SkateOllieCaptureData.cs
+mods/rust/shared/SkateOllieCapture.cs
 mods/rust/shared/SkateEdges.cs
 mods/rust/shared/SkateAudio.cs
 mods/rust/shared/SkateFlick.cs
