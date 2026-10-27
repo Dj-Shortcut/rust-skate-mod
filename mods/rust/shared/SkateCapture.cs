@@ -84,8 +84,8 @@ namespace Shortcut.RustMod
         public readonly SkateCaptureEvent Observation;
         internal SkateCaptureFrame(SkateRiderPose pose, SkateBoardPose board, SkateCaptureRotation rotation,
             SkateVector left, SkateVector right, bool hasEvent, SkateCaptureEvent observation,
-            SkateVector pelvisCorrection, SkateVector leftHandCorrection, SkateVector rightHandCorrection)
-        { Pose = pose; Board = board; Rotation = rotation; RiderUp = new SkateVector(0, 1, 0);
+            SkateVector pelvisCorrection, SkateVector leftHandCorrection, SkateVector rightHandCorrection, SkateVector riderUp = default(SkateVector))
+        { Pose = pose; Board = board; Rotation = rotation; RiderUp = riderUp.LengthSquared > .5 ? riderUp : new SkateVector(0, 1, 0);
           LeftSoleUp = left; RightSoleUp = right; HasEvent = hasEvent; Observation = observation;
           PelvisCorrection = pelvisCorrection; LeftHandCorrection = leftHandCorrection; RightHandCorrection = rightHandCorrection; }
     }
@@ -168,7 +168,7 @@ namespace Shortcut.RustMod
         }
         // Closest point in the intersection of the two equal leg-reach balls. Their centres
         // include the measured hip offsets, so the ankle/contact targets never move.
-        private static bool FitPelvis(SkateVector point, SkateVector left, SkateVector right, double radius, out SkateVector fitted)
+        internal static bool FitPelvis(SkateVector point, SkateVector left, SkateVector right, double radius, out SkateVector fitted)
         {
             fitted = point;
             if ((point - left).Length <= radius + .000000001 && (point - right).Length <= radius + .000000001) return true;
