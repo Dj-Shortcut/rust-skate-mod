@@ -71,8 +71,7 @@ Copy-Item "$probe\bep788" "$to\bep788" -Recurse
 Copy-Item "$gen\out" "$to\gen-$pb\out" -Recurse
 Copy-Item "$gen\gen.log" "$to\gen-$pb\gen.log"
 Copy-Item "$probe\rt" "$to\rt" -Recurse
-# play\ is copied whole into the game's plugin folder by the launcher. Include
-# only the runtime plugin, models and optional private reviewed capture pair.
+# Package only the installed plugin, models and exact declared icon list; no diagnostic logs.
 New-Item -ItemType Directory -Force "$to\play", "$to\launcher" | Out-Null
 Copy-Item "$probe\play\ShortcutSkateClient.dll" "$to\play"
 ls "$probe\play" -File -Filter *.glb | % { Copy-Item $_.FullName "$to\play" }

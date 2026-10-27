@@ -61,6 +61,9 @@ Get-ChildItem "$probe\play" -File -Filter *.glb | Remove-Item
 Get-ChildItem $L -File -Filter *.ps1 | ? { -not $files.ContainsKey($_.Name) } | Remove-Item
 Copy-Item "$probe\plugin\ShortcutSkateClient.dll" "$probe\play\ShortcutSkateClient.dll" -Force
 Get-ChildItem "$probe\plugin" -File -Filter *.glb | % { Copy-Item $_.FullName "$probe\play\$($_.Name)" -Force }
+foreach ($icon in $icons) { Copy-Item -LiteralPath (Join-Path "$probe\plugin" $icon) -Destination "$probe\play" -Force }
+if ($icons.Count) { Copy-Item -LiteralPath "$probe\plugin\artwork.txt" -Destination "$probe\play\artwork.txt" -Force }
+elseif (Test-Path -LiteralPath "$probe\play\artwork.txt") { Move-Item -LiteralPath "$probe\play\artwork.txt" -Destination ("$probe\src\artwork-launcher-previous-" + [Guid]::NewGuid().ToString('N') + '.txt') }
 # Private reviewed captures travel as a pair. The runtime validates the pack's
 # digest and exact approved ids; neither file is fetched from the repository.
 $captureFiles = @('skate_captures.skmc', 'skate_captures.approved.txt')
@@ -73,9 +76,6 @@ if ($supportsCaptures -and (Test-Path -LiteralPath "$captureSource\skate_capture
           (Test-Path -LiteralPath "$captureSource\skate_captures.approved.txt"))) {
   'private capture pair incomplete; normal riding keeps the built-in poses'
 }
-foreach ($icon in $icons) { Copy-Item -LiteralPath (Join-Path "$probe\plugin" $icon) -Destination "$probe\play" -Force }
-if ($icons.Count) { Copy-Item -LiteralPath "$probe\plugin\artwork.txt" -Destination "$probe\play\artwork.txt" -Force }
-elseif (Test-Path -LiteralPath "$probe\play\artwork.txt") { Move-Item -LiteralPath "$probe\play\artwork.txt" -Destination ("$probe\src\artwork-launcher-previous-" + [Guid]::NewGuid().ToString('N') + '.txt') }
 foreach ($f in $files.Keys) { [IO.File]::WriteAllText("$L\$f", $files[$f], $enc) }
 $pb = ((gc 'C:\Program Files (x86)\Steam\steamapps\appmanifest_252490.acf' | sls '"buildid"').Line -split '"')[3]
 "Skate mod " + $rel.Substring(0, 7) + ", prepared " + (Get-Date -Format 'yyyy-MM-dd HH:mm') + " for Rust build $pb" | Out-File "$L\version.txt" -Encoding utf8

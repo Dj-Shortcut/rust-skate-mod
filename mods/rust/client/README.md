@@ -46,13 +46,14 @@ a competing action uses the existing pose route. The Python approval tool and
 private-pair staging are described in the pipeline document. Source compilation,
 animation review and native Shadow gameplay remain separate verification gates.
 
-Development candidate 0.18.63 adds precise boarding-failure diagnostics, X/Back building-wheel
+This separate combined development candidate 0.18.64 also includes the 0.18.63 source for precise boarding-failure diagnostics, X/Back building-wheel
 confirmation, the authored menu icons and held-object restoration. The owner connected with
 0.18.62 and all 18 selected WAVs loaded, but boarding was refused by an unavailable Unity
 method. The exact call still needs a new native attempt with the stage/stack diagnostics;
 this candidate does not claim a repaired mount. The current wrapper also lacks the named
 native view method, so compass stabilization and camera direction restoration remain open.
-See the [candidate status and focused playtest](../../../docs/RUST-SKATE-PLAYTEST-063.md).
+See the [combined candidate scope](../../../docs/RUST-SKATE-PLAYTEST-064.md) and the
+[historical recovery status](../../../docs/RUST-SKATE-PLAYTEST-063.md).
 
 Client 0.18.34 retains the displayed support frame when contact is lost at a transition
 take-off. Held grabs keep their hand and elbow targets through pose easing and shaping;

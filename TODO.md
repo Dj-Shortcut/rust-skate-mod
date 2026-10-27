@@ -3,7 +3,7 @@
 Skate-mod voor Andy's Rust-server, in Andy's volgorde. Eén regel per punt; details en bewijs horen in het issue of de PR, niet hier.
 Klaar = in het spel gezien of gereden, met versie. Bron, CI of een build alleen is niet klaar.
 Laatste native controle: client 0.18.62 / server 0.3.38 (26 okt): verbinden en 18 WAVs laden bevestigd; opstappen weigert een niet-beschikbare Unity-aanroep. Shadow is niet beschikbaar voor een nieuwe rit.
-Eerst deze opstapblokkade oplossen. Ontwikkelversie .63 registreert de exacte foutstap en stacktrace; dit is nog geen bewezen reparatie. [Stand en volgende speltest](docs/RUST-SKATE-PLAYTEST-063.md).
+Eerst deze opstapblokkade oplossen. De afzonderlijke gecombineerde kandidaat .64 neemt de .63-foutstap- en stackdiagnostiek mee; dit is nog geen bewezen reparatie. [Stand en volgende speltest](docs/RUST-SKATE-PLAYTEST-064.md).
 
 1. Bouwplan-wiel: één knop wisselt tussen Skate- en Rust-bouwen, steeds één wiel zichtbaar. Menucompatibiliteit .62 en X/Back-bevestiging .63 bronmatig gecontroleerd; native wisselen, plaatsen en de eerdere ongevraagde `off` blijven open.
 2. MEGA-halfpipe plaatsen op vrije grond en op funderingen. Open.
