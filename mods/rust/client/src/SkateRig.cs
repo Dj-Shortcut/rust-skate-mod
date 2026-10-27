@@ -441,6 +441,7 @@ public class SkateRig : MonoBehaviour
         if (forgetServer) SkateRide.ForgetServer();
         // The old driver is queued behind the old walk component, not the next one.
         if (late != null) { UnityEngine.Object.Destroy(late); late = null; }
+        ResetViewRoute();
         Local = null; LocalT = null; Walk = null; Body = null; AwakeAt = -1f; standTicks = lyingTicks = 0; tracking = lateAdded = false; lateFailures = 0;
         downSince = -1f;
     }
@@ -449,6 +450,12 @@ public class SkateRig : MonoBehaviour
     // mouse may have taken the game's own pitch far up or down while the chase camera clamped it.
     // The player's input is told the new view (SetViewVars); the route is logged once.
     private static bool viewLooked; private static System.Reflection.MethodInfo setView; private static System.Reflection.MemberInfo inputMember;
+    public static string ViewState { get; private set; } = "not checked";
+    private static void ResetViewRoute()
+    {
+        viewLooked = false; setView = null; inputMember = null; viewArgs[0] = null;
+        steadyFailed = false; ViewState = "not checked";
+    }
     // Off the board the item put away at the start of the ride is taken in hand again.
     private void Unholster()
     {
@@ -463,7 +470,8 @@ public class SkateRig : MonoBehaviour
 
     public static void LevelView()
     {
-        SetView(SkateCamera.TravelYaw, "level");
+        if (!SetView(SkateCamera.TravelYaw, "level"))
+            SkateHud.Notice("Camera direction could not be restored in this Rust build");
     }
 
     // With a controller the game's own view is not the steering: Steam's layout sends the right
@@ -483,7 +491,11 @@ public class SkateRig : MonoBehaviour
         if (steadyFailed || !SkateRide.On || !SkateKeys.Pad || SkateKeys.Scripted) return;
         // A chase camera that threw no longer moves FollowYaw: the board's heading then.
         var yaw = SkateCamera.Chase && !SkateCamera.Fixed && !SkateCamera.Failed ? SkateCamera.FollowYaw : SkateCamera.TravelYaw;
-        if (!SetView(yaw, "steady")) steadyFailed = true;
+        if (!SetView(yaw, "steady"))
+        {
+            steadyFailed = true;
+            SkateHud.Notice("Compass stabilization is unavailable in this Rust build");
+        }
     }
 
     // The game's view, yaw only and level, told to the player's input (SetViewVars). False once
@@ -494,7 +506,8 @@ public class SkateRig : MonoBehaviour
     private static readonly object[] viewArgs = new object[1];
     private static bool SetView(float yaw, string what)
     {
-        if (Local == null) return true;
+        if (Local == null) { ViewState = "no local player"; return false; }
+        if (float.IsNaN(yaw) || float.IsInfinity(yaw)) { ViewState = "invalid direction"; return false; }
         try
         {
             const System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
@@ -519,13 +532,17 @@ public class SkateRig : MonoBehaviour
                 }
                 Out.Say("SKATE view route: " + (setView == null ? "none (no member with SetViewVars(Quaternion))" : inputMember.Name + ".SetViewVars"));
             }
-            if (setView == null) return false;
+            if (setView == null) { ViewState = "native view method unavailable"; return false; }
             var field = inputMember as System.Reflection.FieldInfo;
             var input = field != null ? field.GetValue(Local) : ((System.Reflection.PropertyInfo)inputMember).GetValue(Local, null);
-            if (input != null) { viewArgs[0] = Quaternion.Euler(0f, yaw, 0f); setView.Invoke(input, viewArgs); }
+            if (input == null) { ViewState = "native player input unavailable"; return false; }
+            viewArgs[0] = Quaternion.Euler(0f, yaw, 0f);
+            setView.Invoke(input, viewArgs);
+            ViewState = "applied";
             return true;
         }
-        catch (Exception e) { Out.Say("SKATE view " + what + " threw " + e.GetType().Name + ": " + e.Message); return false; }
+        catch (Exception e) { ViewState = "native view call failed"; Out.Say("SKATE view " + what + " threw " + e.GetType().Name + ": " + e.Message); return false; }
+        finally { viewArgs[0] = null; }
     }
 
     private static void CavemanMount()
