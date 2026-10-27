@@ -1,5 +1,6 @@
 # The owner's launcher, installed by launcher.ps1 as launcher\skate.ps1 and started from the desktop
-# file "Rust Skate.cmd". It puts the mod loader and the released plugin into the Rust folder, starts
+# file "Rust Skate.cmd". It puts the mod loader, the released plugin and the sound pack (sounds\ in
+# the staging folder, when it is there) into the Rust folder, starts
 # Rust through the Steam shortcut "RustClient" (so that the controller layout of that shortcut
 # applies), waits until Rust is closed and takes everything out of the Rust folder again.
 # Nothing is downloaded. The window must stay open while playing.
@@ -43,11 +44,12 @@ line '  Starting Rust with the skate mod.'
 if (Test-Path "$probe\server.txt") { line ('  To join the server: in the main menu press F1 and type   connect ' + (Get-Content "$probe\server.txt" -First 1).Trim() + '   then Enter.') }
 else { line '  In the main menu pick the server under QUICK JOIN, or press F1 and type   connect <address>   then Enter.' }
 line '  On the server: Y on the controller, K, or two quick jumps gets you on the board; Y or K again gets you off.'
+if (-not (Test-Path "$probe\sounds\skate_ollie_01.wav")) { line '  No skateboard sounds are installed here: the ride is silent. A pack with sounds fixes that.' }
 line '  Keep this window open. When you quit Rust, the mod is removed from the Rust folder again.'
 line ''
 # A second, hidden helper takes the loader out after Rust closes even if this window is closed first.
 Start-Process powershell -WindowStyle Hidden -ArgumentList '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$L\watch.ps1`""
-$global:ptag = 'P'; $global:plisten = $false; $global:prt = "$probe\rt"; $global:pplug = "$probe\play"; $global:psteps = 'skate'
+$global:ptag = 'P'; $global:plisten = $false; $global:prt = "$probe\rt"; $global:pplug = "$probe\play"; $global:psounds = "$probe\sounds"; $global:psteps = 'skate'
 $global:pwait = 30; $global:pdone = 43200; $global:ppreload = $false; $global:ptail = 3; $global:psteam = $true; $global:pshortcut = $null; $global:pconnect = $false; $global:pkeep = $false; $global:psticks = "$L\sticks.ps1"
 . "$L\session.ps1"
 line ''

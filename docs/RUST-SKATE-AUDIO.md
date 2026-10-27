@@ -84,11 +84,15 @@ claim.
 
 ## Packaging, rights and verification
 
-The stock launcher, build, pack and install paths **do not stage the external
-`skate_sounds` folder**. Their managed DLL/GLB inventory is unchanged. Do not treat
-a stock friend pack as an installed replacement sound pack. A private companion
-staging proposal exists, but its Windows/PowerShell session and cleanup flow have
-not been executed; it is not a verified installer.
+The client tools stage the folder from `sounds\` in the owner's staging folder
+(`Downloads\claude-loader-probe\sounds\`, never committed): `session.ps1` copies
+its WAV files into `BepInEx\plugins\skate_sounds` for every session and the
+launcher, names a missing file, and the loader folder goes out again with the
+rest; `pack.ps1` carries the 18 files to a friend and `install.ps1` puts them in
+the same place ([tools](../mods/rust/client/tools/README.md#settings),
+[FRIEND.md](../mods/rust/client/FRIEND.md)). This is script source only: no
+session, pack or install has yet run with it on Windows, so an installed
+replacement sound pack is still unseen. The managed DLL/GLB inventory is unchanged.
 
 The chosen ElevenLabs-generated sounds and raw downloads stay outside public GitHub.
 They are not relicensed as CC0. Keep provenance and applicable usage terms with

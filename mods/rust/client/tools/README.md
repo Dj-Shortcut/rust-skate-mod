@@ -33,7 +33,10 @@ All of it lives under the user's `Downloads` folder and none of it is in this re
 The staging folder holds `sdk\` and `generator\` (the copies made by `setup`), `bep788\` (the
 unpacked loader), `unity-libs-<version>\` (Unity's base libraries), `gen-<build>\` (one interop set
 per Rust build), `rt\` (the changed runtime library), `plugin\` (the last build), `play\` (the released
-plugin), `launcher\` (the owner's launcher), `run-<tag>-<time>\` (one folder per session with its
+plugin), `launcher\` (the owner's launcher), `sounds\` (the owner's private sound pack: the 18
+`*_01.wav` files that the plugin reads from `BepInEx\plugins\skate_sounds`
+([which](../../../../docs/RUST-SKATE-AUDIO.md)); `session` copies them in, `pack` carries them to a
+friend, and they are never committed), `run-<tag>-<time>\` (one folder per session with its
 logs and the loader files taken back out of the Rust folder) and `server.txt` (the address of the
 private test server as `ip:port`; it is read by `ping` and `session` and is never committed).
 
@@ -79,7 +82,7 @@ PC reliably from a distance.
 | `survey` | Lists what the interop set of the installed build offers for given type names. |
 | `launcher` | Installs or updates the owner's launcher from the commit in [`release.txt`](release.txt). |
 | `launchertest` | Starts the installed launcher, kills it while Rust runs, closes Rust and reports whether the Rust folder was cleaned all the same. |
-| `pack` | Zips the installed launcher for a friend: the loader, the interop set of the installed build, the changed runtime, the released plugin with its models, the launcher's scripts and (unless `$pserver` is 0) `server.txt`, with `install.ps1` of the branch as its installer. Refuses without a launcher prepared for the installed build. [What the friend does](../FRIEND.md). Not yet run on the owner's PC. |
+| `pack` | Zips the installed launcher for a friend: the loader, the interop set of the installed build, the changed runtime, the released plugin with its models, the launcher's scripts, the 18 files of `sounds\` (unless `$psounds` is 0; an incomplete `sounds\` refuses the pack, a missing one is packed without sounds and said) and (unless `$pserver` is 0) `server.txt`, with `install.ps1` of the branch as its installer. Refuses without a launcher prepared for the installed build. [What the friend does](../FRIEND.md). Not yet run on the owner's PC. |
 | `install` | Not a `zz` script: the friend's installer, carried inside the pack and started there by `Install Rust Skate.cmd`. Checks Steam, Rust's default library, the matching Rust build, free space and the `RustClient` shortcut; copies the pack to `Downloads\claude-loader-probe` and writes the two desktop files. |
 | `ping` | Whether the private test server answers on its game port. |
 | `user` | Opens a PowerShell window without administrator rights, with `zz` loaded, for when the window at hand is an administrator's. |
@@ -157,7 +160,8 @@ moves to another Unity version needs both changed, and the base libraries for th
 3. `zz launcher` builds exactly that commit, keeps the plugin in `play\`, saves `skate.ps1`,
    `session.ps1`, `watch.ps1`, `clean.ps1` and `sticks.ps1` of that commit in `launcher\` and writes
    two files on the desktop. The launcher uses only these local copies, so later changes in the repository do
-   not reach the owner until the next `zz launcher`.
+   not reach the owner until the next `zz launcher`. It reports whether `sounds\` holds the 18 WAV
+   files; the launcher stages that folder as it is on every start, nothing is built or fetched for it.
 4. `zz launchertest`.
 
 ## Settings
@@ -173,6 +177,7 @@ Set by the scripts for one another; `sv name value` sets one by hand.
 | `$ptag` | `session` | Label in the session folder's name. |
 | `$psteps` | `session` | Steps for the plugin. |
 | `$pplug`, `$prt` | `session` | Folder with the plugin, folder with the changed runtime. |
+| `$psounds` | `session`, `pack` | Folder with the plugin's 18 WAV sounds, copied to `BepInEx\plugins\skate_sounds` (default `sounds\` in the staging folder when it is there; `0` stages none). `session` says when a file is missing; `pack` with `0` leaves the sounds out of the friend's pack. |
 | `$pdone` | `session` | Seconds after which a session in a world is ended. |
 | `$plimit`, `$pquiet`, `$pdirect`, `$plisten` | `play` | End the session that many seconds after its start; turn the sound down; start the client directly with `+connect` instead of through the Steam shortcut; with `1`, keep `UnityLogListening` on (the inbox probe needs it; `sv plisten 0` turns it off again). |
 | `$pgentest` | `interop` | Generate into a folder of its own instead of the one sessions use. |

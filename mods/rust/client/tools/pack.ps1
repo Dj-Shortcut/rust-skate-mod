@@ -1,10 +1,12 @@
 # Pack the installed launcher for a friend. Takes what `zz launcher` put on this PC - the unpacked
 # loader, the interop set for the installed Rust build, the changed runtime, the released plugin
-# with its park models and the launcher's own scripts - and writes one zip in Downloads with an
+# with its park models, the sound pack and the launcher's own scripts - and writes one zip in Downloads with an
 # installer (install.ps1 of this branch) that a friend runs on his own PC without any of the
 # development tools. Nothing is built or downloaded; the pack is exactly what this PC plays.
 # $pserver = 0 leaves server.txt out of the pack (by default it goes in when it is there, so that
-# the friend's launcher can show the address to join).
+# the friend's launcher can show the address to join). The owner's sound pack (sounds\ in the
+# staging folder, 18 WAV files that are never committed) goes in when it is complete; an incomplete
+# one refuses the pack, since the plugin plays nothing then; $psounds = 0 packs without sounds.
 $dl = "$HOME\Downloads"; $probe = "$dl\claude-loader-probe"; $L = "$probe\launcher"
 $rust = 'C:\Program Files (x86)\Steam\steamapps\common\Rust'
 $acf = 'C:\Program Files (x86)\Steam\steamapps\appmanifest_252490.acf'
@@ -20,6 +22,16 @@ if (-not ((Test-Path "$gen\out\Assembly-CSharp.dll") -and (sls -Path "$gen\gen.l
 $need = @("$probe\bep788\winhttp.dll", "$probe\bep788\BepInEx\core\BepInEx.Core.dll", "$probe\rt\Il2CppInterop.Runtime.dll", "$probe\play\ShortcutSkateClient.dll") + @('session.ps1', 'skate.ps1', 'watch.ps1', 'clean.ps1', 'sticks.ps1' | % { "$L\$_" })
 $missing = @($need | ? { -not (Test-Path -LiteralPath $_) })
 if ($missing) { 'ABORT: not on this PC: ' + (($missing | % { $_.Replace($dl, '~') }) -join ', '); return }
+# The 18 file names mirror SkateSoundPack.cs in the client source; the plugin needs every one.
+$stems = 'skate_rolling_smooth', 'skate_rolling_rough', 'skate_rolling_wood', 'skate_grit', 'skate_whirr', 'skate_push', 'skate_ollie', 'skate_landing', 'skate_drop', 'skate_seam', 'skate_grind_in', 'skate_grind', 'skate_grind_out', 'skate_slide_in', 'skate_deckslide', 'skate_scrape', 'skate_slam', 'skate_bail'
+$sounds = $false
+if ($null -eq $psounds -or $psounds) {
+  if (Test-Path "$probe\sounds") {
+    $absent = @($stems | ? { -not (Test-Path -LiteralPath "$probe\sounds\$($_)_01.wav") })
+    if ($absent) { 'ABORT: the sound pack in ~\claude-loader-probe\sounds is incomplete (missing ' + (($absent | % { $_ + '_01.wav' }) -join ', ') + '); complete it, or sv psounds 0 for a pack without sounds'; return }
+    $sounds = $true
+  }
+}
 # The installer is taken from this branch, like every other script: it is not part of the launcher.
 $enc = New-Object Text.UTF8Encoding($false)
 $inst = "" + (zg 'install.ps1')
@@ -46,13 +58,16 @@ if ((Test-Path -LiteralPath "$probe\play\skate_captures.skmc" -PathType Leaf) -a
   }
 }
 foreach ($f in 'session.ps1', 'skate.ps1', 'watch.ps1', 'clean.ps1', 'sticks.ps1', 'version.txt') { Copy-Item "$L\$f" "$to\launcher" }
+# Only the 18 WAV files the plugin reads; anything else in sounds\ stays on this PC.
+if ($sounds) { New-Item -ItemType Directory -Force "$to\sounds" | Out-Null; $stems | % { Copy-Item -LiteralPath "$probe\sounds\$($_)_01.wav" "$to\sounds" } }
 $server = ''
 if (($null -eq $pserver -or $pserver) -and (Test-Path "$probe\server.txt")) { Copy-Item "$probe\server.txt" "$to\server.txt"; $server = (gc "$probe\server.txt" -First 1).Trim() }
 [IO.File]::WriteAllText("$stage\install.ps1", $inst, $enc)
 [IO.File]::WriteAllText("$stage\Install Rust Skate.cmd", "@echo off`r`ntitle Install Rust Skate`r`npowershell -NoProfile -ExecutionPolicy Bypass -File `"%~dp0install.ps1`"`r`necho.`r`npause`r`n", [Text.Encoding]::ASCII)
 # The comma binds tighter than +, so each line is made before the list is.
 $made = 'made ' + (Get-Date -Format 'yyyy-MM-dd HH:mm'); $srv = 'server ' + $(if ($server) { 'included' } else { 'not included' })
-@("pack $name", $made, "release $rel", "build $pb", $version, $srv) | Out-File "$stage\pack.txt" -Encoding utf8
+$snd = 'sounds ' + $(if ($sounds) { 'included' } else { 'not included' })
+@("pack $name", $made, "release $rel", "build $pb", $version, $srv, $snd) | Out-File "$stage\pack.txt" -Encoding utf8
 $readme = @"
 RUST SKATE - the skate mod for Rust, for the owner's own server
 
@@ -75,6 +90,8 @@ way is unchanged: the mod is in the Rust folder only while the launcher's window
 5. On the server: Y on the controller (or K on the keyboard) gets you on the board. A pushes,
    the left stick steers, B brakes, the right stick held back and flicked forward is an ollie,
    LT/RT held in the air is a grab, Y gets you off. The first seconds on the board show the controls.
+   The skateboard sounds come with the pack when pack.txt says "sounds included"; without them
+   the ride is silent and the game shows "Skateboard sound pack is unavailable" once.
 6. Quit Rust the normal way. The window says "Done" when the Rust folder is back to normal. If it
    does not, or the PC went off while playing, run "Rust Skate - remove mod files" from the desktop
    before starting Rust normally.
@@ -91,5 +108,5 @@ Add-Type -AssemblyName System.IO.Compression.FileSystem
 Remove-Item -LiteralPath $stage -Recurse -Force
 $mb = [int]((gi $zip).Length / 1MB)
 "pack: $zip ($mb MB)"
-"inside: " + $version + " | interop set gen-$pb | plugin " + (gi "$probe\play\ShortcutSkateClient.dll").Length + " bytes | models " + @(ls "$probe\play" -Filter *.glb).Count + " | server.txt " + $(if ($server) { 'included' } else { 'left out' })
+"inside: " + $version + " | interop set gen-$pb | plugin " + (gi "$probe\play\ShortcutSkateClient.dll").Length + " bytes | models " + @(ls "$probe\play" -Filter *.glb).Count + " | sounds " + $(if ($sounds) { '18' } else { 'none: the friend rides without skateboard audio' }) + " | server.txt " + $(if ($server) { 'included' } else { 'left out' })
 'give the zip to the friend with README.txt inside it; see FRIEND.md in the client folder'
