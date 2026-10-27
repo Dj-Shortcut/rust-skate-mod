@@ -160,6 +160,11 @@ def retarget(raw, job, provenance):
     opts=job.get('retarget',{});actor=job['source'].get('actorHint')
     arm_interpolation=opts.get('armInterpolation','linear')
     if arm_interpolation not in ('linear','spherical'):raise ValueError('Unknown armInterpolation')
+    head_anchor=job.get('body',{}).get('headAnchor','nose')
+    if head_anchor not in ('nose','ears'):raise ValueError('Unknown headAnchor')
+    head_provenance=job.get('body',{}).get('headAnchorProvenance')
+    if head_anchor=='ears' and (not isinstance(head_provenance,str) or not head_provenance.strip()):
+        raise ValueError('Ear-mid head anchor requires headAnchorProvenance')
     world,confidence=confidence_track(raw,first,last,opts,isinstance(actor,dict) and bool(actor.get('hipAndHeightSourceKeys')))
     basis=camera_curve(job['camera'],duration)
     for i in range(len(world)): world[i]=world[i]@basis(i/fps).T
@@ -238,7 +243,11 @@ def retarget(raw, job, provenance):
         hips=[pelvis-hip_axis*rig['hipHalfWidth'],pelvis+hip_axis*rig['hipHalfWidth']]
         anatomy=unit(np.cross(hip_axis,UP),[1,0,0]);hip_mid=(w[23]+w[24])*.5
         j=dict(Pelvis=pelvis,Chest=pelvis+torso*(rig['spine']/1.12),Neck=pelvis+torso*rig['spine'])
-        j['Head']=j['Neck']+unit(w[0]-(w[11]+w[12])*.5)*rig['head'];soles={}
+        head_point=(w[7]+w[8])*.5 if head_anchor=='ears' else w[0]
+        head_offset=head_point-(w[11]+w[12])*.5
+        if head_anchor=='ears' and np.linalg.norm(head_offset)<1e-9:
+            raise CaptureError('Degenerate ear-mid head anchor')
+        j['Head']=j['Neck']+unit(head_offset)*rig['head'];soles={}
         for index,side in enumerate(('Left','Right')):
             ai,ki,hi,heel,toe=(27,25,23,29,31) if index==0 else (28,26,24,30,32);curves=foot_curves[side];contact=bool(mask&(1<<index))
             if contact:
@@ -279,6 +288,9 @@ def retarget(raw, job, provenance):
     if maximum_chain_error>1e-6:raise CaptureError('Retarget chain length error',dict(maxChainErrorM=maximum_chain_error))
     metadata=dict(id=job['id'],label=job['label'],sourceUrl=job['source']['url'],sourceAuthor=job['source']['author'],movementKind=job['movementKind'],reviewed=job['reviewed'],rights=job['source'].get('rights','No publication/relicensing permission asserted'),canonicalStance='regular',capturedStance=stance,keySpace=key_space,coordinateFrame='Y up, +Z nose, +X right; right-handed quaternion XYZW; origin=deck top',toeContract='Physical toe endpoints include soleUp*toeDrop once; native sampler reconstructs flat toe targets before writer drop',sourceFps=fps,firstSourceFrame=first,lastSourceFrame=last,provenance=provenance,boardProvenance=board_spec['provenance'],boardLimit='Observed keys mean recipe observations/estimates, not calibrated measured3D board mocap',footOrientationLimit='Soles default to board-up in contact and world-up in air unless per-foot keys supplied. Captured heel/toe heading is projected onto that sole; degenerate projections use a perpendicular basis. Not measured shoe orientation.',rootLimit='Pelvis/board trajectory supplied explicitly by recipe; MediaPipe world33 is hip-relative; no player-root/physics authority',sampleLimit='Dense retarget interpolation, not additional measured source frames',camera=job['camera'],rig=rig,metricScale=scale)
     metadata['armInterpolation']=arm_interpolation
+    if head_anchor=='ears':
+        metadata['headAnchor']=head_anchor
+        metadata['headAnchorProvenance']=head_provenance
     metadata['freeFootPaths']={side:dict(coordinates='Absolute authoring frame, same as pelvisKeys; reflected with captured keySpace',provenance=feet[('Right' if side=='Left' else 'Left') if reflect_keys else side]['airPositionProvenance']) for side in ('Left','Right') if 'airPositionKeys' in foot_curves[side]}
     selection_frames=[dict(frame=f['frame_index'],selection=f['target_selection']) for f in raw['frames'] if first<=f['frame_index']<=last and f.get('target_selection') is not None]
     quality=dict(status='validated transport/kinematics; visual/native acceptance remains open',reviewed=job['reviewed'],confidence=confidence,actorSelection=selection_frames,cutAudit=dict(declaredOrDetectedFrames=sorted(cuts),startsAtDeclaredCut=first in cuts,limit='No automatic visual cut detector; absent markers are not proof of a continuous shot'),boardRotation=rot_quality,boardFloor=dict(policy=floor_policy,minUncorrectedCornerY=minimum_floor,corrections=floor_corrections),invertedFootContactException=dict(explicitlyAllowed=allow_inverted,sampleTimes=inverted_contacts),reachCorrections=reaches,maxChainErrorM=maximum_chain_error,feetDefaultOffsetsEstimated=[s for s in ('Left','Right') if not foot_curves[s].get('positionKeys')],bodyYaw='Preserved in declared camera basis; no per-frame inferred hip-facing normalization',sourceFrames=last-first+1,outputSamples=len(frames))

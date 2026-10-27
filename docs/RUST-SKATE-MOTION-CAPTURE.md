@@ -67,6 +67,14 @@ working capture. Replace the source paths and calibrate each actual attempt.
   new camera heading from the hips every frame would erase the trick's turn.
 - `body.pelvisKeys`: the declared root estimate in meters. Hip-relative
   detections alone cannot supply a measured world trajectory.
+- `body.headAnchor`: optional `"nose"` (the unchanged default) or `"ears"`.
+  The ear option uses the midpoint of model landmarks 7 and 8, rather than the
+  nose, for the shoulder-midpoint-to-head direction. It requires a nonempty
+  `body.headAnchorProvenance` explanation and records that choice in clip
+  metadata. The measured neck-to-head length, other joints, `HeadForward` and
+  existing confidence rules remain unchanged. This is an estimated head-center
+  reconstruction; it does not make occluded ears measured or replace whole-clip
+  visual review. A degenerate ear direction fails the job.
 - `board.positionKeys`: board deck-top origin, in meters.
 - `board.orientation`: full quaternion XYZW or unwrapped Euler degree keys.
   `order` declares Euler order. Continuous 360/720-degree keys preserve complete
