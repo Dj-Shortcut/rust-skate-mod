@@ -58,20 +58,73 @@ public static class SkateFootContacts
         internal readonly List<double> Pose = new List<double>();
         internal readonly List<MeshData> Meshes = new List<MeshData>();
     }
+    private struct Affine
+    {
+        private readonly double[] values;
+        private Affine(bool identity)
+        { values = new double[12]; if (identity) values[0] = values[5] = values[10] = 1; }
+        internal double At(int row, int col) { return values[row * 4 + col]; }
+        internal static Affine Linear(Matrix4x4 matrix)
+        {
+            var result = new Affine(false);
+            for (int r = 0; r < 3; r++) for (int c = 0; c < 3; c++) result.values[r * 4 + c] = Element(matrix, r, c);
+            return result;
+        }
+        private static Affine Local(Transform bone)
+        {
+            Vector3 p = bone.localPosition, scale = bone.localScale; Quaternion q = bone.localRotation;
+            if (!Finite(p) || !Finite(scale) || !Finite(q.x) || !Finite(q.y) || !Finite(q.z) || !Finite(q.w))
+                throw new Unsupported("Local toe transform is not finite.");
+            double x = q.x, y = q.y, z = q.z, w = q.w, norm = x * x + y * y + z * z + w * w;
+            if (Math.Abs(norm - 1) > .0001) throw new Unsupported("Local toe rotation is not unit length.");
+            double inv = 1 / Math.Sqrt(norm); x *= inv; y *= inv; z *= inv; w *= inv;
+            var result = new Affine(false); double[] m = result.values;
+            m[0] = (1 - 2 * (y * y + z * z)) * scale.x; m[1] = 2 * (x * y - z * w) * scale.y; m[2] = 2 * (x * z + y * w) * scale.z;
+            m[4] = 2 * (x * y + z * w) * scale.x; m[5] = (1 - 2 * (x * x + z * z)) * scale.y; m[6] = 2 * (y * z - x * w) * scale.z;
+            m[8] = 2 * (x * z - y * w) * scale.x; m[9] = 2 * (y * z + x * w) * scale.y; m[10] = (1 - 2 * (x * x + y * y)) * scale.z;
+            m[3] = p.x; m[7] = p.y; m[11] = p.z; return result;
+        }
+        internal static Affine Multiply(Affine a, Affine b)
+        {
+            var result = new Affine(false);
+            for (int r = 0; r < 3; r++) for (int c = 0; c < 4; c++)
+            {
+                double value = c == 3 ? a.At(r, 3) : 0;
+                for (int k = 0; k < 3; k++) value += a.At(r, k) * b.At(k, c);
+                result.values[r * 4 + c] = value;
+            }
+            return result;
+        }
+        internal static Affine ToeInFoot(Transform foot, Transform toe)
+        {
+            var result = new Affine(true); Transform current = toe; int depth = 0;
+            // Walk only the known Toe->Foot link. No child/hierarchy search and
+            // no world-position subtraction can quantize the short toe offset.
+            while (current != foot)
+            {
+                if (current == null || depth++ >= 16) throw new Unsupported("Toe is not within the bounded Foot ancestor chain.");
+                result = Multiply(Local(current), result); current = current.parent;
+            }
+            return result;
+        }
+    }
     private struct SoleFrame
     {
         internal Vector3 Origin, Right, Up, Forward;
+        internal Affine Foot, Toe;
         internal static SoleFrame Create(Transform foot, Transform toe, Vector3 sole)
         {
             if (foot == null || toe == null || !Finite(sole) || sole.sqrMagnitude < .25f)
                 throw new Unsupported("Foot frame is unavailable.");
-            Vector3 origin = foot.position, delta = toe.position - origin, up = sole.normalized;
+            Affine linear = Affine.Linear(foot.localToWorldMatrix);
+            Affine preciseToe = Affine.Multiply(linear, Affine.ToeInFoot(foot, toe));
+            Vector3 origin = foot.position, delta = new Vector3((float)preciseToe.At(0, 3), (float)preciseToe.At(1, 3), (float)preciseToe.At(2, 3)), up = sole.normalized;
             Vector3 forward = delta - up * Vector3.Dot(delta, up);
             if (!Finite(origin) || !Finite(delta) || !Finite(forward) || forward.sqrMagnitude < .000001f)
                 throw new Unsupported("Foot frame has no measured toe tangent.");
             forward = forward.normalized;
             Vector3 right = Vector3.Cross(up, forward).normalized;
-            return new SoleFrame { Origin = origin, Right = right, Up = Vector3.Cross(forward, right).normalized, Forward = forward };
+            return new SoleFrame { Origin = origin, Right = right, Up = Vector3.Cross(forward, right).normalized, Forward = forward, Foot = linear, Toe = preciseToe };
         }
         internal void Point(Matrix4x4 matrix, Vector3 point, out double x, out double y, out double z)
         {
@@ -86,19 +139,21 @@ public static class SkateFootContacts
             if (!Finite(x) || !Finite(y) || !Finite(z) || Math.Abs(x) > .5 || Math.Abs(y) > .5 || Math.Abs(z) > .5)
                 throw new Unsupported("Complete foot geometry exceeds its local bounds.");
         }
-        internal void Bone(Read read, Transform bone)
+        internal void Bone(Read read, Affine matrix)
         {
-            Matrix4x4 m = bone.localToWorldMatrix; Scale(read, m);
+            Scale(read, matrix);
             // Full basis, not just Toe-Foot: animation may rotate a weighted toe
             // without moving its origin. Keep translation in the same sole frame.
             for (int col = 0; col < 3; col++)
             {
-                double x = Element(m, 0, col), y = Element(m, 1, col), z = Element(m, 2, col);
+                double x = matrix.At(0, col), y = matrix.At(1, col), z = matrix.At(2, col);
                 read.Pose.Add(x * Right.x + y * Right.y + z * Right.z);
                 read.Pose.Add(x * Up.x + y * Up.y + z * Up.z);
                 read.Pose.Add(x * Forward.x + y * Forward.y + z * Forward.z);
             }
-            double px = (double)m.m03 - Origin.x, py = (double)m.m13 - Origin.y, pz = (double)m.m23 - Origin.z;
+            // Foot position is exactly zero; Toe position is the local-chain
+            // offset transformed by Foot's linear matrix, never world floats.
+            double px = matrix.At(0, 3), py = matrix.At(1, 3), pz = matrix.At(2, 3);
             read.Pose.Add(px * Right.x + py * Right.y + pz * Right.z);
             read.Pose.Add(px * Up.x + py * Up.y + pz * Up.z);
             read.Pose.Add(px * Forward.x + py * Forward.y + pz * Forward.z);
@@ -227,7 +282,7 @@ public static class SkateFootContacts
             throw new Unsupported("Visible skinned renderer set is empty or exceeds its bound.");
         var read = new Read(); Mix(read, set.Length);
         Mix(read, lf.Pointer.ToInt64()); Mix(read, lt.Pointer.ToInt64()); Mix(read, rf.Pointer.ToInt64()); Mix(read, rt.Pointer.ToInt64());
-        left.Bone(read, lf); left.Bone(read, lt); right.Bone(read, rf); right.Bone(read, rt);
+        left.Bone(read, left.Foot); left.Bone(read, left.Toe); right.Bone(read, right.Foot); right.Bone(read, right.Toe);
         int totalVertices = 0, totalIndices = 0;
         for (int n = 0; n < set.Length; n++)
         {
@@ -347,11 +402,13 @@ public static class SkateFootContacts
         }
     }
     private static void Scale(Read read, Matrix4x4 matrix)
+    { Scale(read, Affine.Linear(matrix)); }
+    private static void Scale(Read read, Affine matrix)
     {
         double x = 0, y = 0, z = 0, xy = 0, xz = 0, yz = 0;
         for (int r = 0; r < 3; r++)
         {
-            double a = Element(matrix, r, 0), b = Element(matrix, r, 1), c = Element(matrix, r, 2);
+            double a = matrix.At(r, 0), b = matrix.At(r, 1), c = matrix.At(r, 2);
             if (!Finite(a) || !Finite(b) || !Finite(c)) throw new Unsupported("Foot scale is not finite.");
             x += a * a; y += b * b; z += c * c; xy += a * b; xz += a * c; yz += b * c;
         }
@@ -360,9 +417,9 @@ public static class SkateFootContacts
             Math.Abs(x - y) > max * .0001 || Math.Abs(x - z) > max * .0001 ||
             Math.Abs(xy) > max * .0001 || Math.Abs(xz) > max * .0001 || Math.Abs(yz) > max * .0001)
             throw new Unsupported("Nonuniform or sheared foot geometry is unsupported.");
-        double determinant = (double)matrix.m00 * (matrix.m11 * matrix.m22 - matrix.m12 * matrix.m21) -
-            (double)matrix.m01 * (matrix.m10 * matrix.m22 - matrix.m12 * matrix.m20) +
-            (double)matrix.m02 * (matrix.m10 * matrix.m21 - matrix.m11 * matrix.m20);
+        double determinant = matrix.At(0, 0) * (matrix.At(1, 1) * matrix.At(2, 2) - matrix.At(1, 2) * matrix.At(2, 1)) -
+            matrix.At(0, 1) * (matrix.At(1, 0) * matrix.At(2, 2) - matrix.At(1, 2) * matrix.At(2, 0)) +
+            matrix.At(0, 2) * (matrix.At(1, 0) * matrix.At(2, 1) - matrix.At(1, 1) * matrix.At(2, 0));
         read.Pose.Add(x); read.Pose.Add(y); read.Pose.Add(z); read.Pose.Add(determinant < 0 ? -1 : 1);
     }
     private static float Element(Matrix4x4 m, int row, int col)
@@ -378,7 +435,8 @@ public static class SkateFootContacts
         for (int i = 0; i < a.Length; i++)
         {
             // Four bone signatures each contain scale(4), basis(9), position(3).
-            // Allow large-world float position drift without hiding toe rotation.
+            // Position and basis remain separate tolerances; the short toe offset
+            // now comes from the local chain rather than large-world positions.
             double tolerance = i < 64 && i % 16 >= 13 ? PositionTolerance : PoseTolerance;
             if (!Finite(b[i]) || Math.Abs(a[i] - b[i]) > tolerance) return false;
         }
