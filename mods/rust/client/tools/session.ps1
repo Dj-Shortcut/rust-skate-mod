@@ -146,6 +146,14 @@ try {
     }
     say 'private capture pair incomplete; built-in normal-riding poses remain active'
   }
+  # A plugin directory can supply captures directly. Do not leave its half-pair staged
+  # when the optional external capture source is entirely absent.
+  $stagedCaptureFiles = @('skate_captures.skmc', 'skate_captures.approved.txt' |
+    % { Join-Path "$bx\plugins" $_ } | ? { Test-Path -LiteralPath $_ -PathType Leaf })
+  if ($stagedCaptureFiles.Count -eq 1) {
+    Remove-Item -LiteralPath $stagedCaptureFiles -Force
+    say 'private capture pair incomplete in plugin directory; built-in normal-riding poses remain active'
+  }
   # The sound pack goes in whole when it is complete. A partial set is staged all the same, so that
   # the plugin's log names what it misses, and is said out loud here.
   if ($sounds -and (Test-Path -LiteralPath $sounds) -and @(ls -LiteralPath $sounds -File -Filter *.wav).Count -gt 0) {
