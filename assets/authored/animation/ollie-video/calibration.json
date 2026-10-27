@@ -134,6 +134,6 @@
     "Foot/deck contact and front-foot side/instep roll are explicit retarget constraints, not measured finger/sole capture.",
     "Retarget foot headings are constrained to the anatomical forward hemisphere: 70 percent hip-frame direction, 30 percent captured heel/toe direction.",
     "Knee bend poles retain the captured lateral direction within the anatomical forward hemisphere; monocular depth is not treated as authoritative knee anatomy.",
-    "The 58-degree front-foot roll envelope is an authored side/instep contact correction during source frames 30 through 39, not measured sole orientation."
+    "The 58-degree front-foot roll envelope is an authored side/instep contact correction during source frames 30 through 36, levelled by the observed apex, not measured sole orientation."
   ]
 }

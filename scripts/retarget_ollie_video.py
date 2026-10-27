@@ -134,7 +134,10 @@ def main():
             expected=unit(anatomical_forward-bup*np.dot(anatomical_forward,bup))
             if np.dot(heading,expected)<0: heading=-heading
             heading=unit(expected*.7+heading*.3)
-            blend=ramp(fi,30,33)*(1-ramp(fi,35,39)) if side==0 else 0.
+            # The source front foot has levelled with the deck by frame 36.
+            # End the side/instep roll before the apex instead of carrying it
+            # through the airborne catch.
+            blend=ramp(fi,30,33)*(1-ramp(fi,33,36)) if side==0 else 0.
             sole=unit(turn(bup,heading,math.radians(58)*blend))
             ankles.append(board+R@np.array([.035,.095,z]))
             pole=w[ki]-w[hi]

@@ -38,7 +38,7 @@
       "Foot/deck contact and front-foot side/instep roll are explicit retarget constraints, not measured finger/sole capture.",
       "Retarget foot headings are constrained to the anatomical forward hemisphere: 70 percent hip-frame direction, 30 percent captured heel/toe direction.",
       "Knee bend poles retain the captured lateral direction within the anatomical forward hemisphere; monocular depth is not treated as authoritative knee anatomy.",
-      "The 58-degree front-foot roll envelope is an authored side/instep contact correction during source frames 30 through 39, not measured sole orientation.",
+      "The 58-degree front-foot roll envelope is an authored side/instep contact correction during source frames 30 through 36, levelled by the observed apex, not measured sole orientation.",
       "No captured finger motion. Native game skin/playback and normal-pop phase integration remain unverified."
     ]
   },
@@ -1684,9 +1684,9 @@
           0.16872439917350587
         ],
         "LeftToe": [
-          0.16988095064052375,
-          0.6995087334107295,
-          0.18829642200803898
+          0.16519220576728375,
+          0.6955449579790275,
+          0.20555540889236776
         ],
         "LeftShoulder": [
           0.09907490324045076,
@@ -1768,9 +1768,9 @@
       },
       "soleUp": {
         "Left": [
-          -0.34111888319303635,
-          0.9050360517623086,
-          0.25406230050841405
+          -0.2741368135753219,
+          0.9616614150723373,
+          0.0075053450180027105
         ],
         "Right": [
           0.0,
@@ -1844,9 +1844,9 @@
           0.23094540612059222
         ],
         "LeftToe": [
-          0.16742319649469994,
-          0.6951171790230755,
-          0.27048026006601944
+          0.1424596227808243,
+          0.6814793120785885,
+          0.31313284971710587
         ],
         "LeftShoulder": [
           0.15709967147970835,
@@ -1928,9 +1928,9 @@
       },
       "soleUp": {
         "Left": [
-          -0.5138134470558395,
-          0.766842966755306,
-          0.3846395792979662
+          -0.15719096542904454,
+          0.9616696373908347,
+          -0.22468313000326873
         ],
         "Right": [
           0.0,
@@ -2004,9 +2004,9 @@
           0.27179139250182316
         ],
         "LeftToe": [
-          0.1594975428559514,
-          0.6633073484269387,
-          0.32537140056226166
+          0.12335425427288577,
+          0.6483280434637781,
+          0.3681714064452059
         ],
         "LeftShoulder": [
           0.21746279797874082,
@@ -2088,9 +2088,9 @@
       },
       "soleUp": {
         "Left": [
-          -0.516332694043795,
-          0.761567224698263,
-          0.39168343254069604
+          0.0,
+          0.975557295600557,
+          -0.2197452229299363
         ],
         "Right": [
           0.0,
@@ -2164,9 +2164,9 @@
           0.2959986959200892
         ],
         "LeftToe": [
-          0.143514714911337,
-          0.5578921411830783,
-          0.36222080316165955
+          0.11905832795172115,
+          0.550055018074342,
+          0.38607853793036645
         ],
         "LeftShoulder": [
           0.2468840497093753,
@@ -2248,9 +2248,9 @@
       },
       "soleUp": {
         "Left": [
-          -0.34937695656594064,
-          0.8872552316517569,
-          0.30118747671061624
+          0.0,
+          0.9992141332051333,
+          -0.039637305699481866
         ],
         "Right": [
           0.0,
@@ -2324,9 +2324,9 @@
           0.2679740349984057
         ],
         "LeftToe": [
-          0.12696378756624221,
-          0.46214254631804746,
-          0.3379206603665461
+          0.1190141930213222,
+          0.4602672431698096,
+          0.34537850937855774
         ],
         "LeftShoulder": [
           0.24392389365121872,
@@ -2408,9 +2408,9 @@
       },
       "soleUp": {
         "Left": [
-          -0.11356563635600017,
-          0.9644483458411409,
-          0.23862572041451005
+          0.0,
+          0.9912383908159675,
+          0.132085020242915
         ],
         "Right": [
           0.0,
