@@ -1,5 +1,5 @@
 # Pack the installed launcher for a friend. Takes what `zz launcher` put on this PC - the unpacked
-# loader, the interop set for the installed Rust build, the changed runtime, the released plugin
+# loader, the interop set for the installed Rust build, the changed runtime, the released plugin or explicit candidate
 # with its park models, the sound pack and the launcher's own scripts - and writes one zip in Downloads with an
 # installer (install.ps1 of this branch) that a friend runs on his own PC without any of the
 # development tools. Nothing is built or downloaded; the pack is exactly what this PC plays.
@@ -46,11 +46,19 @@ Copy-Item "$probe\bep788" "$to\bep788" -Recurse
 Copy-Item "$gen\out" "$to\gen-$pb\out" -Recurse
 Copy-Item "$gen\gen.log" "$to\gen-$pb\gen.log"
 Copy-Item "$probe\rt" "$to\rt" -Recurse
-# play\ is copied whole into the game's plugin folder by the launcher: only the plugin and the models.
+# play\ is copied whole into the game's plugin folder by the launcher. Include
+# only the runtime plugin, models and optional private reviewed capture pair.
 New-Item -ItemType Directory -Force "$to\play", "$to\launcher" | Out-Null
 Copy-Item "$probe\play\ShortcutSkateClient.dll" "$to\play"
 ls "$probe\play" -File -Filter *.glb | % { Copy-Item $_.FullName "$to\play" }
+if ((Test-Path -LiteralPath "$probe\play\skate_captures.skmc" -PathType Leaf) -and
+    (Test-Path -LiteralPath "$probe\play\skate_captures.approved.txt" -PathType Leaf)) {
+  foreach ($f in 'skate_captures.skmc', 'skate_captures.approved.txt') {
+    Copy-Item -LiteralPath "$probe\play\$f" -Destination "$to\play\$f"
+  }
+}
 foreach ($f in 'session.ps1', 'skate.ps1', 'watch.ps1', 'clean.ps1', 'sticks.ps1', 'version.txt') { Copy-Item "$L\$f" "$to\launcher" }
+if (Test-Path -LiteralPath "$L\candidate.txt" -PathType Leaf) { Copy-Item -LiteralPath "$L\candidate.txt" -Destination "$to\launcher" }
 # Only the 18 WAV files the plugin reads; anything else in sounds\ stays on this PC.
 if ($sounds) { New-Item -ItemType Directory -Force "$to\sounds" | Out-Null; $stems | % { Copy-Item -LiteralPath "$probe\sounds\$($_)_01.wav" "$to\sounds" } }
 $server = ''

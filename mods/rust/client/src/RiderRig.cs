@@ -544,6 +544,7 @@ public static class RiderRig
 
     private static void ResetPresentation()
     {
+        SkateCapturedTricks.Reset();
         grabSince = grabHold = -1f; plantBlend = chestLead = crouchSpeed = 0f; Crouch = 0.18f;
         contact = default(SkateRiderContactState);
         plantStyle = default(SkateHandplantState); plantId = -1; SkateBoard.HeldFrame = default(SkateBoardPose);
@@ -551,7 +552,7 @@ public static class RiderRig
         motion = default(SkateRiderMotionState); easedAt = -99f;
         SkateBoard.GrabFold = SkateBoard.Plant = 0f; SkateBoard.Held = false;
     }
-    public static void BeginRide() { ResetPresentation(); }
+    public static void BeginRide() { ResetPresentation(); SkateCapturedTricks.Preload(); }
 
     public static void Prepare(float frameSeconds)
     {
@@ -612,6 +613,7 @@ public static class RiderRig
 
     public static void Frame(Vector3 feet, Vector3 up, bool legsOnly, float frameSeconds)
     {
+        SkateCapturedTricks.ClearFrame();
         if (!Bound || failed) return;
         if (SkateRide.Handplant) up = Vector3.up;
         try
@@ -891,6 +893,19 @@ public static class RiderRig
                 SkateRiderPose flipped;
                 if (SkateRider.TryTransformPose(Shown, input.DeckFrame, SkateSurfaceRide.FlipFrame(input.DeckFrame), out flipped)) Shown = flipped;
             }
+            // Preserve procedural loading. A known approved capture crossfades only after the live pop,
+            // using this frame's measured procedural pose as the transition fallback.
+            SkateCaptureFrame captured;
+            if (SkateCapturedTricks.TryFrame(Rig, SkateRig.LocalT, pose, new SkateVector(leftSole.x, leftSole.y, leftSole.z), new SkateVector(rightSole.x, rightSole.y, rightSole.z), out captured))
+            {
+                Posed = Shown = captured.Pose; PosedPlane = V(captured.Board.Origin); Error = "";
+                pinHips = pinLeft = pinRight = true; motion = default(SkateRiderMotionState);
+                // Keep the SAME local basis as the normal route, including on capture exit mid-flip.
+                Ease(captured.Pose, plane, toToes, upV, new Vector3((float)fx, (float)fy, (float)fz),
+                    now, frameSeconds, true, true, true);
+                upV = V(captured.RiderUp); leftSole = V(captured.LeftSoleUp); rightSole = V(captured.RightSoleUp);
+                SkateSurfaceRide.Record(captured.Pose, captured.Board, SkateGrabKind.None);
+            }
             Apply(upV, legsOnly, leftSole, rightSole);
             Applied++;
         }
@@ -956,7 +971,7 @@ public static class RiderRig
             (Math.Abs(local.X) >= .07 || Math.Abs(local.Z) >= .25);
     }
 
-    private static void Ease(SkateRiderPose p, Vector3 origin, Vector3 x, Vector3 y, Vector3 z, float now, float frameSeconds, bool pinLeftHand, bool pinRightHand)
+    private static void Ease(SkateRiderPose p, Vector3 origin, Vector3 x, Vector3 y, Vector3 z, float now, float frameSeconds, bool pinLeftHand, bool pinRightHand, bool exactCapture = false)
     {
         joint[PelvisJ] = V(p.Pelvis); joint[LHipJ] = V(p.LeftHip); joint[RHipJ] = V(p.RightHip); joint[LKneeJ] = V(p.LeftKnee); joint[RKneeJ] = V(p.RightKnee);
         joint[LAnkleJ] = V(p.LeftAnkle); joint[RAnkleJ] = V(p.RightAnkle); joint[LToeJ] = V(p.LeftToe); joint[RToeJ] = V(p.RightToe);
@@ -978,7 +993,7 @@ public static class RiderRig
             // a chest eased behind pinned hips would untwist the spine for a moment each stroke.
             // Keep a grab's solved hand target through the final filter too. The free hand and
             // the rest of the pose still ease; releasing starts from the last held hand and elbow targets.
-            var pinned = SkateRiggingShowcase.Running || SkateSurfaceRide.DisplayWall || SkateSurfaceRide.BodyFlip.Known || SkateOldschoolRide.Active || SkateActions.Owns || (pinHips && (i == PelvisJ || i == LHipJ || i == RHipJ || i == PelvisForwardJ || i == PelvisUpJ ||
+            var pinned = exactCapture || SkateRiggingShowcase.Running || SkateSurfaceRide.DisplayWall || SkateSurfaceRide.BodyFlip.Known || SkateOldschoolRide.Active || SkateActions.Owns || (pinHips && (i == PelvisJ || i == LHipJ || i == RHipJ || i == PelvisForwardJ || i == PelvisUpJ ||
                     i == LShoulderJ || i == RShoulderJ || i == ChestForwardJ || i == ChestUpJ)) ||
                 (pinLeft && (i == LAnkleJ || i == LToeJ)) || (pinRight && (i == RAnkleJ || i == RToeJ)) ||
                 (pinLeftHand && (i == LHandJ || i == LElbowJ)) || (pinRightHand && (i == RHandJ || i == RElbowJ));
@@ -988,6 +1003,7 @@ public static class RiderRig
         }
         // Halfway between two poses the back would come out shorter than it is: the chest, the neck
         // and the head are put back on the eased line of the back, at the module's distances.
+        if (exactCapture) return;
         var hips = (joint[LHipJ] + joint[RHipJ]) * 0.5f; var line = joint[ChestUpJ];
         joint[ChestJ] = hips + line * (float)Rig.SpineLength;
         joint[NeckJ] = hips + line * (float)(Rig.SpineLength * 1.12);
@@ -1105,7 +1121,7 @@ public static class RiderRig
             // head lift most of the way back toward where the board's up is.
             var foldAxis = Vector3.Cross(chestUp, up);
             var fold = (float)(Math.Atan2(foldAxis.magnitude, Vector3.Dot(chestUp, up)) * 180.0 / Math.PI);
-            if (fold > HeadLiftFrom && foldAxis.sqrMagnitude > 0.0001f)
+            if (!SkateCapturedTricks.HasFrame && fold > HeadLiftFrom && foldAxis.sqrMagnitude > 0.0001f)
             {
                 var lift = SkateRide.Clamp((fold - HeadLiftFrom) * HeadLiftShare, 0f, HeadLiftMost);
                 Neck.rotation = SkateRide.Turn(lift * 0.35f, foldAxis) * Neck.rotation;

@@ -1,0 +1,19 @@
+{
+  "format": "skate-capture-review/1",
+  "scope": "source-and-rig-animation",
+  "reviewer": "Replace with the animation reviewer",
+  "clips": [
+    {
+      "id": "replace-with-exact-clip-id",
+      "clipSha256": "0000000000000000000000000000000000000000000000000000000000000000",
+      "verdict": "approved",
+      "notes": "Schema example only. Replace after inspecting the complete source and actual rig animation, including feet detaching, catch, landing and upright recovery.",
+      "evidence": [
+        {
+          "path": "replace-with-local-review-evidence.mp4",
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+        }
+      ]
+    }
+  ]
+}

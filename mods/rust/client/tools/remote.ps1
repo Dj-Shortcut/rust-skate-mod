@@ -3,7 +3,7 @@
 # returns a file from it. Both read the branch named in $pref (default main) through the GitHub
 # contents API: the raw host caches a branch for minutes and would hand out a stale script.
 if (-not $pref) { $global:pref = 'main' }
-$global:prepo = 'Dj-Shortcut/mw2-rust-skate-rewrite'
+if (-not $prepo) { $global:prepo = 'Dj-Shortcut/rust-skate-mod' }
 # The address of a file at a commit, on the raw host: a commit cannot be stale there, and the API
 # answers a caller without a key only sixty times an hour, which three builds would use up.
 function global:zu($path, $commit) { "https://raw.githubusercontent.com/$prepo/$commit/$path" }
@@ -15,4 +15,4 @@ function global:zg($f) {
 }
 function global:zz($n) { iex (zg "$n.ps1") }
 $global:ErrorActionPreference = 'Continue'
-"zz ready, branch $pref"
+"zz ready, repository $prepo, branch $pref"

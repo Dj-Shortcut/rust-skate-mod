@@ -31,7 +31,7 @@ Laatste speltest: client 0.18.45 / server 0.3.38 (21 okt). Geen testomgeving sin
 25. Controller werkt op het board en te voet. Open.
 26. Uitzoeken hoe Skate trick-, rijder- en boardanimaties koppelt. Deels onderzocht (privé).
 27. Herkenbare drop-inanimatie voor halfpipes: tail op coping, gewicht naar voren, knieën en board vloeiend de wand in; aparte animatie en spelcontrole open (Andy, 26 okt).
-28. Automatische rigging-showcase op platte grond: alle beschikbare trickposes met naam, pauze en volgende/vorige, zodat handen, voeten en board samen bekeken kunnen worden. Bron aanwezig in 0.18.60; [batchpipeline met volledige boardrotatie](docs/RUST-SKATE-MOTION-CAPTURE.md) en externe capturebibliotheek toegevoegd. Eerste Berrics-referenties privé verwerkt; normale trickroute, bewegingsacceptatie en native beeldcontrole open (Andy, 27 okt).
+28. Automatische rigging-showcase op platte grond: alle beschikbare trickposes met naam, pauze en volgende/vorige, zodat handen, voeten en board samen bekeken kunnen worden. Bron aanwezig in 0.18.60; [batchpipeline met volledige boardrotatie](docs/RUST-SKATE-MOTION-CAPTURE.md) en externe capturebibliotheek toegevoegd. Normale presentatiecode in 0.18.64 gekoppeld met exacte variantselectie en aparte goedgekeurde pack; eerste vijf Berrics-captures krijgen bron-, voetpad- en continuïteitsherstel. Bewegingsacceptatie, overige batches en native Shadow-beeldcontrole open (Andy, 27 okt).
 
 Per rit controleren: controller, eerste/derde persoon, kompas, hand-item, pose, geluid, put-backs. Halfpipe: drie beklimmingen en fakie-terugkeren zonder put-back.
 

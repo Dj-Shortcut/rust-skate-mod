@@ -212,6 +212,13 @@ public static class SkateBoard
         }
         return frame;
     }
+    // FlipDeg is a scoring/gesture convention (+ kickflip), independent of stance.
+    // Every ordinary visual consumer shares this one physical roll convention.
+    public static float OrdinaryFlipRoll
+    {
+        get { return SkateRide.BoardPath.Known || SkateActions.Finger.Initialized || SkateOldschoolRide.Active
+            ? 0f : (float)SkateRide.FlipDeg * SkateRide.StanceSign; }
+    }
     private static SkateBoardPose PoseFor(Transform playerT, bool carrier)
     {
         var now = Time.realtimeSinceStartup;
@@ -228,7 +235,7 @@ public static class SkateBoard
         var nose = trucked ? deckTurn * deckNose : OnFace(up, SkateRide.Dir(SkateRide.DeckYaw));
         nose = nose - up * Vector3.Dot(nose, up);
         nose = nose.sqrMagnitude > 0.0001f ? nose.normalized : travel;
-        var flip = SkateRide.BoardPath.Known || SkateActions.Finger.Initialized || SkateOldschoolRide.Active ? 0f : (float)SkateRide.FlipDeg; var askew = 0f;
+        var flip = OrdinaryFlipRoll; var askew = 0f;
         if (SkateRide.Mode == RideMode.Bail)
         {
             // The rider goes on and down. The board is on its own from the moment of the bail: it
@@ -293,7 +300,8 @@ public static class SkateBoard
         if (board.activeSelf != show) board.SetActive(show);
         if (!riding) return;
         lieUntil = -1f;
-        var frame = PoseFor(playerT);
+        // The rider and rendered board consume the same current live frame when a capture is shown.
+        var frame = SkateCapturedTricks.HasFrame ? SkateCapturedTricks.DisplayFrame : PoseFor(playerT);
         var up = V(frame.Up); var nose = V(frame.Forward);
         var rot = Quaternion.LookRotation(nose, up);
         var centre = V(frame.Origin) - up * RiderRig.DeckTop;

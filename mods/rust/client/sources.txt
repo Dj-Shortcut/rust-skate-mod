@@ -61,3 +61,6 @@ mods/rust/client/src/SkateOldschoolRide.cs
 mods/rust/shared/SkateTricksAwards.cs
 mods/rust/shared/SkateWallTricks.cs
 mods/rust/client/src/SkateSurfaceRide.cs
+
+mods/rust/shared/SkateCapturePlayback.cs
+mods/rust/client/src/SkateCapturedTricks.cs

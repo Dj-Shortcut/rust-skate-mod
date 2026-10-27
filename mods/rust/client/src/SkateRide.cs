@@ -274,6 +274,27 @@ public static class SkateRide
     // Which way round a frontside turn goes from here: the sign a left-stick turn gets in the trick module.
     public static float SpinSide { get { return (TailFirst ? -1f : 1f) * StanceSign; } }
     public static bool Rotating { get { return BoardPath.Active || spinning || Math.Abs(flipLeft) > 0.001f || Math.Abs(shoveLeft) > 0.001f || Math.Abs(bodyLeft) > 0.001f; } }
+    // Read-only presentation observations. These do not request or advance a trick.
+    public static bool PresentationQueued { get { return Mode == RideMode.Ground && now - jumpWanted >= 0 && now - jumpWanted < .12f && jumpInputEpoch == SkateKeys.InputEpoch; } }
+    public static float PresentationStepSeconds
+    { get { var step = Time.fixedDeltaTime; return step > .001f && step <= .05f ? step : .03125f; } }
+    public static double PresentationBodyTarget { get { return BodyDeg + bodyLeft; } }
+    public static SkateCaptureTrickSignature PresentationSignature
+    {
+        get
+        {
+            bool queued = PresentationQueued;
+            double flip = queued ? wantFlip * 360.0 : FlipDeg + flipLeft + pendFlip * 360.0;
+            double shove = queued ? wantShove : ShoveDeg + shoveLeft + pendShove;
+            double spin = SpinDeg;
+            double asked = -SkateKeys.Spin * (queued ? SpinSide : spinSide);
+            if (Math.Abs(asked) > .001) spin = Math.Sign(asked) * Math.Ceiling(Math.Abs(spin) / 180.0 + .000001) * 180.0;
+            else spin = Math.Round(spin / 180.0, MidpointRounding.AwayFromZero) * 180.0;
+            return new SkateCaptureTrickSignature(queued ? wantKind : popKind,
+                Trick.Airborne ? Trick.PopSwitch : Trick.Switch, Trick.Airborne ? Trick.PopTailLeads : TailFirst,
+                flip, shove, spin, PresentationBodyTarget);
+        }
+    }
 
     public static void ForgetServer() { Cap = MaxSpeed; raiseWait = RaiseWait; refusedSinceRaise = false; raisedAt = putBackAt = -999f; }
 

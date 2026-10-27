@@ -8,6 +8,8 @@
 #   $prt      directory with replacement core DLLs to overlay (default none)
 #   $pwait    seconds to keep the client alive after chainloader start (default 45)
 #   $pplug    directory with plugin DLLs to install (default none)
+#   $pcaptures optional directory with a private reviewed capture pair (default
+#             captures\ in staging); a pair already in $pplug also works
 #   $psounds  directory with the plugin's WAV sound pack, copied to plugins\skate_sounds (default
 #             sounds\ in the staging folder when it is there; 0 stages none). The plugin needs all
 #             18 files (docs/RUST-SKATE-AUDIO.md) or it rides without skateboard audio and says so.
@@ -132,6 +134,26 @@ try {
   if ($prt) { Copy-Item "$prt\*" "$bx\core" -Force; say ('overlay core: ' + ((ls $prt | % Name) -join ',')) }
   if ($psteps) { Set-Content "$bx\plugins\steps.txt" $psteps }
   if ($pplug) { Copy-Item "$pplug\*" "$bx\plugins" -Force; say ('plugins: ' + ((ls $pplug | % Name) -join ',')) }
+  $captureSource = if ($pcaptures) { $pcaptures } else { "$probe\captures" }
+  $capturePack = Join-Path $captureSource 'skate_captures.skmc'
+  $captureApproval = Join-Path $captureSource 'skate_captures.approved.txt'
+  if ((Test-Path -LiteralPath $capturePack -PathType Leaf) -and (Test-Path -LiteralPath $captureApproval -PathType Leaf)) {
+    Copy-Item -LiteralPath $capturePack, $captureApproval -Destination "$bx\plugins" -Force
+    say 'private capture pair staged; client checks digest, ids and review status'
+  } elseif ($pcaptures -or (Test-Path -LiteralPath $capturePack) -or (Test-Path -LiteralPath $captureApproval)) {
+    foreach ($f in 'skate_captures.skmc', 'skate_captures.approved.txt') {
+      Remove-Item -LiteralPath (Join-Path "$bx\plugins" $f) -Force -ErrorAction SilentlyContinue
+    }
+    say 'private capture pair incomplete; built-in normal-riding poses remain active'
+  }
+  # A plugin directory can supply captures directly. Do not leave its half-pair staged
+  # when the optional external capture source is entirely absent.
+  $stagedCaptureFiles = @('skate_captures.skmc', 'skate_captures.approved.txt' |
+    % { Join-Path "$bx\plugins" $_ } | ? { Test-Path -LiteralPath $_ -PathType Leaf })
+  if ($stagedCaptureFiles.Count -eq 1) {
+    Remove-Item -LiteralPath $stagedCaptureFiles -Force
+    say 'private capture pair incomplete in plugin directory; built-in normal-riding poses remain active'
+  }
   # The sound pack goes in whole when it is complete. A partial set is staged all the same, so that
   # the plugin's log names what it misses, and is said out loud here.
   if ($sounds -and (Test-Path -LiteralPath $sounds) -and @(ls -LiteralPath $sounds -File -Filter *.wav).Count -gt 0) {
