@@ -133,8 +133,10 @@ namespace Shortcut.RustMod
         public double SourceTime(SkateCapturePhase phase, double value)
         {
             if (phase == SkateCapturePhase.Load) return load + Math.Max(0, Math.Min(.999999, value)) * (pop - load);
-            if (phase == SkateCapturePhase.Pop || phase == SkateCapturePhase.Air)
-                return pop + Math.Max(0, Math.Min(.999999, value)) * (caught - pop);
+            if (phase == SkateCapturePhase.Pop)
+                return pop + Math.Max(0, Math.Min(.999999, value)) * (air - pop);
+            if (phase == SkateCapturePhase.Air)
+                return air + Math.Max(0, Math.Min(.999999, value)) * (caught - air);
             if (phase == SkateCapturePhase.Catch) return Math.Min(land - .000001, caught + Math.Max(0, value));
             // Land/recovery starts only from the caller's observed physical landing, never a source timestamp.
             return Math.Max(land, Math.Min(Clip.Duration, land + Math.Max(0, value)));

@@ -206,6 +206,8 @@ and air has neither foot attached. Catch contacts may accumulate separately;
 land and recovery require both feet. Reattachment before catch, contact loss
 after catch, reversed phases and simultaneous conflicting events are refused.
 The first event of each phase remains its timing anchor.
+The normal air clock starts at the recorded air phase, after both source feet
+have released. The first live pop frame retains the procedural pose.
 
 The approval file is strict UTF-8 (at most 32 KiB), with these lines and one to
 256 unique canonical clip ids:
