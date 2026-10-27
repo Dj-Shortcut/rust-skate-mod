@@ -64,3 +64,30 @@ Four additional original round models use the same axes, scenes and material con
 The circular riding profile and normal-thickness closed proxy slabs use at most0.9degrees per segment. Coping is0.03m radius; backrails are0.86m. Mega has a6m flat bottom, mirrored walls, two decks and fully closed side cladding. Visible original timber studs are spaced at most0.4m along the side profiles.
 
 Generate only these into a separate output directory with `--only skate_qp_round_mini,skate_qp_round,skate_qp_round_large,skate_mega_halfpipe`; use `--preview-dir <absolute directory>` for daylight side and three-quarter previews. Formula/slope, chord/wheelbase, proxy, symmetry, frame recess, scene and triangle checks fail the background generator on error. The default run regenerates all twelve park pieces while preserving independent authored entries in place.
+
+### Runtime integration boundary
+
+[`round-models.txt`](../mods/rust/client/round-models.txt) records the four new files;
+it is a catalogue, not the active download list. Default builds still use the eight
+entries in `models.txt`. `SkateParks` builds transition geometry from the current
+native placement contract, rather than replacing it with a differently sized GLB.
+
+| Piece | Current native/client riding contract | New authored asset |
+| --- | --- | --- |
+| Mini quarterpipe | width 2.8; R 1.2; rise 1.2; top 90° | width 3; R 1.5; rise 1; top 70.529° |
+| Quarterpipe | width 2.8; R 3; rise 3; top 90° | width 3; R 2.5; rise 2; top 78.463° |
+| Large quarterpipe | width 2.8; R 3; rise 3; separate 3 m side apron | width 4.5; R 3; rise 3; 2 m rear deck |
+| MEGA halfpipe | 80 native parts; width 12; flat 12; R/rise approximately 9.589; 3 m decks | width 9; flat 6; R 3.5; rise 3.6 including 0.1 m vert; 3 m decks |
+
+The current quarterpipe frame starts at forward -1.4 with its bottom tangent at
+-1.2; the new quarterpipe pivot is the tangent point at zero. The current MEGA
+anchor is its first floor lane, 4.5 m across from the flat's centre; the new model
+pivot is the flat's centre. A filename swap, translation or uniform scale cannot
+make these different profiles and widths share the same riding surface.
+
+Using the round models requires a versioned native-layout migration that updates
+server placement/support, saved-group interpretation, collision ownership and
+client matching/preview together. Existing 80-part MEGAs must retain their old
+profile. Entry strips, coping/grind contact and sound-flat limits must follow the
+new shared profile before enabling its closed `CollisionProxies`. The original
+eight GLBs remain unchanged. This migration and native riding are still open.

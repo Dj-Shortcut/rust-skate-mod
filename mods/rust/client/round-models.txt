@@ -1,0 +1,7 @@
+# Original round-transition assets, catalogued for the coordinated native-layout migration.
+# This is not the active models.txt list: current saved/native profiles have different dimensions.
+# Default builds must not silently stage or replace the live transition models with these files.
+assets/authored/skate_qp_round_mini.glb
+assets/authored/skate_qp_round.glb
+assets/authored/skate_qp_round_large.glb
+assets/authored/skate_mega_halfpipe.glb
