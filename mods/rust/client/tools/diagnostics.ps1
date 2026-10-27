@@ -117,6 +117,34 @@ function Save-SkateLogSnapshot([string]$RustPath, [string]$ProbePath, [string]$R
   return [pscustomobject]@{ Count = $entries.Count; Directory = $destination }
 }
 
+function Get-SkateLatestMountEvidence([string[]]$Lines) {
+  # Only print fixed stage names and a Unity method name, never exception text, arguments or paths.
+  $stages = @('player identity', 'physical body mode', 'physical collision flag', 'physical body transform',
+    'root Rigidbody lookup', 'independent root proxy', 'root Rigidbody children', 'root Joint children',
+    'physical Joint children', 'physical body position', 'physical body velocity', 'physical transform position',
+    'physical transform rotation', 'root proxy distance', 'root proxy collision flag', 'root proxy parent',
+    'root collision disable', 'collision lease readback', 'ride initialization')
+  $state = 'none'; $step = ''; $method = ''; $lastRefusal = ''
+  foreach ($line in $Lines) {
+    if ($line -match 'SKATE MOUNT yaw=') { $state = 'mounted'; $step = ''; $method = ''; $lastRefusal = ''; continue }
+    if ($line -match 'SKATE ROOTSYNC mount refused:') {
+      # MountFailure deduplicates identical failures, so repeated refusals may have no new step/trace.
+      if ($state -ne 'refused' -or $line -cne $lastRefusal) { $step = ''; $method = '' }
+      $state = 'refused'; $lastRefusal = $line; continue
+    }
+    if ($line -match 'SKATE MOUNT failure step=(.*?) type=[A-Za-z][A-Za-z0-9_`.+]*$') {
+      $name = $Matches[1]
+      $state = 'refused'; $step = if ($name -cin $stages) { $name } else { 'unrecognized' }; $method = ''; continue
+    }
+    if ($state -eq 'refused' -and $step -and -not $method -and
+      $line -match 'SKATE MOUNT trace [0-9]+:\s*(?:at\s+)?(UnityEngine\.[A-Za-z0-9_.+`]+)') {
+      $method = $Matches[1]
+    }
+  }
+  if ($state -eq 'refused' -and -not $step) { $step = 'not in inspected log tail' }
+  return [pscustomobject]@{ State = $state; Step = $step; UnityFrame = $method }
+}
+
 function Show-SkateChecks([string]$RustPath, [string]$ProbePath) {
   $launcher = Join-Path $ProbePath 'launcher'
   $version = Join-Path $launcher 'version.txt'
@@ -165,8 +193,15 @@ function Show-SkateChecks([string]$RustPath, [string]$ProbePath) {
         $mounted = [bool]($tail -match 'SKATE MOUNT yaw=')
         $refused = [bool]($tail -match 'ROOTSYNC mount refused:')
         $native = [bool]($tail -match 'ROOTSYNC mount refused:.*Method unstripping failed')
+        $latestMount = Get-SkateLatestMountEvidence $tail
         $updated = (Get-Item -LiteralPath $path).LastWriteTimeUtc.ToString('u')
         Write-Host ('  ' + (Split-Path $folder -Leaf) + '/' + $relative + ' @ ' + $updated + ': prepared=' + $prepared + ', mount=' + $mounted + ', proxy-refused=' + $refused + ', unavailable-native-method=' + $native)
+        if ($latestMount.State -ne 'none') {
+          $detail = '    Latest mount in this log: ' + $latestMount.State
+          if ($latestMount.Step) { $detail += '; step=' + $latestMount.Step }
+          if ($latestMount.UnityFrame) { $detail += '; first Unity stack frame=' + $latestMount.UnityFrame }
+          Write-Host $detail
+        }
       } catch { Write-Host ('  ' + (Split-Path $folder -Leaf) + ': a saved log is unreadable.') }
       $shown++; break
     }

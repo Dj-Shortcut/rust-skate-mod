@@ -60,8 +60,22 @@ After installing these tools, diagnostics can run without starting Rust:
 ```
 
 Diagnostics preserve private logs and report preparation, mount and refusal
-signals. They do not start or stop the game. A report from an older saved run is
-not evidence that the newly installed candidate works.
+signals. For each shown log they also report the latest mount outcome, the
+recorded failure step, and the first Unity stack-frame method name if present.
+If the step is outside the inspected log tail or absent, diagnostics say so.
+A stack frame is a clue, not proof of the stripped native method; no
+exception text, argument values or source paths are printed. Repeated identical
+refusals retain their earlier recorded detail when the client deduplicates traces.
+They do not start or stop the game. A report from an older saved run is not
+evidence that the newly installed candidate works.
+
+For an offline check, dot-source `diagnostics.ps1` against disposable folders
+and put `SKATE MOUNT yaw=90`, a `SKATE ROOTSYNC mount refused:` line, and
+`SKATE MOUNT failure step=root Joint children type=NotSupportedException` in
+that order in a synthetic `run-P-*/skate.log`. `Show-SkateChecks` must report
+the last attempt as refused at `root Joint children`, even though the log also
+contains an earlier successful mount. A following `SKATE MOUNT yaw=...` must
+clear the old failure detail. This checks log interpretation only.
 
 ## One focused native attempt
 
