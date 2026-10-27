@@ -52,7 +52,7 @@ public static class SkateCapturedTricks
             SkateCaptureLibrary library;
             using (var stream = new MemoryStream(bytes))
                 if (!SkateCapturePack.TryRead(stream, out library, out error)) { Status = error; return; }
-            var pending = new SkateCapturePlayback[Kinds.Length]; int accepted = 0, unsupported = 0;
+            var pending = new SkateCapturePlayback[Kinds.Length]; int accepted = 0, unsupported = 0, rotationClocks = 0;
             for (int n = 0; n < approval.Count; n++)
             {
                 SkateCaptureClip clip = null;
@@ -63,10 +63,12 @@ public static class SkateCapturedTricks
                 if (pending[kind] != null) { Status = "Captured riding disabled: ambiguous approved trick variant"; return; }
                 SkateCapturePlayback playback;
                 if (!SkateCapturePlayback.TryCreate(clip, out playback, out error)) { Status = error; return; }
+                if (playback.UsesSourceRotationClock) rotationClocks++;
                 pending[kind] = playback; accepted++;
             }
             Array.Copy(pending, clips, clips.Length);
-            Status = "Captured riding ready: " + accepted + " approved variants" + (unsupported > 0 ? "; " + unsupported + " unsupported approvals ignored" : "") + "; restart client after replacing pack";
+            Status = "Captured riding ready: " + accepted + " approved variants; source rotation clocks=" + rotationClocks +
+                (unsupported > 0 ? "; " + unsupported + " unsupported approvals ignored" : "") + "; restart client after replacing pack";
         }
         catch (Exception e) { Status = "Captured riding disabled: " + e.GetType().Name; }
         finally { Out.Say("CAPTURE " + Status); }

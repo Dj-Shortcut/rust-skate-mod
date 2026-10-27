@@ -97,8 +97,14 @@ namespace Shortcut.RustMod
     {
         public readonly SkateCaptureClip Clip;
         private readonly double load, pop, air, caught, land, recovery;
+        private readonly double[] rotationTimes, rotationProgress;
+        private readonly int rotationKeys;
+        public bool UsesSourceRotationClock { get { return rotationKeys > 1; } }
         private SkateCapturePlayback(SkateCaptureClip clip, double[] times)
-        { Clip = clip; load = times[1]; pop = times[2]; air = times[3]; caught = times[4]; land = times[5]; recovery = times[6]; }
+        {
+            Clip = clip; load = times[1]; pop = times[2]; air = times[3]; caught = times[4]; land = times[5]; recovery = times[6];
+            BuildRotationClock(clip, air, caught, out rotationTimes, out rotationProgress, out rotationKeys);
+        }
         public static bool TryCreate(SkateCaptureClip clip, out SkateCapturePlayback playback, out string error)
         {
             playback = null; error = null;
@@ -136,11 +142,84 @@ namespace Shortcut.RustMod
             if (phase == SkateCapturePhase.Pop)
                 return pop + Math.Max(0, Math.Min(.999999, value)) * (air - pop);
             if (phase == SkateCapturePhase.Air)
-                return air + Math.Max(0, Math.Min(.999999, value)) * (caught - air);
+            {
+                double progress = Math.Max(0, Math.Min(.999999, value));
+                if (!UsesSourceRotationClock) return air + progress * (caught - air);
+                // The first trusted Air pose may already contain some flip. Hold it
+                // rather than replaying an earlier pose with a foot still on the deck.
+                if (progress <= rotationProgress[0]) return air;
+                if (progress >= rotationProgress[rotationKeys - 1]) return caught - .000001;
+                int low = 0, high = rotationKeys - 1;
+                while (high - low > 1)
+                { int middle = (low + high) / 2; if (rotationProgress[middle] <= progress) low = middle; else high = middle; }
+                double weight = (progress - rotationProgress[low]) / (rotationProgress[high] - rotationProgress[low]);
+                return Math.Min(caught - .000001, rotationTimes[low] + weight * (rotationTimes[high] - rotationTimes[low]));
+            }
             if (phase == SkateCapturePhase.Catch) return Math.Min(land - .000001, caught + Math.Max(0, value));
             // Land/recovery starts only from the caller's observed physical landing, never a source timestamp.
             return Math.Max(land, Math.Min(Clip.Duration, land + Math.Max(0, value)));
         }
+        // Only these known, single-turn Y*X*Z tracks have an unambiguous inverse.
+        // Unsupported, non-invertible, reversing or near-gimbal tracks retain the old
+        // phase clock. Pack validation and gameplay rotation authority are unchanged.
+        private static void BuildRotationClock(SkateCaptureClip clip, double air, double caught,
+            out double[] times, out double[] progress, out int count)
+        {
+            times = progress = null; count = 0;
+            if (caught - air <= .000001) return;
+            double rollTurn, yawTurn = 0;
+            switch (clip.MovementKind)
+            {
+                case "switch-heelflip": case "nollie-heelflip": rollTurn = -360; break;
+                case "fakie-kickflip": rollTurn = 360; break;
+                case "nollie-backside-180-heelflip": rollTurn = -360; yawTurn = 180; break;
+                case "nollie-360-flip": rollTurn = 360; yawTurn = 360; break;
+                default: return;
+            }
+            var samples = new double[clip.SampleCount + 2]; int sampleCount = 0;
+            for (int row = 0; row < clip.SampleCount && clip.Number(row, 0) < caught; row++) samples[sampleCount++] = clip.Number(row, 0);
+            samples[sampleCount++] = air; samples[sampleCount++] = caught;
+            Array.Sort(samples, 0, sampleCount);
+            var ts = new double[sampleCount]; var ps = new double[sampleCount]; int keys = 0;
+            double previousTime = -1, previousRoll = 0, previousYaw = 0, roll = 0, yaw = 0, lastRollProgress = 0, lastYawProgress = 0;
+            const double degrees = 180 / Math.PI;
+            for (int n = 0; n < sampleCount; n++)
+            {
+                double t = samples[n]; if (t == previousTime) continue;
+                int low = 0, high = clip.SampleCount - 1;
+                while (high - low > 1) { int middle = (low + high) / 2; if (clip.Number(middle, 0) <= t) low = middle; else high = middle; }
+                var a = new SkateCaptureRotation(clip.Number(low, 4), clip.Number(low, 5), clip.Number(low, 6), clip.Number(low, 7));
+                var b = new SkateCaptureRotation(clip.Number(high, 4), clip.Number(high, 5), clip.Number(high, 6), clip.Number(high, 7));
+                double w = Math.Max(0, Math.Min(1, (t - clip.Number(low, 0)) / (clip.Number(high, 0) - clip.Number(low, 0))));
+                var q = SkateCaptureRotation.Slerp(a, b, w);
+                var right = q.Rotate(new SkateVector(1, 0, 0)); var up = q.Rotate(new SkateVector(0, 1, 0)); var forward = q.Rotate(new SkateVector(0, 0, 1));
+                if (Math.Abs(forward.Y) > .94) return; // Y*X*Z pitch must remain away from its 90-degree singularity.
+                double r = Math.Atan2(right.Y, up.Y) * degrees, y = Math.Atan2(forward.X, forward.Z) * degrees;
+                if (previousTime < 0)
+                { if (Math.Abs(r) > 5 || Math.Abs(y) > 5) return; roll = r; yaw = y; }
+                else
+                {
+                    double dr = WrapDegrees(r - previousRoll), dy = WrapDegrees(y - previousYaw);
+                    if (Math.Abs(dr) > 90 || Math.Abs(dy) > 90) return;
+                    roll += dr; yaw += dy;
+                }
+                previousRoll = r; previousYaw = y; previousTime = t;
+                if (yawTurn == 0 && Math.Abs(yaw) > 5) return;
+                if (t < air) continue;
+                double rp = roll / rollTurn, yp = yawTurn != 0 ? yaw / yawTurn : 0;
+                if (rp < 0 || rp > 1.02 || yp < 0 || yp > 1.02 ||
+                    keys > 0 && (rp < lastRollProgress - .00000001 || yp < lastYawProgress - .00000001)) return;
+                lastRollProgress = rp; lastYawProgress = yp;
+                double p = yawTurn != 0 ? Math.Min(rp, yp) : rp;
+                // A plateau would make the inverse jump across source body motion.
+                if (!Finite(p) || p < 0 || p > 1.02 || keys > 0 && p <= ps[keys - 1] + .00000001) return;
+                ts[keys] = t; ps[keys++] = p;
+            }
+            if (keys < 2 || Math.Abs(roll - rollTurn) > 5 || Math.Abs(yaw - yawTurn) > 5 || ps[0] >= .5) return;
+            times = ts; progress = ps; count = keys;
+        }
+        private static double WrapDegrees(double angle)
+        { return angle > 180 ? angle - 360 : angle < -180 ? angle + 360 : angle; }
         public bool TrySample(SkateCapturePhase phase, double value, SkateRiderRig rig, SkateStance stance,
             SkateBoardPose liveBoard, SkateVector liveHeading, SkateVector supportUp,
             out SkateCaptureFrame shown, out string error)

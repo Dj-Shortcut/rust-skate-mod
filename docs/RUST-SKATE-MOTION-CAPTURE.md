@@ -245,6 +245,25 @@ after catch, reversed phases and simultaneous conflicting events are refused.
 The first event of each phase remains its timing anchor.
 The normal air clock starts at the recorded air phase, after both source feet
 have released. The first live pop frame retains the procedural pose.
+For the five known single-turn variants, playback precomputes an inverse of the
+source board's unwrapped Y*X*Z rotation progress. The pose follows the last
+unfinished live rotation instead of assuming a linear source-time relationship.
+Each active source axis must advance without reversing; a plateau in the limiting
+progress, a large rotation step, a turn more than five degrees from its expected
+endpoint or a near-gimbal pitch keeps
+the previous linear clock. The startup status reports how many inverse clocks
+were accepted. The arrays are built during loading; lookup does not allocate.
+
+The first trusted air sample can already be partway through its rotation. It is
+held until live progress reaches that fraction, rather than moving back into a
+foot-supported pop pose. An unfinished source endpoint is likewise held before
+catch; it is not rescaled into a fictitious complete turn. Catch and landing
+still follow live state. Matching the limiting component does not independently
+match every source/live flip and yaw angle or prove foot clearance. Inspect the
+actual skin and runtime board shape before approving a pack.
+
+The [full animation-library batches](RUST-SKATE-ANIMATION-LIBRARY.md) keep code,
+capture quality and native gameplay acceptance separate.
 
 The approval file is strict UTF-8 (at most 32 KiB), with these lines and one to
 256 unique canonical clip ids:
