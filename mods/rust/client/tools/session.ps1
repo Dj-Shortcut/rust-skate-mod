@@ -8,6 +8,8 @@
 #   $prt      directory with replacement core DLLs to overlay (default none)
 #   $pwait    seconds to keep the client alive after chainloader start (default 45)
 #   $pplug    directory with plugin DLLs to install (default none)
+#   $pcaptures optional directory with a private reviewed capture pair (default
+#             captures\ in staging); a pair already in $pplug also works
 #   $psteps   comma separated plugin steps written to plugins\steps.txt
 #   $ppreload PreloadIL2CPPInteropAssemblies (default false)
 #   $pdone    seconds to keep the client running until the plugin writes plugins\skate.done
@@ -124,6 +126,18 @@ try {
   if ($prt) { Copy-Item "$prt\*" "$bx\core" -Force; say ('overlay core: ' + ((ls $prt | % Name) -join ',')) }
   if ($psteps) { Set-Content "$bx\plugins\steps.txt" $psteps }
   if ($pplug) { Copy-Item "$pplug\*" "$bx\plugins" -Force; say ('plugins: ' + ((ls $pplug | % Name) -join ',')) }
+  $captureSource = if ($pcaptures) { $pcaptures } else { "$probe\captures" }
+  $capturePack = Join-Path $captureSource 'skate_captures.skmc'
+  $captureApproval = Join-Path $captureSource 'skate_captures.approved.txt'
+  if ((Test-Path -LiteralPath $capturePack -PathType Leaf) -and (Test-Path -LiteralPath $captureApproval -PathType Leaf)) {
+    Copy-Item -LiteralPath $capturePack, $captureApproval -Destination "$bx\plugins" -Force
+    say 'private capture pair staged; client checks digest, ids and review status'
+  } elseif ($pcaptures -or (Test-Path -LiteralPath $capturePack) -or (Test-Path -LiteralPath $captureApproval)) {
+    foreach ($f in 'skate_captures.skmc', 'skate_captures.approved.txt') {
+      Remove-Item -LiteralPath (Join-Path "$bx\plugins" $f) -Force -ErrorAction SilentlyContinue
+    }
+    say 'private capture pair incomplete; built-in normal-riding poses remain active'
+  }
   $cfg = "[IL2CPP]`r`nUpdateInteropAssemblies = false`r`nPreloadIL2CPPInteropAssemblies = " + ([bool]$ppreload).ToString().ToLower() + "`r`n`r`n[Logging]`r`nUnityLogListening = " + $plisten.ToString().ToLower() + "`r`n`r`n[Logging.Disk]`r`nLogLevels = All`r`n`r`n[Logging.Console]`r`nEnabled = false`r`n"
   [IO.File]::WriteAllText("$bx\config\BepInEx.cfg", $cfg)
   # The controller's reader runs beside the client as a process of its own: Steam must not have

@@ -37,6 +37,15 @@ show their review status; normal riding does not automatically consume these
 reference captures. Missing or invalid packs leave the built-in catalogue usable.
 See the [motion capture pipeline](../../../docs/RUST-SKATE-MOTION-CAPTURE.md).
 
+Client source 0.18.64 adds normal-riding presentation for five exact captured
+flat-ground variants. It requires a separately reviewed private pack and a
+digest-pinned `skate_captures.approved.txt`, loaded once per client process.
+Live trick state selects and times the pose; live physics, board rotation,
+landing and scoring remain authoritative. Missing approval, a changed trick or
+a competing action uses the existing pose route. The Python approval tool and
+private-pair staging are described in the pipeline document. Source compilation,
+animation review and native Shadow gameplay remain separate verification gates.
+
 Client 0.18.34 retains the displayed support frame when contact is lost at a transition
 take-off. Held grabs keep their hand and elbow targets through pose easing and shaping;
 during a single grab the free hand stays within its measured arm reach. Controller crouching interrupts a foot stroke,

@@ -24,6 +24,18 @@ Get-ChildItem "$probe\play" -File -Filter *.glb | Remove-Item
 Get-ChildItem $L -File -Filter *.ps1 | ? { -not $files.ContainsKey($_.Name) } | Remove-Item
 Copy-Item "$probe\plugin\ShortcutSkateClient.dll" "$probe\play\ShortcutSkateClient.dll" -Force
 Get-ChildItem "$probe\plugin" -File -Filter *.glb | % { Copy-Item $_.FullName "$probe\play\$($_.Name)" -Force }
+# Private reviewed captures travel as a pair. The runtime validates the pack's
+# digest and exact approved ids; neither file is fetched from the repository.
+$captureFiles = @('skate_captures.skmc', 'skate_captures.approved.txt')
+$captureSource = "$probe\captures"
+if ((Test-Path -LiteralPath "$captureSource\skate_captures.skmc" -PathType Leaf) -and
+    (Test-Path -LiteralPath "$captureSource\skate_captures.approved.txt" -PathType Leaf)) {
+  foreach ($f in $captureFiles) { Copy-Item -LiteralPath "$captureSource\$f" -Destination "$probe\play\$f" -Force }
+  'private capture pair staged; animation approval is checked by the client'
+} elseif ((Test-Path -LiteralPath "$captureSource\skate_captures.skmc") -or
+          (Test-Path -LiteralPath "$captureSource\skate_captures.approved.txt")) {
+  'private capture pair incomplete; normal riding keeps the built-in poses'
+}
 foreach ($f in $files.Keys) { [IO.File]::WriteAllText("$L\$f", $files[$f], $enc) }
 $pb = ((gc 'C:\Program Files (x86)\Steam\steamapps\appmanifest_252490.acf' | sls '"buildid"').Line -split '"')[3]
 "Skate mod " + $rel.Substring(0, 7) + ", prepared " + (Get-Date -Format 'yyyy-MM-dd HH:mm') + " for Rust build $pb" | Out-File "$L\version.txt" -Encoding utf8

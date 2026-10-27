@@ -40,6 +40,16 @@ def confidence_track(raw, first, last, options, actor_expected=False):
     occluded=options.get('occludedPolicy','interpolate');retain_presence=float(options.get('retainModelPresence',.8));margin=float(options.get('roiEdgeMargin',.01))
     if occluded not in ('interpolate','retain-model'):raise ValueError('Unknown occludedPolicy')
     if not .8<=retain_presence<=1 or not 0<=margin<=.2:raise ValueError('Invalid retain-model presence/ROI threshold')
+    rejected=options.get('rejectedModelFrames',{})
+    if not isinstance(rejected,dict):raise ValueError('rejectedModelFrames must map raw landmark indices to source frames')
+    if rejected and (not isinstance(options.get('rejectedModelProvenance'),str) or not options['rejectedModelProvenance'].strip()):
+        raise ValueError('Explicit model-point rejection requires rejectedModelProvenance')
+    rejected_sets={}
+    for name,frames in rejected.items():
+        if name not in {str(j) for j in REQUIRED} or not isinstance(frames,list) or not frames or any(type(i) is not int or not first<=i<=last for i in frames):
+            raise ValueError('Invalid rejected model landmark or source frames')
+        if frames!=sorted(set(frames)):raise ValueError('Rejected model source frames must be unique and sorted')
+        rejected_sets[int(name)]=set(frames)
     for row, i in enumerate(range(first,last+1)):
         f = indexed[i]
         if f['pose_count'] not in (0,1): raise CaptureError('Multiple people require explicit subject extraction', dict(frame=i))
@@ -49,12 +59,19 @@ def confidence_track(raw, first, last, options, actor_expected=False):
                 raise CaptureError('Missing or ambiguous declared actor; identity gaps cannot be interpolated',dict(frame=i,targetSelection=f.get('target_selection')))
             for j in REQUIRED: reasons.setdefault(str(j), []).append(dict(frame=i, reason='absent_pose'))
             continue
-        w, im = f['world_landmarks'][0], f['image_landmarks'][0]
-        if len(w) != 33 or len(im) != 33: raise ValueError('Expected33 actual world/image landmarks')
+        groups = [f.get('world_landmarks'), f.get('image_landmarks')]
+        if any(not isinstance(group,list) or len(group)!=1 or not isinstance(group[0],list)
+               or len(group[0])!=33 or any(not isinstance(point,dict) for point in group[0]) for group in groups):
+            raise CaptureError('Expected one complete33-point world/image landmark array',dict(frame=i))
+        w, im = groups[0][0], groups[1][0]
+        roi=f.get('roi')
+        if roi is not None and (not isinstance(roi,list) or len(roi)!=4 or any(type(v) is not int for v in roi)
+                                or min(roi[:2])<0 or min(roi[2:])<1):
+            raise CaptureError('Invalid retained ROI array',dict(frame=i))
         for j in range(33):
             try: xyz = finite([w[j][a] for a in ('x','y','z')], (3,))
             except (KeyError,ValueError): xyz = np.full(3,np.nan)
-            why = []
+            why = ['review_rejected_model'] if i in rejected_sets.get(j,()) else []
             for label, item in [('image',im[j]),('world',w[j])]:
                 p, v = item.get('presence'), item.get('visibility')
                 if p is None or not math.isfinite(p) or not 0<=p<=1 or p < presence: why.append(label+'_presence')
@@ -65,7 +82,6 @@ def confidence_track(raw, first, last, options, actor_expected=False):
             except (KeyError,ValueError): why.append('invalid_image')
             if not np.isfinite(xyz).all(): why.append('invalid_world')
             if im[j].get('roi_cropped'): why.append('roi_edge_or_crop')
-            roi = f.get('roi')
             if roi is not None:
                 px, py = im[j].get('x', -1)*f['width'], im[j].get('y', -1)*f['height']
                 if not (roi[0]+roi[2]*margin <= px <= roi[0]+roi[2]*(1-margin) and roi[1]+roi[3]*margin <= py <= roi[1]+roi[3]*(1-margin)):
@@ -101,6 +117,7 @@ def confidence_track(raw, first, last, options, actor_expected=False):
                        occludedPolicy=occluded,retainModelPresenceMinimum=retain_presence,estimatedModelFrames=estimates,
                        estimatedModelFrameCounts={k:len(v) for k,v in estimates.items()},trustedFrameCounts={str(j):int(good[:,j].sum()) for j in REQUIRED},
                        estimatedModelStatus='UNREVIEWED original model estimates; visibility failed, trusted=FALSE, not used as interpolation anchors',
+                       reviewRejectedModelFrames=rejected,reviewRejectionProvenance=options.get('rejectedModelProvenance'),
                        correctionMeaning='Interpolated/edge-held observations are reconstruction, not additional measured capture')
 
 def ik(hip, ankle, a, b, pole, limit, corrections, t, side):
@@ -114,6 +131,18 @@ def ik(hip, ankle, a, b, pole, limit, corrections, t, side):
     along = (a*a-b*b+d*d)/(2*d)
     knee = hip+axis*along+bend*math.sqrt(max(0.,a*a-along*along))
     return knee, ankle
+
+def interpolate_direction(a, b, weight):
+    """Interpolate fixed-length limb direction, not variable model bone length."""
+    a,b=finite(a,(3,)),finite(b,(3,))
+    if min(np.linalg.norm(a),np.linalg.norm(b))<1e-8:
+        raise CaptureError('Degenerate source arm direction')
+    a,b=unit(a),unit(b);dot=float(np.clip(np.dot(a,b),-1,1))
+    if dot<-.9995:
+        raise CaptureError('Ambiguous opposing source arm directions; review the source observations')
+    if dot>.9995:return unit(a*(1-weight)+b*weight)
+    angle=math.acos(dot)
+    return (a*math.sin((1-weight)*angle)+b*math.sin(weight*angle))/math.sin(angle)
 
 def retarget(raw, job, provenance):
     window=job['window']; first,last=window['firstFrame'],window['lastFrame']; fps=float(window['fps'])
@@ -129,6 +158,8 @@ def retarget(raw, job, provenance):
     internal_cuts=sorted(k for k in cuts if first<k<=last)
     if internal_cuts:raise CaptureError('Source window crosses a declared/detected cut',dict(sourceFrames=internal_cuts))
     opts=job.get('retarget',{});actor=job['source'].get('actorHint')
+    arm_interpolation=opts.get('armInterpolation','linear')
+    if arm_interpolation not in ('linear','spherical'):raise ValueError('Unknown armInterpolation')
     world,confidence=confidence_track(raw,first,last,opts,isinstance(actor,dict) and bool(actor.get('hipAndHeightSourceKeys')))
     basis=camera_curve(job['camera'],duration)
     for i in range(len(world)): world[i]=world[i]@basis(i/fps).T
@@ -163,7 +194,9 @@ def retarget(raw, job, provenance):
     for side in ('Left','Right'):
         source_side=('Right' if side=='Left' else 'Left') if reflect_keys else side
         config=feet.get(source_side,{})
-        foot_curves[side]={key:Curve(config[key],duration) for key in ('positionKeys','soleUpKeys','airSoleUpKeys') if key in config}
+        foot_curves[side]={key:Curve(config[key],duration) for key in ('positionKeys','soleUpKeys','airSoleUpKeys','airPositionKeys') if key in config}
+        if 'airPositionKeys' in config and (not isinstance(config.get('airPositionProvenance'),str) or not config['airPositionProvenance'].strip()):
+            raise ValueError('Explicit free-foot paths require airPositionProvenance: '+source_side)
         for key in ('soleUpKeys','airSoleUpKeys'):
             if key not in foot_curves[side]:continue
             values=foot_curves[side][key].values
@@ -183,7 +216,7 @@ def retarget(raw, job, provenance):
     limit=float(opts.get('maxReachCorrectionM',0))
     if not 0<=limit<=.5:raise ValueError('maxReachCorrectionM outside0..0.5')
     for t in times:
-        source_pos=min(last-first,t*fps);lo=int(source_pos);hi=min(len(world)-1,lo+1);w=world[lo]*(1-(source_pos-lo))+world[hi]*(source_pos-lo)
+        source_pos=min(last-first,t*fps);lo=int(source_pos);source_hi=min(len(world)-1,lo+1);w=world[lo]*(1-(source_pos-lo))+world[source_hi]*(source_pos-lo)
         for a,b in ((23,24),(11,12),(11,13),(13,15),(12,14),(14,16)):
             if np.linalg.norm(w[a]-w[b])<1e-8:raise CaptureError('Degenerate captured body direction',dict(t=t,landmarks=[a,b]))
         if np.linalg.norm((w[11]+w[12]-w[23]-w[24])*.5)<1e-8:
@@ -215,7 +248,14 @@ def retarget(raw, job, provenance):
                 if reflect_keys:local_sole[0]*=-1
                 ankle=origin+R@local;sole=R@unit(local_sole)
             else:
-                ankle=pelvis+w[ai]-hip_mid;sole=unit(curves['airSoleUpKeys'](t) if 'airSoleUpKeys' in curves else UP)
+                # Optional reconstructed free-foot paths use the same absolute
+                # authoring frame as pelvisKeys. They can meet a source-observed
+                # catch without changing raw model points or faking contact.
+                if 'airPositionKeys' in curves:
+                    ankle=curves['airPositionKeys'](t)
+                    if reflect_keys:ankle[0]*=-1
+                else:ankle=pelvis+w[ai]-hip_mid
+                sole=unit(curves['airSoleUpKeys'](t) if 'airSoleUpKeys' in curves else UP)
             if reflect_keys and not contact:sole[0]*=-1
             heading=unit(w[toe]-w[heel],anatomy)
             fallback=np.cross(sole,[0,0,1]) if abs(sole[2])<.9 else np.cross(sole,[1,0,0])
@@ -225,7 +265,12 @@ def retarget(raw, job, provenance):
             j[side+'Toe']=ankle+heading*math.sqrt(rig['foot']**2-rig['toeDrop']**2)-sole*rig['toeDrop'];soles[side]=unit(sole)
             si,ei,wi=(11,13,15) if index==0 else (12,14,16)
             shoulder=pelvis+torso*rig['shoulderRise']+shoulder_axis*(rig['shoulderHalfWidth'] if index else -rig['shoulderHalfWidth'])
-            j[side+'Shoulder']=shoulder;j[side+'Elbow']=shoulder+unit(w[ei]-w[si])*rig['upperArm'];j[side+'Hand']=j[side+'Elbow']+unit(w[wi]-w[ei])*rig['forearm']
+            if arm_interpolation=='spherical':
+                weight=source_pos-lo
+                upper=interpolate_direction(world[lo,ei]-world[lo,si],world[source_hi,ei]-world[source_hi,si],weight)
+                fore=interpolate_direction(world[lo,wi]-world[lo,ei],world[source_hi,wi]-world[source_hi,ei],weight)
+            else:upper,fore=unit(w[ei]-w[si]),unit(w[wi]-w[ei])
+            j[side+'Shoulder']=shoulder;j[side+'Elbow']=shoulder+upper*rig['upperArm'];j[side+'Hand']=j[side+'Elbow']+fore*rig['forearm']
             for a,b,length in [('Hip','Knee',rig['thigh']),('Knee','Ankle',rig['shin']),('Ankle','Toe',rig['foot']),('Shoulder','Elbow',rig['upperArm']),('Elbow','Hand',rig['forearm'])]:
                 maximum_chain_error=max(maximum_chain_error,abs(float(np.linalg.norm(j[side+a]-j[side+b]))-length))
         pelvis_up=unit(torso*.45+UP*.55);pelvis_up=unit(pelvis_up-hip_axis*np.dot(pelvis_up,hip_axis),UP)
@@ -233,6 +278,8 @@ def retarget(raw, job, provenance):
         frames.append(dict(t=t,sourceFrame=first+t*fps,board=dict(origin=origin.tolist(),quaternion=q.tolist()),joints={k:finite(j[k],(3,)).tolist() for k in JOINTS},dirs={k:unit(directions[k]).tolist() for k in DIRS},soleUp={k:v.tolist() for k,v in soles.items()},phase=events[event_index]['phase'],contacts=mask))
     if maximum_chain_error>1e-6:raise CaptureError('Retarget chain length error',dict(maxChainErrorM=maximum_chain_error))
     metadata=dict(id=job['id'],label=job['label'],sourceUrl=job['source']['url'],sourceAuthor=job['source']['author'],movementKind=job['movementKind'],reviewed=job['reviewed'],rights=job['source'].get('rights','No publication/relicensing permission asserted'),canonicalStance='regular',capturedStance=stance,keySpace=key_space,coordinateFrame='Y up, +Z nose, +X right; right-handed quaternion XYZW; origin=deck top',toeContract='Physical toe endpoints include soleUp*toeDrop once; native sampler reconstructs flat toe targets before writer drop',sourceFps=fps,firstSourceFrame=first,lastSourceFrame=last,provenance=provenance,boardProvenance=board_spec['provenance'],boardLimit='Observed keys mean recipe observations/estimates, not calibrated measured3D board mocap',footOrientationLimit='Soles default to board-up in contact and world-up in air unless per-foot keys supplied. Captured heel/toe heading is projected onto that sole; degenerate projections use a perpendicular basis. Not measured shoe orientation.',rootLimit='Pelvis/board trajectory supplied explicitly by recipe; MediaPipe world33 is hip-relative; no player-root/physics authority',sampleLimit='Dense retarget interpolation, not additional measured source frames',camera=job['camera'],rig=rig,metricScale=scale)
+    metadata['armInterpolation']=arm_interpolation
+    metadata['freeFootPaths']={side:dict(coordinates='Absolute authoring frame, same as pelvisKeys; reflected with captured keySpace',provenance=feet[('Right' if side=='Left' else 'Left') if reflect_keys else side]['airPositionProvenance']) for side in ('Left','Right') if 'airPositionKeys' in foot_curves[side]}
     selection_frames=[dict(frame=f['frame_index'],selection=f['target_selection']) for f in raw['frames'] if first<=f['frame_index']<=last and f.get('target_selection') is not None]
     quality=dict(status='validated transport/kinematics; visual/native acceptance remains open',reviewed=job['reviewed'],confidence=confidence,actorSelection=selection_frames,cutAudit=dict(declaredOrDetectedFrames=sorted(cuts),startsAtDeclaredCut=first in cuts,limit='No automatic visual cut detector; absent markers are not proof of a continuous shot'),boardRotation=rot_quality,boardFloor=dict(policy=floor_policy,minUncorrectedCornerY=minimum_floor,corrections=floor_corrections),invertedFootContactException=dict(explicitlyAllowed=allow_inverted,sampleTimes=inverted_contacts),reachCorrections=reaches,maxChainErrorM=maximum_chain_error,feetDefaultOffsetsEstimated=[s for s in ('Left','Right') if not foot_curves[s].get('positionKeys')],bodyYaw='Preserved in declared camera basis; no per-frame inferred hip-facing normalization',sourceFrames=last-first+1,outputSamples=len(frames))
     return dict(format='skate-capture-clip/1',fps=hz,duration=duration,stride=83,jointOrder=JOINTS,directionOrder=DIRS,metadata=metadata,events=events,frames=frames),quality

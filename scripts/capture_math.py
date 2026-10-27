@@ -41,6 +41,7 @@ def euler_quat(degrees):
     return quaternion(qmul(parts[2], qmul(parts[1], parts[0])))
 
 def qangle(a, b):
+    a, b = quaternion(a), quaternion(b)
     return math.degrees(2 * math.acos(float(np.clip(abs(np.dot(a, b)), -1, 1))))
 
 def slerp(a, b, weight):
@@ -135,6 +136,59 @@ def row83(frame):
     finite(row, (STRIDE,)); quaternion(row[4:8])
     return row
 
+def validate_reference_samples(rows, events, duration):
+    """Conservative parity with SkateCaptureSampler.Validate's canonical rig.
+
+    Validate endpoints AND each interval midpoint before a successful job can
+    replace a pack. Custom native rigs still require their own evaluation.
+    Canonical leg targets must be reachable without moving the pelvis, rather
+    than relying on the native sampler's bounded fitting allowance.
+    """
+    rows = finite(rows)
+    if np.max(np.abs(rows))>100 or abs(rows[0,0])>1e-7 or abs(rows[-1,0]-duration)>1e-7 or np.any(rows[:,0]>duration):
+        raise ValueError('Capture samples exceed runtime value/time bounds')
+    if np.any(np.abs(np.sum(rows[:,4:8]**2,axis=1)-1)>1e-6):
+        raise ValueError('Capture board quaternion exceeds runtime unit tolerance')
+    for col in range(62,81,3):
+        if np.any(np.abs(np.sum(rows[:,col:col+3]**2,axis=1)-1)>1e-4):
+            raise ValueError('Capture directions exceed runtime unit tolerance')
+    samples=np.concatenate((rows,(rows[:-1]+rows[1:])*.5))
+    joints=samples[:,8:62].reshape(-1,18,3)
+    def norm(v):return np.linalg.norm(v,axis=1)
+    def direction(v):
+        lengths=norm(v)
+        if np.any(lengths**2<=1e-8):
+            raise ValueError('Degenerate runtime body/foot frame at a sample or interpolated midpoint; supply denser samples')
+        return v/lengths[:,None]
+    def project(v,n):return v-n*np.sum(v*n,axis=1)[:,None]
+    hip=direction(joints[:,5]-joints[:,4]); shoulder=direction(joints[:,13]-joints[:,12])
+    direction(project(samples[:,65:68],hip)); chest_up=direction(project(samples[:,71:74],shoulder))
+    direction(samples[:,74:77]); direction(joints[:,3]-joints[:,2])
+    left_up=direction(samples[:,77:80]); right_up=direction(samples[:,80:83])
+    direction(project(joints[:,10]-joints[:,8],left_up))
+    direction(project(joints[:,11]-joints[:,9],right_up))
+    pelvis=joints[:,0]
+    for side,offset in [(0,-1),(1,1)]:
+        hip_root=pelvis+hip*(.09*offset)
+        leg=norm(joints[:,8+side]-hip_root)
+        if np.any(leg>.87+1e-9) or np.any(leg<.01-1e-8):
+            raise ValueError('Canonical runtime leg reach fails at a sample or interpolated midpoint; supply denser samples')
+        arm_root=pelvis+chest_up*.44+shoulder*(.18*offset)
+        # The reference rig's arm scale is1; pinned hands remain absolute.
+        hand=arm_root+joints[:,16+side]-joints[:,12+side]
+        masks=np.zeros(len(samples),dtype=int)
+        if events:
+            index=np.searchsorted([e['t'] for e in events],samples[:,0],side='right')-1
+            observed=index>=0
+            masks[observed]=np.array([e['contacts'] for e in events])[index[observed]]
+        pinned=(masks&(4<<side))!=0
+        hand[pinned]=joints[pinned,16+side]
+        arm=norm(hand-arm_root)
+        # Runtime corrects only tiny floating-point overshoot of free arms.
+        maximum=np.where(pinned,.56+1e-8,.56+1e-7)
+        if np.any(arm>maximum) or np.any(arm<.02-1e-8):
+            raise ValueError('Canonical runtime arm reach fails at a sample or interpolated midpoint; supply denser samples')
+
 def encode_pack(clips):
     if not 1 <= len(clips) <= 256: raise ValueError('Pack clip count outside1..256')
     out = bytearray(b'SKMCAP01' + struct.pack('<I', len(clips))); total = 0; ids=set()
@@ -153,12 +207,12 @@ def encode_pack(clips):
         if len(out)+13+len(frames)*STRIDE*8+2>32*1024*1024:raise ValueError('Pack exceeds32MiB')
         if type(meta['reviewed']) is not bool: raise ValueError('reviewed must be explicit boolean')
         out += struct.pack('<BdI', int(meta['reviewed']), duration, len(frames))
-        previous = -1.; last_q = None
+        previous = -1.; last_q = None; rows=[]
         for frame in frames:
             row = row83(frame)
             if not previous < row[0] <= duration+1e-6 or row[0] < 0: raise ValueError('Invalid pack sample timestamp')
             if last_q is not None and qangle(last_q,row[4:8]) > 150: raise ValueError('Ambiguous pack rotation')
-            previous = row[0]; last_q = row[4:8]; out += struct.pack('<83d', *row)
+            previous = row[0]; last_q = row[4:8]; rows.append(row); out += struct.pack('<83d', *row)
         if abs(frames[0]['t']) > 1e-8 or abs(frames[-1]['t']-duration) > 1e-6: raise ValueError('Pack must cover both endpoints')
         events = clip['events']
         if len(events) > 128: raise ValueError('Too many events')
@@ -166,5 +220,6 @@ def encode_pack(clips):
         for e in events:
             if not prior <= e['t'] <= duration or not 0 <= e['phase'] <= 6 or not 0 <= e['contacts'] <= 15: raise ValueError('Invalid event')
             out += struct.pack('<dBB', e['t'], e['phase'], e['contacts']); prior = e['t']
+        validate_reference_samples(rows,events,duration)
     if len(out) > 32*1024*1024: raise ValueError('Pack exceeds32MiB')
     return bytes(out)

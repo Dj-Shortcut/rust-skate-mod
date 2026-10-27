@@ -4,7 +4,8 @@ The pipeline converts local video or retained MediaPipe pose detections into
 board-local rider animation and an external capture pack. It is code and data:
 Python performs extraction, reconstruction and batch export; the C# sampler
 retargets the exported samples to measured rider dimensions. The guarded rigging
-showcase is the initial runtime entry point. Normal riding and physics retain
+showcase remains available for unreviewed references. Normal riding has a
+separate, explicitly approved presentation path; physics and scoring retain
 their existing owners.
 
 A monocular pose detector estimates a skeleton. It does not directly measure
@@ -73,7 +74,12 @@ working capture. Replace the source paths and calibrate each actual attempt.
 - `events`: explicit load/pop/air/catch/land/recovery times and foot/hand
   contact masks. An airborne foot is not pinned to a flipping deck.
 - `feet`: optional contact paths in board coordinates. Default placements and
-  any corrections are reported as estimates.
+  any corrections are reported as estimates. Optional `airPositionKeys` use
+  absolute authoring coordinates, like `body.pelvisKeys`, while the foot is
+  detached. They require an explicit `airPositionProvenance` string. Use actual
+  source witnesses to reconstruct clearance and a continuous approach to a
+  catch; keep the original model detections and mark reconstructed paths as
+  estimates. Grounded contact keys and event times still define attachment.
 - `retarget`: bounded missing-data and reach-correction policies. Low presence,
   visibility and source/ROI clipping are evidence of uncertainty, not proof of
   a measured limb. Unresolved gaps fail the job.
@@ -83,6 +89,19 @@ working capture. Replace the source paths and calibrate each actual attempt.
   anchors. Crops, low presence and missing/ambiguous actors do not qualify.
   This avoids holding a future airborne hand over a long ground-phase gap;
   it does not make the hidden motion measured or visually correct.
+  Source review can explicitly downgrade bad model points using
+  `rejectedModelFrames: {"14": [2453, 2454]}` (raw landmark indices and original
+  source frames), with a required `rejectedModelProvenance` explanation. Such
+  points cannot remain trusted or retained estimates. The same bounded
+  trusted-anchor interpolation and edge policy apply; actor identity gaps still
+  fail. The report lists every rejected and reconstructed point. This is motion
+  cleanup from reviewed source evidence, not another measured observation.
+  Optional `armInterpolation: "spherical"` interpolates the normalized upper-arm
+  and forearm directions between source frames. This preserves source-frame
+  directions while avoiding angular bursts caused by normalizing interpolated,
+  shrinking model segments. Opposing/degenerate directions fail for review.
+  The default `"linear"` preserves earlier reconstruction behavior. Neither
+  mode makes an incorrect or occluded source observation trustworthy.
 - `sampleHz`: evaluation rate. Interpolation at 120 Hz does not make a 30 fps
   source into 120 fps measured motion.
 
@@ -127,6 +146,64 @@ joint XYZ targets; five body-direction XYZ vectors; and two sole-up XYZ vectors.
 The joint/direction order matches the existing capture retarget contract. Stored
 toe points are physical endpoints; the native sampler returns the writer's flat
 contact datum so the measured ankle-to-toe drop is applied once.
+
+## Review and normal riding
+
+Conversion alone does not enable a capture during normal skating. Inspect the
+whole source/rig movement, including the load, free feet, catch, physical
+landing and upright roll-away. Record the exact clip JSON hash and local review
+evidence hashes using the [review receipt example](examples/skate-capture-review.example.json).
+The receipt records an animation review, not native Rust-skin or gameplay
+acceptance. Keep failed captures unapproved and preserve their source evidence.
+
+```sh
+python scripts/capture_approve.py /absolute/private/capture-output \
+  --review /absolute/private/review.json --output /absolute/private/staging
+```
+
+This requires a complete successful batch whose clip files still reproduce its
+pack. It verifies every named clip and evidence file, then writes a separate
+`skate_captures.skmc` and `skate_captures.approved.txt`. Only the explicitly
+reviewed clips receive reviewed metadata. The approval pins the exact staged
+pack digest and selected ids. The original batch stays unchanged. Existing
+approval does not carry over to a changed pack implicitly.
+
+Place both files in `BepInEx/plugins/` and restart the client. For the owner
+launcher and direct sessions, stage the pair in
+`Downloads/claude-loader-probe/captures/`; `$pcaptures` overrides this directory
+for a direct session. The launcher copies the pair into `play/`, and the friend
+packer includes that installed pair. It does not include source videos, model
+weights, raw detections or review working files. Missing, incomplete, malformed
+or mismatched approval keeps normal riding on the existing poses.
+
+The initial exact variants are Switch Heelflip, Nollie Heelflip, Fakie Kickflip,
+Nollie Backside 180 Heelflip and Nollie 360 Flip. Matching uses the actual pop,
+stance and requested rotation values, rather than a displayed trick name.
+Unmatched variants keep the existing presentation. These are flat-ground
+references; ramps, walltricks, grabs, grinds, manuals, oldschool actions and
+other competing presentation states retain their existing routes.
+
+The game supplies its current board frame, body heading, rotation progress and
+actual landing. Capture data supplies relative body motion and contact targets.
+The recorded board trajectory never drives the player's world position or
+velocity. Recorded full board rotation transforms declared contact targets to
+the full live deck frame; it is not added to the game's rotations a second time.
+The existing charge pose remains authoritative before the requested trick is
+known. Catch and recovery cannot cause an early gameplay landing. A changed
+trick or interruption relinquishes capture presentation.
+
+The approval file is strict UTF-8 (at most 32 KiB), with these lines and one to
+256 unique canonical clip ids:
+
+```text
+SKMCAP-APPROVAL-1
+sha256=<64 lowercase hexadecimal characters>
+clip=<exact clip id>
+```
+
+Both approval and pack are read once per client process, outside the per-frame
+presentation path. A restart is required after replacement. Review metadata is
+not a source licence and does not establish native gameplay acceptance.
 
 ## Source library and acceptance
 

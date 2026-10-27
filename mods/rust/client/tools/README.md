@@ -11,6 +11,17 @@ is installed permanently except the launcher described below.
 
 ## What must be on the PC
 
+Optional reviewed animation captures are staged as the exact pair
+`claude-loader-probe\captures\skate_captures.skmc` and
+`claude-loader-probe\captures\skate_captures.approved.txt`. Prepare them with
+the [capture review tool](../../../../docs/RUST-SKATE-MOTION-CAPTURE.md#review-and-normal-riding).
+The launcher copies the pair into `play\`; direct sessions also accept
+`$pcaptures = <directory>`. The friend pack carries the installed pair and its
+existing installer copies `play\` as a whole. The game verifies the digest,
+selected ids and review metadata; incomplete or mismatched pairs cannot enable
+normal-riding captures. Restart the client after replacement. Source video,
+raw detections and model files are not installed or packed.
+
 All of it lives under the user's `Downloads` folder and none of it is in this repository.
 
 | Path under `Downloads` | What it is |

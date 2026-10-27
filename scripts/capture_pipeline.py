@@ -255,7 +255,7 @@ def batch(args):
             if type(job['reviewed']) is not bool:raise ValueError('reviewed must be an explicit boolean')
             clip,record=process(job,base,out,model,args.resume,args.model_sha256);clips.append(clip);records.append(record)
             print(job['id']+': '+record['status'],flush=True)
-        except (ValueError,KeyError,TypeError,OSError,ImportError,OverflowError,RuntimeError,np.linalg.LinAlgError,MemoryError) as error:
+        except (ValueError,KeyError,TypeError,IndexError,OSError,ImportError,OverflowError,RuntimeError,np.linalg.LinAlgError,MemoryError) as error:
             failed+=1;failure=dict(id=job['id'],status='failed',errorType=type(error).__name__,error=str(error),details=failure_details(getattr(error,'details',{})),previousSuccessfulFilesRetained=True)
             atomic(out/'jobs'/(job['id']+'.failure.json'),json_bytes(failure));records.append(failure);print(job['id']+': failed: '+str(error),file=sys.stderr,flush=True)
     pack=out/'skate_captures.skmc';updated=False

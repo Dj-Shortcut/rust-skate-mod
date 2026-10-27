@@ -34,10 +34,17 @@ Copy-Item "$probe\bep788" "$to\bep788" -Recurse
 Copy-Item "$gen\out" "$to\gen-$pb\out" -Recurse
 Copy-Item "$gen\gen.log" "$to\gen-$pb\gen.log"
 Copy-Item "$probe\rt" "$to\rt" -Recurse
-# play\ is copied whole into the game's plugin folder by the launcher: only the plugin and the models.
+# play\ is copied whole into the game's plugin folder by the launcher. Include
+# only the runtime plugin, models and optional private reviewed capture pair.
 New-Item -ItemType Directory -Force "$to\play", "$to\launcher" | Out-Null
 Copy-Item "$probe\play\ShortcutSkateClient.dll" "$to\play"
 ls "$probe\play" -File -Filter *.glb | % { Copy-Item $_.FullName "$to\play" }
+if ((Test-Path -LiteralPath "$probe\play\skate_captures.skmc" -PathType Leaf) -and
+    (Test-Path -LiteralPath "$probe\play\skate_captures.approved.txt" -PathType Leaf)) {
+  foreach ($f in 'skate_captures.skmc', 'skate_captures.approved.txt') {
+    Copy-Item -LiteralPath "$probe\play\$f" -Destination "$to\play\$f"
+  }
+}
 foreach ($f in 'session.ps1', 'skate.ps1', 'watch.ps1', 'clean.ps1', 'sticks.ps1', 'version.txt') { Copy-Item "$L\$f" "$to\launcher" }
 $server = ''
 if (($null -eq $pserver -or $pserver) -and (Test-Path "$probe\server.txt")) { Copy-Item "$probe\server.txt" "$to\server.txt"; $server = (gc "$probe\server.txt" -First 1).Trim() }
