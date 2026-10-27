@@ -4,14 +4,20 @@
 # Rust through the Steam shortcut "RustClient" (so that the controller layout of that shortcut
 # applies), waits until Rust is closed and takes everything out of the Rust folder again.
 # Nothing is downloaded. The window must stay open while playing.
+param([switch]$Diagnostics)
+$ErrorActionPreference = 'Stop'
 $probe = "$HOME\Downloads\claude-loader-probe"; $L = "$probe\launcher"
 $rust = 'C:\Program Files (x86)\Steam\steamapps\common\Rust'
 function line($m) { Write-Host $m }
 line ''
 line '  RUST SKATE'
 line '  ----------'
-if (Test-Path "$L\version.txt") { line ('  ' + (Get-Content "$L\version.txt" -First 1)) }
+. "$L\diagnostics.ps1"
+$recovered = Save-SkateLogSnapshot $rust $probe 'before-launcher-clean'
+if ($recovered.Count) { line ('  Preserved existing client logs: ' + $recovered.Directory) }
+Show-SkateChecks $rust $probe
 line ''
+if ($Diagnostics) { line '  Diagnostics finished. Rust was not started.'; return }
 if (Get-Process RustClient -ErrorAction SilentlyContinue) { line '  Rust is already running. Quit Rust first, then start this again.'; return }
 if (-not (Test-Path "$probe\play\ShortcutSkateClient.dll")) { line '  The skate plugin is not installed here. Install it again (zz launcher, or the pack''s "Install Rust Skate").'; return }
 # A session that was cut off (window closed, PC stopped) can have left the loader in the Rust folder.

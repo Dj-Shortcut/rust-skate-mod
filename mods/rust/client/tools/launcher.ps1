@@ -20,15 +20,16 @@ finally { $global:pcommit = $previousCommit }
 if ($pbuilt -ne $rel) { 'ABORT: the requested ' + $mode + ' commit did not build; the launcher was left as it was'; return }
 $enc = New-Object Text.UTF8Encoding($false)
 $files = @{}
-foreach ($f in 'session.ps1', 'skate.ps1', 'watch.ps1', 'clean.ps1', 'sticks.ps1') {
+foreach ($f in 'session.ps1', 'skate.ps1', 'watch.ps1', 'clean.ps1', 'sticks.ps1', 'diagnostics.ps1') {
   $t = "" + (irm (zu "mods/rust/client/tools/$f" $rel))
   if ($t.Length -lt 200) { "ABORT: could not fetch $f at the requested commit; the launcher was left as it was"; return }
   $files[$f] = $t
 }
+. ([scriptblock]::Create($files['diagnostics.ps1']))
+$icons = @(Get-SkateArtworkFiles "$probe\plugin\artwork.txt" "$probe\plugin")
 New-Item -ItemType Directory -Force $L, "$probe\play" | Out-Null
-# Everything in play\ is copied into the game's plugin folder, so only the plugin and its park
-# models may be there.
-Get-ChildItem "$probe\play" -File | ? { $_.Name -ne 'ShortcutSkateClient.dll' -and $_.Extension -ne '.glb' } | Remove-Item
+# Sessions use the plugin, current models and the exact declared icon list from play\.
+# Unrelated staged files are retained; session.ps1 stages only DLLs/models and declared icons.
 Get-ChildItem "$probe\play" -File -Filter *.glb | Remove-Item
 Get-ChildItem $L -File -Filter *.ps1 | ? { -not $files.ContainsKey($_.Name) } | Remove-Item
 Copy-Item "$probe\plugin\ShortcutSkateClient.dll" "$probe\play\ShortcutSkateClient.dll" -Force
@@ -45,6 +46,9 @@ if ((Test-Path -LiteralPath "$captureSource\skate_captures.skmc" -PathType Leaf)
           (Test-Path -LiteralPath "$captureSource\skate_captures.approved.txt")) {
   'private capture pair incomplete; normal riding keeps the built-in poses'
 }
+foreach ($icon in $icons) { Copy-Item -LiteralPath (Join-Path "$probe\plugin" $icon) -Destination "$probe\play" -Force }
+if ($icons.Count) { Copy-Item -LiteralPath "$probe\plugin\artwork.txt" -Destination "$probe\play\artwork.txt" -Force }
+elseif (Test-Path -LiteralPath "$probe\play\artwork.txt") { Move-Item -LiteralPath "$probe\play\artwork.txt" -Destination ("$probe\src\artwork-launcher-previous-" + [Guid]::NewGuid().ToString('N') + '.txt') }
 foreach ($f in $files.Keys) { [IO.File]::WriteAllText("$L\$f", $files[$f], $enc) }
 $pb = ((gc 'C:\Program Files (x86)\Steam\steamapps\appmanifest_252490.acf' | sls '"buildid"').Line -split '"')[3]
 "Skate mod " + $rel.Substring(0, 7) + ", prepared " + (Get-Date -Format 'yyyy-MM-dd HH:mm') + " for Rust build $pb" | Out-File "$L\version.txt" -Encoding utf8
@@ -62,4 +66,5 @@ $mode + ' plugin: ' + (gc "$L\version.txt" -First 1) + ' | ' + (gi "$probe\play\
 # The launcher and every session stage that folder (session.ps1); a missing file is said there.
 $wavs = @(ls "$probe\sounds" -File -Filter *_01.wav -ErrorAction SilentlyContinue).Count
 'sounds: ' + $(if ($wavs -ge 18) { "$wavs WAV files in sounds\" } elseif ($wavs) { "$wavs of 18 WAV files in sounds\ - incomplete, the ride is silent until all 18 are there" } else { 'none (no sounds\ folder) - the ride is silent' })
+'menu artwork: ' + $icons.Count + ' declared PNGs; diagnostics: powershell -NoProfile -File "' + "$L\skate.ps1" + '" -Diagnostics (does not start Rust)'
 'desktop: ' + ((ls $desk -Filter 'Rust Skate*' | % Name) -join ', ')

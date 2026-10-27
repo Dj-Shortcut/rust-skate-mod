@@ -23,9 +23,12 @@ $pb = ((gc $acf | sls '"buildid"').Line -split '"')[3]
 if ($pb -ne $pack['build']) { abort ("This pack was made for Rust build " + $pack['build'] + " and this PC has build $pb. Ask the owner for a pack made for your build."); return }
 if (Get-Process RustClient -ErrorAction SilentlyContinue) { abort 'Rust is running. Quit Rust first, then start this again.'; return }
 if (Test-Path "$probe\loader-in-rust-folder.txt") { abort 'An earlier session left the mod in the Rust folder. Run "Rust Skate - remove mod files" on the desktop first, then start this again.'; return }
-$need = @("claude-loader-probe\bep788\winhttp.dll", "claude-loader-probe\bep788\doorstop_config.ini", "claude-loader-probe\bep788\BepInEx\core\BepInEx.Core.dll", "claude-loader-probe\gen-$pb\out\Assembly-CSharp.dll", "claude-loader-probe\gen-$pb\gen.log", 'claude-loader-probe\rt\Il2CppInterop.Runtime.dll', 'claude-loader-probe\play\ShortcutSkateClient.dll', 'claude-loader-probe\launcher\skate.ps1', 'claude-loader-probe\launcher\session.ps1', 'claude-loader-probe\launcher\clean.ps1', 'claude-loader-probe\launcher\watch.ps1', 'claude-loader-probe\launcher\sticks.ps1', 'claude-loader-probe\launcher\version.txt')
+$need = @("claude-loader-probe\bep788\winhttp.dll", "claude-loader-probe\bep788\doorstop_config.ini", "claude-loader-probe\bep788\BepInEx\core\BepInEx.Core.dll", "claude-loader-probe\gen-$pb\out\Assembly-CSharp.dll", "claude-loader-probe\gen-$pb\gen.log", 'claude-loader-probe\rt\Il2CppInterop.Runtime.dll', 'claude-loader-probe\play\ShortcutSkateClient.dll', 'claude-loader-probe\launcher\skate.ps1', 'claude-loader-probe\launcher\session.ps1', 'claude-loader-probe\launcher\clean.ps1', 'claude-loader-probe\launcher\watch.ps1', 'claude-loader-probe\launcher\sticks.ps1', 'claude-loader-probe\launcher\diagnostics.ps1', 'claude-loader-probe\launcher\version.txt')
 $missing = @($need | ? { -not (Test-Path -LiteralPath (Join-Path $here $_)) })
 if ($missing) { abort ('The pack is incomplete (missing ' + ($missing -join ', ') + '). Unpack the whole zip again.'); return }
+. "$from\launcher\diagnostics.ps1"
+try { $icons = @(Get-SkateArtworkFiles "$from\play\artwork.txt" "$from\play") }
+catch { abort 'The declared menu artwork is incomplete or invalid. Unpack the complete prepared pack again.'; return }
 $free = [int]((Get-PSDrive C).Free / 1MB)
 $mb = [int]((ls $from -Recurse -File | measure Length -Sum).Sum / 1MB)
 if ($free -lt $mb + 1024) { abort "The pack needs about $mb MB on C: and only $free MB are free."; return }
@@ -52,6 +55,7 @@ $clean = "@echo off`r`ntitle Rust Skate - remove mod files`r`npowershell -NoProf
 [IO.File]::WriteAllText("$desk\Rust Skate.cmd", $start, [Text.Encoding]::ASCII)
 [IO.File]::WriteAllText("$desk\Rust Skate - remove mod files.cmd", $clean, [Text.Encoding]::ASCII)
 line ('  Installed: ' + (gc "$probe\launcher\version.txt" -First 1) + " ($mb MB in Downloads\claude-loader-probe).")
+line ('  Menu artwork: ' + $icons.Count + ' declared PNGs. Diagnostics without starting Rust: run launcher\skate.ps1 -Diagnostics.')
 line '  On the desktop: "Rust Skate" and "Rust Skate - remove mod files".'
 if (Test-Path "$probe\sounds\skate_ollie_01.wav") { line ('  Skateboard sounds: ' + @(ls "$probe\sounds" -File -Filter *_01.wav).Count + ' files.') }
 else { line '  This pack has no skateboard sounds: the ride is silent. Ask the owner for a pack with sounds.' }

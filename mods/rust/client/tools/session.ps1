@@ -47,7 +47,7 @@ $stems = 'skate_rolling_smooth', 'skate_rolling_rough', 'skate_rolling_wood', 's
 $pb = ((gc 'C:\Program Files (x86)\Steam\steamapps\appmanifest_252490.acf' | sls '"buildid"').Line -split '"')[3]
 $gen = "$dl\claude-loader-probe\gen-$pb\out"
 if (-not ((Test-Path "$gen\Assembly-CSharp.dll") -and (sls -Path "$dl\claude-loader-probe\gen-$pb\gen.log" -Pattern 'GEN DONE.* errors=0( |$)' -Quiet))) { Write-Host "ABORT: no complete, error-free interop set for installed build $pb; run zz interop first"; return }
-$run = "$probe\run-$ptag-" + (Get-Date -Format 'HHmmss')
+$run = "$probe\run-$ptag-" + (Get-Date -Format 'yyyyMMdd-HHmmssfff') + '-' + [Guid]::NewGuid().ToString('N').Substring(0, 8)
 $roots = 'BepInEx','dotnet','winhttp.dll','doorstop_config.ini','.doorstop_version','changelog.txt'
 # While this file exists, a loader in the Rust folder is one that these tools put there. clean.ps1
 # moves a loader out only then: one that somebody installed for another mod is left alone. The
@@ -107,6 +107,16 @@ function Find-Shortcut($name) {
   }
 }
 if (Get-Process RustClient -ErrorAction SilentlyContinue) { say 'ABORT: RustClient is already running'; return }
+# Preserve an interrupted session before any new loader, plugin or log can replace its files.
+$diagnostics = if ($PSScriptRoot) { Join-Path $PSScriptRoot 'diagnostics.ps1' } else { "$probe\launcher\diagnostics.ps1" }
+if (-not (Test-Path -LiteralPath $diagnostics) -and (Get-Command zg -ErrorAction SilentlyContinue)) {
+  $diagnostics = "$probe\diagnostics.ps1"
+  [IO.File]::WriteAllText($diagnostics, ("" + (zg 'diagnostics.ps1')), (New-Object Text.UTF8Encoding($false)))
+}
+if (-not (Test-Path -LiteralPath $diagnostics)) { throw 'Log recovery tools are missing; nothing was staged or started. Install the prepared launcher again.' }
+. $diagnostics
+$recovered = Save-SkateLogSnapshot $rust $probe 'before-session'
+if ($recovered.Count) { say ('preserved existing client logs: ' + $recovered.Directory) }
 $present = $roots | ? { Test-Path (Join-Path $rust $_) }
 if ($present) { say ('ABORT: loader files already in the Rust folder: ' + ($present -join ',')); return }
 if (-not (Get-Process steam -ErrorAction SilentlyContinue)) { say 'ABORT: Steam is not running'; return }
@@ -133,7 +143,19 @@ try {
   say ('interop files: ' + (ls "$bx\interop").Count + ' from ' + $gen.Replace($dl,'~'))
   if ($prt) { Copy-Item "$prt\*" "$bx\core" -Force; say ('overlay core: ' + ((ls $prt | % Name) -join ',')) }
   if ($psteps) { Set-Content "$bx\plugins\steps.txt" $psteps }
-  if ($pplug) { Copy-Item "$pplug\*" "$bx\plugins" -Force; say ('plugins: ' + ((ls $pplug | % Name) -join ',')) }
+  if ($pplug) {
+    # Only declared artwork may enter the live plugin folder; unrelated PNGs/logs stay staged.
+    $icons = @(Get-SkateArtworkFiles (Join-Path $pplug 'artwork.txt') $pplug)
+    Get-ChildItem -LiteralPath $pplug -File | Where-Object { $_.Extension -in '.dll', '.glb' } |
+      ForEach-Object { Copy-Item -LiteralPath $_.FullName -Destination "$bx\plugins" -Force }
+    foreach ($icon in $icons) { Copy-Item -LiteralPath (Join-Path $pplug $icon) -Destination "$bx\plugins" -Force }
+    foreach ($file in 'skate_captures.skmc', 'skate_captures.approved.txt') {
+      if (Test-Path -LiteralPath (Join-Path $pplug $file) -PathType Leaf) {
+        Copy-Item -LiteralPath (Join-Path $pplug $file) -Destination "$bx\plugins" -Force
+      }
+    }
+    say ('plugins: DLLs and models staged; declared menu icons=' + $icons.Count)
+  }
   $captureSource = if ($pcaptures) { $pcaptures } else { "$probe\captures" }
   $capturePack = Join-Path $captureSource 'skate_captures.skmc'
   $captureApproval = Join-Path $captureSource 'skate_captures.approved.txt'
@@ -166,6 +188,10 @@ try {
   else { say 'sound pack left out ($psounds = 0)' }
   $cfg = "[IL2CPP]`r`nUpdateInteropAssemblies = false`r`nPreloadIL2CPPInteropAssemblies = " + ([bool]$ppreload).ToString().ToLower() + "`r`n`r`n[Logging]`r`nUnityLogListening = " + $plisten.ToString().ToLower() + "`r`n`r`n[Logging.Disk]`r`nLogLevels = All`r`n`r`n[Logging.Console]`r`nEnabled = false`r`n"
   [IO.File]::WriteAllText("$bx\config\BepInEx.cfg", $cfg)
+  $plugin = Join-Path $bx 'plugins\ShortcutSkateClient.dll'
+  [ordered]@{ startedUtc = [DateTime]::UtcNow.ToString('o'); rustBuild = $pb;
+    pluginSha256 = $(if (Test-Path -LiteralPath $plugin) { (Get-FileHash -LiteralPath $plugin -Algorithm SHA256).Hash.ToLowerInvariant() } else { $null }) } |
+    ConvertTo-Json | Set-Content -LiteralPath (Join-Path $run 'session.json') -Encoding UTF8
   # The controller's reader runs beside the client as a process of its own: Steam must not have
   # started it, or it would see no more of the controller than the game does.
   $sticks = "$psticks"
@@ -175,8 +201,10 @@ try {
   }
   if ($sticks -and (Test-Path -LiteralPath $sticks)) {
     $env:SKATE_PAD_SERVE = 'RustClient'
-    $reader = Start-Process powershell -WindowStyle Hidden -PassThru -ArgumentList '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$sticks`""
+    $reader = Start-Process powershell -WindowStyle Hidden -PassThru -RedirectStandardOutput "$run\controller-reader.out.log" -RedirectStandardError "$run\controller-reader.err.log" -ArgumentList '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', "`"$sticks`""
     $env:SKATE_PAD_SERVE = $null
+    [ordered]@{ startedUtc = [DateTime]::UtcNow.ToString('o'); readerSha256 = (Get-FileHash -LiteralPath $sticks -Algorithm SHA256).Hash.ToLowerInvariant() } |
+      ConvertTo-Json | Set-Content -LiteralPath (Join-Path $run 'controller-reader.json') -Encoding UTF8
     say 'controller reader started'
   } else { say 'no controller reader: keyboard only' }
   if ($psteam) {
@@ -264,15 +292,7 @@ try {
 }
 $global:plast = $run
 say "run dir: $run"
-if (Test-Path "$run\LogOutput.log") {
-  $l = Get-Content "$run\LogOutput.log"
-  say ('log lines=' + $l.Count)
-  $l | ? { $_ -notmatch 'DobbyDetour|NativeDetour' } | select -Last $(if ($ptail) { $ptail } else { 26 }) | % { if ($_.Length -gt 1500) { $_.Substring(0,1500) } else { $_ } }
-} else { say 'no LogOutput.log' }
 if (Test-Path "$run\skate.log") {
-  $pl = @(Get-Content "$run\skate.log" | % { if ($_.Length -gt 1900) { $_.Substring(0,1900) } else { $_ } })
-  say ('--- skate.log lines=' + $pl.Count)
-  if ($pl.Count -le 34) { $pl } else { $pl | select -First 8; '...'; $pl | select -Last 24 }
   $global:pfile = "$run\skate.log"; $global:poff = 0
 }
-if (Test-Path "$run\ErrorLog.log") { say '--- ErrorLog'; Get-Content "$run\ErrorLog.log" | select -First 12 }
+Show-SkateChecks $rust $probe

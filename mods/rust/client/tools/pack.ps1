@@ -7,6 +7,7 @@
 # the friend's launcher can show the address to join). The owner's sound pack (sounds\ in the
 # staging folder, 18 WAV files that are never committed) goes in when it is complete; an incomplete
 # one refuses the pack, since the plugin plays nothing then; $psounds = 0 packs without sounds.
+$ErrorActionPreference = 'Stop'
 $dl = "$HOME\Downloads"; $probe = "$dl\claude-loader-probe"; $L = "$probe\launcher"
 $rust = 'C:\Program Files (x86)\Steam\steamapps\common\Rust'
 $acf = 'C:\Program Files (x86)\Steam\steamapps\appmanifest_252490.acf'
@@ -19,9 +20,11 @@ if ($version -notmatch "for Rust build $pb$") { "ABORT: the launcher was prepare
 $rel = if ($version -match '^Skate mod ([0-9a-f]{7})') { $Matches[1] } else { 'unknown' }
 $gen = "$probe\gen-$pb"
 if (-not ((Test-Path "$gen\out\Assembly-CSharp.dll") -and (sls -Path "$gen\gen.log" -Pattern 'GEN DONE.* errors=0( |$)' -Quiet))) { "ABORT: no complete, error-free interop set for build $pb (zz interop)"; return }
-$need = @("$probe\bep788\winhttp.dll", "$probe\bep788\BepInEx\core\BepInEx.Core.dll", "$probe\rt\Il2CppInterop.Runtime.dll", "$probe\play\ShortcutSkateClient.dll") + @('session.ps1', 'skate.ps1', 'watch.ps1', 'clean.ps1', 'sticks.ps1' | % { "$L\$_" })
+$need = @("$probe\bep788\winhttp.dll", "$probe\bep788\BepInEx\core\BepInEx.Core.dll", "$probe\rt\Il2CppInterop.Runtime.dll", "$probe\play\ShortcutSkateClient.dll") + @('session.ps1', 'skate.ps1', 'watch.ps1', 'clean.ps1', 'sticks.ps1', 'diagnostics.ps1' | % { "$L\$_" })
 $missing = @($need | ? { -not (Test-Path -LiteralPath $_) })
 if ($missing) { 'ABORT: not on this PC: ' + (($missing | % { $_.Replace($dl, '~') }) -join ', '); return }
+. "$L\diagnostics.ps1"
+$icons = @(Get-SkateArtworkFiles "$probe\play\artwork.txt" "$probe\play")
 # The 18 file names mirror SkateSoundPack.cs in the client source; the plugin needs every one.
 $stems = 'skate_rolling_smooth', 'skate_rolling_rough', 'skate_rolling_wood', 'skate_grit', 'skate_whirr', 'skate_push', 'skate_ollie', 'skate_landing', 'skate_drop', 'skate_seam', 'skate_grind_in', 'skate_grind', 'skate_grind_out', 'skate_slide_in', 'skate_deckslide', 'skate_scrape', 'skate_slam', 'skate_bail'
 $sounds = $false
@@ -51,13 +54,15 @@ Copy-Item "$probe\rt" "$to\rt" -Recurse
 New-Item -ItemType Directory -Force "$to\play", "$to\launcher" | Out-Null
 Copy-Item "$probe\play\ShortcutSkateClient.dll" "$to\play"
 ls "$probe\play" -File -Filter *.glb | % { Copy-Item $_.FullName "$to\play" }
+foreach ($icon in $icons) { Copy-Item -LiteralPath (Join-Path "$probe\play" $icon) -Destination "$to\play" }
+if ($icons.Count) { Copy-Item -LiteralPath "$probe\play\artwork.txt" -Destination "$to\play" }
 if ((Test-Path -LiteralPath "$probe\play\skate_captures.skmc" -PathType Leaf) -and
     (Test-Path -LiteralPath "$probe\play\skate_captures.approved.txt" -PathType Leaf)) {
   foreach ($f in 'skate_captures.skmc', 'skate_captures.approved.txt') {
     Copy-Item -LiteralPath "$probe\play\$f" -Destination "$to\play\$f"
   }
 }
-foreach ($f in 'session.ps1', 'skate.ps1', 'watch.ps1', 'clean.ps1', 'sticks.ps1', 'version.txt') { Copy-Item "$L\$f" "$to\launcher" }
+foreach ($f in 'session.ps1', 'skate.ps1', 'watch.ps1', 'clean.ps1', 'sticks.ps1', 'diagnostics.ps1', 'version.txt') { Copy-Item "$L\$f" "$to\launcher" }
 if (Test-Path -LiteralPath "$L\candidate.txt" -PathType Leaf) { Copy-Item -LiteralPath "$L\candidate.txt" -Destination "$to\launcher" }
 # Only the 18 WAV files the plugin reads; anything else in sounds\ stays on this PC.
 if ($sounds) { New-Item -ItemType Directory -Force "$to\sounds" | Out-Null; $stems | % { Copy-Item -LiteralPath "$probe\sounds\$($_)_01.wav" "$to\sounds" } }
@@ -68,7 +73,7 @@ if (($null -eq $pserver -or $pserver) -and (Test-Path "$probe\server.txt")) { Co
 # The comma binds tighter than +, so each line is made before the list is.
 $made = 'made ' + (Get-Date -Format 'yyyy-MM-dd HH:mm'); $srv = 'server ' + $(if ($server) { 'included' } else { 'not included' })
 $snd = 'sounds ' + $(if ($sounds) { 'included' } else { 'not included' })
-@("pack $name", $made, "release $rel", "build $pb", $version, $srv, $snd) | Out-File "$stage\pack.txt" -Encoding utf8
+@("pack $name", $made, "release $rel", "build $pb", $version, $srv, $snd, ("artwork " + $icons.Count)) | Out-File "$stage\pack.txt" -Encoding utf8
 $readme = @"
 RUST SKATE - the skate mod for Rust, for the owner's own server
 
