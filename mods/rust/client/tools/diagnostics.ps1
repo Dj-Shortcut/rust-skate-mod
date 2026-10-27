@@ -78,6 +78,11 @@ function Show-SkateChecks([string]$RustPath, [string]$ProbePath) {
     if ($text -match '^Skate mod [0-9a-f]{7,40}, prepared [0-9 :-]+ for Rust build [0-9]+$') { Write-Host ('  ' + $text) }
     else { Write-Host '  Version: the installed version receipt is not recognized.' }
   } else { Write-Host '  Version: no installed launcher receipt.' }
+  $candidateReceipt = Join-Path $launcher 'candidate.txt'
+  if (Test-Path -LiteralPath $candidateReceipt -PathType Leaf) {
+    $candidateCommit = ("" + (Get-Content -LiteralPath $candidateReceipt -First 1)).Trim()
+    if ($candidateCommit -match '\A[0-9a-f]{40}\z') { Write-Host ('  Candidate: ' + $candidateCommit + '; in-game acceptance is pending.') }
+  }
   $plugin = Join-Path $ProbePath 'play/ShortcutSkateClient.dll'
   Write-Host ('  Plugin: ' + $(if (Test-Path -LiteralPath $plugin -PathType Leaf) { 'installed; SHA256 ' + (Get-FileHash -LiteralPath $plugin -Algorithm SHA256).Hash.Substring(0, 12).ToLowerInvariant() } else { 'missing' }))
   $acf = Join-Path (Split-Path (Split-Path $RustPath -Parent) -Parent) 'appmanifest_252490.acf'
