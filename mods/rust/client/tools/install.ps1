@@ -23,14 +23,36 @@ $pb = ((gc $acf | sls '"buildid"').Line -split '"')[3]
 if ($pb -ne $pack['build']) { abort ("This pack was made for Rust build " + $pack['build'] + " and this PC has build $pb. Ask the owner for a pack made for your build."); return }
 if (Get-Process RustClient -ErrorAction SilentlyContinue) { abort 'Rust is running. Quit Rust first, then start this again.'; return }
 if (Test-Path "$probe\loader-in-rust-folder.txt") { abort 'An earlier session left the mod in the Rust folder. Run "Rust Skate - remove mod files" on the desktop first, then start this again.'; return }
-$need = @("claude-loader-probe\bep788\winhttp.dll", "claude-loader-probe\bep788\doorstop_config.ini", "claude-loader-probe\bep788\BepInEx\core\BepInEx.Core.dll", "claude-loader-probe\gen-$pb\out\Assembly-CSharp.dll", "claude-loader-probe\gen-$pb\gen.log", 'claude-loader-probe\rt\Il2CppInterop.Runtime.dll', 'claude-loader-probe\play\ShortcutSkateClient.dll', 'claude-loader-probe\launcher\skate.ps1', 'claude-loader-probe\launcher\session.ps1', 'claude-loader-probe\launcher\clean.ps1', 'claude-loader-probe\launcher\watch.ps1', 'claude-loader-probe\launcher\sticks.ps1', 'claude-loader-probe\launcher\diagnostics.ps1', 'claude-loader-probe\launcher\version.txt')
+$need = @("claude-loader-probe\bep788\winhttp.dll", "claude-loader-probe\bep788\doorstop_config.ini", "claude-loader-probe\bep788\BepInEx\core\BepInEx.Core.dll", "claude-loader-probe\gen-$pb\out\Assembly-CSharp.dll", "claude-loader-probe\gen-$pb\gen.log", 'claude-loader-probe\rt\Il2CppInterop.Runtime.dll', 'claude-loader-probe\play\ShortcutSkateClient.dll', 'claude-loader-probe\launcher\skate.ps1', 'claude-loader-probe\launcher\session.ps1', 'claude-loader-probe\launcher\clean.ps1', 'claude-loader-probe\launcher\watch.ps1', 'claude-loader-probe\launcher\sticks.ps1', 'claude-loader-probe\launcher\version.txt')
 $missing = @($need | ? { -not (Test-Path -LiteralPath (Join-Path $here $_)) })
 if ($missing) { abort ('The pack is incomplete (missing ' + ($missing -join ', ') + '). Unpack the whole zip again.'); return }
-. "$from\launcher\diagnostics.ps1"
-try { $icons = @(Get-SkateArtworkFiles "$from\play\artwork.txt" "$from\play") }
-catch { abort 'The declared menu artwork is incomplete or invalid. Unpack the complete prepared pack again.'; return }
-try { $soundFiles = @(Get-SkateSoundFiles "$from\sounds" -RequireComplete:(Test-Path -LiteralPath "$from\sounds" -PathType Container)) }
-catch { abort 'The pack has an incomplete sound set. Unpack the complete prepared pack again.'; return }
+$launcherFiles = @('session.ps1', 'skate.ps1', 'watch.ps1', 'clean.ps1', 'sticks.ps1')
+$needsDiagnostics = @($launcherFiles | Where-Object { [IO.File]::ReadAllText("$from\launcher\$_") -match 'diagnostics\.ps1' }).Count -gt 0
+$supportsSounds = [IO.File]::ReadAllText("$from\launcher\session.ps1") -match 'skate_sounds'
+$icons = @(); $soundFiles = @()
+if ($needsDiagnostics) {
+  if (-not (Test-Path -LiteralPath "$from\launcher\diagnostics.ps1" -PathType Leaf)) { abort 'This launcher requires diagnostics.ps1. Unpack the complete prepared pack again.'; return }
+  . "$from\launcher\diagnostics.ps1"
+  try { $icons = @(Get-SkateArtworkFiles "$from\play\artwork.txt" "$from\play") }
+  catch { abort 'The declared menu artwork is incomplete or invalid. Unpack the complete prepared pack again.'; return }
+  try { $soundFiles = @(Get-SkateSoundFiles "$from\sounds" -RequireComplete:(Test-Path -LiteralPath "$from\sounds" -PathType Container)) }
+  catch { abort 'The pack has an incomplete sound set. Unpack the complete prepared pack again.'; return }
+} else {
+  line '  Legacy launcher: custom WAV source settings, authored icons and diagnostics are unavailable in this selected version.'
+  if ($supportsSounds -and (Test-Path -LiteralPath "$from\sounds" -PathType Container)) {
+    $stems = 'skate_rolling_smooth', 'skate_rolling_rough', 'skate_rolling_wood', 'skate_grit', 'skate_whirr', 'skate_push', 'skate_ollie', 'skate_landing', 'skate_drop', 'skate_seam', 'skate_grind_in', 'skate_grind', 'skate_grind_out', 'skate_slide_in', 'skate_deckslide', 'skate_scrape', 'skate_slam', 'skate_bail'
+    $soundFiles = @($stems | ForEach-Object { $_ + '_01.wav' })
+    foreach ($name in $soundFiles) {
+      $stream = $null
+      try {
+        $path = Join-Path "$from\sounds" $name
+        if (-not (Test-Path -LiteralPath $path -PathType Leaf) -or (Get-Item -LiteralPath $path).Length -le 0) { throw 'Missing sound file.' }
+        $stream = [IO.File]::OpenRead($path)
+      } catch { abort ('The pack has an incomplete or unreadable sound set: ' + $name); return }
+      finally { if ($stream) { $stream.Dispose() } }
+    }
+  }
+}
 $free = [int]((Get-PSDrive C).Free / 1MB)
 $mb = [int]((ls $from -Recurse -File | measure Length -Sum).Sum / 1MB)
 if ($free -lt $mb + 1024) { abort "The pack needs about $mb MB on C: and only $free MB are free."; return }
@@ -49,21 +71,29 @@ foreach ($d in 'bep788', "gen-$pb", 'rt', 'play', 'launcher') {
 # away too, so that what plays here is what the pack holds.
 if (Test-Path "$from\server.txt") { Copy-Item "$from\server.txt" "$probe\server.txt" -Force }
 else { Remove-Item -LiteralPath "$probe\server.txt" -Force -ErrorAction SilentlyContinue }
-Remove-Item -LiteralPath "$probe\sounds" -Recurse -Force -ErrorAction SilentlyContinue
-if (Test-Path "$from\sounds") { Copy-Item -LiteralPath "$from\sounds" -Destination "$probe\sounds" -Recurse }
-# Applying a portable pack selects its own sounds\ (or its explicit lack of audio), not an old
-# private source on this PC. Preflight failures above leave the existing pointer untouched.
-if (Test-Path -LiteralPath "$probe\sounds-source.txt" -PathType Leaf) { Remove-Item -LiteralPath "$probe\sounds-source.txt" -Force -ErrorAction Stop }
+if ($supportsSounds) {
+  Remove-Item -LiteralPath "$probe\sounds" -Recurse -Force -ErrorAction SilentlyContinue
+  if (Test-Path "$from\sounds") { Copy-Item -LiteralPath "$from\sounds" -Destination "$probe\sounds" -Recurse }
+  # Applying a modern portable pack selects its own sounds\ (or its explicit lack of audio),
+  # not an old private source on this PC. Preflight failures leave the pointer untouched.
+  if ($needsDiagnostics -and (Test-Path -LiteralPath "$probe\sounds-source.txt" -PathType Leaf)) { Remove-Item -LiteralPath "$probe\sounds-source.txt" -Force -ErrorAction Stop }
+}
+if (-not $needsDiagnostics) {
+  if ($supportsSounds) { line '  The local WAV source setting was preserved; this launcher uses only the pack''s default WAV folder.' }
+  else { line '  Existing local WAV files and their source setting were preserved; this legacy launcher does not use them.' }
+}
 $desk = [Environment]::GetFolderPath('Desktop')
 $start = "@echo off`r`ntitle Rust Skate`r`npowershell -NoProfile -ExecutionPolicy Bypass -File `"%USERPROFILE%\Downloads\claude-loader-probe\launcher\skate.ps1`"`r`necho.`r`npause`r`n"
 $clean = "@echo off`r`ntitle Rust Skate - remove mod files`r`npowershell -NoProfile -ExecutionPolicy Bypass -File `"%USERPROFILE%\Downloads\claude-loader-probe\launcher\clean.ps1`"`r`necho.`r`npause`r`n"
 [IO.File]::WriteAllText("$desk\Rust Skate.cmd", $start, [Text.Encoding]::ASCII)
 [IO.File]::WriteAllText("$desk\Rust Skate - remove mod files.cmd", $clean, [Text.Encoding]::ASCII)
 line ('  Installed: ' + (gc "$probe\launcher\version.txt" -First 1) + " ($mb MB in Downloads\claude-loader-probe).")
-line ('  Menu artwork: ' + $icons.Count + ' declared PNGs. Diagnostics without starting Rust: run launcher\skate.ps1 -Diagnostics.')
+if ($needsDiagnostics) { line ('  Menu artwork: ' + $icons.Count + ' declared PNGs. Diagnostics without starting Rust: run launcher\skate.ps1 -Diagnostics.') }
 line '  On the desktop: "Rust Skate" and "Rust Skate - remove mod files".'
-if (Test-Path "$probe\sounds\skate_ollie_01.wav") { line ('  Skateboard sounds: ' + @(ls "$probe\sounds" -File -Filter *_01.wav).Count + ' files.') }
-else { line '  This pack has no skateboard sounds: the ride is silent. Ask the owner for a pack with sounds.' }
+if ($supportsSounds) {
+  if (Test-Path "$probe\sounds\skate_ollie_01.wav") { line ('  Skateboard sounds: ' + @(ls "$probe\sounds" -File -Filter *_01.wav).Count + ' files.') }
+  else { line '  This pack has no skateboard sounds: the ride is silent. Ask the owner for a pack with sounds.' }
+}
 # The launcher starts Rust through a Steam shortcut named RustClient, so that the controller
 # layout made for it applies on foot as well. Steam keeps those shortcuts in a binary file; the
 # installer only reads it, it does not make the shortcut.
