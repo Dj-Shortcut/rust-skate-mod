@@ -3,7 +3,7 @@
 $probe = "$HOME\Downloads\claude-loader-probe"
 # `$prun = <folder>` sums up that session instead of the newest (see `zz runs`).
 if ($prun) { $run = Get-Item "$probe\$prun" -ErrorAction SilentlyContinue; $global:prun = $null }
-else { $run = Get-ChildItem $probe -Directory -Filter 'run-*' -ErrorAction SilentlyContinue | Sort-Object CreationTime | Select-Object -Last 1 }
+else { $run = Get-ChildItem $probe -Directory -Filter 'run-*' -ErrorAction SilentlyContinue | Where-Object { $_.Name -notlike 'run-recovered-*' } | Sort-Object CreationTime | Select-Object -Last 1 }
 if (-not $run) { 'no session folder yet'; return }
 $global:plast = $run.FullName
 'last session: ' + $run.Name + ', started ' + $run.CreationTime.ToString('yyyy-MM-dd HH:mm:ss') + ' | ' + ((Get-ChildItem $run.FullName -File | % { "{0} {1}" -f $_.Name, $_.Length }) -join ', ')

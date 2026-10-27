@@ -77,7 +77,7 @@ PC reliably from a distance.
 | `file` | Another file of the last session, by default the game's `Player.log`. |
 | `more` | The next page of whatever was shown last. |
 | `netfind` | The network library's types from the send check's listing (`console-net.txt`) that the console packet path is looked for in: the packet enum, every type with a method taking it or a string and a bool, every struct, every type with a static member, with their members. |
-| `last` | Makes the newest session folder the one that `log`, `logall` and `file` show, and sums up its ride: seconds on the board, top speed, the lowest speed cap, how often the server put the rider back or held it back, tricks and bails, every trick name the scorer gave with its count, the presses in the air that were refused for want of air by what was asked, and why the rider stepped off. For a session of the owner's launcher, which runs in a window of its own. |
+| `last` | Makes the newest session folder the one that `log`, `logall` and `file` show, and sums up its ride: seconds on the board, top speed, the lowest speed cap, how often the server put the rider back or held it back, tricks and bails, every trick name the scorer gave with its count, the presses in the air that were refused for want of air by what was asked, and why the rider stepped off. For a session of the owner's launcher, which runs in a window of its own. Automatic selection excludes `run-recovered-*` snapshots; select one explicitly with `$prun` to inspect it. |
 | `clean` | Moves a loader that these tools left in the Rust folder out of it. A file still held by a closing client or its crash handler is tried again for a minute; what is left is named. |
 | `survey` | Lists what the interop set of the installed build offers for given type names. |
 | `launcher` | Installs or updates the owner's launcher from [`release.txt`](release.txt), or an explicit full-SHA `$pcandidate` without changing that release pin. |
@@ -160,7 +160,13 @@ Select-String -Path $manifest -Pattern '"buildid"'
 After these tools are installed, `launcher\skate.ps1 -Diagnostics` preserves existing logs and
 shows bounded version, interop and mount checks without starting or stopping Rust. Every normal
 start also preserves interrupted logs before cleanup. The private `run-recovered-*` folders are
-never automatically purged. See the [focused candidate test](../../../../docs/RUST-SKATE-PLAYTEST-063.md).
+never automatically purged. To check session selection, copy `last.ps1` to a disposable folder
+and point its `$probe` at a separate empty staging folder. In that folder, create one `run-P-*`
+folder containing a `skate.log` with `SKATE MOUNT yaw=90`, followed by a newer `run-recovered-*`
+folder containing a log with no mount. Dot-source the copied script: it must report the `run-P-*`
+folder and `mounts=1`; setting `$prun` to the recovered folder before dot-sourcing must still select
+it. With only recovered folders, it reports no session. See the
+[focused candidate test](../../../../docs/RUST-SKATE-PLAYTEST-063.md).
 
 `interop.ps1` and `Gen.cs` name the Unity version of the client (6000.3.15). A Rust update that
 moves to another Unity version needs both changed, and the base libraries for that version.
