@@ -49,8 +49,11 @@ def confidence_track(raw, first, last, options, actor_expected=False):
                 raise CaptureError('Missing or ambiguous declared actor; identity gaps cannot be interpolated',dict(frame=i,targetSelection=f.get('target_selection')))
             for j in REQUIRED: reasons.setdefault(str(j), []).append(dict(frame=i, reason='absent_pose'))
             continue
-        w, im = f['world_landmarks'][0], f['image_landmarks'][0]
-        if len(w) != 33 or len(im) != 33: raise ValueError('Expected33 actual world/image landmarks')
+        groups = [f.get('world_landmarks'), f.get('image_landmarks')]
+        if any(not isinstance(group,list) or len(group)!=1 or not isinstance(group[0],list)
+               or len(group[0])!=33 or any(not isinstance(point,dict) for point in group[0]) for group in groups):
+            raise CaptureError('Expected one complete33-point world/image landmark array',dict(frame=i))
+        w, im = groups[0][0], groups[1][0]
         for j in range(33):
             try: xyz = finite([w[j][a] for a in ('x','y','z')], (3,))
             except (KeyError,ValueError): xyz = np.full(3,np.nan)
