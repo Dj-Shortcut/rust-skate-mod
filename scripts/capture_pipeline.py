@@ -20,7 +20,7 @@ import tempfile
 
 import numpy as np
 from capture_math import encode_pack
-from capture_retarget import retarget
+from capture_retarget import retarget, window_timing
 
 MAX_JSON = 512*1024*1024
 ROOT = Path(__file__).resolve().parent
@@ -131,7 +131,7 @@ def extract(video,model,job):
     import mediapipe as mp
     from mediapipe.tasks import python
     from mediapipe.tasks.python import vision
-    first,last=job['window']['firstFrame'],job['window']['lastFrame'];roi=job['source'].get('roi')
+    first,last,_,_,frame_times=window_timing(job['window']);roi=job['source'].get('roi')
     actor=validate_actor_hint(job['source'].get('actorHint'),first,last);num_poses=6 if actor else 2
     if roi is not None and (not isinstance(roi,list) or len(roi)!=4 or any(type(x) is not int for x in roi) or min(roi[:2])<0 or min(roi[2:])<1):
         raise ValueError('source.roi must be [x,y,width,height] original pixel integers')
@@ -153,7 +153,8 @@ def extract(video,model,job):
                 if not ok:raise ValueError('Source decode failed')
                 height,width=bgr.shape[:2];x,y,w,h=roi if roi is not None else [0,0,width,height]
                 if x+w>width or y+h>height:raise ValueError('ROI extends outside original frame')
-                crop=bgr[y:y+h,x:x+w];timestamp=max(previous+1,round(i*1000/fps));previous=timestamp
+                source_time=i/fps if frame_times is None else float(frame_times[i-first])
+                crop=bgr[y:y+h,x:x+w];timestamp=max(previous+1,round(i*1000/fps if frame_times is None else source_time*1000));previous=timestamp
                 image=mp.Image(image_format=mp.ImageFormat.SRGB,data=np.ascontiguousarray(cv2.cvtColor(crop,cv2.COLOR_BGR2RGB)))
                 result=task.detect_for_video(image,timestamp);images=[]
                 for pose in result.pose_landmarks:
@@ -167,13 +168,17 @@ def extract(video,model,job):
                 if actor:
                     selected,selection,previous_hip=select_actor(images,width,height,i,actor,previous_hip)
                     images=[images[selected]] if selected is not None else [];worlds=[worlds[selected]] if selected is not None else []
-                rows.append(dict(frame_index=i,source_time_seconds=i/fps,inference_timestamp_ms=timestamp,width=width,height=height,roi=roi,
+                rows.append(dict(frame_index=i,source_time_seconds=source_time,inference_timestamp_ms=timestamp,width=width,height=height,roi=roi,
                     pose_count=len(images),image_landmarks=images,world_landmarks=worlds,target_selection=selection))
     finally:cap.release()
-    return dict(scope='Actual MediaPipe VIDEO outputs. No body retarget/root trajectory. Multiple detections are retained and later rejected, never silently subject-selected.',
+    raw=dict(scope='Actual MediaPipe VIDEO outputs. No body retarget/root trajectory. Multiple detections are retained and later rejected, never silently subject-selected.',
         source=dict(sha256=digest(video),fps=fps,roi=roi,actorHint=actor,selection=dict(method='Explicit source hip/height hint + bounded accepted track; missing/ambiguous=0, no actor fallback',bounds=ACTOR_BOUNDS,cost='First:hintDistance+.15*heightError; thereafter:.75*previousDistance+.25*hintDistance+.15*heightError') if actor else 'Exactly one detection required; no subject selection without numeric hint'),
         model=dict(sha256=digest(model),origin='Caller-supplied local PoseLandmarker task; no download performed'),
         environment=dict(mediapipe=importlib.metadata.version('mediapipe'),numpy=np.__version__,numPoses=num_poses,delegate='CPU'),frames=rows)
+    if frame_times is not None:
+        raw['source']['sourceTiming']=dict(mode='variable-frame-times',origin='Window first source frame is t=0',
+            frameTimes=frame_times.tolist(),frameTimeProvenance=job['window']['frameTimeProvenance'])
+    return raw
 
 def job_inputs(job,base,model,expected_model_sha=None):
     source=job['source'];video=local_path(source['video'],base) if source.get('video') else None
@@ -200,7 +205,7 @@ def retained_inference(video,model,job,out,resume,expected_model_sha):
     if expected_model_sha and model_sha!=expected_model_sha:raise ValueError('Model checksum mismatch')
     recipe=dict(window=job['window'],roi=job['source'].get('roi'),actorHint=job['source'].get('actorHint'),roiEdgeMargin=job.get('retarget',{}).get('roiEdgeMargin',.01))
     ingredients=dict(sourceSha256=digest(video),modelSha256=model_sha,recipe=recipe,
-        extractorCodeSha256=hashlib.sha256((''.join(inspect.getsource(f) for f in [extract,validate_actor_hint,actor_hint_at,select_actor])+json.dumps(ACTOR_BOUNDS,sort_keys=True)).encode()).hexdigest(),
+        extractorCodeSha256=hashlib.sha256((''.join(inspect.getsource(f) for f in [extract,window_timing,validate_actor_hint,actor_hint_at,select_actor])+json.dumps(ACTOR_BOUNDS,sort_keys=True)).encode()).hexdigest(),
         mediapipe=importlib.metadata.version('mediapipe'),opencv=cv2.__version__,numpy=np.__version__)
     key=hashlib.sha256(json_bytes(ingredients)).hexdigest();path=out/'raw-cache'/(key+'.json.gz');receipt=path.with_suffix('.receipt.json')
     if resume and path.is_file() and receipt.is_file() and read_json(receipt).get('sha256')==digest(path):

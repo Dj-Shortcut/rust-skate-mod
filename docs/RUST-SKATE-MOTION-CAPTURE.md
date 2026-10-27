@@ -57,6 +57,18 @@ working capture. Replace the source paths and calibrate each actual attempt.
   bystander. An actor hint is a selection constraint, not a measured skeleton.
 - `window`: original inclusive frame indices and actual source fps. Do not join
   independent shots or treat a slow-motion replay as normal captured timing.
+  Variable-frame-rate footage can opt into `frameTimes`, an inline array with
+  exactly one finite timestamp per included source frame (at most 2401). Times
+  are seconds relative to the first window frame: start at exactly 0, strictly
+  increase, and end at the clip duration (at most 10 seconds). A nonempty
+  `frameTimeProvenance` must explain the source presentation timestamps. For
+  example, three frames can use `[0, 0.02, 0.07]`; do not derive these from
+  average fps. `fps` remains nominal source identification in this mode.
+  Camera keys, body/board/contact keys and event times use this actual duration;
+  source-frame interpolation and detector timing follow the declared timestamps.
+  The metadata retains the array and provenance, and cache keys include them.
+  Without the array, the existing constant-frame-rate timing is unchanged.
+  Resampling adds interpolated poses, not additional measured observations.
 - `stance`: the recorded anatomical regular/goofy stance. The detector's body
   is normalized to canonical regular. Trick names such as switch and nollie
   remain explicit in `movementKind`.
