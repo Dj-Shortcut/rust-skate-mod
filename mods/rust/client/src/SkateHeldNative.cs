@@ -515,6 +515,7 @@ public static partial class SkateHeld
     // switched on again on stepping off (Show). What the held entity offers is logged once a type.
     private static readonly System.Collections.Generic.List<UnityEngine.GameObject> hidden = new System.Collections.Generic.List<UnityEngine.GameObject>();
     private static readonly System.Collections.Generic.HashSet<string> probed = new System.Collections.Generic.HashSet<string>();
+    public static bool HasPendingRestore { get { return hidden.Count != 0; } }
     private static bool Hide(object player, out string how)
     {
         how = "";
@@ -541,8 +542,10 @@ public static partial class SkateHeld
             var kind = c.GetType().Name;
             var first = probed.Add(kind);
             if (first) Out.Say("HELD switching off a " + kind + " (" + go.name + ") while riding");
+            // Own the exact originally active object before a native setter can throw after
+            // changing it. A repeated hide retains one restoration record for the same object.
+            if (!hidden.Contains(go)) hidden.Add(go);
             go.SetActive(false);
-            hidden.Add(go);
             names += " " + kind + " (" + go.name + ")" + Guides(c, first);
             off++;
         }
@@ -609,13 +612,10 @@ public static partial class SkateHeld
                     line += " " + p.Name + ":" + typeName + "=" + go.name + (go.activeInHierarchy ? "" : ",off") + (outside ? ",outside" : "");
                     if (outside && (!plannerReferences || !plan.transform.IsChildOf(go.transform)) && go.activeSelf && GuideLike(go.name))
                     {
-                        if (plannerReferences)
-                        {
-                            // Record before changing it, so even a throwing setter can be restored.
-                            if (!owned.Contains(go)) owned.Add(go);
-                        }
+                        // Both planner and legacy held-item guides retain their exact reference
+                        // before a setter can throw; their restoration lists remain separate.
+                        if (!owned.Contains(go)) owned.Add(go);
                         go.SetActive(false);
-                        if (!plannerReferences) owned.Add(go);
                         names += " and its " + go.name;
                     }
                 }
@@ -767,11 +767,35 @@ public static partial class SkateHeld
     private static string Short(string s, int most) { return s.Length > most ? s.Substring(0, most) + "…" : s; }
 
     // Stepping off: every held entity switched off for the ride is switched on again.
+    private static string restoreFailure = "";
     public static int Show()
     {
-        var n = 0;
-        foreach (var go in hidden) if (go != null && !go.activeSelf) { go.SetActive(true); n++; }
-        hidden.Clear();
+        var n = 0; var failure = "";
+        for (var i = hidden.Count - 1; i >= 0; i--)
+        {
+            var go = hidden[i];
+            try
+            {
+                if (go != null && !go.activeSelf)
+                {
+                    go.SetActive(true);
+                    if (!go.activeSelf) throw new InvalidOperationException("held object restoration did not verify");
+                    n++;
+                }
+                hidden.RemoveAt(i);
+            }
+            catch (Exception e)
+            {
+                // Keep only the failed references for a later off-board retry. One destroyed
+                // or temporarily unavailable part must not strand the other held objects.
+                if (failure.Length == 0) failure = e.GetType().Name;
+            }
+        }
+        if (restoreFailure != failure)
+        {
+            restoreFailure = failure;
+            if (failure.Length != 0) Out.Say("HELD restore pending: " + failure + "; objects=" + hidden.Count);
+        }
         return n;
     }
 
