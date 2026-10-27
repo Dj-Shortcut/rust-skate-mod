@@ -17,7 +17,7 @@ function most($pattern, $lowest) {
   if ($lowest) { $m.Minimum } else { $m.Maximum }
 }
 function count($pattern) { @($l | ? { $_ -match $pattern }).Count }
-'lines=' + $l.Count + ' mounts=' + (count '^SKATE MOUNT') + ' seconds on the board=' + (count '^SKATE (Ground|Air|Grind|Bail) speed') + ' top speed=' + (most ' top=([0-9.]+)' $false) + ' lowest cap=' + (most ' cap=([0-9.]+)' $true) + ' put backs=' + (count '^SKATE put back')
+'lines=' + $l.Count + ' mounts=' + (count '^SKATE MOUNT yaw=') + ' seconds on the board=' + (count '^SKATE (Ground|Air|Grind|Bail) speed') + ' top speed=' + (most ' top=([0-9.]+)' $false) + ' lowest cap=' + (most ' cap=([0-9.]+)' $true) + ' put backs=' + (count '^SKATE put back')
 'tricks=' + (count '^SKATE trick ') + ' bails=' + (count '^SKATE bail') + ' grinds=' + (count 'Grind speed') + ' threw=' + (count 'threw') + ' late presses=' + (count '^SKATE late ') + ' held back=' + (count '^SKATE held back') + ' snaps=' + (count '^SKATE snap ')
 # Presses in the air that there was no room for, by what was asked: many of one kind say the
 # jumps are too low for it, or that the press comes too late in the arc.
