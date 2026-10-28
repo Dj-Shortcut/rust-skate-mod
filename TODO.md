@@ -28,7 +28,7 @@ Eerst deze opstapblokkade oplossen. Kandidaat .64 bewaart de .63-foutstap en sta
 21. Spel bevriest niet en invoer blijft werken. Open.
 22. Lichaam trekt in de lucht niet horizontaal recht. Bron klaar, ongetest.
 23. Volledige, samenhangende rijdersanimatie. Bron klaar, ongetest.
-24. Alle tricks die Skate 3 heeft: alle flips (kickflip-familie), alle grabs, alle grinds en slides, manuals, enzovoort, elk met eigen animatie (Andy, 25 okt). [Volledige bibliotheek in zeven batches](docs/RUST-SKATE-ANIMATION-LIBRARY.md); eerste vijf nog in herstel, geen nieuwe bewegings- of gameplayacceptatie.
+24. Alle tricks die Skate 3 heeft: alle flips (kickflip-familie), alle grabs, alle grinds en slides, manuals, enzovoort, met een eigen animatie per trick; batch 3 samenstellen uit gedeelde bronclips per stance ([40 bronreferenties, #584](https://github.com/Dj-Shortcut/rust-skate-mod/issues/584)). [Volledige bibliotheek in zeven batches](docs/RUST-SKATE-ANIMATION-LIBRARY.md); eerste vijf visueel herwerkt voor de viewer, familiesamenstelling nog niet geïmplementeerd, gameplayacceptatie op Shadow open.
 25. Controller werkt op het board en te voet. Open.
 26. Uitzoeken hoe Skate trick-, rijder- en boardanimaties koppelt. Deels onderzocht (privé).
 27. Herkenbare drop-inanimatie voor halfpipes: afzonderlijk bronvoorstel met gewichtsverplaatsing en knieabsorptie bij bevestigd rampcontact; tail-op-coping voorfase, native uitvoering en beeld blijven open (Andy, 26 okt).
