@@ -15,6 +15,9 @@ public static class SkateCapturedTricks
     private static bool loaded, airSeen, landed;
     private static double beganAt, landedAt, caughtAt = -1, previousAt, previousAirSourceTime, catchSourceLead;
     private static double preparedAt = -1, catchPreparationWeight;
+    private static double catchKneeDegrees = SkateCaptureFootSupport.CatchPriorInternalDegrees;
+    private static double landingKneeDegrees = SkateCaptureFootSupport.LandingPriorInternalDegrees;
+    private static bool supportedKneePlanes;
     private static double previousAirProgress;
     private static bool flipExtended;
     private static SkateCaptureFrame previous, landingFrom;
@@ -166,7 +169,7 @@ public static class SkateCapturedTricks
         {
             SkateRiderPose absorbed; SkateVector shift;
             if (!SkateCaptureFootSupport.TryLandingAbsorption(rig, pose, V(SkateRide.ViewNormal), sinceLand,
-                out absorbed, out shift, out error, catchPreparationWeight))
+                out absorbed, out shift, out error, catchPreparationWeight, catchKneeDegrees, landingKneeDegrees, supportedKneePlanes))
             { ClearPlantedFeet(); pose = baseline; return false; }
             pose = absorbed;
         }
@@ -298,6 +301,10 @@ public static class SkateCapturedTricks
             if (index < 0 || clips[index] == null) { if (airborne) refusedToken = nextToken; return false; }
             active = clips[index]; signature = requested; activeStance = SkateRide.Goofy ? SkateStance.Goofy : SkateStance.Regular; token = nextToken; lands = SkateRide.Lands; airSeen = landed = flipExtended = false; beganAt = Time.realtimeSinceStartup; caughtAt = -1; previousAirSourceTime = catchSourceLead = previousAirProgress = 0; previous = default(SkateCaptureFrame);
             preparedAt = -1; catchPreparationWeight = 0;
+            supportedKneePlanes = active.SourceMovementKind == "nollie-backside-180-heelflip";
+            catchKneeDegrees = supportedKneePlanes ? 100 :
+                active.SourceMovementKind == "360-flip" ? 135 : SkateCaptureFootSupport.CatchPriorInternalDegrees;
+            landingKneeDegrees = supportedKneePlanes ? 100 : SkateCaptureFootSupport.LandingPriorInternalDegrees;
             string supportError = null;
             if (!PrepareSupport(index, rig, activeStance, out footSupport, out supportError))
             { Refuse(nextToken, supportError); return false; }
@@ -420,9 +427,9 @@ public static class SkateCapturedTricks
             catchPreparationWeight = SkateCaptureFootSupport.CatchPreparationWeight(now - preparedAt);
             SkateRiderPose prepared; SkateVector preparationShift;
             if (!SkateCaptureFootSupport.TryCatchPreparation(rig, frame.Pose, frame.RiderUp, catchPreparationWeight,
-                out prepared, out preparationShift, out error))
+                out prepared, out preparationShift, out error, catchKneeDegrees, supportedKneePlanes))
             { Refuse(nextToken, error ?? "authored catch preparation unavailable"); return false; }
-            catchPreparationWeight = SkateCaptureFootSupport.ReachedCatchPreparationWeight(rig, prepared, catchPreparationWeight);
+            catchPreparationWeight = SkateCaptureFootSupport.ReachedCatchPreparationWeight(rig, prepared, catchPreparationWeight, catchKneeDegrees);
             frame = new SkateCaptureFrame(prepared, frame.Board, frame.Rotation, frame.LeftSoleUp, frame.RightSoleUp,
                 frame.HasEvent, frame.Observation, frame.PelvisCorrection + preparationShift,
                 frame.LeftHandCorrection, frame.RightHandCorrection, frame.RiderUp);
@@ -451,7 +458,7 @@ public static class SkateCapturedTricks
             }
             SkateRiderPose absorbed; SkateVector absorptionShift;
             if (!SkateCaptureFootSupport.TryLandingAbsorption(rig, frame.Pose, frame.RiderUp, now - landedAt,
-                out absorbed, out absorptionShift, out error, catchPreparationWeight))
+                out absorbed, out absorptionShift, out error, catchPreparationWeight, catchKneeDegrees, landingKneeDegrees, supportedKneePlanes))
             { Refuse(nextToken, error ?? "authored landing absorption unavailable"); return false; }
             frame = new SkateCaptureFrame(absorbed, frame.Board, frame.Rotation, frame.LeftSoleUp, frame.RightSoleUp,
                 frame.HasEvent, frame.Observation, frame.PelvisCorrection + absorptionShift,

@@ -432,7 +432,7 @@ opposite headings. Captured recovery limits displayed head yaw relative to the
 current chest; camera look remains unrestricted. Idle
 riding retains the measured rig's soft knees without adding an extra crouch.
 
-Captured presentation has one shared **authored knee prior** for ambiguous
+Captured presentation has a shared **authored knee prior** for ambiguous
 monocular depth. Once Catch has actually returned both feet to the board, it
 prepares at least 35 degrees of knee flex (145-degree internal angle) over
 0.04 seconds. Free feet,
@@ -450,6 +450,15 @@ contact event or a physics/scoring change. Review replays must identify the
 authored prior and use the same `SkateCaptureFootSupport.TryCatchPreparation` and
 `TryLandingAbsorption` implementations as normal riding. Source packs and their
 approval remain separate.
+
+The nollie BS180 heelflip uses a deeper authored supported profile: a 100-degree
+internal knee target in Catch and at impact, with the same entry/release clock,
+drop cap and fixed feet. Its knee planes ease toward the ordinary toe-directed
+guides because retaining the ambiguous source planes still looked straight.
+Normal 360 Flip uses a 135-degree catch target with the default landing target
+and source knee planes. The other families keep the default angles and planes.
+Review metadata must
+include `SupportedKneeProvenance`.
 
 The nollie BS180 heelflip also has an explicitly authored supported-torso
 cleanup for its unreliable filmed lean. From Catch through recovery, a 0.12-second
