@@ -73,8 +73,18 @@ afspeelpad.
 
 De launcher, een `zz`-sessie en het vriendenpakket plaatsen de geluidsmap vanuit
 `Downloads\claude-loader-probe\sounds\` ([clienttools](../mods/rust/client/tools/README.md#settings));
-dat is scriptbron, nog niet op Windows/PowerShell uitgevoerd. Alle 18 gekozen bestanden zijn privé voorbereid: 44,1 kHz mono PCM16,
-veilige pieken, gecontroleerde onsets en loopnaden, en volledige decode met de
-werkelijke clientlezer. De absolute LUFS-doelen en de gevraagde drop/landing-verhouding
-worden niet allemaal gehaald. Daadwerkelijke installatie, volumebalans, timing en
-gezamenlijk luisteren op Shadow blijven open; het pakket is niet in-game goedgekeurd.
+dat is scriptbron, nog niet op Windows/PowerShell uitgevoerd. De 18 gekozen bestanden
+zijn privé voorbereid als 44,1 kHz mono PCM16. De vier te late aanzetten zijn
+ingekort; de volledige uitklanken blijven behouden. Formaat, veilige pieken, DC,
+onsets, eindfades, loopnaden en decode met de werkelijke clientlezer zijn gecontroleerd.
+Acht van de elf eerdere LUFS-afwijkingen vallen nu binnen de oorspronkelijke
+0,5 LU-tolerantie. Landing (−13,59), Drop (−10,59) en Slam (−14,59 LUFS) blijven
+circa 1,59 LU onder hun absolute doel. Drop zit wel 3 LU boven de werkelijke
+Landing, Slam 1 LU eronder en Push 10 LU onder de werkelijke Ollie. Die resterende
+afwijkingen worden niet als opgelost gemeld.
+
+De bron gebruikt nu lokale 3D-geluidsbronnen: loops volgen het board en eenmalige
+impacts blijven op hun gebeurtenisplek staan. Dat is geen geluidssynchronisatie
+naar andere spelers. Daadwerkelijke installatie, ruimtelijke weergave, volumebalans,
+timing en gezamenlijk luisteren op Shadow blijven open; het pakket is niet in-game
+goedgekeurd.

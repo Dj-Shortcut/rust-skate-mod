@@ -11,6 +11,11 @@ public static class SkateSfx
     public static bool Ready;
     public static string State = "not started";
     private static GameObject audio;
+    private static GameObject boardEmitter;
+    private const int ShotVoices = 8;
+    private static readonly AudioSource[] shotPool = new AudioSource[ShotVoices];
+    private static readonly float[] shotTimes = new float[ShotVoices];
+    private static int shotStep;
     private const int Smooth = 0, Rough = 1, Wood = 2, Grit = 3, Whirr = 4, Push = 5,
         Ollie = 6, Landing = 7, Drop = 8, Seamed = 9, GrindIn = 10, Grind = 11,
         GrindOut = 12, SlideIn = 13, DeckSlide = 14, Scrape = 15, Slam = 16, Bail = 17;
@@ -43,7 +48,12 @@ public static class SkateSfx
     private static AudioSource Source(GameObject go, AudioClip clip, bool loop)
     {
         var s = go.AddComponent<AudioSource>();
-        s.spatialBlend = 0f; s.loop = loop; s.volume = loop ? 0f : 1f;
+        s.spatialBlend = 1f; s.dopplerLevel = 0f;
+        s.rolloffMode = AudioRolloffMode.Linear; s.minDistance = 1f; s.maxDistance = 25f;
+        if (s.spatialBlend != 1f || s.dopplerLevel != 0f || s.rolloffMode != AudioRolloffMode.Linear ||
+            s.minDistance != 1f || s.maxDistance != 25f)
+            throw new InvalidOperationException("Native skateboard audio source rejected its 3D configuration");
+        s.loop = loop; s.volume = loop ? 0f : 1f;
         if (ranked)
         {
             // When more sources play than the engine mixes, it drops the least important ones first.
@@ -70,20 +80,31 @@ public static class SkateSfx
                 samples = new float[32768];
                 audio = new GameObject("skate_audio");
                 UnityEngine.Object.DontDestroyOnLoad(audio);
-                shots = Source(audio, null, false);
                 State = "preparing WAV sound pack";
                 preparation = 1;
             }
             else if (slot < ownedClips.Length) PrepareClip();
+            else if (shotStep < ShotVoices)
+            {
+                var voice = new GameObject("skate_audio_shot_" + shotStep);
+                voice.transform.SetParent(audio.transform, false);
+                shotPool[shotStep] = Source(voice, null, false);
+                shotTimes[shotStep++] = -1f;
+            }
             else if (sourceStep < 7)
             {
-                if (sourceStep == 0) roll = Source(audio, ownedClips[Smooth * SkateSoundPack.Variations], true);
-                else if (sourceStep == 1) rough = Source(audio, ownedClips[Rough * SkateSoundPack.Variations], true);
-                else if (sourceStep == 2) hollow = Source(audio, ownedClips[Wood * SkateSoundPack.Variations], true);
-                else if (sourceStep == 3) grit = Source(audio, ownedClips[Grit * SkateSoundPack.Variations], true);
-                else if (sourceStep == 4) whirr = Source(audio, ownedClips[Whirr * SkateSoundPack.Variations], true);
-                else if (sourceStep == 5) grind = Source(audio, ownedClips[Grind * SkateSoundPack.Variations], true);
-                else slide = Source(audio, ownedClips[DeckSlide * SkateSoundPack.Variations], true);
+                if (sourceStep == 0)
+                {
+                    boardEmitter = new GameObject("skate_audio_board");
+                    boardEmitter.transform.SetParent(audio.transform, false);
+                    roll = Source(boardEmitter, ownedClips[Smooth * SkateSoundPack.Variations], true);
+                }
+                else if (sourceStep == 1) rough = Source(boardEmitter, ownedClips[Rough * SkateSoundPack.Variations], true);
+                else if (sourceStep == 2) hollow = Source(boardEmitter, ownedClips[Wood * SkateSoundPack.Variations], true);
+                else if (sourceStep == 3) grit = Source(boardEmitter, ownedClips[Grit * SkateSoundPack.Variations], true);
+                else if (sourceStep == 4) whirr = Source(boardEmitter, ownedClips[Whirr * SkateSoundPack.Variations], true);
+                else if (sourceStep == 5) grind = Source(boardEmitter, ownedClips[Grind * SkateSoundPack.Variations], true);
+                else slide = Source(boardEmitter, ownedClips[DeckSlide * SkateSoundPack.Variations], true);
                 sourceStep++;
             }
             else
@@ -91,7 +112,8 @@ public static class SkateSfx
                 samples = upload = null; directory = null;
                 Sync(); wasOn = false;
                 Ready = true; State = "ready";
-                Out.Say("AUDIO ready: " + ownedClips.Length + " selected WAVs, seven loops and eleven one-shot types at " + Rate + " Hz");
+                Out.Say("AUDIO ready: " + ownedClips.Length + " selected WAVs at " + Rate +
+                    " Hz; seven 3D board loops, eleven one-shot types, eight fixed-position voices, linear range 1-25 m");
             }
         }
         catch (Exception e) { Fail("failed", e); }
@@ -160,13 +182,17 @@ public static class SkateSfx
 
     private static bool Cleanup()
     {
-        Ready = false; preparation = slot = phase = uploaded = uploadCount = sourceStep = 0;
+        Ready = false; preparation = slot = phase = uploaded = uploadCount = sourceStep = shotStep = 0;
         var clean = true;
         try { if (reader != null) reader.Dispose(); reader = null; }
         catch (Exception) { clean = false; }
         samples = upload = null; directory = null;
         SilenceAll();
-        if (DestroyOwned(audio)) { audio = null; roll = rough = grind = slide = shots = hollow = grit = whirr = null; }
+        if (DestroyOwned(audio))
+        {
+            audio = boardEmitter = null; roll = rough = grind = slide = shots = hollow = grit = whirr = null;
+            for (var i = 0; i < ShotVoices; i++) { shotPool[i] = null; shotTimes[i] = -1f; }
+        }
         else clean = false;
         for (var i = 0; i < ownedCount; i++)
         {
@@ -192,7 +218,10 @@ public static class SkateSfx
     }
 
     private static void SilenceAll()
-    { Silence(roll); Silence(rough); Silence(grind); Silence(slide); Silence(shots); Silence(hollow); Silence(grit); Silence(whirr); }
+    {
+        Silence(roll); Silence(rough); Silence(grind); Silence(slide); Silence(hollow); Silence(grit); Silence(whirr);
+        for (var i = 0; i < ShotVoices; i++) Silence(shotPool[i]);
+    }
 
     public static void Suspend()
     {
@@ -251,7 +280,42 @@ public static class SkateSfx
         return clip;
     }
 
-    private static void Play(int stem, float volume) { shots.PlayOneShot(Variant(stem), volume); }
+    private static void PlaceBoardEmitter()
+    {
+        var position = SkateRide.Position + SkateRide.ViewNormal * (RiderRig.DeckTop + SkateBoard.ShowLift + SkateBoard.Pop);
+        if (SkateBoard.RollingOut) position = SkateBoard.RollOutAt;
+        else if (SkateCapturedTricks.HasFrame)
+        {
+            var p = SkateCapturedTricks.DisplayFrame.Origin;
+            position = new Vector3((float)p.X, (float)p.Y, (float)p.Z);
+        }
+        else if (SkateRide.On && SkateRig.LocalT != null)
+        {
+            var frame = SkateBoard.PoseFor(SkateRig.LocalT);
+            if (frame.Initialized) position = new Vector3((float)frame.Origin.X, (float)frame.Origin.Y, (float)frame.Origin.Z);
+        }
+        if (float.IsNaN(position.x) || float.IsNaN(position.y) || float.IsNaN(position.z) ||
+            float.IsInfinity(position.x) || float.IsInfinity(position.y) || float.IsInfinity(position.z))
+            throw new InvalidOperationException("Invalid skateboard audio position");
+        boardEmitter.transform.position = position;
+    }
+
+    private static void Play(int stem, float volume)
+    {
+        var index = 0;
+        for (var i = 0; i < ShotVoices; i++)
+        {
+            if (!shotPool[i].isPlaying) { index = i; break; }
+            if (shotTimes[i] < shotTimes[index]) index = i;
+        }
+        // Loops follow the board; a completed impact stays where it happened.
+        // Reuse only a free voice, or the oldest tail when the bounded pool is full.
+        shots = shotPool[index]; shots.Stop();
+        shots.transform.position = stem == Slam ? SkateRide.Position + Vector3.up * .45f :
+            stem == Push ? SkateRide.Position + Vector3.up * .03f : boardEmitter.transform.position;
+        shotTimes[index] = Time.realtimeSinceStartup;
+        shots.PlayOneShot(Variant(stem), volume);
+    }
 
     private static void ContactLoop(AudioSource source, int stem, bool active, ref bool running)
     {
@@ -290,7 +354,8 @@ public static class SkateSfx
         {
             if (block == null) block = new Il2CppStructArray<float>(256);
             var wheels = Math.Max(Math.Max(Peak(roll), Peak(rough)), Math.Max(Peak(hollow), Math.Max(Peak(grit), Peak(whirr))));
-            RollHeard = Math.Max(RollHeard, wheels); GrindHeard = Math.Max(GrindHeard, Math.Max(Peak(grind), Peak(slide))); ShotsHeard = Math.Max(ShotsHeard, Peak(shots));
+            RollHeard = Math.Max(RollHeard, wheels); GrindHeard = Math.Max(GrindHeard, Math.Max(Peak(grind), Peak(slide)));
+            for (var i = 0; i < ShotVoices; i++) ShotsHeard = Math.Max(ShotsHeard, Peak(shotPool[i]));
         }
         catch (Exception e) { deaf = true; Out.Say("AUDIO output cannot be read back: " + e.GetType().Name + ": " + e.Message); }
     }
@@ -320,6 +385,7 @@ public static class SkateSfx
         if (!Ready || failed || suspended) return;
         try
         {
+            PlaceBoardEmitter();
             var speed = Math.Abs(SkateRide.Speed);
             if (float.IsNaN(speed) || float.IsInfinity(speed)) speed = 0f;
             if (float.IsNaN(frameSeconds) || float.IsInfinity(frameSeconds) || frameSeconds < 0f) frameSeconds = 0f;
