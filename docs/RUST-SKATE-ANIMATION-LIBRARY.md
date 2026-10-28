@@ -10,7 +10,7 @@ selections are reference material, not a limit or a count of finished animations
 | --- | --- | --- |
 | 1 | Switch Heelflip, Nollie Heelflip, Fakie Kickflip, Nollie Backside 180 Heelflip, Nollie 360 Flip | Viewer revision includes corrected head/neck frames, quicker recovery, relaxed cruise arms, targeted free-foot return and coupled trucks on the detailed board. Normal and slow visual review uses the reference skin; Rust/Shadow acceptance remains open. This source change does not approve or install a capture pack. |
 | 2 | Riding, steering, crouch, normal/mongo push, ollie/nollie, braking, powerslide, revert, kickturn, both manuals, landing and upright roll-away | Existing procedural routes need visual review. Dedicated manual-revert, speed-check and kickturn actions are still missing. |
-| 3 | All requested flip/shove families and stance/spin variants, composed from shared source families; separate references for exceptional foot/body actions | Follow the 40-reference plan in [#584](https://github.com/Dj-Shortcut/rust-skate-mod/issues/584). Family composition is not implemented; capture selection still covers only the five exact batch-1 variants. |
+| 3 | All requested flip/shove families and stance/spin variants, composed from shared source families; separate references for exceptional foot/body actions | First #584 source step: compose and exact normal-route selection for six double/triple variants from three batch-1 families, alongside the original five. Every variant requires independent visual review and pack approval; the remaining 40-reference coverage is open. |
 | 4 | All requested air grabs, tweaks and one-foot/no-foot variants | Existing grab catalogue and procedural presentation need hand/foot and motion review. Review airs above a halfpipe, including entry, hold, release, catch and landing. |
 | 5 | All grinds, slides and stalls, darkslide, both exit directions | Existing action/pose source remains separate from approved capture playback. Rail, ledge and coping contact must be verified. |
 | 6 | Ground grabs, coffin, boneless, beanplant, fastplant, no comply, caveman and hippie-jump variants | Existing source needs distinct per-action contact/motion review; shared generic poses do not count as individual finished animations. |
@@ -68,8 +68,15 @@ timestamps, establish clip quality or count completed animations. The linked
 [Swinburne dataset](https://doi.org/10.25916/sut.31043779.v1) is a reference index;
 retain actual source windows, provenance and uncertainties for selected footage.
 
-Family-aware selection/adapters must be implemented before composed variants
-enter normal gameplay. Each result records its source IDs, stance, composition,
+The first family adapter covers switch/nollie double and triple heelflips and
+fakie double and triple kickflips. It preserves the source flick/release on the
+first live turn and catch on the final turn; intermediate turns share the free
+body motion. Separately approved held extensions retain the displayed source
+progress when the underlying samples and contact events match. This does not
+add airtime, change scoring or complete an unfinished physical rotation.
+
+Other families still need their own selection and presentation adapters before
+entering normal gameplay. Each result records its source IDs, stance, composition,
 reconstruction and release/catch timing. Keep `reviewed=false` until that exact
 result passes visual review on the real rig and detailed board in both stances.
 Check every composed trick's flick/scoop against its actual full board rotation,
@@ -87,8 +94,9 @@ footage as a grab reference. Failed body detections are not motion data; explici
 reconstruction must not inflate confidence or evade actor/gap rejection.
 Occluded head authoring is opt-in and leaves its uncertainty in the JSON receipts.
 
-The existing normal capture adapter remains limited to five exact flat-ground
-variants. Later families need their own entry/hold/exit and contact rules rather
+The normal capture registry covers eleven exact flat-ground signatures: the five
+batch-1 sources and six separately reviewable double/triple derivatives. Later
+families need their own entry/hold/exit and contact rules rather
 than relaxing that adapter's flat-ground exclusions. Ground, rail and coping
 anchors must come from the active game action. Physics, board rotation, scoring,
 catch and landing remain game-owned; animation does not move the player root.

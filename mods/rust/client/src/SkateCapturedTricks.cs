@@ -8,13 +8,14 @@ using UnityEngine;
 public static class SkateCapturedTricks
 {
     private const double GroundRecoverySpeed = 1.35;
-    private static readonly string[] Kinds = { "switch-heelflip", "nollie-heelflip", "fakie-kickflip", "nollie-backside-180-heelflip", "nollie-360-flip" };
-    private static readonly SkateCapturePlayback[] clips = new SkateCapturePlayback[Kinds.Length];
-    private static readonly SkateCaptureFootSupport[] supports = new SkateCaptureFootSupport[Kinds.Length * 2];
-    private static readonly int[] supportVersions = new int[Kinds.Length * 2];
-    private static readonly string[] supportErrors = new string[Kinds.Length * 2];
+    private static readonly SkateCapturePlayback[] clips = new SkateCapturePlayback[SkateCaptureVariants.Count];
+    private static readonly SkateCaptureFootSupport[] supports = new SkateCaptureFootSupport[SkateCaptureVariants.Count * 2];
+    private static readonly int[] supportVersions = new int[SkateCaptureVariants.Count * 2];
+    private static readonly string[] supportErrors = new string[SkateCaptureVariants.Count * 2];
     private static bool loaded, airSeen, landed;
     private static double beganAt, landedAt, caughtAt = -1, previousAt, previousAirSourceTime, catchSourceLead;
+    private static double previousAirProgress;
+    private static bool flipExtended;
     private static SkateCaptureFrame previous, landingFrom;
     private static SkateBoardPose previousCarrier, landingCarrier;
     private static int token = -1, refusedToken = -1, lands;
@@ -38,7 +39,7 @@ public static class SkateCapturedTricks
     public static string Status { get; private set; } = "Captured riding not loaded";
     public static void ClearFrame() { displayed = default(SkateBoardPose); }
     public static void Reset()
-    { active = null; footSupport = null; token = refusedToken = -1; airSeen = landed = false; caughtAt = -1; previousAirSourceTime = catchSourceLead = 0; previous = landingFrom = default(SkateCaptureFrame); ClearPlantedFeet(); ClearFrame(); }
+    { active = null; footSupport = null; token = refusedToken = -1; airSeen = landed = flipExtended = false; caughtAt = -1; previousAirSourceTime = catchSourceLead = previousAirProgress = 0; previous = landingFrom = default(SkateCaptureFrame); ClearPlantedFeet(); ClearFrame(); }
     public static void Preload()
     {
         if (loaded) return;
@@ -66,14 +67,16 @@ public static class SkateCapturedTricks
             SkateCaptureLibrary library;
             using (var stream = new MemoryStream(bytes))
                 if (!SkateCapturePack.TryRead(stream, out library, out error)) { Status = error; return; }
-            var pending = new SkateCapturePlayback[Kinds.Length]; int accepted = 0, unsupported = 0, rotationClocks = 0;
+            var pending = new SkateCapturePlayback[SkateCaptureVariants.Count]; int accepted = 0, unsupported = 0, rotationClocks = 0;
             for (int n = 0; n < approval.Count; n++)
             {
                 SkateCaptureClip clip = null;
                 for (int c = 0; c < library.Count; c++) if (library.GetClip(c).Id == approval.GetId(n)) clip = library.GetClip(c);
                 if (clip == null || !clip.Reviewed) { Status = "Captured riding disabled: approved clip missing or unreviewed"; return; }
-                int kind = Array.IndexOf(Kinds, clip.MovementKind);
+                int kind = SkateCaptureVariants.IndexOf(clip.MovementKind);
                 if (kind < 0) { unsupported++; continue; }
+                if (SkateCaptureVariants.Get(kind).Derived && clip.Id != clip.MovementKind)
+                { Status = "Captured riding disabled: derived trick needs its own exact approved id"; return; }
                 if (pending[kind] != null) { Status = "Captured riding disabled: ambiguous approved trick variant"; return; }
                 SkateCapturePlayback playback;
                 if (!SkateCapturePlayback.TryCreate(clip, out playback, out error)) { Status = error; return; }
@@ -223,6 +226,40 @@ public static class SkateCapturedTricks
             PrepareSupport(n, rig, stance, out ignored, out error); return;
         }
     }
+    private static double SourceProgress(double liveProgress)
+    {
+        double value = flipExtended ? Math.Max(previousAirProgress, liveProgress) : liveProgress;
+        // The controller can add a turn just before the old target finishes.
+        // Do not enter the shoe-return adapter while that request is pending.
+        // Keys retains an extra already drained from Pad until physics takes it.
+        if ((SkatePad.HeldFlipExtensionPending || SkateKeys.HeldFlip != 0) &&
+            Math.Abs(signature.Flip) < 1080 && Math.Abs(signature.Shove) < .01 && Math.Abs(signature.Spin) < .01 &&
+            previousAirProgress <= active.FreeFlightEndProgress)
+            value = Math.Min(value, active.FreeFlightEndProgress);
+        return value;
+    }
+    private static bool TryExtendFlip(SkateRiderRig rig, SkateCaptureTrickSignature requested, out string error)
+    {
+        error = "the live trick variant changed";
+        if (landed || caughtAt >= 0 || !SkateCaptureVariants.IsFlipExtension(signature, requested)) return false;
+        if (previousAirProgress > active.FreeFlightEndProgress)
+        { error = "extended flip capture has already begun its source foot return"; return false; }
+        int index = SkateCaptureVariants.IndexOf(requested.MovementKind);
+        if (index < 0 || clips[index] == null)
+        { error = "extended flip capture has no separately approved variant"; return false; }
+        if (!active.SharesSourceWith(clips[index]))
+        { error = "extended flip capture has different source motion or contacts"; return false; }
+        SkateCaptureFootSupport support;
+        if (!PrepareSupport(index, rig, activeStance, out support, out error)) return false;
+        double live = clips[index].PresentationProgress(requested.RotationProgress(SkateRide.FlipDeg, SkateRide.ShoveDeg, SkateRide.SpinDeg));
+        if (live >= 1 || previousAirProgress >= 1)
+        { error = "extended flip capture has no remaining free-flight interval"; return false; }
+        // Hold the last shown free pose until the larger family's clock catches
+        // up; stretching the remaining return would carry a low shoe through it.
+        flipExtended = true;
+        active = clips[index]; signature = requested; footSupport = support;
+        return true;
+    }
     public static bool TryFrame(SkateRiderRig rig, Transform player, SkateRiderPose baseline, SkateVector baselineLeftUp, SkateVector baselineRightUp, out SkateCaptureFrame frame)
     {
         frame = default(SkateCaptureFrame); ClearFrame();
@@ -244,9 +281,9 @@ public static class SkateCapturedTricks
         {
             if (!airborne && !queued || airborne && (!SkateRide.Jumped || SkateRide.AirTime > .1f)) return false;
             var requested = SkateRide.PresentationSignature; string kind = requested.MovementKind;
-            int index = Array.IndexOf(Kinds, kind);
+            int index = SkateCaptureVariants.IndexOf(kind);
             if (index < 0 || clips[index] == null) { if (airborne) refusedToken = nextToken; return false; }
-            active = clips[index]; signature = requested; activeStance = SkateRide.Goofy ? SkateStance.Goofy : SkateStance.Regular; token = nextToken; lands = SkateRide.Lands; airSeen = landed = false; beganAt = Time.realtimeSinceStartup; caughtAt = -1; previousAirSourceTime = catchSourceLead = 0; previous = default(SkateCaptureFrame);
+            active = clips[index]; signature = requested; activeStance = SkateRide.Goofy ? SkateStance.Goofy : SkateStance.Regular; token = nextToken; lands = SkateRide.Lands; airSeen = landed = flipExtended = false; beganAt = Time.realtimeSinceStartup; caughtAt = -1; previousAirSourceTime = catchSourceLead = previousAirProgress = 0; previous = default(SkateCaptureFrame);
             string supportError = null;
             if (!PrepareSupport(index, rig, activeStance, out footSupport, out supportError))
             { Refuse(nextToken, supportError); return false; }
@@ -257,7 +294,11 @@ public static class SkateCapturedTricks
         if (activeStance != (SkateRide.Goofy ? SkateStance.Goofy : SkateStance.Regular))
         { Refuse(nextToken, "the rider stance changed"); return false; }
         if ((airborne || queued) && !signature.Same(SkateRide.PresentationSignature))
-        { Refuse(nextToken, "the live trick variant changed"); return false; }
+        {
+            string extensionError = "the live trick variant changed";
+            if (!airborne || !TryExtendFlip(rig, SkateRide.PresentationSignature, out extensionError))
+            { Refuse(nextToken, airborne ? extensionError : "the live trick variant changed"); return false; }
+        }
         SkateCapturePhase phase; double value;
         if (airborne)
         {
@@ -278,7 +319,7 @@ public static class SkateCapturedTricks
                     { Refuse(nextToken, "capture catch approach exceeds its source boundary"); return false; }
                 }
             }
-            value = caught ? Time.realtimeSinceStartup - caughtAt - catchSourceLead : signature.RotationProgress(SkateRide.FlipDeg, SkateRide.ShoveDeg, SkateRide.SpinDeg);
+            value = caught ? Time.realtimeSinceStartup - caughtAt - catchSourceLead : SourceProgress(active.PresentationProgress(signature.RotationProgress(SkateRide.FlipDeg, SkateRide.ShoveDeg, SkateRide.SpinDeg)));
         }
         else if (queued) { phase = SkateCapturePhase.Load; value = SkateKeys.Charging ? SkateKeys.Charge : 1; }
         else
@@ -297,7 +338,7 @@ public static class SkateCapturedTricks
         // The source's flip finishes ahead of its shove. Keep the flick foot
         // tucked through the last three source frames as the live board returns,
         // preserving its free shoe orientation and the ordinary catch guards.
-        if (active.Clip.MovementKind == "nollie-360-flip")
+        if (active.SourceMovementKind == "nollie-360-flip")
         {
             double sourceTime = phase == SkateCapturePhase.Air ? active.FlightSourceTime(value) : active.SourceTime(phase, value);
             double end = active.SourceTime(SkateCapturePhase.Catch, 0), start = end - .1001, peak = end - .0625625;
@@ -370,14 +411,14 @@ public static class SkateCapturedTricks
                 SkateRiderPose settled;
                 if (!impact.Board.Initialized || !SkateCaptureFootSupport.TryGroundRecovery(rig, impact.Pose, baseline, frame.Pose,
                     frame.RiderUp, u, gaze, out settled, out error,
-                    active.Clip.Id == "nollie-heelflip" || active.Clip.Id == "fakie-kickflip" ||
-                    active.Clip.Id == "nollie-backside-180-heelflip" || active.Clip.Id == "nollie-360-flip"))
+                    active.SourceMovementKind == "nollie-heelflip" || active.SourceMovementKind == "fakie-kickflip" ||
+                    active.SourceMovementKind == "nollie-backside-180-heelflip" || active.SourceMovementKind == "nollie-360-flip"))
                 { Refuse(nextToken, error ?? "supported recovery frame unavailable"); return false; }
                 frame = new SkateCaptureFrame(settled, frame.Board, frame.Rotation, frame.LeftSoleUp, frame.RightSoleUp,
                     frame.HasEvent, frame.Observation, frame.PelvisCorrection, frame.LeftHandCorrection, frame.RightHandCorrection, frame.RiderUp);
             }
         }
-        if (phase == SkateCapturePhase.Air) previousAirSourceTime = active.FlightSourceTime(value);
+        if (phase == SkateCapturePhase.Air) { previousAirSourceTime = active.FlightSourceTime(value); previousAirProgress = value; }
         previous = frame; previousCarrier = carrier; previousAt = now;
         displayed = board; return true;
     }

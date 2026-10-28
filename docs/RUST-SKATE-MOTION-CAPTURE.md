@@ -42,6 +42,64 @@ changing calibration invalidates the affected job. Failed jobs are reported
 individually and the command exits nonzero. A partial batch is not a completed
 library.
 
+## Compose shared-source variants
+
+The first composition step in [#584](https://github.com/Dj-Shortcut/rust-skate-mod/issues/584)
+reuses the switch/nollie heel-flick and fakie toe-flick references for their
+double and triple variants. These six presentations have independent identities;
+they are not six additional filmed captures. The five existing source variants
+remain available.
+
+Use retained, converted clip JSON files as inputs:
+
+```json
+{
+  "version": 1,
+  "sources": {
+    "switch-heelflip": "source-clips/switch-heelflip.json",
+    "nollie-heelflip": "source-clips/nollie-heelflip.json",
+    "fakie-kickflip": "source-clips/fakie-kickflip.json"
+  },
+  "variants": [
+    "switch-double-heelflip", "switch-triple-heelflip",
+    "nollie-double-heelflip", "nollie-triple-heelflip",
+    "fakie-double-kickflip", "fakie-triple-kickflip"
+  ]
+}
+```
+
+```sh
+python scripts/capture_pipeline.py compose /absolute/private/compose.json \
+  --output /absolute/private/composed-output --include-base
+```
+
+Paths are relative to the manifest. `--include-base` also includes the declared
+source clips; the two other batch-1 sources may be declared without deriving a
+variant. The complete candidate is validated before replacing the previous pack.
+Each derived JSON retains the source frames, contacts, board keys and provenance,
+and records `sourceFamily`, `derivedFromClipId`, `requestedFlipDegrees` and
+`derivation`. Its own `id` equals its movement kind and `reviewed` starts false.
+Review and approval apply to that exact variant and pack hash; approving a source
+does not approve its derived variants.
+
+The game still owns every board turn and the available airtime. Presentation
+keeps the source release/flick on the first turn and the return/catch on the last;
+extra turns extend only the free body interval. A separately approved held-flip
+extension may continue from the last shown source pose when both entries have
+identical source samples and contact events. It cannot rewind the pop, change
+families, extend after catch or acquire approval from its source. A longer review
+flight does not establish that an ordinary flat-ground ollie has enough airtime.
+Inspect both stances against the real board before approving any result.
+
+While the controller's same-rim hold can still request an extra turn, presentation
+reserves the last fully free source pose before the existing 0.08-second foot
+return. A queued extra retains that reservation until physics consumes it.
+An approved extension holds the last shown progress until its new family clock
+catches up; it never stretches a near-catch foot pose through another board turn.
+If source foot return already began, the extension is refused. With no pending
+hold or extension, the original source clock remains unchanged. Physics, contact
+events and the ordinary catch-approach guards retain authority.
+
 ## Job data
 
 The manifest has `version: 1` and a `jobs` array. See the
@@ -297,7 +355,8 @@ velocity. Recorded full board rotation transforms declared contact targets to
 the full live deck frame; it is not added to the game's rotations a second time.
 The existing charge pose remains authoritative before the requested trick is
 known. Catch and recovery cannot cause an early gameplay landing. A changed
-trick or interruption relinquishes capture presentation.
+trick or interruption relinquishes capture presentation, except for the
+separately approved, same-source held-flip extension described above.
 
 The entry weight applies to the complete pose, including a foot still marked as
 Pop contact. Apply its measured deck-support fit after blending; pinning it

@@ -67,16 +67,7 @@ namespace Shortcut.RustMod
         { Pop = pop; Switch = sw; TailLeads = tail; Flip = flip; Shove = shove; Spin = spin; Body = body; }
         public string MovementKind
         {
-            get
-            {
-                if (!Near(Body, 0)) return null;
-                if (Pop == SkatePopKind.Ollie && Switch && !TailLeads && Near(Flip, -360) && Near(Shove, 0) && Near(Spin, 0)) return "switch-heelflip";
-                if (Pop == SkatePopKind.Ollie && Switch && TailLeads && Near(Flip, 360) && Near(Shove, 0) && Near(Spin, 0)) return "fakie-kickflip";
-                if (Pop != SkatePopKind.Nollie || Switch || TailLeads) return null;
-                if (Near(Flip, -360) && Near(Shove, 0))
-                    return Near(Spin, 0) ? "nollie-heelflip" : Near(Spin, -180) ? "nollie-backside-180-heelflip" : null;
-                return Near(Flip, 360) && Near(Shove, -360) && Near(Spin, 0) ? "nollie-360-flip" : null;
-            }
+            get { return SkateCaptureVariants.MovementKind(this); }
         }
         private static bool Near(double a, double b) { return !double.IsNaN(a) && !double.IsInfinity(a) && Math.Abs(a - b) < .01; }
         public bool Same(SkateCaptureTrickSignature b)
@@ -96,18 +87,46 @@ namespace Shortcut.RustMod
     public sealed class SkateCapturePlayback
     {
         public readonly SkateCaptureClip Clip;
+        public string SourceMovementKind { get { return SkateCaptureVariants.SourceMovementKind(Clip.MovementKind); } }
         private readonly double load, pop, air, caught, land, recovery;
         private readonly double[] rotationTimes, rotationProgress;
         private readonly int rotationKeys;
         private readonly double[] flightTimes, flightProgress;
         private readonly int flightKeys;
+        private readonly double extraTurns, freeProgressStart, freeProgressEnd;
+        public double FreeFlightEndProgress { get { return freeProgressEnd; } }
         public bool UsesSourceRotationClock { get { return rotationKeys > 1; } }
         public bool UsesSourceFlightClock { get { return flightKeys > 1; } }
+        // A held flip may select another approved recipe without changing its
+        // source body/contact clock. Family names alone cannot prove that.
+        public bool SharesSourceWith(SkateCapturePlayback other)
+        {
+            if (other == null || SourceMovementKind != other.SourceMovementKind || Clip.Duration != other.Clip.Duration ||
+                Clip.SampleCount != other.Clip.SampleCount || Clip.EventCount != other.Clip.EventCount) return false;
+            for (int n = 0; n < Clip.EventCount; n++)
+            {
+                var a = Clip.GetEvent(n); var b = other.Clip.GetEvent(n);
+                if (a.Time != b.Time || a.Phase != b.Phase || a.Contacts != b.Contacts) return false;
+            }
+            for (int row = 0; row < Clip.SampleCount; row++)
+                for (int column = 0; column < 83; column++)
+                    if (Clip.Number(row, column) != other.Clip.Number(row, column)) return false;
+            return true;
+        }
         private SkateCapturePlayback(SkateCaptureClip clip, double[] times)
         {
             Clip = clip; load = times[1]; pop = times[2]; air = times[3]; caught = times[4]; land = times[5]; recovery = times[6];
             BuildRotationClock(clip, air, caught, out rotationTimes, out rotationProgress, out rotationKeys);
             BuildRotationClock(clip, pop, caught, out flightTimes, out flightProgress, out flightKeys);
+            int variant = SkateCaptureVariants.IndexOf(clip.MovementKind);
+            int source = SkateCaptureVariants.IndexOf(SourceMovementKind);
+            if (variant >= 0 && source >= 0)
+                extraTurns = Math.Abs(SkateCaptureVariants.Get(variant).Signature.Flip / SkateCaptureVariants.Get(source).Signature.Flip) - 1;
+            // Base and derived entries share the same reservation boundary.
+            // Extra turns occupy only the fully free body interval, outside
+            // the existing .08s release/catch foot-boundary adapters.
+            freeProgressStart = ProgressAtSourceTime(air + .08);
+            freeProgressEnd = ProgressAtSourceTime(caught - .08);
         }
         public static bool TryCreate(SkateCaptureClip clip, out SkateCapturePlayback playback, out string error)
         {
@@ -137,7 +156,39 @@ namespace Shortcut.RustMod
             }
             for (int n = 1; n <= 6; n++) if (!seen[n] || n > 1 && times[n] <= times[n - 1])
             { error = "Capture needs ordered load, pop, air, catch, land and recovery phases."; return false; }
-            playback = new SkateCapturePlayback(clip, times); return true;
+            var candidate = new SkateCapturePlayback(clip, times);
+            if (candidate.extraTurns > 0 && (candidate.freeProgressStart < 0 || candidate.freeProgressEnd > 1 ||
+                candidate.freeProgressEnd <= candidate.freeProgressStart))
+            { error = "Derived capture has no supported free-flight interval."; return false; }
+            playback = candidate; return true;
+        }
+        private double ProgressAtSourceTime(double time)
+        {
+            if (!UsesSourceFlightClock) return Math.Max(0, Math.Min(1, (time - air) / (caught - air)));
+            if (time <= flightTimes[0]) return flightProgress[0];
+            for (int n = 1; n < flightKeys; n++) if (time <= flightTimes[n])
+            {
+                double u = (time - flightTimes[n - 1]) / (flightTimes[n] - flightTimes[n - 1]);
+                return flightProgress[n - 1] + u * (flightProgress[n] - flightProgress[n - 1]);
+            }
+            return flightProgress[flightKeys - 1];
+        }
+        public double PresentationProgress(double liveProgress)
+        {
+            if (!Finite(liveProgress) || extraTurns <= 0) return liveProgress;
+            double turn = Math.Max(0, Math.Min(1, liveProgress)) * (extraTurns + 1);
+            if (turn <= freeProgressStart) return turn;
+            if (turn >= freeProgressEnd + extraTurns) return turn - extraTurns;
+            // Invert a monotone C2 expansion of only the free-flight interval.
+            // The source pop/flick is not stretched across an inverted live deck.
+            double low = freeProgressStart, high = freeProgressEnd;
+            for (int n = 0; n < 32; n++)
+            {
+                double middle = (low + high) * .5, u = (middle - freeProgressStart) / (freeProgressEnd - freeProgressStart);
+                double ease = u * u * u * (10 + u * (-15 + 6 * u));
+                if (middle + extraTurns * ease < turn) low = middle; else high = middle;
+            }
+            return (low + high) * .5;
         }
         public bool Finished(double sinceLanding) { return sinceLanding >= Clip.Duration - land; }
         // Retain the source impact before handing recovery back to ordinary
@@ -197,7 +248,7 @@ namespace Shortcut.RustMod
             times = progress = null; count = 0;
             if (caught - air <= .000001) return;
             double rollTurn, yawTurn = 0;
-            switch (clip.MovementKind)
+            switch (SkateCaptureVariants.SourceMovementKind(clip.MovementKind))
             {
                 case "switch-heelflip": case "nollie-heelflip": rollTurn = -360; break;
                 case "fakie-kickflip": rollTurn = 360; break;
@@ -266,7 +317,7 @@ namespace Shortcut.RustMod
             // Only the explicit body-spin descriptor removes source world heading. It has no shove,
             // so board forward isolates that heading even while its local longitudinal flip turns.
             var along = new SkateVector(0, 0, 1);
-            if (Clip.MovementKind == "nollie-backside-180-heelflip")
+            if (SourceMovementKind == "nollie-backside-180-heelflip")
                 along = Unit(new SkateVector(source.Board.Forward.X, 0, source.Board.Forward.Z));
             var from = new SkateBoardPose(source.Board.Origin, along, new SkateVector(0, 1, 0));
             var to = new SkateBoardPose(liveBoard.Origin, liveHeading, supportUp);
