@@ -1,40 +1,41 @@
-# Separate body and board frames in halfpipe airs
+# Coupled rider and board frames in halfpipe airs
 
-In ordinary free air the rider's body now turns gradually from the departure
-normal toward world-up by the estimated apex. Near a sensed landing it turns
-back toward the observed ramp normal. An actual grind retains its separate grind
-alignment. This changes the previously incorrect rule that held the whole body
-on its side throughout a steep air.
+In ordinary free air the rider and skateboard turn together from the departure
+normal toward world-up by the estimated apex. Near a sensed landing the same
+assembly turns back toward the observed ramp normal. An actual grind retains its
+own alignment. A steep departure no longer holds the rider sideways in free air.
 
-`SkateRide.RiderViewNormal` supplies the body frame. `ViewNormal` retains the
-separate board/support frame, including the existing board pitch and landing
-alignment. The rig still builds its foot and grab contacts against the actual
-`DeckFrame`; leveling the body does not substitute a level board or move the
-physical player. Planted feet, handplants, wall presentation and body flips retain
-their existing frame owners.
+`SkateRide.ViewNormal` supplies one common base for the board and rider's lower
+body; `RiderViewNormal` reads that same value. Existing ollie pitch, grab tweaks,
+flips and body flips remain relative rotations on top. Foot and grab contacts are
+solved against the actual `DeckFrame`. Leveling only the torso while leaving the
+base board vertical is explicitly rejected.
 
 The free-air timing uses elapsed release time, release rise and gravity. Rotation
-is continuous and bounded. A landing approach keeps a fixed starting body-up and
-a monotone share toward the observed plane; a missed probe cannot turn it back
-toward world-up. The board helper preserves the previous support-frame behavior.
+is continuous and bounded. A landing approach retains its starting up-vector and
+a monotone share toward the observed plane; a missed probe cannot turn it away
+from an approach already observed. Planted feet retain their support until
+release; wall and handplant routes retain their own frame owners.
+
+Ordinary board and rider placement also share the capsule-sphere display datum:
+`radius * (worldUp - ViewNormal)` before Pop, Tilt and relative board rotations.
+The radius comes from the player's collider. This rotates the displayed assembly
+about the capsule sphere centre instead of leaving a visible gap at steep
+support. The offset stays active through ordinary Ground and Air, and is exactly
+zero on flat ground. Wall, handplant, independent action/oldschool, grind, bail,
+scenario and showcase anchors are excluded. It does not change the physical
+player, velocity, collision, landing detection or scoring.
 
 At most three `AIRFRAME` lines accompany a steep departure: departure, first
-descent and first sensed landing approach. They report actual mode, whether
-release came from a grind, body/board up, nose/deck yaw and existing display
+descent and first sensed landing approach. They report mode, whether release
+came from a grind, the common body/board base, nose/deck yaw and relative display
 angles. Flat departures stay quiet. No world position or player identity is
-recorded. The logs are physics-step observations rather than rendered pixels.
+recorded. Logs are physics-step observations rather than rendered pixels.
 
-The same four controlled air cases were regenerated before/after on the
-reference skin and real board: two free departures, a grab and an explicit grind
-control. The free body becomes upright; board/movement rows and the grind control
-remain unchanged. These controls use no sensed landing plane. A separate bounded
-landing example exercises the return to a sensed ramp despite a missed probe.
-The existing grab reach solver can still fold the chest strongly even with the
-new upright body basis; that grab silhouette is not approved.
-
-The combined grab review also includes a moving transition return with a medium
-three-quarter camera. It uses explicitly labeled offline capsule/mesh contact
-emulation. A visible steep-support display gap and incomplete finger geometry
-remain open; this is not native Unity collision or full-grip acceptance. Retain source compilation, CI, visible motion and native acceptance as
-separate gates. The former outward top-deck transfer does not establish normal
-halfpipe reentry. Native Shadow validation remains open.
+The four controlled cases cover two free departures, a grab and an explicit grind
+control on the reference skin and real board. The original body-only comparison
+is superseded. These controls have no sensed landing plane; separate transition
+return previews use labeled offline capsule/mesh contact emulation. Source
+compilation and bounded landing examples do not establish native Unity collision,
+full hand-grip quality or Shadow gameplay acceptance. Native validation remains
+open.

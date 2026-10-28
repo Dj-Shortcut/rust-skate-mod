@@ -57,28 +57,11 @@ namespace Shortcut.RustMod
         private const double FrameTolerance = 0.000001;
         private const double Substep = 1.0 / 120;
 
-        // Body presentation leaves the departure lean toward the ballistic apex.
-        // The board keeps its own support/pitch frame; neither path changes physics.
-        public const double AirReleaseMinimum = 0.18, AirLandingLead = 0.25, AirFrameRadiansPerSecond = Math.PI * 2;
-        public const double AirBodyFrameRadiansPerSecond = Math.PI * 4;
+        public const double AirReleaseMinimum = 0.18, AirLandingLead = 0.25, AirFrameRadiansPerSecond = Math.PI * 4;
         public static bool TryAirFrame(SkateRiderAirFrameState state, double dt,
                                        SkateVector takeoffUp, double sinceRelease, double riseAtRelease, double gravity,
                                        SkateVector landingUp, double gapToContact, double closingSpeed,
                                        out SkateVector up, out SkateRiderAirFrameState next, out string error)
-        { return TryAirFrameCore(state, dt, takeoffUp, sinceRelease, riseAtRelease, gravity,
-            landingUp, gapToContact, closingSpeed, true, out up, out next, out error); }
-
-        public static bool TryBoardAirFrame(SkateRiderAirFrameState state, double dt,
-                                            SkateVector takeoffUp, double sinceRelease, double riseAtRelease, double gravity,
-                                            SkateVector landingUp, double gapToContact, double closingSpeed,
-                                            out SkateVector up, out SkateRiderAirFrameState next, out string error)
-        { return TryAirFrameCore(state, dt, takeoffUp, sinceRelease, riseAtRelease, gravity,
-            landingUp, gapToContact, closingSpeed, false, out up, out next, out error); }
-
-        private static bool TryAirFrameCore(SkateRiderAirFrameState state, double dt,
-                                           SkateVector takeoffUp, double sinceRelease, double riseAtRelease, double gravity,
-                                           SkateVector landingUp, double gapToContact, double closingSpeed, bool bodyFrame,
-                                           out SkateVector up, out SkateRiderAirFrameState next, out string error)
         {
             up = takeoffUp; next = state; error = null;
             if (!Finite(dt) || dt < MinimumDelta || dt > MaximumDelta ||
@@ -95,17 +78,12 @@ namespace Shortcut.RustMod
             // A missed probe must not undo an already observed landing approach.
             var held = state.Initialized ? state.LandingShare : 0;
             var plane = state.Initialized ? state.LandingUp : landingUp;
-            double turnRate = bodyFrame ? AirBodyFrameRadiansPerSecond : AirFrameRadiansPerSecond;
+            double turnRate = AirFrameRadiansPerSecond;
             if (land > 0) plane = held > 0 ? AirTurn(plane, landingUp, dt, turnRate) : landingUp;
             land = Math.Max(held, land);
             var current = state.Initialized ? state.Up : takeoffUp;
             var landingFrom = held > 0 ? state.LandingFromUp : current;
-            if (!bodyFrame)
-            {
-                var target = Unit(takeoffUp * (1 - land) + plane * land);
-                up = AirTurn(current, target, dt, turnRate);
-            }
-            else if (land > 0)
+            if (land > 0)
             {
                 // Freeze the entry frame when approach is first sensed. A missed
                 // probe retains that anchor and share instead of resuming world-up.

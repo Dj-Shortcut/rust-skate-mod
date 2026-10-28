@@ -46,8 +46,7 @@ public static class SkateRide
     private static float steppedAt = -99f;
     private static Vector3 airViewFrom = Vector3.up;
     private static float airViewAt, airViewRise;
-    private static SkateRiderAirFrameState airView, riderAirView;
-    private static Vector3 riderViewNormal = Vector3.up;
+    private static SkateRiderAirFrameState airView;
     private static int airViewTrace;
     private static bool airViewFromGrind;
     public static readonly int GroundMask = ~((1 << 12) | (1 << 17) | (1 << 18) | (1 << 4) | (1 << 10) | (1 << 9) | (1 << 2));
@@ -61,8 +60,7 @@ public static class SkateRide
     public static bool Frozen;
     public static float Speed, Yaw, Lean, VSpeed, AirTime, AirPeak, Clearance = 99f, Actual, ActualV, Top, Cap = MaxSpeed, ModeAt, LandAt = -99f, LandImpact, PushPhase, CapLoweredAt = -99f;
     public static Vector3 Normal = Vector3.up, Tangent = Vector3.forward, ViewNormal = Vector3.up, Position;
-    public static Vector3 RiderViewNormal { get { return Mode == RideMode.Air && !FootPlanted && !Handplant &&
-        !SkateSurfaceRide.DisplayWall && !SkateSurfaceRide.BodyFlip.Known ? riderViewNormal : ViewNormal; } }
+    public static Vector3 RiderViewNormal { get { return ViewNormal; } }
     // In the shared trick module's signs: positive spin and shove are frontside, positive flip is a
     // kickflip. Spin turns rider and board, shove the board alone under his feet.
     public static double SpinDeg, FlipDeg, ShoveDeg;
@@ -540,6 +538,15 @@ public static class SkateRide
     // The capsule's radius, for its rest on a slope (Sense); a slope over 78 degrees counts as 78.
     private static float CapsuleRadius = 0.5f;
     public static float SurfaceBodyGap { get { return Math.Max((float)SkateWallTricks.RideBodyGap, CapsuleRadius); } }
+    // Rotate the ordinary display about the capsule sphere centre. Independent
+    // wall, plant, detached-board and showcase routes retain their own anchors.
+    public static Vector3 DisplaySupportOffset
+    {
+        get { return (Mode == RideMode.Ground || Mode == RideMode.Air) && !Handplant &&
+            !SkateSurfaceRide.DisplayWall && !SkateOldschoolRide.Active && !SkateActions.Owns &&
+            !SkateRiggingShowcase.Running && !Scenarios.Active
+                ? (Vector3.up - ViewNormal) * CapsuleRadius : Vector3.zero; }
+    }
     private const float CapsuleSlackMost = 2f;
     private static bool capsuleSaid;
 
@@ -1105,7 +1112,6 @@ public static class SkateRide
         wantFlip = 0; wantShove = 0f; wantKind = SkatePopKind.Ollie;
     }
 
-    // Body and board display frames have separate owners; neither changes movement.
     // A planted foot retains its support frame until released.
     private static void AirView(float dt)
     {
@@ -1120,12 +1126,9 @@ public static class SkateRide
         // Align before the existing air-step contact threshold, not after a catch or landing snap.
         var gap = Clearance - Math.Max(0.04f, closing * dt + 0.02f);
         SkateVector shown; SkateRiderAirFrameState next; string error;
-        if (SkateRiderMotion.TryBoardAirFrame(airView, dt, V(airViewFrom), Math.Max(0f, AirTime - airViewAt), airViewRise,
+        if (SkateRiderMotion.TryAirFrame(airView, dt, V(airViewFrom), Math.Max(0f, AirTime - airViewAt), airViewRise,
             AirGravity, V(BelowNormal), gap, closing, out shown, out next, out error))
         { airView = next; ViewNormal = V(shown); }
-        if (SkateRiderMotion.TryAirFrame(riderAirView, dt, V(airViewFrom), Math.Max(0f, AirTime - airViewAt), airViewRise,
-            AirGravity, V(BelowNormal), gap, closing, out shown, out next, out error))
-        { riderAirView = next; riderViewNormal = V(shown); }
         if (airViewFrom.y < .85f)
         {
             TraceAirFrame(1, "departure");
@@ -1136,8 +1139,7 @@ public static class SkateRide
 
     private static void ResetAirDisplay()
     {
-        airView = riderAirView = default(SkateRiderAirFrameState);
-        riderViewNormal = airViewFrom;
+        airView = default(SkateRiderAirFrameState);
     }
 
     private static void TraceAirFrame(int bit, string phase)
