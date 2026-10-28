@@ -50,3 +50,12 @@ return previews use labeled offline capsule/mesh contact emulation. Source
 compilation and bounded landing examples do not establish native Unity collision,
 full hand-grip quality or Shadow gameplay acceptance. Native validation remains
 open.
+
+Ordinary ungrabbed air also owns a separate head look. Named grabs retain their
+separate grab look. Rising motion keeps a forward
+horizon gaze; descending motion follows velocity toward the observed landing
+plane, with bounded yaw and downward pitch. This runs after secondary solving
+and is restored after easing/shaping. Native neck yaw uses the solved head up
+instead of the tilted chest up, and the competing generic head lift is skipped
+only when this air look succeeds. Captured heads and special pose owners retain
+precedence. The common body/board basis and every contact endpoint stay unchanged.
