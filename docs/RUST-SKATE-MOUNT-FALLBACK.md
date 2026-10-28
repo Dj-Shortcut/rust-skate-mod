@@ -28,6 +28,17 @@ native type checking, all-unsupported logging and unexpected-error propagation.
 It does not execute Unity. The cached compile references include an older
 PhysicsModule; verify again against the complete current laptop interop set.
 
+Metadata inspection for installed Rust build 26140533, Unity 6000.3.15, confirms
+both Component enumeration overloads and `Joint : Component` in newly generated
+diagnostic wrappers. The inspected generic wrapper and its initialization helpers
+are not direct method-unstripping failure stubs. This confirms API shape, not
+native callability or the cause of the historical exception.
+
+That diagnostic generation completed with its cross-reference cache disabled
+and some unrestored method bodies. It is not a client-installable interop set;
+its input identity, output inventory and reports remain private. No source
+compile against a complete production interop set or native mount is claimed.
+
 On Shadow, preserve one real mount attempt's failure step and stack, or its
 successful `MOUNT` line, plus any Joint fallback/skip lines. Then test riding,
 dismounting and collision behavior. Compass and dismount camera remain a separate
