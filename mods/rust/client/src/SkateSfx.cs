@@ -282,17 +282,15 @@ public static class SkateSfx
 
     private static void PlaceBoardEmitter()
     {
-        var position = SkateRide.Position + SkateRide.ViewNormal * (RiderRig.DeckTop + SkateBoard.ShowLift + SkateBoard.Pop);
+        // Audio reads the existing board state; it must not initialize the
+        // renderer's contact cache or loose-board/bail trajectory by querying a pose.
+        var position = SkateRide.Position + SkateBoard.TruckPlaneOffset +
+            SkateRide.ViewNormal * (RiderRig.DeckTop + SkateBoard.ShowLift + SkateBoard.Pop);
         if (SkateBoard.RollingOut) position = SkateBoard.RollOutAt;
-        else if (SkateCapturedTricks.HasFrame)
+        else if (SkateRide.On && SkateCapturedTricks.HasFrame)
         {
             var p = SkateCapturedTricks.DisplayFrame.Origin;
             position = new Vector3((float)p.X, (float)p.Y, (float)p.Z);
-        }
-        else if (SkateRide.On && SkateRig.LocalT != null)
-        {
-            var frame = SkateBoard.PoseFor(SkateRig.LocalT);
-            if (frame.Initialized) position = new Vector3((float)frame.Origin.X, (float)frame.Origin.Y, (float)frame.Origin.Z);
         }
         if (float.IsNaN(position.x) || float.IsNaN(position.y) || float.IsNaN(position.z) ||
             float.IsInfinity(position.x) || float.IsInfinity(position.y) || float.IsInfinity(position.z))
