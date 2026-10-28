@@ -250,10 +250,10 @@ namespace Shortcut.RustMod
             double rollTurn, yawTurn = 0;
             switch (SkateCaptureVariants.SourceMovementKind(clip.MovementKind))
             {
-                case "switch-heelflip": case "nollie-heelflip": rollTurn = -360; break;
+                case "heelflip": case "switch-heelflip": case "nollie-heelflip": rollTurn = -360; break;
                 case "kickflip": case "fakie-kickflip": rollTurn = 360; break;
                 case "nollie-backside-180-heelflip": rollTurn = -360; yawTurn = 180; break;
-                case "nollie-360-flip": rollTurn = 360; yawTurn = 360; break;
+                case "360-flip": case "nollie-360-flip": rollTurn = 360; yawTurn = 360; break;
                 default: return;
             }
             var samples = new double[clip.SampleCount + 2]; int sampleCount = 0;

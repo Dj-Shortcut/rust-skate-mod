@@ -10,7 +10,7 @@ selections are reference material, not a limit or a count of finished animations
 | --- | --- | --- |
 | 1 | Switch Heelflip, Nollie Heelflip, Fakie Kickflip, Nollie Backside 180 Heelflip, Nollie 360 Flip | Viewer revision includes corrected head/neck frames, quicker recovery, relaxed cruise arms, targeted free-foot return and coupled trucks on the detailed board. Normal and slow visual review uses the reference skin; Rust/Shadow acceptance remains open. This source change does not approve or install a capture pack. |
 | 2 | Riding, steering, crouch, normal/mongo push, ollie/nollie, braking, powerslide, revert, kickturn, both manuals, landing and upright roll-away | Existing procedural routes need visual review. Dedicated manual-revert, speed-check and kickturn actions are still missing. |
-| 3 | All requested flip/shove families and stance/spin variants, composed from shared source families; separate references for exceptional foot/body actions | First #584 source step: compose and exact normal-route selection for six double/triple variants from three batch-1 families, alongside the original five. Every variant requires independent visual review and pack approval; the remaining 40-reference coverage is open. |
+| 3 | All requested flip/shove families and stance/spin variants, composed from shared source families; separate references for exceptional foot/body actions | The #584 source route supports six double/triple variants from three batch-1 families, the original five and normal kickflip/heelflip/360 flip. New filmed candidates remain unreviewed. Every variant requires independent visual review and pack approval; the remaining 40-reference coverage is open. |
 | 4 | All requested air grabs, tweaks and one-foot/no-foot variants | Existing grab catalogue and procedural presentation need hand/foot and motion review. Review airs above a halfpipe, including entry, hold, release, catch and landing. |
 | 5 | All grinds, slides and stalls, darkslide, both exit directions | Existing action/pose source remains separate from approved capture playback. Rail, ledge and coping contact must be verified. |
 | 6 | Ground grabs, coffin, boneless, beanplant, fastplant, no comply, caveman and hippie-jump variants | Existing source needs distinct per-action contact/motion review; shared generic poses do not count as individual finished animations. |
@@ -94,11 +94,11 @@ footage as a grab reference. Failed body detections are not motion data; explici
 reconstruction must not inflate confidence or evade actor/gap rejection.
 Occluded head authoring is opt-in and leaves its uncertainty in the JSON receipts.
 
-The normal capture registry covers twelve exact flat-ground signatures: the five
-batch-1 sources, normal kickflip and six separately reviewable double/triple
-derivatives. Normal kickflip includes the source pop-to-catch rotation clock and
-recovery gaze; its source capture remains inactive until separately reviewed and
-approved for the exact pack. Later
+The normal capture registry covers fourteen exact flat-ground signatures: the five
+batch-1 sources, normal kickflip/heelflip/360 flip and six separately reviewable
+double/triple derivatives. The three normal flip families include the source
+pop-to-catch rotation clock and recovery gaze; their new source captures remain
+inactive until separately reviewed and approved for the exact pack. Later
 families need their own entry/hold/exit and contact rules rather
 than relaxing that adapter's flat-ground exclusions. Ground, rail and coping
 anchors must come from the active game action. Physics, board rotation, scoring,
