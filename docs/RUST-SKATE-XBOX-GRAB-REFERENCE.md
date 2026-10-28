@@ -22,8 +22,8 @@ Grip side, exact anatomical stance and individual fingers are partly occluded.
 The catalogue keeps canonical trick semantics. The numerical targets are authored
 reconstructions from visible evidence, not measured mocap or tracked fingers.
 
-Only these five profiles add a raised free-arm target and a wrist approach outside
-and above the selected board edge. Crail reaches toward the rounded nose end.
+Only these five profiles add a raised free-arm target and a measured wrist approach
+to the selected board edge. Crail reaches toward the rounded nose end.
 Existing contact entry/hold/release weights still own the pose. No input selection,
 physics, scoring, catch or landing guard changes.
 
@@ -32,13 +32,26 @@ hand. `RiderRig` measures the actual avatar hand's finger direction and dorsal
 basis from its middle/index/little proximal bones, including mirrored mapping.
 It applies the frame through the existing grab contact weight, rebuilds from the
 saved entry local rotation each frame, and restores it on release, another pose
-owner, reset or unbind. Missing/degenerate finger bones disable this refinement
-and retain animated hands; riding does not fail. Finger articulation is unchanged.
+owner, reset or unbind. Missing/degenerate finger bones disable the orientation refinement and retain
+animated hands; riding does not fail. Finger articulation is unchanged.
+
+`SkateRiderRig.WithHands` adds optional measured wrist-to-middle-proximal lengths
+and index-to-little knuckle spans without changing existing constructors. The
+native binder supplies actual avatar measurements. `TryGrip` finds the rounded
+deck edge with its authored concavity and kick, places the MCP outside the edge,
+and derives the wrist through that measured length before solving torso reach.
+The edge is not used as the wrist. Missing measurements use an explicit authored
+65 mm reference reach; the binding log distinguishes this fallback. Both hand
+axes use the same grip frame. This is not a calibrated native finger curl.
 
 Named reference grabs now keep the head above the neck in the common air basis
 and turn its gaze toward descent, with bounded neck yaw. This runs after contact
 and secondary solving, which otherwise rebuild the head from the rolled chest.
-The native writer skips its generic head lift for these five grabs. Contact
+For a procedural fakie transition return, actual velocity rather than the stored
+nose direction supplies the gaze. A bounded blend owns both head tilt and yaw
+through release and ground return. The native writer restores the independent
+head after final easing/shaping and skips the competing generic head lift. Captured
+poses, plants, walls, body flips and other action owners keep their own route. Contact
 endpoints, neck-to-head length and all other bone lengths stay unchanged. Existing
 free-arm elevation and entry/held/release progress remain; no new timing model or
 random movement is added.
@@ -66,11 +79,14 @@ reach is recomputed from the actual rounded edge, concavity and nose kick using
 a65mm authored wrist-to-MCP measurement. Fingers close/relax through the existing
 grab weight. This is authored anatomy, not tracked fingers from the recording.
 
-That prototype's new grip anchor and finger articulation are not yet native
-runtime features. The current runtime preserves avatar finger animation. Measured
-native MCP/reach calibration is the next separate API step; missing finger chains
-must retain avatar animation and report the limitation. Full hand/contact quality,
-grab-specific silhouette and Shadow gameplay remain open. This PR stays draft.
+The native source now uses the same grip-anchor construction with measured avatar
+MCP reach. The prototype finger articulation remains private; native fingers
+preserve avatar animation. Full hand/contact quality, grab-specific silhouette and
+Shadow gameplay remain open. The v3 review identified upward-looking return heads
+after release because the default gaze followed the nose while the rider rolled fakie. The new return
+helper corrects that direction without moving other joints or the board. Knee
+compression before contact, the visible prototype wrist seam, native hand contact
+and Shadow gameplay remain open. This PR stays draft.
 Some FS close-up angles are occluded by the knees; the complete medium route is
 the primary review. Earlier body-only and outgoing deck-transfer cases are
 preserved as superseded comparisons.
@@ -78,6 +94,10 @@ preserved as superseded comparisons.
 Validation: all69 client sources compile as C#7.3 against356 verified cached
 reference assemblies with zero warnings/errors. Existing wrist restoration probes
 cover entry, full weight, repeated frames, fade, release, other owners and reset.
+The focused MCP probe checks old constructors, immutable measurements, invalid
+input rejection, mirrored edge approaches, size-dependent wrist placement,
+continuous weighted gaze and the actual post-easing head restoration slice. The two151-frame return
+checks preserve every non-head joint exactly while looking down the return ramp.
 The private v3 clips include the new post-solve head output and preserve the
 reference body and actual13-part runtime board. Offline evidence does not execute
 Unity native bindings or establish full trick acceptance.

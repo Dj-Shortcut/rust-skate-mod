@@ -2,6 +2,29 @@ using System;
 
 namespace Shortcut.RustMod
 {
+    public readonly struct SkateHandMeasurements
+    {
+        public readonly bool Initialized, Measured;
+        public readonly double McpLength, KnuckleSpan;
+        private SkateHandMeasurements(double mcp, double span, bool measured)
+        { Initialized = true; Measured = measured; McpLength = mcp; KnuckleSpan = span; }
+        public static SkateHandMeasurements Reference { get { return new SkateHandMeasurements(.065, .054, false); } }
+        public static bool TryMeasured(double mcp, double span, out SkateHandMeasurements result)
+        {
+            result = default(SkateHandMeasurements);
+            if (double.IsNaN(mcp) || double.IsInfinity(mcp) || mcp < .02 || mcp > .14 ||
+                double.IsNaN(span) || double.IsInfinity(span) || span < .01 || span > .12) return false;
+            result = new SkateHandMeasurements(mcp, span, true); return true;
+        }
+    }
+
+    public readonly struct SkateHandGripFrame
+    {
+        public readonly SkateVector Edge, Wrist, Forward, Back;
+        public SkateHandGripFrame(SkateVector edge, SkateVector wrist, SkateVector forward, SkateVector back)
+        { Edge = edge; Wrist = wrist; Forward = forward; Back = back; }
+    }
+
     public enum SkateGrabHand { Leading, Trailing, Nose, Tail }
 
     // Authored contact targets in the rider's frame: X toward the toes, Y up, Z toward the nose.
@@ -36,6 +59,45 @@ namespace Shortcut.RustMod
 
     public static class SkateGrabCatalog
     {
+        private static readonly SkateVector[] GripOutline = BuildGripOutline();
+        private static SkateVector[] BuildGripOutline()
+        {
+            var points = new SkateVector[40]; int n = 0;
+            for (int i = 0; i <= 18; i++) { double a = i * Math.PI / 18; points[n++] = new SkateVector(.102 * Math.Cos(a), 0, .288 + .112 * Math.Sin(a)); }
+            points[n++] = new SkateVector(-.102, 0, 0);
+            for (int i = 0; i <= 18; i++) { double a = Math.PI + i * Math.PI / 18; points[n++] = new SkateVector(.102 * Math.Cos(a), 0, -.288 + .112 * Math.Sin(a)); }
+            points[n] = new SkateVector(.102, 0, 0); return points;
+        }
+        public static bool TryGrip(SkateBoardPose frame, double across, double along, SkateHandMeasurements hand,
+            out SkateHandGripFrame grip)
+        {
+            grip = default(SkateHandGripFrame);
+            if (!SkateBoardPath.Valid(frame) || !frame.Initialized || double.IsNaN(across) || double.IsInfinity(across) ||
+                double.IsNaN(along) || double.IsInfinity(along) || Math.Abs(across) > .3 || Math.Abs(along) > .5) return false;
+            if (!hand.Initialized) hand = SkateHandMeasurements.Reference;
+            var seed = new SkateVector(across, 0, along); var edge = default(SkateVector); int selected = 0; double best = double.MaxValue;
+            for (int i = 0; i < GripOutline.Length; i++)
+            {
+                var a = GripOutline[i]; var d = GripOutline[(i + 1) % GripOutline.Length] - a;
+                double t = Math.Max(0, Math.Min(1, SkateVector.Dot(seed - a, d) / d.LengthSquared));
+                var p = a + d * t; double distance = (p - seed).LengthSquared;
+                if (distance < best) { best = distance; edge = p; selected = i; }
+            }
+            double kick = Math.Max(0, (Math.Abs(edge.Z) - .245) / .155);
+            edge = new SkateVector(edge.X, .05 * kick * kick + .008 * Math.Pow(edge.X / .102, 2), edge.Z);
+            var normal = HandUnit(new SkateVector(-.016 * edge.X / (.102 * .102), 1, -.1 * kick / .155 * Math.Sign(edge.Z)));
+            var tangent = GripOutline[(selected + 1) % GripOutline.Length] - GripOutline[selected];
+            var outward = new SkateVector(tangent.Z, 0, -tangent.X);
+            outward = HandUnit(outward - normal * SkateVector.Dot(outward, normal));
+            double tilt = 20 * Math.PI / 180;
+            var forward = normal * -Math.Cos(tilt) + outward * Math.Sin(tilt);
+            var back = outward * Math.Cos(tilt) + normal * Math.Sin(tilt);
+            var mcp = edge + outward * .020 + normal * .013;
+            grip = new SkateHandGripFrame(frame.Point(edge), frame.Point(mcp - forward * hand.McpLength), frame.Rotate(forward), frame.Rotate(back));
+            return true;
+        }
+        private static SkateVector HandUnit(SkateVector value) { return value * (1 / value.Length); }
+
         // Owner's Xbox air windows supply silhouette/reach timing, not finger tracking.
         // Only these five profiles opt into the authored raised free arm and wrist approach.
         public static bool HasReferenceHand(SkateGrabKind kind)
