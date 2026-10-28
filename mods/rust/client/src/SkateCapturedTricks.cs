@@ -7,13 +7,14 @@ using UnityEngine;
 // Normal riding consumes only owner-approved, reviewed captures. No runtime menu can approve data.
 public static class SkateCapturedTricks
 {
+    private const double GroundRecoverySpeed = 1.35;
     private static readonly string[] Kinds = { "switch-heelflip", "nollie-heelflip", "fakie-kickflip", "nollie-backside-180-heelflip", "nollie-360-flip" };
     private static readonly SkateCapturePlayback[] clips = new SkateCapturePlayback[Kinds.Length];
     private static readonly SkateCaptureFootSupport[] supports = new SkateCaptureFootSupport[Kinds.Length * 2];
     private static readonly int[] supportVersions = new int[Kinds.Length * 2];
     private static readonly string[] supportErrors = new string[Kinds.Length * 2];
     private static bool loaded, airSeen, landed;
-    private static double beganAt, landedAt, caughtAt = -1, previousAt;
+    private static double beganAt, landedAt, caughtAt = -1, previousAt, previousAirSourceTime, catchSourceLead;
     private static SkateCaptureFrame previous, landingFrom;
     private static SkateBoardPose previousCarrier, landingCarrier;
     private static int token = -1, refusedToken = -1, lands;
@@ -24,12 +25,20 @@ public static class SkateCapturedTricks
     private static SkateStance activeStance;
     private static SkateBoardPose displayed;
     private static string lastRefusal;
+    private static SkateBoardPose plantedLeft, plantedRight;
+    private static int plantedVersion, plantedPops;
+    private static SkateStance plantedStance;
+    private static SkateRiderRig plantedRig;
+    private static double departedAt = -1;
+    private static SkateCaptureFrame departedFrom;
+    private static SkateCaptureFrame groundedImpact;
+    private static SkateBoardPose departedCarrier;
     public static bool HasFrame { get { return displayed.Initialized; } }
     public static SkateBoardPose DisplayFrame { get { return displayed; } }
     public static string Status { get; private set; } = "Captured riding not loaded";
     public static void ClearFrame() { displayed = default(SkateBoardPose); }
     public static void Reset()
-    { active = null; footSupport = null; token = refusedToken = -1; airSeen = landed = false; caughtAt = -1; previous = landingFrom = default(SkateCaptureFrame); ClearFrame(); }
+    { active = null; footSupport = null; token = refusedToken = -1; airSeen = landed = false; caughtAt = -1; previousAirSourceTime = catchSourceLead = 0; previous = landingFrom = default(SkateCaptureFrame); ClearPlantedFeet(); ClearFrame(); }
     public static void Preload()
     {
         if (loaded) return;
@@ -78,15 +87,102 @@ public static class SkateCapturedTricks
         catch (Exception e) { Status = "Captured riding disabled: " + e.GetType().Name; }
         finally { Out.Say("CAPTURE " + Status); }
     }
-    private static void Refuse(int pop, string reason)
+    private static void Refuse(int pop, string reason, bool keepPlantedFeet = false)
     {
-        active = null; footSupport = null; refusedToken = pop; ClearFrame();
+        active = null; footSupport = null; refusedToken = pop; if (!keepPlantedFeet) ClearPlantedFeet(); ClearFrame();
         if (reason != lastRefusal) { lastRefusal = reason; Out.Say("CAPTURE fallback: " + reason); }
     }
-    private static bool Eligible()
+
+    private static void ClearPlantedFeet()
+    { plantedLeft = plantedRight = default(SkateBoardPose); departedAt = -1; departedFrom = groundedImpact = default(SkateCaptureFrame); }
+
+    private static SkateVector Local(SkateVector v, SkateBoardPose board)
+    { return new SkateVector(SkateVector.Dot(v, board.Right), SkateVector.Dot(v, board.Up), SkateVector.Dot(v, board.Forward)); }
+
+    private static bool RememberPlantedFeet(SkateRiderRig rig, SkateCaptureFrame frame)
+    {
+        SkateBoardPose left, right;
+        if (!SkateCaptureFootSupport.TryFootFrame(frame.Pose.LeftAnkle, frame.Pose.LeftToe, frame.LeftSoleUp, out left) ||
+            !SkateCaptureFootSupport.TryFootFrame(frame.Pose.RightAnkle, frame.Pose.RightToe, frame.RightSoleUp, out right)) return false;
+        plantedLeft = new SkateBoardPose(Local(left.Origin - frame.Board.Origin, frame.Board), Local(left.Forward, frame.Board), Local(left.Up, frame.Board));
+        plantedRight = new SkateBoardPose(Local(right.Origin - frame.Board.Origin, frame.Board), Local(right.Forward, frame.Board), Local(right.Up, frame.Board));
+        plantedVersion = SkateFootContacts.Version; plantedPops = SkateRide.Pops;
+        plantedRig = rig;
+        plantedStance = SkateRide.Goofy ? SkateStance.Goofy : SkateStance.Regular;
+        return true;
+    }
+
+    private static bool PinPlantedFeet(SkateRiderRig rig, SkateRiderPose body, SkateBoardPose board, SkateVector baselineLeftUp, SkateVector baselineRightUp,
+        out SkateRiderPose pose, out SkateVector leftUp, out SkateVector rightUp, out string error)
+    {
+        pose = body; leftUp = baselineLeftUp; rightUp = baselineRightUp; error = null;
+        if ((!plantedLeft.Initialized && !plantedRight.Initialized) || !board.Initialized) return false;
+        var la = body.LeftAnkle; var lt = body.LeftToe; var ra = body.RightAnkle; var rt = body.RightToe;
+        if (plantedLeft.Initialized)
+        { la = board.Origin + board.Rotate(plantedLeft.Origin); lt = la + board.Rotate(plantedLeft.Forward) * rig.FootLength; leftUp = board.Rotate(plantedLeft.Up); }
+        if (plantedRight.Initialized)
+        { ra = board.Origin + board.Rotate(plantedRight.Origin); rt = ra + board.Rotate(plantedRight.Forward) * rig.FootLength; rightUp = board.Rotate(plantedRight.Up); }
+        return SkateCaptureFootSupport.TrySetFeet(rig, body, la, lt, ra, rt, true, out pose, out error);
+    }
+
+    // Preserve the landed placement through the return to ordinary rolling.
+    // The collector still sees an ordinary ground pose; this does not keep a
+    // capture active, approve a pack, or retain ownership over another action.
+    public static bool TryGroundedFooting(SkateRiderRig rig, Transform player, SkateRiderPose baseline, SkateVector baselineLeftUp, SkateVector baselineRightUp,
+        out SkateRiderPose pose, out SkateVector leftUp, out SkateVector rightUp, out SkateCaptureContacts pinned)
+    {
+        pose = baseline; leftUp = baselineLeftUp; rightUp = baselineRightUp; pinned = SkateCaptureContacts.None;
+        if (!plantedLeft.Initialized && !plantedRight.Initialized) return false;
+        if (player == null || !Eligible(false, true) || SkateRide.Mode != RideMode.Ground || SkateRide.PresentationQueued ||
+            SkateRide.Pops != plantedPops || !SkateFootContacts.Ready || SkateFootContacts.Version != plantedVersion ||
+            rig.FootLength != plantedRig.FootLength || rig.ThighLength != plantedRig.ThighLength ||
+            rig.ShinLength != plantedRig.ShinLength || rig.HipWidth != plantedRig.HipWidth ||
+            plantedStance != (SkateRide.Goofy ? SkateStance.Goofy : SkateStance.Regular))
+        { ClearPlantedFeet(); return false; }
+        if (SkateRide.PushPhase > .001f)
+        {
+            bool trailingLeft = SkateRide.Goofy != SkateRide.TailFirst;
+            bool pushLeft = SkateRide.PushLead ? !trailingLeft : trailingLeft;
+            if (pushLeft) plantedLeft = default(SkateBoardPose); else plantedRight = default(SkateBoardPose);
+        }
+        // An interrupted recovery must not jump the pinned pelvis directly to
+        // the procedural target. Only the body departs; a released push foot
+        // already belongs to the current procedural push trajectory.
+        if (active != null && !Eligible() && departedAt < 0 && previous.Board.Initialized)
+        { departedAt = Time.realtimeSinceStartup; departedFrom = previous; departedCarrier = previousCarrier; }
+        string error;
+        var board = SkateBoard.PoseFor(player);
+        if (!PinPlantedFeet(rig, baseline, board, baselineLeftUp, baselineRightUp, out pose, out leftUp, out rightUp, out error))
+        { ClearPlantedFeet(); pose = baseline; return false; }
+        if (departedAt >= 0)
+        {
+            double u = Math.Max(0, Math.Min(1, (Time.realtimeSinceStartup - departedAt) / .15));
+            if (u >= 1) departedAt = -1;
+            else
+            {
+                var carrier = new SkateBoardPose(board.Origin, V(SkateBoard.OnFace(SkateRide.ViewNormal, SkateRide.Dir(SkateRide.NoseYaw))), V(SkateRide.ViewNormal));
+                var from = SkateCapturePlayback.Transport(departedFrom, departedCarrier, carrier);
+                SkateRiderPose body;
+                if (!from.Board.Initialized || !SkateCaptureFootSupport.TrySetFeet(rig, from.Pose, pose.LeftAnkle, pose.LeftToe,
+                    pose.RightAnkle, pose.RightToe, true, out body, out error))
+                { ClearPlantedFeet(); pose = baseline; return false; }
+                var target = new SkateCaptureFrame(body, board, from.Rotation, leftUp, rightUp, from.HasEvent, from.Observation,
+                    from.PelvisCorrection, from.LeftHandCorrection, from.RightHandCorrection, from.RiderUp);
+                double weight = 1 - u * u * u * (10 + u * (-15 + 6 * u)); SkateCaptureFrame blended;
+                weight = Math.Max(0, Math.Min(1, weight));
+                if (!SkateCapturePlayback.TryBlend(rig, pose, leftUp, rightUp, target, weight, out blended, out error, true))
+                { ClearPlantedFeet(); pose = baseline; return false; }
+                pose = blended.Pose;
+            }
+        }
+        pinned = (plantedLeft.Initialized ? SkateCaptureContacts.LeftFoot : SkateCaptureContacts.None) |
+            (plantedRight.Initialized ? SkateCaptureContacts.RightFoot : SkateCaptureContacts.None);
+        return true;
+    }
+    private static bool Eligible(bool requireControls = true, bool allowPush = false)
     {
         // These source clips are flat-ground footage. Transition, wall and contact-action motion owns its own presentation.
-        return SkateRide.On && !SkateRide.Frozen && !SkateRiggingShowcase.Running && SkateKeys.ControlsActive && !SkateKeys.Scripted && !Scenarios.Active &&
+        return SkateRide.On && !SkateRide.Frozen && !SkateRiggingShowcase.Running && (!requireControls || SkateKeys.ControlsActive) && !SkateKeys.Scripted && !Scenarios.Active &&
             (SkateRide.Mode == RideMode.Air || SkateRide.Mode == RideMode.Ground) &&
             (SkateRide.Mode != RideMode.Ground || !SkateRide.Rotating) &&
             !SkateRide.Manual && !SkateRide.NoseManual && !SkateRide.GroundGrab.Active &&
@@ -96,7 +192,7 @@ public static class SkateCapturedTricks
             !SkateRide.LateTrick && Math.Abs(SkateRide.PresentationBodyTarget) < .01 &&
             SkateRide.ViewNormal.y >= .98f && SkateRide.Normal.y >= .98f && !SkateRide.OnRamp &&
             Math.Abs(SkateBoard.Tip) < .001f && Math.Abs(SkateBoard.GrindPitch) < .01f && Math.Abs(SkateBoard.GrindRoll) < .01f &&
-            SkateRide.RevertLeft == 0 && SkateRide.Powerslide <= .001f && SkateRide.PushPhase <= .001f;
+            SkateRide.RevertLeft == 0 && SkateRide.Powerslide <= .001f && (allowPush || SkateRide.PushPhase <= .001f);
     }
 
     private static bool PrepareSupport(int index, SkateRiderRig rig, SkateStance stance, out SkateCaptureFootSupport support, out string error)
@@ -133,9 +229,15 @@ public static class SkateCapturedTricks
         // Loading is done once by BeginRide, never by this per-frame path.
         if (!loaded || player == null) return false;
         bool airborne = SkateRide.Mode == RideMode.Air, queued = SkateRide.PresentationQueued;
-        if (queued && !airborne) { active = null; return false; } // The flick is not known during most of the live load.
+        if (queued && !airborne) { active = null; ClearPlantedFeet(); return false; } // The flick is not known during most of the live load.
         int nextToken = SkateRide.Pops + (queued && !airborne ? 1 : 0);
-        if (!Eligible()) { if (active != null) Refuse(nextToken, "another riding action owns presentation"); return false; }
+        if (!Eligible())
+        {
+            bool retainGroundFeet = SkateRide.Mode == RideMode.Ground && Eligible(false, true);
+            if (!retainGroundFeet) ClearPlantedFeet();
+            if (active != null) Refuse(nextToken, "another riding action owns presentation", retainGroundFeet);
+            return false;
+        }
         if (nextToken == refusedToken) return false;
         if (active != null && token != nextToken) active = null;
         if (active == null)
@@ -144,7 +246,7 @@ public static class SkateCapturedTricks
             var requested = SkateRide.PresentationSignature; string kind = requested.MovementKind;
             int index = Array.IndexOf(Kinds, kind);
             if (index < 0 || clips[index] == null) { if (airborne) refusedToken = nextToken; return false; }
-            active = clips[index]; signature = requested; activeStance = SkateRide.Goofy ? SkateStance.Goofy : SkateStance.Regular; token = nextToken; lands = SkateRide.Lands; airSeen = landed = false; beganAt = Time.realtimeSinceStartup; caughtAt = -1; previous = default(SkateCaptureFrame);
+            active = clips[index]; signature = requested; activeStance = SkateRide.Goofy ? SkateStance.Goofy : SkateStance.Regular; token = nextToken; lands = SkateRide.Lands; airSeen = landed = false; beganAt = Time.realtimeSinceStartup; caughtAt = -1; previousAirSourceTime = catchSourceLead = 0; previous = default(SkateCaptureFrame);
             string supportError = null;
             if (!PrepareSupport(index, rig, activeStance, out footSupport, out supportError))
             { Refuse(nextToken, supportError); return false; }
@@ -162,21 +264,57 @@ public static class SkateCapturedTricks
             airSeen = true;
             bool caught = !SkateRide.Rotating && SkateRide.AirTime > .03f;
             phase = caught ? SkateCapturePhase.Catch : SkateCapturePhase.Air;
-            if (caught && caughtAt < 0) caughtAt = Time.realtimeSinceStartup;
-            value = caught ? Math.Max(0, Time.realtimeSinceStartup - caughtAt) : signature.RotationProgress(SkateRide.FlipDeg, SkateRide.ShoveDeg, SkateRide.SpinDeg);
+            if (caught && caughtAt < 0)
+            {
+                caughtAt = Time.realtimeSinceStartup; catchSourceLead = 0;
+                if (previous.Board.Initialized)
+                {
+                    // A slow source rotation tail can compress several source
+                    // frames into the final physics step. Finish that observed
+                    // foot return at source speed before adding catch contacts.
+                    double gap = active.SourceTime(SkateCapturePhase.Catch, 0) - previousAirSourceTime;
+                    catchSourceLead = Math.Max(0, gap - Math.Max(0, caughtAt - previousAt));
+                    if (catchSourceLead > .08)
+                    { Refuse(nextToken, "capture catch approach exceeds its source boundary"); return false; }
+                }
+            }
+            value = caught ? Time.realtimeSinceStartup - caughtAt - catchSourceLead : signature.RotationProgress(SkateRide.FlipDeg, SkateRide.ShoveDeg, SkateRide.SpinDeg);
         }
         else if (queued) { phase = SkateCapturePhase.Load; value = SkateKeys.Charging ? SkateKeys.Charge : 1; }
         else
         {
-            double since = Time.realtimeSinceStartup - SkateRide.LandAt;
+            // Keep the physical impact, then leave the filmed deep crouch sooner
+            // so ordinary rolling does not wait on a slow source recovery.
+            double since = (Time.realtimeSinceStartup - SkateRide.LandAt) * GroundRecoverySpeed;
             if (!airSeen || SkateRide.Lands <= lands || since < 0 || active.Finished(since)) { active = null; return false; }
             phase = SkateCapturePhase.Land; value = since;
-            if (!landed) { landed = true; landedAt = Time.realtimeSinceStartup; landingFrom = previous; landingCarrier = previousCarrier; }
+            if (!landed) { landed = true; landedAt = Time.realtimeSinceStartup; landingFrom = previous; landingCarrier = previousCarrier; ClearPlantedFeet(); }
         }
         var up = SkateRide.ViewNormal; var heading = SkateBoard.OnFace(up, SkateRide.Dir(SkateRide.NoseYaw));
         var board = SkateBoard.PoseFor(player); string error;
         if (!active.TrySample(phase, value, rig, SkateRide.Goofy ? SkateStance.Goofy : SkateStance.Regular,
-            board, V(heading), V(up), out frame, out error, footSupport)) { Refuse(nextToken, error); return false; }
+            board, V(heading), V(up), out frame, out error, footSupport, true, true)) { Refuse(nextToken, error); return false; }
+        // The source's flip finishes ahead of its shove. Keep the flick foot
+        // tucked through the last three source frames as the live board returns,
+        // preserving its free shoe orientation and the ordinary catch guards.
+        if (active.Clip.MovementKind == "nollie-360-flip")
+        {
+            double sourceTime = phase == SkateCapturePhase.Air ? active.FlightSourceTime(value) : active.SourceTime(phase, value);
+            double end = active.SourceTime(SkateCapturePhase.Catch, 0), start = end - .1001, peak = end - .0625625;
+            var foot = activeStance == SkateStance.Regular ? SkateCaptureContacts.RightFoot : SkateCaptureContacts.LeftFoot;
+            if (sourceTime > start && sourceTime < end && (frame.Observation.Contacts & foot) == 0)
+            {
+                double u = sourceTime <= peak ? (sourceTime - start) / (peak - start) : (end - sourceTime) / (end - peak);
+                double tuck = Math.Min(.065, .06 * rig.ThighLength / .44) * u * u * u * (10 + u * (-15 + 6 * u));
+                var shift = frame.RiderUp * tuck; var none = default(SkateVector); SkateRiderPose tucked;
+                if (!SkateCaptureFootSupport.TryShiftFeet(rig, frame.Pose,
+                    foot == SkateCaptureContacts.LeftFoot ? shift : none,
+                    foot == SkateCaptureContacts.RightFoot ? shift : none, false, out tucked, out error))
+                { Refuse(nextToken, error ?? "capture late-return tuck exceeds measured reach"); return false; }
+                frame = new SkateCaptureFrame(tucked, frame.Board, frame.Rotation, frame.LeftSoleUp, frame.RightSoleUp,
+                    frame.HasEvent, frame.Observation, frame.PelvisCorrection, frame.LeftHandCorrection, frame.RightHandCorrection, frame.RiderUp);
+            }
+        }
         double now = Time.realtimeSinceStartup;
         var carrier = new SkateBoardPose(board.Origin, V(heading), V(up));
         if (phase == SkateCapturePhase.Catch && previous.Board.Initialized)
@@ -191,6 +329,16 @@ public static class SkateCapturedTricks
                 (newlyCaught & SkateCaptureContacts.RightFoot) != 0 && (frame.Pose.RightAnkle - approaching.Pose.RightAnkle).Length > limit)
             { Refuse(nextToken, "capture feet did not approach the live catch safely"); return false; }
         }
+        if (landed)
+        {
+            if (!plantedLeft.Initialized && !RememberPlantedFeet(rig, frame))
+            { Refuse(nextToken, "landing has no valid measured foot frames"); return false; }
+            SkateRiderPose planted; SkateVector lu, ru;
+            if (!PinPlantedFeet(rig, frame.Pose, board, frame.LeftSoleUp, frame.RightSoleUp, out planted, out lu, out ru, out error))
+            { Refuse(nextToken, error ?? "planted landing feet exceed measured reach"); return false; }
+            frame = new SkateCaptureFrame(planted, frame.Board, frame.Rotation, lu, ru, frame.HasEvent, frame.Observation,
+                frame.PelvisCorrection + planted.Pelvis - frame.Pose.Pelvis, frame.LeftHandCorrection, frame.RightHandCorrection, frame.RiderUp);
+        }
         if (landed && now - landedAt < .1 && landingFrom.Board.Initialized)
         {
             var start = SkateCapturePlayback.Transport(landingFrom, landingCarrier, carrier);
@@ -201,10 +349,35 @@ public static class SkateCapturedTricks
         double weight = Math.Max(0, Math.Min(1, (now - beganAt) / .1));
         if (landed) weight = Math.Min(weight, active.RecoveryWeight(value));
         if (weight <= 0) return false; // The first live pop frame keeps the exact procedural pose.
-        if (!SkateCapturePlayback.TryBlend(rig, baseline, baselineLeftUp, baselineRightUp, frame, weight, out frame, out error))
+        // Pop contact still uses the measured support refit below. Pinning its
+        // target here would bypass the entry weight, then jump back on release.
+        if (!SkateCapturePlayback.TryBlend(rig, baseline, baselineLeftUp, baselineRightUp, frame, weight, out frame, out error, landed))
         { Refuse(nextToken, error); return false; }
-        if (!footSupport.TryConform(rig, frame, out frame, out error))
+        if (!footSupport.TryConform(rig, frame, out frame, out error, !landed && (weight < 1 || phase == SkateCapturePhase.Catch)))
         { Refuse(nextToken, error ?? "the blended foot frame cannot follow the shaped deck"); return false; }
+        if (landed)
+        {
+            if (!groundedImpact.Board.Initialized) groundedImpact = frame;
+            else
+            {
+                var impact = SkateCapturePlayback.Transport(groundedImpact, groundedImpact.Board, board);
+                double u = Math.Max(0, Math.Min(1, (value - .12) / .35));
+                u = u * u * u * (10 + u * (-15 + 6 * u));
+                u = Math.Max(0, Math.Min(1, u));
+                double gaze = Math.Max(0, Math.Min(1, (value - .12) / .6));
+                gaze = gaze * gaze * gaze * (10 + gaze * (-15 + 6 * gaze));
+                gaze = Math.Max(0, Math.Min(1, gaze));
+                SkateRiderPose settled;
+                if (!impact.Board.Initialized || !SkateCaptureFootSupport.TryGroundRecovery(rig, impact.Pose, baseline, frame.Pose,
+                    frame.RiderUp, u, gaze, out settled, out error,
+                    active.Clip.Id == "nollie-heelflip" || active.Clip.Id == "fakie-kickflip" ||
+                    active.Clip.Id == "nollie-backside-180-heelflip" || active.Clip.Id == "nollie-360-flip"))
+                { Refuse(nextToken, error ?? "supported recovery frame unavailable"); return false; }
+                frame = new SkateCaptureFrame(settled, frame.Board, frame.Rotation, frame.LeftSoleUp, frame.RightSoleUp,
+                    frame.HasEvent, frame.Observation, frame.PelvisCorrection, frame.LeftHandCorrection, frame.RightHandCorrection, frame.RiderUp);
+            }
+        }
+        if (phase == SkateCapturePhase.Air) previousAirSourceTime = active.FlightSourceTime(value);
         previous = frame; previousCarrier = carrier; previousAt = now;
         displayed = board; return true;
     }

@@ -1057,12 +1057,13 @@ namespace Shortcut.RustMod
 
             double carving = Math.Min(1, Math.Abs(input.LeanDegrees) / SkatePose.MaximumLean);
             double air = input.Airborne ? 1 : 0;
+            double cruising = input.Airborne || pushing || grabbing || input.Bailed ? 0 : speed;
             // At rest the arms hang loosely a little out and ahead, the elbows bent, not straight
             // down at the sides; they come up and out with a crouch, a carve and in the air.
             // A board turning under the feet takes the arms a little further out, for the balance.
             double armOut = armLength * (0.26 + 0.10 * crouch + 0.15 * carving + 0.30 * air + 0.12 * clear + LandArms * landing);
-            double armDown = armLength * (0.84 - 0.22 * crouch - 0.12 * carving - 0.34 * air);
-            double armAhead = armLength * (0.14 + 0.12 * crouch + 0.05 * speed + LandArms * landing);
+            double armDown = armLength * (0.84 - 0.22 * crouch - 0.12 * carving - 0.34 * air - 0.12 * cruising);
+            double armAhead = armLength * (0.14 + 0.12 * crouch + 0.05 * speed + 0.10 * cruising + LandArms * landing);
             var along = travel * (armLength * (backIsLeft ? -1 : 1));
             // The arm opposite the pushing foot goes forward as that foot goes back; a mongo push
             // is the other foot, so the other arm.

@@ -3,21 +3,24 @@ using System.Collections.Generic;
 
 namespace Shortcut.RustMod
 {
-    public enum SkateBoardPartKind { Deck = 0, Truck = 1, Wheel = 2 }
+    public enum SkateBoardPartKind { Deck = 0, Truck = 1, Wheel = 2, Fixed = 3, Bushing = 4 }
 
     public struct SkateBoardPart
     {
         public readonly SkateBoardPartKind Kind;
         public readonly int ParentIndex, VertexStart, VertexCount, IndexStart, IndexCount;
         public readonly float PivotX, PivotY, PivotZ, AxisX, AxisY, AxisZ;
+        public readonly float RestQX, RestQY, RestQZ, RestQW;
+        public readonly int BushingSeat; // +1 top, -1 bottom, otherwise zero
 
         internal SkateBoardPart(SkateBoardPartKind kind, int parent, int vertexStart, int vertexCount,
                                 int indexStart, int indexCount, float px, float py, float pz,
-                                float ax, float ay, float az)
+                                float ax, float ay, float az, float qx = 0, float qy = 0, float qz = 0, float qw = 1, int seat = 0)
         {
             Kind = kind; ParentIndex = parent; VertexStart = vertexStart; VertexCount = vertexCount;
             IndexStart = indexStart; IndexCount = indexCount;
             PivotX = px; PivotY = py; PivotZ = pz; AxisX = ax; AxisY = ay; AxisZ = az;
+            RestQX = qx; RestQY = qy; RestQZ = qz; RestQW = qw; BushingSeat = seat;
         }
     }
 
@@ -63,6 +66,12 @@ namespace Shortcut.RustMod
             builder.Wheel(0.082f, -0.245f, 1);
             builder.Wheel(-0.082f, 0.245f, 2);
             builder.Wheel(0.082f, 0.245f, 2);
+            builder.FixedTruck(-0.245f);
+            builder.FixedTruck(0.245f);
+            builder.Bushing(-0.245f, true);
+            builder.Bushing(-0.245f, false);
+            builder.Bushing(0.245f, true);
+            builder.Bushing(0.245f, false);
             return builder.Build(seed);
         }
 
@@ -73,7 +82,7 @@ namespace Shortcut.RustMod
             private readonly List<int> triangles = new List<int>(9000);
             private readonly List<float> colours = new List<float>(8000);
             private readonly List<float> uvs = new List<float>(4000);
-            private readonly List<SkateBoardPart> parts = new List<SkateBoardPart>(7);
+            private readonly List<SkateBoardPart> parts = new List<SkateBoardPart>(13);
             private int vertexStart, indexStart;
             private const int GripTile = 0, GraphicTile = 1, EdgeTile = 2, MetalTile = 3, WheelTile = 4;
 
@@ -86,10 +95,10 @@ namespace Shortcut.RustMod
             private void Begin() { vertexStart = positions.Count / 3; indexStart = triangles.Count; }
 
             // Ranges index the full board-space arrays; IndexCount counts entries, not triangle faces.
-            private void End(SkateBoardPartKind kind, int parent, Point pivot, Point axis)
+            private void End(SkateBoardPartKind kind, int parent, Point pivot, Point axis, float qx = 0, float qw = 1, int seat = 0)
             {
                 parts.Add(new SkateBoardPart(kind, parent, vertexStart, positions.Count / 3 - vertexStart,
-                    indexStart, triangles.Count - indexStart, pivot.X, pivot.Y, pivot.Z, axis.X, axis.Y, axis.Z));
+                    indexStart, triangles.Count - indexStart, pivot.X, pivot.Y, pivot.Z, axis.X, axis.Y, axis.Z, qx, 0, 0, qw, seat));
             }
 
             public void Deck()
@@ -141,7 +150,9 @@ namespace Shortcut.RustMod
                     for (int i = 0; i < 40; i++) Quad(edge[layer, i], edge[layer, i + 1], edge[layer + 1, i + 1], edge[layer + 1, i]);
                 foreach (float z in new[] { -0.245f, 0.245f })
                 {
-                    Box(new Point(0, 0.079f, z), new Point(0.031f, 0.004f, 0.025f), MetalTile);
+                    // Mounting plate retains the old top face, footprint and bolt
+                    // geometry. Its underside makes room for the actual socket.
+                    Box(new Point(0, 0.08225f, z), new Point(0.031f, 0.00075f, 0.025f), MetalTile);
                     foreach (float x in new[] { -0.022f, 0.022f }) foreach (float dz in new[] { -0.018f, 0.018f })
                         Cylinder(new Point(x, Height(x, z + dz) + 0.0007f, z + dz), new Point(0, 1, 0), 0.0028f, 0.0014f, 6, MetalTile);
                 }
@@ -192,13 +203,150 @@ namespace Shortcut.RustMod
                 float side = Math.Sign(z);
                 var axis = new Point(0, 0.70710677f, -side * 0.70710677f);
                 var pivot = new Point(0, 0.059f, z);
-                Cylinder(new Point(0, 0.034f, z), new Point(1, 0, 0), 0.007f, 0.125f, 12, MetalTile);
+                Cylinder(new Point(0, 0.032f, z), new Point(1, 0, 0), 0.005f, 0.125f, 12, MetalTile);
                 Cylinder(new Point(0, 0.027f, z), new Point(1, 0, 0), 0.0035f, 0.178f, 12, MetalTile);
-                Cylinder(new Point(0, 0.050f, z + side * 0.009f), axis, 0.012f, 0.04f, 12, MetalTile);
-                Cylinder(pivot, axis, 0.014f, 0.011f, 12, WheelTile);
-                Cylinder(new Point(0, pivot.Y + axis.Y * 0.012f, pivot.Z + axis.Z * 0.012f), axis, 0.0035f, 0.041f, 8, MetalTile);
-                Box(new Point(0, 0.063f, z - side * 0.004f), new Point(0.006f, 0.005f, 0.006f), MetalTile);
-                End(SkateBoardPartKind.Truck, 0, pivot, axis);
+                Tube(pivot, axis, (float)SkateBoardTruckKinematics.EyeRadius, 0.0065f, 0.005f, 16, MetalTile);
+                // Outboard yoke joins the eye rim, leaving its lower washer's
+                // complete steering/load envelope clear of the diagonal arms.
+                Link(new Point(-0.015f, 0.055f, z), new Point(-0.044f, 0.034f, z), 0.0048f);
+                Link(new Point(0.015f, 0.055f, z), new Point(0.044f, 0.034f, z), 0.0048f);
+                var cup = new Point(0, (float)SkateBoardTruckKinematics.CupY, z + side * (float)SkateBoardTruckKinematics.CupForward);
+                var steerAxis = Unit(new Point(0, (float)SkateBoardTruckKinematics.CupY - pivot.Y, side * (float)SkateBoardTruckKinematics.CupForward));
+                var neck = Along(cup, steerAxis, -.008f);
+                Link(cup, neck, .0025f);
+                Link(neck, new Point(0, .0682f, z + side * .0092f), .003f);
+                Sphere(cup, .0043f);
+                End(SkateBoardPartKind.Truck, 0, pivot, steerAxis);
+            }
+
+            public void FixedTruck(float z)
+            {
+                Begin();
+                var pivot = new Point(0, 0.059f, z);
+                var axis = new Point(0, 0.70710677f, -Math.Sign(z) * 0.70710677f);
+                Cylinder(Along(pivot, axis, 0.001f), axis, 0.0025f, 0.046f, 12, MetalTile);
+                Tube(Along(pivot, axis, -0.020f), axis, 0.010f, 0.0026f, 0.002f, 16, MetalTile);
+                Tube(Along(pivot, axis, 0.022f), axis, 0.010f, 0.0026f, 0.002f, 16, MetalTile);
+                Tube(Along(pivot, axis, 0.024f), axis, 0.0046f, 0.0026f, 0.004f, 6, MetalTile);
+                var cup = new Point(0, (float)SkateBoardTruckKinematics.CupY, z + Math.Sign(z) * (float)SkateBoardTruckKinematics.CupForward);
+                var cupAxis = Unit(new Point(0, (float)SkateBoardTruckKinematics.CupY - pivot.Y, Math.Sign(z) * (float)SkateBoardTruckKinematics.CupForward));
+                // The triangulated inner planes, not just their vertex radius,
+                // must clear the complete 4.3mm pivot ball.
+                Socket(cup, cupAxis, .0062f, .00445f, 32, 8);
+                End(SkateBoardPartKind.Fixed, 0, pivot, new Point(0, 1, 0));
+            }
+
+            public void Bushing(float z, bool top)
+            {
+                Begin();
+                float sign = Math.Sign(z), seat = top ? 0.021f : -0.019f, tip = top ? 0.0025f : -0.0025f;
+                var pivot = new Point(0, 0.059f, z);
+                var axis = new Point(0, 0.70710677f, -sign * 0.70710677f);
+                var origin = Along(pivot, axis, seat);
+                Barrel(origin, axis, tip - seat, 0.0093f, 0.003f, 16);
+                // Geometry remains in board space; the adapter inverse-transforms
+                // it before installing this fixed local-Y kingpin alignment.
+                End(SkateBoardPartKind.Bushing, 0, origin, new Point(0, 1, 0), -sign * 0.38268343f, 0.92387953f, top ? 1 : -1);
+            }
+
+            private static Point Along(Point p, Point axis, float distance)
+            { return new Point(p.X + axis.X * distance, p.Y + axis.Y * distance, p.Z + axis.Z * distance); }
+
+            private void Barrel(Point seat, Point axis, float length, float outer, float inner, int segments)
+            {
+                var tangent = new Point(1, 0, 0); var forward = Point.Cross(tangent, axis);
+                float[] height = { 0, .5f, 1, 1, .5f, 0, 1, 1, 0, 0 };
+                var rings = new int[10, segments + 1];
+                for (int ring = 0; ring < 10; ring++) for (int i = 0; i <= segments; i++)
+                {
+                    double a = (i % segments) * Math.PI * 2 / segments;
+                    var radial = new Point((float)Math.Cos(a), forward.Y * (float)Math.Sin(a), forward.Z * (float)Math.Sin(a));
+                    bool outside = ring < 3 || ring == 6 || ring == 9; float radius = outside ? outer : inner;
+                    var normal = ring < 3 ? radial : ring < 6 ? new Point(-radial.X, -radial.Y, -radial.Z) :
+                        ring < 8 ? Along(new Point(0, 0, 0), axis, Math.Sign(length)) : Along(new Point(0, 0, 0), axis, -Math.Sign(length));
+                    rings[ring, i] = Vertex(Along(Along(seat, axis, height[ring] * length), radial, radius), normal, WheelTile, i / (float)segments, height[ring]);
+                }
+                foreach (int start in new[] { 0, 1, 3, 4, 6, 8 }) for (int i = 0; i < segments; i++)
+                    Quad(rings[start, i], rings[start, i + 1], rings[start + 1, i + 1], rings[start + 1, i]);
+            }
+
+            private void Sphere(Point centre, float radius)
+            {
+                // Closed octahedron subdivisions avoid polar zero-area faces.
+                var p = new[] { new Point(1, 0, 0), new Point(-1, 0, 0), new Point(0, 1, 0), new Point(0, -1, 0), new Point(0, 0, 1), new Point(0, 0, -1) };
+                int[] faces = { 0, 2, 4, 2, 1, 4, 1, 3, 4, 3, 0, 4, 2, 0, 5, 1, 2, 5, 3, 1, 5, 0, 3, 5 };
+                for (int i = 0; i < faces.Length; i += 3)
+                {
+                    var a = p[faces[i]]; var b = p[faces[i + 1]]; var c = p[faces[i + 2]];
+                    var ab = Unit(new Point(a.X + b.X, a.Y + b.Y, a.Z + b.Z)); var bc = Unit(new Point(b.X + c.X, b.Y + c.Y, b.Z + c.Z)); var ca = Unit(new Point(c.X + a.X, c.Y + a.Y, c.Z + a.Z));
+                    foreach (var tri in new[] { new[] { a, ab, ca }, new[] { ab, b, bc }, new[] { ca, bc, c }, new[] { ab, bc, ca } })
+                        Face(Vertex(Along(centre, tri[0], radius), tri[0], MetalTile, 0, 0), Vertex(Along(centre, tri[1], radius), tri[1], MetalTile, 0, 0), Vertex(Along(centre, tri[2], radius), tri[2], MetalTile, 0, 0));
+                }
+            }
+
+            private void Socket(Point centre, Point axis, float outer, float inner, int segments, int steps)
+            {
+                // Closed hemispherical shell: opening faces the moving stem,
+                // while the back of the socket joins the fixed mounting plate.
+                // A complete axial tube would cut through the tilted ball/stem.
+                var tangent = new Point(1, 0, 0); var around = Point.Cross(axis, tangent);
+                var rings = new int[2, steps, segments + 1]; var poles = new int[2];
+                for (int surface = 0; surface < 2; surface++)
+                {
+                    float radius = surface == 0 ? outer : inner, sign = surface == 0 ? 1 : -1;
+                    poles[surface] = Vertex(Along(centre, axis, radius), Along(new Point(0, 0, 0), axis, sign), MetalTile, .5f, 1);
+                    for (int ring = 0; ring < steps; ring++) for (int i = 0; i <= segments; i++)
+                    {
+                        double polar = (ring + 1) * Math.PI / (2 * steps), angle = (i % segments) * Math.PI * 2 / segments;
+                        var direction = new Point(
+                            (float)(Math.Sin(polar) * Math.Cos(angle)),
+                            (float)(axis.Y * Math.Cos(polar) + around.Y * Math.Sin(polar) * Math.Sin(angle)),
+                            (float)(axis.Z * Math.Cos(polar) + around.Z * Math.Sin(polar) * Math.Sin(angle)));
+                        rings[surface, ring, i] = Vertex(Along(centre, direction, radius), Along(new Point(0, 0, 0), direction, sign), MetalTile, i / (float)segments, (ring + 1) / (float)steps);
+                    }
+                    for (int i = 0; i < segments; i++) Face(poles[surface], rings[surface, 0, i], rings[surface, 0, i + 1]);
+                    for (int ring = 0; ring < steps - 1; ring++) for (int i = 0; i < segments; i++)
+                        Quad(rings[surface, ring, i], rings[surface, ring, i + 1], rings[surface, ring + 1, i + 1], rings[surface, ring + 1, i]);
+                }
+                var rim = new int[2, segments + 1]; var rimNormal = Along(new Point(0, 0, 0), axis, -1);
+                for (int side = 0; side < 2; side++) for (int i = 0; i <= segments; i++)
+                {
+                    double angle = (i % segments) * Math.PI * 2 / segments;
+                    var direction = new Point((float)Math.Cos(angle), around.Y * (float)Math.Sin(angle), around.Z * (float)Math.Sin(angle));
+                    rim[side, i] = Vertex(Along(centre, direction, side == 0 ? outer : inner), rimNormal, MetalTile, i / (float)segments, side);
+                }
+                for (int i = 0; i < segments; i++) Quad(rim[0, i], rim[0, i + 1], rim[1, i + 1], rim[1, i]);
+            }
+
+            private void Link(Point a, Point b, float radius)
+            {
+                var delta = b - a;
+                Cylinder(new Point((a.X + b.X) * .5f, (a.Y + b.Y) * .5f, (a.Z + b.Z) * .5f),
+                    Unit(delta), radius, (float)Math.Sqrt(Point.Dot(delta, delta)), 10, MetalTile);
+            }
+
+            private void Tube(Point centre, Point axis, float outer, float inner, float length, int segments, int tile)
+            {
+                var u = Math.Abs(axis.X) < .9f ? Unit(Point.Cross(axis, new Point(1, 0, 0))) : new Point(0, 1, 0);
+                var v = Point.Cross(axis, u);
+                var rings = new int[8, segments + 1];
+                // Separate end-ring normals: sharing radial side normals with a
+                // washer face gives neither a correct cap normal nor reliable winding.
+                for (int ring = 0; ring < 8; ring++) for (int i = 0; i <= segments; i++)
+                {
+                    double angle = (i % segments) * Math.PI * 2 / segments;
+                    var radial = new Point(u.X * (float)Math.Cos(angle) + v.X * (float)Math.Sin(angle),
+                        u.Y * (float)Math.Cos(angle) + v.Y * (float)Math.Sin(angle), u.Z * (float)Math.Cos(angle) + v.Z * (float)Math.Sin(angle));
+                    int surface = ring / 2, end = ring % 2;
+                    float along = surface == 0 ? (end == 0 ? -length * .5f : length * .5f) :
+                        surface == 1 ? length * .5f : surface == 2 ? (end == 0 ? length * .5f : -length * .5f) : -length * .5f;
+                    float radius = surface == 0 || surface == 1 && end == 0 || surface == 3 && end == 1 ? outer : inner;
+                    var p = Along(centre, axis, along);
+                    var normal = surface == 0 ? radial : surface == 1 ? axis : surface == 2 ? new Point(-radial.X, -radial.Y, -radial.Z) : new Point(-axis.X, -axis.Y, -axis.Z);
+                    rings[ring, i] = Vertex(Along(p, radial, radius), normal, tile, i / (float)segments, ring / 3f);
+                }
+                for (int ring = 0; ring < 8; ring += 2) for (int i = 0; i < segments; i++)
+                    Quad(rings[ring, i], rings[ring, i + 1], rings[ring + 1, i + 1], rings[ring + 1, i]);
             }
 
             public void Wheel(float x, float z, int parent)

@@ -315,6 +315,37 @@ class AuthoredHead:
                     affectedFields=['Head','HeadForward'],outsideWindow='Exact original targets and directions',
                     confidence='Original confidence/rejection gates unchanged; authoring is not a trusted observation')
 
+class AnatomicalHeadFrame:
+    """Explicit neutral-roll reconstruction from retained source gaze, not a measurement."""
+    def __init__(self,spec,authored_head):
+        if not isinstance(spec,dict) or set(spec)!={'mode','up','minimumUpProjection','provenance','uncertainty'}:
+            raise ValueError('anatomicalHeadFrame requires mode, up, minimumUpProjection, provenance and uncertainty')
+        if spec['mode']!='source-gaze-neutral-roll' or authored_head is not None:
+            raise ValueError('Anatomical source-gaze frame cannot be combined with authoredHead')
+        self.up=finite(spec['up'],(3,))
+        if np.linalg.norm(self.up-UP)>1e-9:
+            raise ValueError('Anatomical head frame currently requires declared world up [0,1,0]')
+        self.minimum=spec['minimumUpProjection']
+        if type(self.minimum) not in (int,float) or not .1<=self.minimum<=.5:
+            raise ValueError('Anatomical head minimum up projection must be within .1.. .5')
+        for key in ('provenance','uncertainty'):
+            if not isinstance(spec[key],str) or not spec[key].strip() or len(spec[key])>4096:
+                raise ValueError('Anatomical head frame requires explicit bounded '+key)
+        self.spec=spec
+
+    def apply(self,t,j,dirs,length):
+        gaze=finite(dirs['HeadForward'],(3,));gaze=unit(gaze)
+        up=self.up-gaze*np.dot(self.up,gaze);projection=float(np.linalg.norm(up))
+        if projection<self.minimum:
+            raise CaptureError('Source gaze is too vertical to determine the declared neutral head roll',dict(t=t,upProjection=projection))
+        j['Head']=j['Neck']+length*up/projection
+        # HeadForward is deliberately unchanged: source yaw/pitch movement survives.
+
+    def report(self):
+        return {**self.spec,'affectedFields':['Head'],
+                'method':'World up projected perpendicular to retained source HeadForward; fixed neck-to-head length.',
+                'confidence':'Neutral roll is declared reconstruction, not measured head/neck motion. Original confidence gates and raw model are unchanged.'}
+
 def retarget(raw, job, provenance):
     window=job['window'];first,last,fps,duration,frame_times=window_timing(window)
     source_fps=raw.get('source',{}).get('fps')
@@ -344,6 +375,7 @@ def retarget(raw, job, provenance):
     if stance not in ('regular','goofy') or key_space not in ('canonical','captured'): raise ValueError('Explicit stance/keySpace required')
     goofy=stance=='goofy'; reflect_keys=goofy and key_space=='captured'
     authored_head=AuthoredHead(job['body']['authoredHead'],duration,reflect_keys) if 'authoredHead' in job['body'] else None
+    anatomical_head=AnatomicalHeadFrame(job['body']['anatomicalHeadFrame'],authored_head) if 'anatomicalHeadFrame' in job['body'] else None
     authored_heading=AuthoredHeading(job['body']['authoredHeading'],duration,reflect_keys) if 'authoredHeading' in job['body'] else None
     if goofy:
         world[:,:,0]*=-1
@@ -369,11 +401,56 @@ def retarget(raw, job, provenance):
     times=[i/hz for i in range(intervals)]+[duration];rot_quality=rotation.check_density(times)
     events=contact_events(job['events'],duration,reflect_keys)
     if not events or events[0]['t']!=0:raise ValueError('Explicit initial contact event at t=0 required')
+    recovery_smoothing=opts.get('recoverySmoothing');recovery_report=None
+    if recovery_smoothing is not None:
+        if not isinstance(recovery_smoothing,dict) or set(recovery_smoothing)!={'start','full','passes','provenance','uncertainty'}:
+            raise ValueError('recoverySmoothing requires start, full, passes, provenance and uncertainty')
+        for key in ('provenance','uncertainty'):
+            value=recovery_smoothing[key]
+            if not isinstance(value,str) or not value.strip() or len(value)>4096:
+                raise ValueError('recoverySmoothing requires explicit bounded '+key)
+        start,full=recovery_smoothing['start'],recovery_smoothing['full'];count=recovery_smoothing['passes']
+        land_times=[e['t'] for e in events if e['phase']==5]
+        if type(start) not in (int,float) or type(full) not in (int,float) or not land_times or not land_times[0]<=start<full<=duration:
+            raise ValueError('recoverySmoothing must begin at or after observed Land and reach full within the clip')
+        if type(count) is not int or not 1<=count<=4:
+            raise ValueError('recoverySmoothing passes must be1..4')
+        filtered=world.copy()
+        for _ in range(count):
+            padded=np.pad(filtered,((1,1),(0,0),(0,0)),mode='edge');filtered=(padded[:-2]+2*padded[1:-1]+padded[2:])/4
+        source_times=np.arange(len(world))/fps if frame_times is None else frame_times
+        u=np.clip((source_times-start)/(full-start),0,1);u=u*u*u*(10+u*(-15+6*u))
+        change=(filtered-world)*u[:,None,None];world+=change
+        recovery_report={**recovery_smoothing,'method':'Additional symmetric binomial model interpolation with C2 entry; no raw or confidence changes.',
+            'maximumModelPointChangeM':float(np.max(np.linalg.norm(change,axis=2))),
+            'affectedSourceFrames':int(np.count_nonzero(u)),
+            'limit':'Interpolated model estimates, not new measured motion. Before the declared Land window remains exact; root and contact curves are separate.'}
+    legs=job.get('legs',{});leg_curves={};leg_report={}
+    if not isinstance(legs,dict) or set(legs)-{'Left','Right'}:
+        raise ValueError('legs must map Left/Right reconstruction settings')
+    for side in ('Left','Right'):
+        source_side=('Right' if side=='Left' else 'Left') if reflect_keys else side
+        if source_side not in legs:continue
+        config=legs[source_side]
+        if not isinstance(config,dict) or set(config)!={'poleKeys','provenance','uncertainty'}:
+            raise ValueError('Leg reconstruction requires poleKeys, provenance and uncertainty: '+source_side)
+        for key in ('provenance','uncertainty'):
+            if not isinstance(config[key],str) or not config[key].strip() or len(config[key])>4096:
+                raise ValueError('Leg reconstruction requires bounded '+key+': '+source_side)
+        if not isinstance(config['poleKeys'],list) or not 2<=len(config['poleKeys'])<=4096:
+            raise ValueError('Leg reconstruction requires 2..4096 covering pole keys: '+source_side)
+        curve=Curve(config['poleKeys'],duration);values=curve.values
+        if np.any(np.linalg.norm(values,axis=1)<1e-8) or any(np.dot(unit(a),unit(b))<math.cos(math.radians(150)) for a,b in zip(values,values[1:])):
+            raise ValueError('Leg poles need nonzero directions and intermediate keys for turns above150 degrees')
+        leg_curves[side]=curve
+        leg_report[side]=dict(coordinates='Absolute authoring frame before optional authoredHeading; target hip-to-ankle bend-plane direction',
+            keyCount=len(curve.times),provenance=config['provenance'],uncertainty=config['uncertainty'],
+            limit='Explicit joint-plane reconstruction, not a new source observation. Does not move hips, ankle targets or contact events.')
     feet=job.get('feet',{});foot_curves={}
     for side in ('Left','Right'):
         source_side=('Right' if side=='Left' else 'Left') if reflect_keys else side
         config=feet.get(source_side,{})
-        foot_curves[side]={key:Curve(config[key],duration) for key in ('positionKeys','soleUpKeys','airSoleUpKeys','airPositionKeys','headingKeys') if key in config}
+        foot_curves[side]={key:Curve(config[key],duration) for key in ('positionKeys','soleUpKeys','airSoleUpKeys','airPositionKeys','headingKeys','airHeadingKeys') if key in config}
         if 'airPositionKeys' in config and (not isinstance(config.get('airPositionProvenance'),str) or not config['airPositionProvenance'].strip()):
             raise ValueError('Explicit free-foot paths require airPositionProvenance: '+source_side)
         if 'headingKeys' in config:
@@ -383,6 +460,13 @@ def retarget(raw, job, provenance):
             values=foot_curves[side]['headingKeys'].values
             if np.any(np.linalg.norm(values,axis=1)<1e-8) or any(np.dot(unit(a),unit(b))<-.9995 for a,b in zip(values,values[1:])):
                 raise ValueError('Contact headings need nonzero unambiguous directions')
+        if 'airHeadingKeys' in config:
+            note=config.get('airHeadingProvenance')
+            if not isinstance(note,str) or not note.strip() or len(note)>4096:
+                raise ValueError('Explicit free-foot headings require bounded airHeadingProvenance: '+source_side)
+            values=foot_curves[side]['airHeadingKeys'].values
+            if np.any(np.linalg.norm(values,axis=1)<1e-8) or any(np.dot(unit(a),unit(b))<math.cos(math.radians(150)) for a,b in zip(values,values[1:])):
+                raise ValueError('Free-foot headings need nonzero directions and intermediate keys for turns above150 degrees')
         for key in ('soleUpKeys','airSoleUpKeys'):
             if key not in foot_curves[side]:continue
             values=foot_curves[side][key].values
@@ -464,6 +548,11 @@ def retarget(raw, job, provenance):
                 sole=unit(curves['airSoleUpKeys'](t) if 'airSoleUpKeys' in curves else UP)
             if reflect_keys and not contact:sole[0]*=-1
             heading=unit(w[toe]-w[heel],anatomy)
+            if not contact and 'airHeadingKeys' in curves:
+                heading=curves['airHeadingKeys'](t)
+                if reflect_keys:heading[0]*=-1
+                if np.linalg.norm(heading-sole*np.dot(heading,sole))<1e-8:
+                    raise CaptureError('Explicit free-foot heading is parallel to its sole normal',dict(t=t,side=side))
             if contact and 'headingKeys' in curves:
                 local_heading=curves['headingKeys'](t)
                 if reflect_keys:local_heading[0]*=-1
@@ -473,7 +562,13 @@ def retarget(raw, job, provenance):
             fallback=np.cross(sole,[0,0,1]) if abs(sole[2])<.9 else np.cross(sole,[1,0,0])
             heading=unit(heading-sole*np.dot(heading,sole),fallback)
             pole = w[ki]-w[hi]
-            if leg_pole_transport == 'source-plane':
+            if side in leg_curves:
+                pole=leg_curves[side](t)
+                if reflect_keys:pole[0]*=-1
+                axis=unit(ankle-hips[index])
+                if np.linalg.norm(pole-axis*np.dot(pole,axis))<1e-8:
+                    raise CaptureError('Explicit leg pole is parallel to its hip-to-ankle axis',dict(t=t,side=side))
+            elif leg_pole_transport == 'source-plane':
                 pole = transport_leg_pole(w[hi], w[ki], w[ai], hips[index], ankle)
             knee,ankle=ik(hips[index],ankle,rig['thigh'],rig['shin'],pole,limit,reaches,t,side)
             j[side+'Hip']=hips[index];j[side+'Knee']=knee;j[side+'Ankle']=ankle
@@ -491,11 +586,14 @@ def retarget(raw, job, provenance):
         pelvis_up=unit(torso*.45+UP*.55);pelvis_up=unit(pelvis_up-hip_axis*np.dot(pelvis_up,hip_axis),UP)
         directions=dict(zip(DIRS,(unit(np.cross(hip_axis,pelvis_up)),pelvis_up,unit(np.cross(shoulder_axis,torso)),torso,unit(w[0]-(w[7]+w[8])*.5,anatomy))))
         if authored_head is not None:authored_head.apply(t,j,directions,rig['head'])
+        if anatomical_head is not None:anatomical_head.apply(t,j,directions,rig['head'])
         if authored_heading is not None:authored_heading.apply(t,j,directions,soles,origin)
         frames.append(dict(t=t,sourceFrame=first+t*fps if frame_times is None else first+source_pos,board=dict(origin=origin.tolist(),quaternion=q.tolist()),joints={k:finite(j[k],(3,)).tolist() for k in JOINTS},dirs={k:unit(directions[k]).tolist() for k in DIRS},soleUp={k:v.tolist() for k,v in soles.items()},phase=events[event_index]['phase'],contacts=mask))
     if maximum_chain_error>1e-6:raise CaptureError('Retarget chain length error',dict(maxChainErrorM=maximum_chain_error))
     metadata=dict(id=job['id'],label=job['label'],sourceUrl=job['source']['url'],sourceAuthor=job['source']['author'],movementKind=job['movementKind'],reviewed=job['reviewed'],rights=job['source'].get('rights','No publication/relicensing permission asserted'),canonicalStance='regular',capturedStance=stance,keySpace=key_space,coordinateFrame='Y up, +Z nose, +X right; right-handed quaternion XYZW; origin=deck top',toeContract='Physical toe endpoints include soleUp*toeDrop once; native sampler reconstructs flat toe targets before writer drop',sourceFps=fps,firstSourceFrame=first,lastSourceFrame=last,provenance=provenance,boardProvenance=board_spec['provenance'],boardLimit='Observed keys mean recipe observations/estimates, not calibrated measured3D board mocap',footOrientationLimit='Soles default to board-up in contact and world-up in air unless per-foot keys supplied. Captured heel/toe heading is projected onto that sole; degenerate projections use a perpendicular basis. Not measured shoe orientation.',rootLimit='Pelvis/board trajectory supplied explicitly by recipe; MediaPipe world33 is hip-relative; no player-root/physics authority',sampleLimit='Dense retarget interpolation, not additional measured source frames',camera=job['camera'],rig=rig,metricScale=scale)
     metadata['armInterpolation']=arm_interpolation
+    if leg_report:metadata['legBends']=leg_report
+    if recovery_report is not None:metadata['recoverySmoothing']=recovery_report
     if leg_pole_transport != 'legacy-target-projection':
         metadata['legPoleTransport']=dict(mode=leg_pole_transport,
             method='Source knee bend projected on source hip-ankle axis, then minimal rotation onto target leg axis.',
@@ -506,6 +604,8 @@ def retarget(raw, job, provenance):
             limit='Supplied rest geometry envelope; does not simulate truck or wheel movement.')
     contact_headings={side:dict(coordinates='Board local; used only with observed foot contact',provenance=feet[('Right' if side=='Left' else 'Left') if reflect_keys else side]['headingProvenance']) for side in ('Left','Right') if 'headingKeys' in foot_curves[side]}
     if contact_headings:metadata['contactHeadings']=contact_headings
+    free_headings={side:dict(coordinates='Absolute authoring frame; used only without observed foot contact',provenance=feet[('Right' if side=='Left' else 'Left') if reflect_keys else side]['airHeadingProvenance']) for side in ('Left','Right') if 'airHeadingKeys' in foot_curves[side]}
+    if free_headings:metadata['freeFootHeadings']=free_headings
     if frame_times is not None:
         metadata['sourceTiming']=dict(mode='variable-frame-times',frameTimes=frame_times.tolist(),
             frameTimeProvenance=window['frameTimeProvenance'],origin='Window first source frame is t=0',
@@ -514,6 +614,7 @@ def retarget(raw, job, provenance):
         metadata['headAnchor']=head_anchor
         metadata['headAnchorProvenance']=head_provenance
     if authored_head is not None:metadata['authoredHead']=authored_head.report()
+    if anatomical_head is not None:metadata['anatomicalHeadFrame']=anatomical_head.report()
     if authored_heading is not None:metadata['authoredHeading']=authored_heading.report()
     metadata['freeFootPaths']={side:dict(coordinates='Absolute authoring frame, same as pelvisKeys; reflected with captured keySpace',provenance=feet[('Right' if side=='Left' else 'Left') if reflect_keys else side]['airPositionProvenance']) for side in ('Left','Right') if 'airPositionKeys' in foot_curves[side]}
     selection_frames=[dict(frame=f['frame_index'],selection=f['target_selection']) for f in raw['frames'] if first<=f['frame_index']<=last and f.get('target_selection') is not None]
