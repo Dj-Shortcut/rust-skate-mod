@@ -8,6 +8,7 @@ using UnityEngine;
 public static class SkateCapturedTricks
 {
     private const double GroundRecoverySpeed = 1.35;
+    public const string HardflipEarlyTuckProvenance = "Authored early free-front-foot tuck for normal Hardflip; reference-scaled lift up to 0.28 m, not measured capture.";
     private static readonly SkateCapturePlayback[] clips = new SkateCapturePlayback[SkateCaptureVariants.Count];
     private static readonly SkateCaptureFootSupport[] supports = new SkateCaptureFootSupport[SkateCaptureVariants.Count * 2];
     private static readonly int[] supportVersions = new int[SkateCaptureVariants.Count * 2];
@@ -419,6 +420,29 @@ public static class SkateCapturedTricks
         { Refuse(nextToken, error); return false; }
         if (!footSupport.TryConform(rig, frame, out frame, out error, !landed && (weight < 1 || phase == SkateCapturePhase.Catch)))
         { Refuse(nextToken, error ?? "the blended foot frame cannot follow the shaped deck"); return false; }
+        if (!landed && phase == SkateCapturePhase.Air && active.SourceMovementKind == "hardflip")
+        {
+            // An authored free-foot prior: lift the front ankle and toe together,
+            // preserving the source torso and the canonical leg solve. Source
+            // progress and the existing entry weight own its timing, not a new clock.
+            double sourceTime = active.FlightSourceTime(value), start = active.SourceTime(SkateCapturePhase.Air, 0);
+            double span = active.SourceTime(SkateCapturePhase.Catch, 0) - start;
+            double peak = start + span * 2 / 7, finish = start + span * .5;
+            var front = activeStance == SkateStance.Regular ? SkateCaptureContacts.LeftFoot : SkateCaptureContacts.RightFoot;
+            if (span > .000001 && sourceTime > start && sourceTime < finish && (frame.Observation.Contacts & front) == 0)
+            {
+                double u = sourceTime <= peak ? (sourceTime - start) / (peak - start) : (finish - sourceTime) / (finish - peak);
+                u = Math.Max(0, Math.Min(1, u));
+                double lift = Math.Min(.28, .28 * rig.ThighLength / .44) * weight * u * u * u * (10 + u * (-15 + 6 * u));
+                var shift = frame.RiderUp * lift; var none = default(SkateVector); SkateRiderPose tucked;
+                if (!SkateCaptureFootSupport.TryShiftFeet(rig, frame.Pose,
+                    front == SkateCaptureContacts.LeftFoot ? shift : none,
+                    front == SkateCaptureContacts.RightFoot ? shift : none, false, out tucked, out error))
+                { Refuse(nextToken, error ?? "authored Hardflip early tuck exceeds measured reach"); return false; }
+                frame = new SkateCaptureFrame(tucked, frame.Board, frame.Rotation, frame.LeftSoleUp, frame.RightSoleUp,
+                    frame.HasEvent, frame.Observation, frame.PelvisCorrection, frame.LeftHandCorrection, frame.RightHandCorrection, frame.RiderUp);
+            }
+        }
         if (!landed && phase == SkateCapturePhase.Catch &&
             (frame.Observation.Contacts & (SkateCaptureContacts.LeftFoot | SkateCaptureContacts.RightFoot)) ==
             (SkateCaptureContacts.LeftFoot | SkateCaptureContacts.RightFoot))
