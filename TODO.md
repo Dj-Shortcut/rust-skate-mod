@@ -14,7 +14,7 @@ Eerst deze opstapblokkade oplossen. De afzonderlijke gecombineerde kandidaat .64
 7. Niet bouwen of items gebruiken tijdens rijden. Bron klaar, ongetest.
 8. Kompas blijft stabiel tijdens rijden. Geblokkeerd: huidige Rust-wrapper mist de gebruikte view-methode; .63 meldt de ontbrekende route. Vervangende binding en spelcontrole open.
 9. Camera na afstappen horizontaal in rijrichting. Zelfde ontbrekende view-binding; .63 verwerpt schijnsucces en reset de binding bij een nieuwe speler. Herstel en spelcontrole open.
-10. Flip/shuv en grab sluiten elkaar uit. Open.
+10. Flip/shuv en grab sluiten elkaar uit. Bron aanwezig sinds 0.18.34 (`SkateRide.cs`: een flip of shove tijdens een grab of met de grabknop al vast vóór de pop wordt geweigerd, een grab tijdens een flip start pas als het board rond is); ongetest in het spel.
 11. Handen leeg op het board, item terug na afstappen. .63 bewaart oorspronkelijke rendererstatus en herstelt onafhankelijke held-objecten met begrensde herpogingen. Native slotselectie en volledige spelcontrole open.
 12. Skateboardgeluid klinkt echt. [18 gekozen geluiden](docs/RUST-SKATE-SOUND-BRIEF.md) in .62 native geladen (26 okt), één per soort. .63 bewaart de ingestelde private geluidsbron bij installatie; bron gecontroleerd, native installatie, hoorbare mix en spelcontrole open.
 13. Bouwplan zichtbaar in de hand. Open.
