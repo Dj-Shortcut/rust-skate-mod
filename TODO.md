@@ -12,7 +12,7 @@ Eerst deze opstapblokkade oplossen. Kandidaat .64 bewaart de .63-foutstap en sta
 5. Parkstukken staan op grond of fundering, zweven niet. Bron klaar, ongetest.
 6. Snappen en preview zoals Rust-bouwen. Bron klaar, ongetest.
 7. Niet bouwen of items gebruiken tijdens rijden. Bron klaar, ongetest.
-8. Kompas blijft stabiel tijdens rijden. Geblokkeerd: huidige Rust-wrapper mist de gebruikte view-methode; .63 meldt de ontbrekende route. Vervangende binding en spelcontrole open.
+8. Kompas blijft stabiel tijdens rijden. De 26-oktober-wrapper mist de gebruikte view-methode; .63 meldt de ontbrekende route. [Begrensde inspectietool voor de passende build](docs/RUST-SKATE-VIEW-BINDING.md) aanwezig; bewezen vervangende binding en spelcontrole open.
 9. Camera na afstappen horizontaal in rijrichting. Zelfde ontbrekende view-binding; .63 verwerpt schijnsucces en reset de binding bij een nieuwe speler. Herstel en spelcontrole open.
 10. Flip/shuv en grab sluiten elkaar uit. Bron aanwezig sinds 0.18.34 (`SkateRide.cs`: een flip of shove tijdens een grab of met de grabknop al vast vóór de pop wordt geweigerd, een grab tijdens een flip start pas als het board rond is); ongetest in het spel.
 11. Handen leeg op het board, item terug na afstappen. .63 bewaart oorspronkelijke rendererstatus en herstelt onafhankelijke held-objecten met begrensde herpogingen. Native slotselectie en volledige spelcontrole open.
