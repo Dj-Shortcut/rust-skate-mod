@@ -157,6 +157,18 @@ public static class SkateCapturedTricks
         var board = SkateBoard.PoseFor(player);
         if (!PinPlantedFeet(rig, baseline, board, baselineLeftUp, baselineRightUp, out pose, out leftUp, out rightUp, out error))
         { ClearPlantedFeet(); pose = baseline; return false; }
+        // The departure target already includes any remaining absorption.
+        double sinceLand = Time.realtimeSinceStartup - landedAt;
+        double sourceRecovery = sinceLand * GroundRecoverySpeed;
+        if (landed && SkateRide.PushPhase <= .001f &&
+            (departedAt >= 0 || active == null || active.Finished(sourceRecovery) || active.RecoveryWeight(sourceRecovery) <= 0))
+        {
+            SkateRiderPose absorbed; SkateVector shift;
+            if (!SkateCaptureFootSupport.TryLandingAbsorption(rig, pose, V(SkateRide.ViewNormal), sinceLand,
+                out absorbed, out shift, out error))
+            { ClearPlantedFeet(); pose = baseline; return false; }
+            pose = absorbed;
+        }
         if (departedAt >= 0)
         {
             double u = Math.Max(0, Math.Min(1, (Time.realtimeSinceStartup - departedAt) / .15));
@@ -417,6 +429,13 @@ public static class SkateCapturedTricks
                 frame = new SkateCaptureFrame(settled, frame.Board, frame.Rotation, frame.LeftSoleUp, frame.RightSoleUp,
                     frame.HasEvent, frame.Observation, frame.PelvisCorrection, frame.LeftHandCorrection, frame.RightHandCorrection, frame.RiderUp);
             }
+            SkateRiderPose absorbed; SkateVector absorptionShift;
+            if (!SkateCaptureFootSupport.TryLandingAbsorption(rig, frame.Pose, frame.RiderUp, now - landedAt,
+                out absorbed, out absorptionShift, out error))
+            { Refuse(nextToken, error ?? "authored landing absorption unavailable"); return false; }
+            frame = new SkateCaptureFrame(absorbed, frame.Board, frame.Rotation, frame.LeftSoleUp, frame.RightSoleUp,
+                frame.HasEvent, frame.Observation, frame.PelvisCorrection + absorptionShift,
+                frame.LeftHandCorrection, frame.RightHandCorrection, frame.RiderUp);
         }
         if (phase == SkateCapturePhase.Air) { previousAirSourceTime = active.FlightSourceTime(value); previousAirProgress = value; }
         previous = frame; previousCarrier = carrier; previousAt = now;

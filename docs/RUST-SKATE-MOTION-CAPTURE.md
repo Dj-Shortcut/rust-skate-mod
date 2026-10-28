@@ -424,12 +424,24 @@ transition.
 Supported recovery explicitly reconstructs leg bend direction: it transports the
 first displayed landing's bend planes onto each current hip-to-ankle axis, then
 returns them to the ordinary supported planes with a C2 transition from 0.12 to
-0.47 seconds after landing. Feet, pelvis and torso retain their existing targets;
-this is not a new measured source observation. Gaze returns separately from 0.12
+0.47 seconds after landing. This bend-direction step retains the existing foot,
+pelvis and torso targets; the separate landing prior below may lower the body.
+Neither is a new measured source observation. Gaze returns separately from 0.12
 to 0.72 seconds using heading and elevation, avoiding a vertical shortcut between
 opposite headings. Captured recovery limits displayed head yaw relative to the
 current chest; camera look remains unrestricted. Idle
 riding retains the measured rig's soft knees without adding an extra crouch.
+
+Captured Land/Recovery also has one shared **authored landing prior** for
+ambiguous monocular knee depth. It starts with zero offset at the actual physical
+landing, compresses over 0.065 seconds toward a minimum 127.5-degree internal
+knee angle, then releases over 0.30 seconds. A deeper source is not straightened.
+Both hips and the upper body move together, capped at 0.14 m on the reference
+0.87 m leg chain; ankle and toe anchors remain fixed and canonical IK stays in
+force. This is presentation reconstruction, not measured capture, a changed
+contact event or a physics/scoring change. Review replays must identify the
+authored prior and use the same `SkateCaptureFootSupport.TryLandingAbsorption`
+implementation as normal riding. Source packs and their approval remain separate.
 
 Presentation events may repeat a phase to describe individual foot contacts.
 The initial load has both feet attached; load/pop may release them separately,

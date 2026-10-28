@@ -12,6 +12,9 @@ namespace Shortcut.RustMod
         // to shorten an otherwise exact board contact. Also avoids a singular
         // perfectly straight knee in the independent skin evaluator.
         public const double ReachShare = .998;
+        public const double LandingImpactSeconds = .065, LandingReleaseSeconds = .30;
+        public const double LandingPriorInternalDegrees = 127.5, LandingMaximumDropShare = .14 / .87;
+        public const string LandingPriorProvenance = "Authored minimum landing absorption; fixed feet and canonical rig, not measured capture.";
         private readonly SkateCaptureClip clip;
         private readonly SkateStance stance;
         private readonly SkateDeckFootFitter left, right;
@@ -206,6 +209,57 @@ namespace Shortcut.RustMod
                 body.Chest + shift, body.Neck + shift, body.Head + shift, body.LeftShoulder + shift, body.RightShoulder + shift,
                 body.LeftElbow + shift, body.RightElbow + shift, body.LeftHand + shift, body.RightHand + shift,
                 body.PelvisForward, body.PelvisUp, body.ChestForward, body.ChestUp, body.HeadForward);
+            return true;
+        }
+
+        public static bool TryLandingAbsorption(SkateRiderRig rig, SkateRiderPose body, SkateVector supportUp,
+            double secondsSinceLand, out SkateRiderPose pose, out SkateVector pelvisShift, out string error)
+        {
+            pose = body; pelvisShift = default(SkateVector); error = null;
+            if (!Finite(secondsSinceLand) || !Finite(supportUp.LengthSquared) || supportUp.LengthSquared < .5 ||
+                !Finite(rig.ThighLength) || !Finite(rig.ShinLength) || rig.ThighLength <= 0 || rig.ShinLength <= 0)
+            { error = "Invalid authored landing absorption frame."; return false; }
+            if (secondsSinceLand <= 0 || secondsSinceLand >= LandingImpactSeconds + LandingReleaseSeconds) return true;
+            double u = secondsSinceLand <= LandingImpactSeconds ? secondsSinceLand / LandingImpactSeconds :
+                1 - (secondsSinceLand - LandingImpactSeconds) / LandingReleaseSeconds;
+            double weight = u * u * u * (10 + u * (-15 + 6 * u));
+            var up = supportUp * (1 / supportUp.Length);
+            double flex = (180 - LandingPriorInternalDegrees) * Math.PI / 180;
+            double radius = Math.Sqrt(rig.ThighLength * rig.ThighLength + rig.ShinLength * rig.ShinLength +
+                2 * rig.ThighLength * rig.ShinLength * Math.Cos(flex));
+            double leftDown, rightDown, leftSafe, rightSafe;
+            if (!LandingDrop(body.LeftHip - body.LeftAnkle, up, radius, out leftDown, out leftSafe) ||
+                !LandingDrop(body.RightHip - body.RightAnkle, up, radius, out rightDown, out rightSafe))
+            { error = "Authored landing absorption has invalid leg targets."; return false; }
+            double bound = (rig.ThighLength + rig.ShinLength) * LandingMaximumDropShare;
+            double down = Math.Min(Math.Max(leftDown, rightDown), Math.Min(bound, Math.Min(leftSafe, rightSafe))) * weight;
+            if (down <= 0) return true;
+            var shift = up * -down; var lh = body.LeftHip + shift; var rh = body.RightHip + shift;
+            SkateVector lk, rk, lp, rp;
+            if (!TryBendPlane(body.LeftHip, body.LeftKnee, body.LeftAnkle, lh, body.LeftAnkle, out lp) ||
+                !TryBendPlane(body.RightHip, body.RightKnee, body.RightAnkle, rh, body.RightAnkle, out rp) ||
+                !SkateOllieStyles.TryLimb(lh, body.LeftAnkle, rig.ThighLength, rig.ShinLength, lp, out lk, out error) ||
+                !SkateOllieStyles.TryLimb(rh, body.RightAnkle, rig.ThighLength, rig.ShinLength, rp, out rk, out error))
+            { if (error == null) error = "Authored landing absorption has an ambiguous knee plane."; return false; }
+            pose = new SkateRiderPose(body.Pelvis + shift, lh, rh, lk, rk,
+                body.LeftAnkle, body.RightAnkle, body.LeftToe, body.RightToe,
+                body.Chest + shift, body.Neck + shift, body.Head + shift,
+                body.LeftShoulder + shift, body.RightShoulder + shift, body.LeftElbow + shift, body.RightElbow + shift,
+                body.LeftHand + shift, body.RightHand + shift,
+                body.PelvisForward, body.PelvisUp, body.ChestForward, body.ChestUp, body.HeadForward);
+            pelvisShift = shift; return true;
+        }
+
+        private static bool LandingDrop(SkateVector hipFromAnkle, SkateVector up, double radius, out double down, out double safe)
+        {
+            down = safe = 0;
+            if (!Finite(hipFromAnkle.LengthSquared)) return false;
+            double vertical = SkateVector.Dot(hipFromAnkle, up);
+            if (vertical <= 0) return true;
+            safe = vertical;
+            if (hipFromAnkle.LengthSquared <= radius * radius) return true;
+            double tangentSquared = Math.Max(0, hipFromAnkle.LengthSquared - vertical * vertical);
+            down = Math.Max(0, vertical - Math.Sqrt(Math.Max(0, radius * radius - tangentSquared)));
             return true;
         }
 
