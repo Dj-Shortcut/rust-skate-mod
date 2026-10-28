@@ -11,6 +11,11 @@ flips and body flips remain relative rotations on top. Foot and grab contacts ar
 solved against the actual `DeckFrame`. Leveling only the torso while leaving the
 base board vertical is explicitly rejected.
 
+A free steep transition air without a pop also gathers the knees toward the
+apex and extends toward reentry. The board rises by at most0.10m while the
+matching crouch keeps rider and feet together. Grabs, popped tricks and
+independently anchored actions keep their own pose timing.
+
 The free-air timing uses elapsed release time, release rise and gravity. Rotation
 is continuous and bounded. A landing approach retains its starting up-vector and
 a monotone share toward the observed plane; a missed probe cannot turn it away

@@ -714,6 +714,7 @@ public static class RiderRig
             // The ollie's pitch about the tail lifts the deck's middle too; the legs fold by that as well.
             var pitchRise = SkateBoard.Axle * (float)Math.Abs(Math.Sin(SkateBoard.AirPitch * Math.PI / 180.0));
             var inAir = SkateRide.Jumped ? 0.2f + (SkateBoard.Pop + pitchRise) / (float)SkatePose.CrouchDrop : 0.45f;
+            inAir += .10f * SkateRide.TransitionAirTuck / (float)SkatePose.CrouchDrop;
             var shownGrab = mode == RideMode.Air && !wall && !SkateActions.Owns && !SkateOldschoolRide.Active ? ShownGrab : SkateGrabKind.None;
             if (shownGrab != SkateGrabKind.None) inAir += (0.95f - inAir) * (contact.Initialized ? (float)contact.GrabWeight : 1f);
             // Measured riding height already leaves soft knees. An extra idle

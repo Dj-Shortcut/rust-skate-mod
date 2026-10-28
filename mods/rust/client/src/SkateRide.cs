@@ -61,6 +61,19 @@ public static class SkateRide
     public static float Speed, Yaw, Lean, VSpeed, AirTime, AirPeak, Clearance = 99f, Actual, ActualV, Top, Cap = MaxSpeed, ModeAt, LandAt = -99f, LandImpact, PushPhase, CapLoweredAt = -99f;
     public static Vector3 Normal = Vector3.up, Tangent = Vector3.forward, ViewNormal = Vector3.up, Position;
     public static Vector3 RiderViewNormal { get { return ViewNormal; } }
+    public static float TransitionAirTuck
+    {
+        get
+        {
+            if (Mode != RideMode.Air || Jumped || airViewFrom.y >= .85f || airViewRise <= 0f ||
+                FootPlanted || Handplant || Grabbing || SkateBoard.GrabFold > .001f ||
+                SkateSurfaceRide.DisplayWall || SkateSurfaceRide.BodyFlip.Known ||
+                SkateActions.Owns || SkateOldschoolRide.Active || SkateRiggingShowcase.Running || Scenarios.Active) return 0f;
+            var apex = Math.Max(.18f, airViewRise / AirGravity);
+            var phase = Clamp(1f - Math.Abs((AirTime - airViewAt) / apex - 1f), 0f, 1f);
+            return phase * phase * (3f - 2f * phase) * (1f - (float)airView.LandingShare);
+        }
+    }
     // In the shared trick module's signs: positive spin and shove are frontside, positive flip is a
     // kickflip. Spin turns rider and board, shove the board alone under his feet.
     public static double SpinDeg, FlipDeg, ShoveDeg;
