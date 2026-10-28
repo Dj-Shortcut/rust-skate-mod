@@ -19,6 +19,7 @@ namespace Shortcut.RustMod
         public const string LandingPriorProvenance = "Authored minimum catch preparation and landing absorption; fixed feet and canonical rig, not measured capture.";
         public const string SupportedTorsoProvenance = "Authored BS180 supported torso cleanup for ambiguous source lean; not measured capture.";
         public const string SupportedKneeProvenance = "Authored BS180 supported crouch; 100-degree internal knee target and toe-directed bend planes, not measured capture.";
+        public const string CatchRiseProvenance = "Authored capture catch rise limit; fixed current feet, not measured capture.";
         private readonly SkateCaptureClip clip;
         private readonly SkateStance stance;
         private readonly SkateDeckFootFitter left, right;
@@ -246,6 +247,31 @@ namespace Shortcut.RustMod
             double cosine = (rig.ThighLength * rig.ThighLength + rig.ShinLength * rig.ShinLength - distanceSquared) / denominator;
             double reachedDegrees = Math.Acos(Math.Max(-1, Math.Min(1, cosine))) * 180 / Math.PI;
             return Math.Max(0, Math.Min(requestedWeight, (180 - reachedDegrees) / (180 - internalDegrees)));
+        }
+
+        public static bool TryLimitCatchRise(SkateRiderRig rig, SkateRiderPose body, SkateVector referencePelvis,
+            SkateVector supportUp, out SkateRiderPose pose, out SkateVector pelvisShift, out string error)
+        {
+            pose = body; pelvisShift = default(SkateVector); error = null;
+            if (!Finite(referencePelvis.LengthSquared) || !Finite(body.Pelvis.LengthSquared) ||
+                !Finite(supportUp.LengthSquared) || supportUp.LengthSquared < .5 ||
+                !Finite(rig.ThighLength) || !Finite(rig.ShinLength) || rig.ThighLength <= 0 || rig.ShinLength <= 0)
+            { error = "Invalid authored catch rise frame."; return false; }
+            var up = supportUp * (1 / supportUp.Length);
+            double rise = SkateVector.Dot(body.Pelvis - referencePelvis, up);
+            if (rise <= 0) return true;
+            double safe = Math.Min(SkateVector.Dot(body.LeftHip - body.LeftAnkle, up),
+                SkateVector.Dot(body.RightHip - body.RightAnkle, up));
+            double down = Math.Min(rise, Math.Min((rig.ThighLength + rig.ShinLength) * LandingMaximumDropShare, Math.Max(0, safe)));
+            if (down <= 0) return true;
+            var shift = up * -down;
+            var forward = new SkateVector(0, 0, 1); var worldUp = new SkateVector(0, 1, 0);
+            SkateRiderPose lowered;
+            if (!SkateRider.TryTransformPose(body, new SkateBoardPose(default(SkateVector), forward, worldUp),
+                new SkateBoardPose(shift, forward, worldUp), out lowered) ||
+                !TrySetFeet(rig, lowered, body.LeftAnkle, body.LeftToe, body.RightAnkle, body.RightToe, false, out pose, out error))
+            { if (error == null) error = "Authored catch rise exceeds supported reach."; return false; }
+            pelvisShift = shift; return true;
         }
 
         public static bool TryLandingAbsorption(SkateRiderRig rig, SkateRiderPose body, SkateVector supportUp,

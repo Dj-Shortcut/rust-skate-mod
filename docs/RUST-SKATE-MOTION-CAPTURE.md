@@ -451,6 +451,14 @@ authored prior and use the same `SkateCaptureFootSupport.TryCatchPreparation` an
 `TryLandingAbsorption` implementations as normal riding. Source packs and their
 approval remain separate.
 
+All captured flips share a physical Catch rise limit. The previous displayed
+pelvis is transported to the current riding carrier; source stand-up cannot add
+another upward pelvis motion as the feet return to the board. The capped coherent
+body shift keeps the current foot positions and reconstructs canonical legs.
+It starts on physical Catch even while source return is still labelled Air;
+source contacts, rotation and the real flight remain authoritative. Land inherits
+the reached final knee floor. Review metadata must identify `CatchRiseProvenance`.
+
 The nollie BS180 heelflip uses a deeper authored supported profile: a 100-degree
 internal knee target in Catch and at impact. Its deeper catch eases in over
 0.12 seconds, retaining the same impact/release clock, drop cap and fixed feet.

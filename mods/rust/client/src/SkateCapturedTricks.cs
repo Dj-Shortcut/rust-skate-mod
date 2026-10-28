@@ -435,6 +435,20 @@ public static class SkateCapturedTricks
                 frame.HasEvent, frame.Observation, frame.PelvisCorrection + preparationShift,
                 frame.LeftHandCorrection, frame.RightHandCorrection, frame.RiderUp);
         }
+        if (!landed && phase == SkateCapturePhase.Catch && previous.Board.Initialized)
+        {
+            // The physical catch can precede the source's contact label. Keep
+            // its source stand-up from lifting the pelvis while the feet return.
+            var prior = SkateCapturePlayback.Transport(previous, previousCarrier, carrier);
+            SkateRiderPose settled; SkateVector riseShift;
+            if (!prior.Board.Initialized || !SkateCaptureFootSupport.TryLimitCatchRise(rig, frame.Pose, prior.Pose.Pelvis,
+                frame.RiderUp, out settled, out riseShift, out error))
+            { Refuse(nextToken, error ?? "catch rise carrier unavailable"); return false; }
+            frame = new SkateCaptureFrame(settled, frame.Board, frame.Rotation, frame.LeftSoleUp, frame.RightSoleUp,
+                frame.HasEvent, frame.Observation, frame.PelvisCorrection + riseShift,
+                frame.LeftHandCorrection, frame.RightHandCorrection, frame.RiderUp);
+            catchPreparationWeight = SkateCaptureFootSupport.ReachedCatchPreparationWeight(rig, settled, 1, catchKneeDegrees);
+        }
         if (landed)
         {
             if (!groundedImpact.Board.Initialized) groundedImpact = frame;
