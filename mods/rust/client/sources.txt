@@ -31,6 +31,10 @@ mods/rust/client/src/SkateHeld.cs
 mods/rust/client/src/SkateHeldNative.cs
 mods/rust/client/src/SkateInbox.cs
 mods/rust/shared/SkateBoardMesh.cs
+mods/rust/shared/SkateBoardTruckMotion.cs
+mods/rust/shared/SkateBoardWheelContact.cs
+mods/rust/shared/SkateBoardTruckKinematics.cs
+mods/rust/shared/SkateBoardBushing.cs
 mods/rust/shared/SkateMotion.cs 928eb7b91ad2644f96696384120aa509ab3bb727 048fb2b82632fd46c58316c89706b259bf283e70471802b7fb15542fa60b5938
 mods/rust/shared/SkateRails.cs
 mods/rust/shared/SkatePose.cs

@@ -12,17 +12,37 @@ public static class SkateBoard
     public const float TipDegrees = 15f, Axle = 0.23f;
     public const string LitShader = "Rust/Standard", PlainShader = "Hidden/Internal-Colored";
     public const float Gloss = 0.2f, BailTurn = 0.5f, BailBehind = 0.9f, BailRest = 0.045f, PopMost = 0.22f, LieSeconds = 6f;
-    // The wheels of the shared mesh, and how far a truck turns per degree the board leans.
-    public const float WheelRadius = 0.027f, TruckTurn = 0.8f;
+    // Shared wheel radius and the retained legacy truck-turn API constant.
+    public const float WheelRadius = 0.027f, TruckTurn = (float)SkateBoardTruckMotion.SteeringRatio;
     public static string Drawn = "";
     public static float ShowLift, Tip, Pop, WheelSpin;
     // Held: the board is where the rider's feet hold it (a handplant), at HeldAt with its grip toward HeldUp.
     public static bool Held;
     public static SkateBoardPose HeldFrame;
     public static Vector3 HeldAt, HeldNose = Vector3.forward, HeldUp = Vector3.up;
-    private static Transform[] trucks = new Transform[0], wheels = new Transform[0];
-    private static Vector3[] truckAxes = new Vector3[0], wheelAxes = new Vector3[0];
+    private static Transform[] trucks = new Transform[0], wheels = new Transform[0], bushings = new Transform[0];
+    private static Vector3[] wheelAxes = new Vector3[0];
+    private static Vector3[] truckOrigins = new Vector3[0];
+    private static SkateBoardBushing[] bushingShapes = new SkateBoardBushing[0];
+    private static Mesh[] bushingMeshes = new Mesh[0];
+    private static Vector3[][] bushingVertices = new Vector3[0][], bushingNormals = new Vector3[0][];
     private static float[] truckSides = new float[0];
+    private static int[] bushingTrucks = new int[0];
+    private static readonly SkateBoardTruckState[] truckMotion = new SkateBoardTruckState[2]; // rear, front
+    private static bool truckRigRiding;
+    private static float wheelVelocity; // degrees/second, carried through an airborne board rotation
+    private static SkateBoardWheelContact wheelContact;
+    private static Vector3 contactOffset, observedPoint, observedNormal;
+    private static bool contactCached, observedPlane;
+    private static float motionAt = -1f, motionSeconds;
+    private static int supportStep;
+    private static bool displayTruckRig;
+    private static float displayAhead = 1;
+    public static bool TruckPlaneSupported { get; private set; }
+    public static Vector3 TruckPlaneOffset { get { return contactOffset; } }
+    public static SkateBoardTruckState RearTruck { get { return truckMotion[0]; } }
+    public static SkateBoardTruckState FrontTruck { get { return truckMotion[1]; } }
+    public static string TruckContactStatus { get; private set; } = "Truck plane not prepared";
     private static float followedAt = -1f;
     private static Vector3 bailFrom, bailTravel, bailNose, bailUp;
     private static float bailStamp = -1f, bailRoll, lieUntil = -1f;
@@ -32,14 +52,40 @@ public static class SkateBoard
     public static GameObject Build()
     {
         trucks = new Transform[0]; wheels = new Transform[0];
+        bushings = new Transform[0]; bushingTrucks = new int[0];
+        bushingShapes = new SkateBoardBushing[0]; bushingMeshes = new Mesh[0]; bushingVertices = bushingNormals = new Vector3[0][];
+        truckMotion[0] = truckMotion[1] = default(SkateBoardTruckState); truckRigRiding = false;
+        followedAt = -1f; WheelSpin = wheelVelocity = 0;
+        wheelContact = null; contactOffset = Vector3.zero; contactCached = observedPlane = false; motionAt = -1f;
         SkateFootContacts.SetBoard(null, RiderRig.DeckTop);
-        try { var made = FromParts(); Say("BOARD from the shared mesh in parts: " + trucks.Length + " trucks, " + wheels.Length + " wheels"); return made; }
-        catch (Exception e) { Say("board in parts unavailable (" + e.GetType().Name + ": " + e.Message + "); using the one-piece mesh"); trucks = new Transform[0]; wheels = new Transform[0]; }
+        try { var made = FromParts(); Say("BOARD from the shared mesh in parts: " + trucks.Length + " trucks, " + wheels.Length + " wheels, " + bushings.Length + " bushings"); return made; }
+        catch (Exception e) { Say("board in parts unavailable (" + e.GetType().Name + ": " + e.Message + "); using the one-piece mesh"); trucks = new Transform[0]; wheels = new Transform[0]; bushings = new Transform[0]; }
         try { var made = FromMesh(); Say("BOARD from the shared mesh"); return made; }
         catch (Exception e) { Say("shared mesh unavailable (" + e.GetType().Name + ": " + e.Message + "); using primitives"); return FromPrimitives(); }
     }
 
-    public static Vector3 Contact(Transform playerT) { return playerT.position + Vector3.up * (ShowLift + Pop); }
+    private static Vector3 RawContact(Transform playerT) { return playerT.position + Vector3.up * (ShowLift + Pop); }
+    public static Vector3 Contact(Transform playerT)
+    {
+        if (!contactCached)
+        {
+            contactCached = true; TruckPlaneSupported = false;
+            SkateVector offset; string error = null;
+            if (wheelContact != null && observedPlane && supportStep == SkateRide.Steps && OrdinaryPlaneEligible() &&
+                (playerT.position - SkateRide.Position).sqrMagnitude <= .5625f &&
+                wheelContact.TryOffset(PoseAt(playerT, false, RawContact(playerT)), RiderRig.DeckTop, truckMotion[0], truckMotion[1],
+                    V(observedPoint), V(observedNormal), .04, out offset, out error))
+            {
+                contactOffset = V(offset); TruckPlaneSupported = true; TruckContactStatus = "Observed flat wheel plane";
+            }
+            else
+            {
+                contactOffset *= (float)Math.Exp(-14 * motionSeconds);
+                TruckContactStatus = error ?? "Wheel plane unavailable outside ordinary flat support";
+            }
+        }
+        return RawContact(playerT) + contactOffset;
+    }
 
     // A manual lifts the end that leads: the board, and the rider's footing with it, pitches about
     // the ground under the trailing axle. A nose manual (Tip below zero) lifts the end that trails,
@@ -80,6 +126,69 @@ public static class SkateBoard
         if (!SkateRide.On || SkateRide.Mode == RideMode.Bail) SupportTruck = 0;
         else if (SkateRide.Mode == RideMode.Grind) SupportTruck = SkateGrinds.Truck(SkateRide.GrindKind);
         else if (Math.Abs(GrindPitch) < 0.02f && Math.Abs(GrindRoll) < 0.02f) SupportTruck = 0;
+        PrepareTrucks();
+    }
+
+    private static bool OrdinaryPlaneEligible()
+    {
+        return SkateRide.On && SkateRide.Mode == RideMode.Ground && !SkateRide.OnRamp && !SkateRide.Frozen &&
+            !SkateRiggingShowcase.Running && !Scenarios.Active && !Held && !SkateRide.Handplant &&
+            !SkateOldschoolRide.Active && !SkateActions.Owns && !SkateRide.BoardPath.Known &&
+            !SkateSurfaceRide.DisplayWall && !SkateSurfaceRide.BodyFlip.Known && !SkateRide.GroundGrab.Active &&
+            !SkateRide.Manual && !SkateRide.NoseManual && SkateRide.PushPhase <= .001f &&
+            SkateRide.Powerslide <= .001f && SkateRide.RevertLeft == 0 &&
+            Math.Abs(Vector3.Dot(SkateRide.Dir(SkateRide.Yaw), SkateRide.Dir(SkateRide.DeckYaw))) >= .9995f &&
+            Math.Abs(Tip) < .001f && Math.Abs(GrindPitch) < .01f && Math.Abs(GrindRoll) < .01f && Math.Abs(ShowLift) < .000001f;
+    }
+
+    // Existing frame hook runs before RiderRig.Frame and Follow. State advances
+    // here only; all later Contact/PoseFor queries share one fitted translation.
+    private static void PrepareTrucks()
+    {
+        contactCached = false; observedPlane = false; TruckPlaneSupported = false;
+        if (!SkateRide.On || SkateRide.Mode == RideMode.Bail)
+        { if (truckRigRiding) ResetTruckMotion(); truckRigRiding = false; return; }
+        if (!truckRigRiding) { ResetTruckMotion(); truckRigRiding = true; }
+        float now = Time.realtimeSinceStartup;
+        motionSeconds = motionAt < 0 ? 0 : SkateRide.Clamp(now - motionAt, 0, .1f); motionAt = now;
+        RaycastHit hit;
+        if (wheelContact != null && OrdinaryPlaneEligible() && SkateRide.TryObservedGround(SkateRide.Position, out hit) &&
+            hit.m_Normal.y >= .9995f && Vector3.Dot(hit.m_Normal, SkateRide.ViewNormal) >= .9995f)
+        { observedPlane = true; observedPoint = hit.m_Point; observedNormal = hit.m_Normal; supportStep = SkateRide.Steps; }
+        if (observedPlane)
+        {
+            displayTruckRig = true;
+            // These are air-only display offsets. On confirmed ordinary ground,
+            // retain neither a floating board nor an equal/opposite camera offset.
+            Pop = AirPitch = 0;
+            displayAhead = Vector3.Dot(SkateRide.Dir(SkateRide.Yaw), SkateRide.Dir(SkateRide.DeckYaw)) < 0 ? -1 : 1;
+        }
+        else if (SkateRide.Mode != RideMode.Air || Held || SkateOldschoolRide.Active || SkateActions.Owns) displayTruckRig = false;
+        bool steering = SkateRide.Mode == RideMode.Ground && !Held && !SkateOldschoolRide.Active && !SkateActions.Owns;
+        float since = now - SkateRide.LandAt;
+        double settle = observedPlane && since >= 0 && since < .3f ? 1 - since / .3 : 0;
+        double landing = settle * settle * SkateRide.Clamp(SkateRide.LandImpact / 8, 0, 1);
+        var rear = truckMotion[0]; var front = truckMotion[1];
+        for (int side = 0; side < 2; side++)
+        {
+            SkateBoardTruckState next; string error;
+            if (SkateBoardTruckMotion.TryStep(truckMotion[side], SkateRide.Clamp(SkateRide.Lean * displayAhead, -20, 20), steering,
+                observedPlane ? 1 : 0, landing, motionSeconds, out next, out error)) truckMotion[side] = next;
+            else { truckMotion[side] = default(SkateBoardTruckState); TruckContactStatus = error; }
+        }
+        for (int i = 0; i < bushingShapes.Length; i++)
+        {
+            SkateTruckPose pose; string error;
+            if (!SkateBoardTruckKinematics.TryPose(bushingShapes[i].Side, truckMotion[bushingTrucks[i]], out pose, out error) ||
+                !bushingShapes[i].TryUpdate(pose, out error))
+            {
+                truckMotion[0] = rear; truckMotion[1] = front; TruckContactStatus = error;
+                // Restore previously accepted geometry before any body/board query.
+                for (int j = 0; j < bushingShapes.Length; j++)
+                    if (SkateBoardTruckKinematics.TryPose(bushingShapes[j].Side, truckMotion[bushingTrucks[j]], out pose, out error)) bushingShapes[j].TryUpdate(pose, out error);
+                break;
+            }
+        }
     }
     private static SkateBoardPose detached;
     private static Vector3 detachedVelocity;
@@ -121,6 +230,9 @@ public static class SkateBoard
     }
     public static void BeginRide()
     {
+        ResetTruckMotion(); truckRigRiding = false;
+        WheelSpin = wheelVelocity = 0;
+        for (var i = 0; i < wheels.Length; i++) if (wheels[i] != null) wheels[i].localRotation = Quaternion.identity;
         detached = default(SkateBoardPose); detachedVelocity = Vector3.zero;
         Tip = Pop = GrindPitch = GrindRoll = AirPitch = GrabFold = Plant = 0f;
         SupportTruck = 0; Held = false; bailStamp = -1f;
@@ -131,7 +243,7 @@ public static class SkateBoard
     public const float OllieNoseUp = 26f, OllieNoseDown = 9f;
 
     // The deck's pitch, degrees, the leading end up: a manual's, a grind's and an ollie's together.
-    public static float PitchDegrees { get { return Tip * TipDegrees + GrindPitch + AirPitch *
+    public static float PitchDegrees { get { return Tip * TipDegrees + GrindPitch + (observedPlane && displayTruckRig ? 0 : AirPitch) *
         (SkateRide.Mode == RideMode.Air ? (float)RiderRig.Contact.PopPitchSign : 1f); } }
 
     // A heading laid on the face whose up is that normal: the part along the face stays, the part
@@ -221,17 +333,19 @@ public static class SkateBoard
             ? 0f : (float)SkateRide.FlipDeg * SkateRide.StanceSign; }
     }
     private static SkateBoardPose PoseFor(Transform playerT, bool carrier)
+    { return PoseAt(playerT, carrier, Contact(playerT)); }
+    private static SkateBoardPose PoseAt(Transform playerT, bool carrier, Vector3 at)
     {
         var now = Time.realtimeSinceStartup;
         var n = SkateRide.ViewNormal;
-        var at = Contact(playerT);
         var trucked = SupportTruck != 0;
         var deckNose = OnFace(n, SkateRide.Dir(SkateRide.DeckYaw));
         var deckTurn = trucked ? SkateRide.Turn(PitchDegrees, Vector3.Cross(deckNose, n)) : Quaternion.identity;
         Tilt(ref at, ref n);
         var travel = OnFace(n, SkateRide.Dir(SkateRide.Yaw));
         // The lean rolls the board about its direction of travel, right side down in a right turn.
-        var up = SkateRide.Turn(-SkateRide.Lean * (trucked ? 1f - SupportWeight : 1f), travel) * n;
+        float lean = displayTruckRig ? (float)((truckMotion[0].Steering + truckMotion[1].Steering) * .5) * displayAhead : SkateRide.Lean;
+        var up = SkateRide.Turn(-lean * (trucked ? 1f - SupportWeight : 1f), travel) * n;
         // The board's own nose: the rider's stance, and what the board has turned under his feet.
         var nose = trucked ? deckTurn * deckNose : OnFace(up, SkateRide.Dir(SkateRide.DeckYaw));
         nose = nose - up * Vector3.Dot(nose, up);
@@ -276,6 +390,8 @@ public static class SkateBoard
     {
         var now = Time.realtimeSinceStartup;
         var riding = SkateRide.On && playerT != null;
+        if ((!riding || SkateRide.Mode == RideMode.Bail) && truckRigRiding)
+        { ResetTruckMotion(); truckRigRiding = false; }
         if ((!riding || SkateRide.Mode == RideMode.Bail) && FollowIndependent(board, now)) { wasRiding = riding; return; }
         // A bail ends on foot: the board stays where it came to rest for a while, or until the
         // rider gets on again. Stepped off while rolling, it rolls on and comes to rest.
@@ -355,14 +471,68 @@ public static class SkateBoard
     {
         var dt = followedAt < 0f ? 0f : SkateRide.Clamp(now - followedAt, 0f, 0.1f);
         followedAt = now;
+        // An independently held/action-driven board does not prove wheel support.
+        bool ground = SkateRide.Mode == RideMode.Ground && !Held && !SkateOldschoolRide.Active && !SkateActions.Owns;
         if (SkateRide.Mode != RideMode.Bail)
         {
-            var ahead = Vector3.Dot(travel, nose) < 0f ? -1f : 1f;
-            WheelSpin = (WheelSpin + ahead * SkateRide.Speed / WheelRadius * 57.29578f * dt) % 360f;
+            float turned;
+            if (ground)
+            {
+                var ahead = Vector3.Dot(travel, nose) < 0f ? -1f : 1f;
+                wheelVelocity = ahead * SkateRide.Speed / WheelRadius * 57.29578f;
+                turned = wheelVelocity * dt;
+            }
+            else
+            {
+                double decay = Math.Exp(-.12 * dt);
+                turned = (float)(wheelVelocity * (1 - decay) / .12);
+                wheelVelocity *= (float)decay;
+            }
+            WheelSpin = (WheelSpin + turned) % 360f;
         }
-        var turn = SkateRide.Mode == RideMode.Ground ? SkateRide.Lean * TruckTurn : 0f;
-        for (var i = 0; i < trucks.Length; i++) trucks[i].localRotation = Quaternion.AngleAxis(truckSides[i] * turn, truckAxes[i]);
+        for (var i = 0; i < trucks.Length; i++)
+        {
+            SkateTruckPose hanger; string error;
+            if (!SkateBoardTruckKinematics.TryPose(truckSides[i] < 0 ? -1 : 1, truckMotion[truckSides[i] < 0 ? 0 : 1], out hanger, out error)) continue;
+            trucks[i].localPosition = V(hanger.Point(SkateBoardTruckKinematics.Eye(truckSides[i] < 0 ? -1 : 1))) - new Vector3(0, RiderRig.DeckTop, 0);
+            trucks[i].localRotation = Quaternion.LookRotation(V(hanger.Forward), V(hanger.Up));
+        }
+        ApplyBushings();
         for (var i = 0; i < wheels.Length; i++) wheels[i].localRotation = Quaternion.AngleAxis(WheelSpin, wheelAxes[i]);
+    }
+
+    private static void ApplyBushings()
+    {
+        for (var i = 0; i < bushings.Length; i++)
+        {
+            var shape = bushingShapes[i]; var vertices = bushingVertices[i]; var normals = bushingNormals[i];
+            bool changed = false;
+            for (int k = 0; k < vertices.Length; k++)
+                if (Math.Abs(vertices[k].x - shape.Positions[k * 3]) + Math.Abs(vertices[k].y - shape.Positions[k * 3 + 1]) + Math.Abs(vertices[k].z - shape.Positions[k * 3 + 2]) > 1e-7) { changed = true; break; }
+            if (!changed) continue;
+            for (int k = 0; k < vertices.Length; k++)
+            {
+                vertices[k] = new Vector3(shape.Positions[k * 3], shape.Positions[k * 3 + 1], shape.Positions[k * 3 + 2]);
+                normals[k] = new Vector3(shape.Normals[k * 3], shape.Normals[k * 3 + 1], shape.Normals[k * 3 + 2]);
+            }
+            // Fixed rest quaternion, unit scale; actual closed wedge geometry changes.
+            bushingMeshes[i].vertices = vertices; bushingMeshes[i].normals = normals; bushingMeshes[i].RecalculateBounds();
+        }
+    }
+
+    private static void ResetTruckMotion()
+    {
+        truckMotion[0] = truckMotion[1] = default(SkateBoardTruckState); followedAt = -1f;
+        motionAt = -1f; motionSeconds = 0; contactCached = observedPlane = false; contactOffset = Vector3.zero; TruckPlaneSupported = false;
+        displayTruckRig = false; displayAhead = 1;
+        for (var i = 0; i < trucks.Length; i++) if (trucks[i] != null) { trucks[i].localRotation = Quaternion.identity; trucks[i].localPosition = truckOrigins[i]; }
+        for (var i = 0; i < bushings.Length; i++) if (bushings[i] != null) bushings[i].localScale = Vector3.one;
+        for (int i = 0; i < bushingShapes.Length; i++)
+        {
+            SkateTruckPose pose; string error;
+            if (SkateBoardTruckKinematics.TryPose(bushingShapes[i].Side, default(SkateBoardTruckState), out pose, out error)) bushingShapes[i].TryUpdate(pose, out error);
+        }
+        ApplyBushings();
     }
 
     // The detailed shared mesh: a deck, two trucks that hang from it and four wheels that hang
@@ -397,19 +567,26 @@ public static class SkateBoard
         var root = new GameObject("skate_board");
         var objects = new Transform[data.Parts.Length];
         var pivots = new Vector3[data.Parts.Length];
-        var truckList = new System.Collections.Generic.List<Transform>(); var truckAxis = new System.Collections.Generic.List<Vector3>(); var truckSide = new System.Collections.Generic.List<float>();
+        var truckList = new System.Collections.Generic.List<Transform>(); var truckSide = new System.Collections.Generic.List<float>();
         var wheelList = new System.Collections.Generic.List<Transform>(); var wheelAxis = new System.Collections.Generic.List<Vector3>();
+        var bushList = new System.Collections.Generic.List<Transform>(); var bushTruck = new System.Collections.Generic.List<int>();
+        var shapes = new System.Collections.Generic.List<SkateBoardBushing>(); var meshes = new System.Collections.Generic.List<Mesh>();
+        var vertexBuffers = new System.Collections.Generic.List<Vector3[]>(); var normalBuffers = new System.Collections.Generic.List<Vector3[]>();
+        var rubber = new Material(lit != null ? lit : Shader.Find(PlainShader));
+        rubber.color = new Color(.95f, .29f, .028f); rubber.mainTexture = tex;
         for (var p = 0; p < data.Parts.Length; p++)
         {
             var part = data.Parts[p];
             var pivot = new Vector3(part.PivotX, part.PivotY, part.PivotZ);
             var axis = new Vector3(part.AxisX, part.AxisY, part.AxisZ);
+            var rest = new Quaternion(part.RestQX, part.RestQY, part.RestQZ, part.RestQW);
+            var inverseRest = Quaternion.Inverse(rest);
             var verts = new Vector3[part.VertexCount]; var norms = new Vector3[part.VertexCount]; var cols = new Color[part.VertexCount]; var uv = new Vector2[part.VertexCount];
             for (var i = 0; i < part.VertexCount; i++)
             {
                 var v = part.VertexStart + i;
-                verts[i] = new Vector3(data.Positions[v * 3], data.Positions[v * 3 + 1], data.Positions[v * 3 + 2]) - pivot;
-                norms[i] = new Vector3(data.Normals[v * 3], data.Normals[v * 3 + 1], data.Normals[v * 3 + 2]);
+                verts[i] = inverseRest * (new Vector3(data.Positions[v * 3], data.Positions[v * 3 + 1], data.Positions[v * 3 + 2]) - pivot);
+                norms[i] = inverseRest * new Vector3(data.Normals[v * 3], data.Normals[v * 3 + 1], data.Normals[v * 3 + 2]);
                 cols[i] = new Color(data.Colours[v * 4], data.Colours[v * 4 + 1], data.Colours[v * 4 + 2], data.Colours[v * 4 + 3]);
                 uv[i] = new Vector2(data.UVs[v * 2], data.UVs[v * 2 + 1]);
             }
@@ -418,21 +595,34 @@ public static class SkateBoard
             var mesh = new Mesh();
             mesh.vertices = verts; mesh.normals = norms; mesh.colors = cols; mesh.uv = uv; mesh.triangles = tris;
             mesh.RecalculateBounds();
-            var go = new GameObject(part.Kind == Shortcut.RustMod.SkateBoardPartKind.Deck ? "deck" : part.Kind == Shortcut.RustMod.SkateBoardPartKind.Truck ? "truck" : "wheel");
+            var go = new GameObject(part.Kind.ToString().ToLowerInvariant());
             go.AddComponent<MeshFilter>().sharedMesh = mesh;
-            go.AddComponent<MeshRenderer>().material = mat;
+            go.AddComponent<MeshRenderer>().material = part.Kind == SkateBoardPartKind.Bushing ? rubber : mat;
             var parent = part.ParentIndex >= 0 && part.ParentIndex < p ? objects[part.ParentIndex] : root.transform;
             var parentPivot = part.ParentIndex >= 0 && part.ParentIndex < p ? pivots[part.ParentIndex] : Vector3.zero;
             go.transform.SetParent(parent, false);
-            go.transform.localPosition = pivot - parentPivot; go.transform.localRotation = Quaternion.identity;
+            go.transform.localPosition = pivot - parentPivot; go.transform.localRotation = rest;
             objects[p] = go.transform; pivots[p] = pivot;
-            if (part.Kind == Shortcut.RustMod.SkateBoardPartKind.Truck) { truckList.Add(go.transform); truckAxis.Add(axis); truckSide.Add(part.PivotZ < 0f ? -1f : 1f); }
+            if (part.Kind == Shortcut.RustMod.SkateBoardPartKind.Truck) { truckList.Add(go.transform); truckSide.Add(part.PivotZ < 0f ? -1f : 1f); }
             if (part.Kind == Shortcut.RustMod.SkateBoardPartKind.Wheel) { wheelList.Add(go.transform); wheelAxis.Add(axis); }
+            if (part.Kind == SkateBoardPartKind.Bushing)
+            {
+                SkateBoardBushing shape; string error;
+                if (!SkateBoardBushing.TryCreate(data, p, out shape, out error)) throw new InvalidOperationException(error);
+                bushList.Add(go.transform); bushTruck.Add(part.PivotZ < 0 ? 0 : 1);
+                shapes.Add(shape); meshes.Add(mesh); vertexBuffers.Add(verts); normalBuffers.Add(norms);
+            }
         }
-        trucks = truckList.ToArray(); truckAxes = truckAxis.ToArray(); truckSides = truckSide.ToArray();
+        trucks = truckList.ToArray(); truckSides = truckSide.ToArray();
+        truckOrigins = new Vector3[trucks.Length];
+        for (int i = 0; i < trucks.Length; i++) truckOrigins[i] = trucks[i].localPosition;
         wheels = wheelList.ToArray(); wheelAxes = wheelAxis.ToArray();
+        bushings = bushList.ToArray(); bushingTrucks = bushTruck.ToArray();
+        bushingShapes = shapes.ToArray(); bushingMeshes = meshes.ToArray(); bushingVertices = vertexBuffers.ToArray(); bushingNormals = normalBuffers.ToArray();
         UnityEngine.Object.DontDestroyOnLoad(root);
         SkateFootContacts.SetBoard(data, RiderRig.DeckTop);
+        string contactError;
+        if (!SkateBoardWheelContact.TryCreate(data, out wheelContact, out contactError)) TruckContactStatus = contactError;
         return root;
     }
 
