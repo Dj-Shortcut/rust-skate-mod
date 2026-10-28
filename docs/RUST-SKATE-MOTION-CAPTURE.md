@@ -145,6 +145,23 @@ working capture. Replace the source paths and calibrate each actual attempt.
   opposing axes and source bend components below 2 mm refuse conversion;
   uncertain straight-leg observations need explicit reconstruction. This does
   not improve source confidence or remove root/contact noise.
+- `retarget.sourceContactRootFit`: optional explicit root reconstruction for
+  planted feet. Set `mode: "source-knee-distance"`, a
+  `maximumCorrectionM` greater than zero and at most 0.5, and nonempty
+  `provenance` and `uncertainty` notes (at most 4096 characters each). The source
+  knee angle determines each canonical hip-to-ankle distance. One coherent
+  pelvis is fitted to the fixed ankle guide or the intersection of both guides'
+  distance spheres, using `body.pelvisKeys` as the soft image/depth prior.
+  Merely fitting inside the maximum leg reach can otherwise flatten an observed
+  landing bend into an almost straight leg. Ankle guides, contact events, bone
+  lengths and free-Air targets remain unchanged. Incompatible distances,
+  underdetermined fits or correction beyond the declared bound refuse conversion.
+  The existing canonical IK endpoint bounds still apply and any resulting
+  distance adjustment is reported. Omission retains the previous behavior.
+  Metadata and quality retain the reconstruction notes, source knee distances
+  and additional root correction. This does not improve detector confidence or
+  approve a clip. Producers must author coherent root/free-foot joins at release
+  and catch; the core option does not silently smooth those boundaries.
 - `board.floorEnvelope`: optional `{points, provenance, sourceSha256}` replaces
   the default eight-corner floor box with 4–4096 finite board-local points in
   meters, relative to the deck-top origin. Supply the complete geometry needed
