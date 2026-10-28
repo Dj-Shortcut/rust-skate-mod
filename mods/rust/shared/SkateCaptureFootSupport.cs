@@ -14,7 +14,8 @@ namespace Shortcut.RustMod
         public const double ReachShare = .998;
         public const double LandingImpactSeconds = .065, LandingReleaseSeconds = .30;
         public const double LandingPriorInternalDegrees = 127.5, LandingMaximumDropShare = .14 / .87;
-        public const string LandingPriorProvenance = "Authored minimum landing absorption; fixed feet and canonical rig, not measured capture.";
+        public const double CatchPreparationSeconds = .04, CatchPriorInternalDegrees = 145;
+        public const string LandingPriorProvenance = "Authored minimum catch preparation and landing absorption; fixed feet and canonical rig, not measured capture.";
         private readonly SkateCaptureClip clip;
         private readonly SkateStance stance;
         private readonly SkateDeckFootFitter left, right;
@@ -212,19 +213,64 @@ namespace Shortcut.RustMod
             return true;
         }
 
+        public static double CatchPreparationWeight(double secondsSinceCatch)
+        {
+            double u = Math.Max(0, Math.Min(1, secondsSinceCatch / CatchPreparationSeconds));
+            return u * u * u * (10 + u * (-15 + 6 * u));
+        }
+
+        public static bool TryCatchPreparation(SkateRiderRig rig, SkateRiderPose body, SkateVector supportUp,
+            double weight, out SkateRiderPose pose, out SkateVector pelvisShift, out string error)
+        {
+            if (!Finite(weight) || weight < 0 || weight > 1)
+            { pose = body; pelvisShift = default(SkateVector); error = "Invalid authored catch preparation weight."; return false; }
+            return TryKneeAbsorption(rig, body, supportUp, (180 - CatchPriorInternalDegrees) * weight,
+                out pose, out pelvisShift, out error);
+        }
+
+        public static double ReachedCatchPreparationWeight(SkateRiderRig rig, SkateRiderPose body, double requestedWeight)
+        {
+            // A strongly offset hip can hit the drop cap before the requested
+            // angle. Carry the reached floor into Land, not that unreachable goal.
+            double distanceSquared = Math.Max((body.LeftHip - body.LeftAnkle).LengthSquared,
+                (body.RightHip - body.RightAnkle).LengthSquared);
+            double denominator = 2 * rig.ThighLength * rig.ShinLength;
+            if (!Finite(distanceSquared) || !Finite(denominator) || denominator <= 0 || !Finite(requestedWeight)) return 0;
+            double cosine = (rig.ThighLength * rig.ThighLength + rig.ShinLength * rig.ShinLength - distanceSquared) / denominator;
+            double internalDegrees = Math.Acos(Math.Max(-1, Math.Min(1, cosine))) * 180 / Math.PI;
+            return Math.Max(0, Math.Min(requestedWeight, (180 - internalDegrees) / (180 - CatchPriorInternalDegrees)));
+        }
+
         public static bool TryLandingAbsorption(SkateRiderRig rig, SkateRiderPose body, SkateVector supportUp,
-            double secondsSinceLand, out SkateRiderPose pose, out SkateVector pelvisShift, out string error)
+            double secondsSinceLand, out SkateRiderPose pose, out SkateVector pelvisShift, out string error,
+            double catchPreparationWeight = 0)
         {
             pose = body; pelvisShift = default(SkateVector); error = null;
-            if (!Finite(secondsSinceLand) || !Finite(supportUp.LengthSquared) || supportUp.LengthSquared < .5 ||
-                !Finite(rig.ThighLength) || !Finite(rig.ShinLength) || rig.ThighLength <= 0 || rig.ShinLength <= 0)
+            if (!Finite(secondsSinceLand) || !Finite(catchPreparationWeight) || catchPreparationWeight < 0 || catchPreparationWeight > 1)
             { error = "Invalid authored landing absorption frame."; return false; }
-            if (secondsSinceLand <= 0 || secondsSinceLand >= LandingImpactSeconds + LandingReleaseSeconds) return true;
+            if (secondsSinceLand < 0 || secondsSinceLand >= LandingImpactSeconds + LandingReleaseSeconds) return true;
             double u = secondsSinceLand <= LandingImpactSeconds ? secondsSinceLand / LandingImpactSeconds :
                 1 - (secondsSinceLand - LandingImpactSeconds) / LandingReleaseSeconds;
             double weight = u * u * u * (10 + u * (-15 + 6 * u));
+            double flex = (180 - LandingPriorInternalDegrees) * weight;
+            if (secondsSinceLand <= LandingImpactSeconds)
+                flex += (180 - CatchPriorInternalDegrees) * catchPreparationWeight * (1 - weight);
+            return TryKneeAbsorption(rig, body, supportUp, flex, out pose, out pelvisShift, out error);
+        }
+
+        // An angular minimum is idempotent: the prepared catch already present
+        // in the impact blend is not compressed again at the Land boundary.
+        private static bool TryKneeAbsorption(SkateRiderRig rig, SkateRiderPose body, SkateVector supportUp,
+            double flexDegrees, out SkateRiderPose pose, out SkateVector pelvisShift, out string error)
+        {
+            pose = body; pelvisShift = default(SkateVector); error = null;
+            if (!Finite(flexDegrees) || flexDegrees < 0 || flexDegrees > 180 - LandingPriorInternalDegrees ||
+                !Finite(supportUp.LengthSquared) || supportUp.LengthSquared < .5 ||
+                !Finite(rig.ThighLength) || !Finite(rig.ShinLength) || rig.ThighLength <= 0 || rig.ShinLength <= 0)
+            { error = "Invalid authored knee absorption frame."; return false; }
+            if (flexDegrees <= 0) return true;
             var up = supportUp * (1 / supportUp.Length);
-            double flex = (180 - LandingPriorInternalDegrees) * Math.PI / 180;
+            double flex = flexDegrees * Math.PI / 180;
             double radius = Math.Sqrt(rig.ThighLength * rig.ThighLength + rig.ShinLength * rig.ShinLength +
                 2 * rig.ThighLength * rig.ShinLength * Math.Cos(flex));
             double leftDown, rightDown, leftSafe, rightSafe;
@@ -232,7 +278,7 @@ namespace Shortcut.RustMod
                 !LandingDrop(body.RightHip - body.RightAnkle, up, radius, out rightDown, out rightSafe))
             { error = "Authored landing absorption has invalid leg targets."; return false; }
             double bound = (rig.ThighLength + rig.ShinLength) * LandingMaximumDropShare;
-            double down = Math.Min(Math.Max(leftDown, rightDown), Math.Min(bound, Math.Min(leftSafe, rightSafe))) * weight;
+            double down = Math.Min(Math.Max(leftDown, rightDown), Math.Min(bound, Math.Min(leftSafe, rightSafe)));
             if (down <= 0) return true;
             var shift = up * -down; var lh = body.LeftHip + shift; var rh = body.RightHip + shift;
             SkateVector lk, rk, lp, rp;

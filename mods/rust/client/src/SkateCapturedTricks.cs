@@ -14,6 +14,7 @@ public static class SkateCapturedTricks
     private static readonly string[] supportErrors = new string[SkateCaptureVariants.Count * 2];
     private static bool loaded, airSeen, landed;
     private static double beganAt, landedAt, caughtAt = -1, previousAt, previousAirSourceTime, catchSourceLead;
+    private static double preparedAt = -1, catchPreparationWeight;
     private static double previousAirProgress;
     private static bool flipExtended;
     private static SkateCaptureFrame previous, landingFrom;
@@ -39,7 +40,7 @@ public static class SkateCapturedTricks
     public static string Status { get; private set; } = "Captured riding not loaded";
     public static void ClearFrame() { displayed = default(SkateBoardPose); }
     public static void Reset()
-    { active = null; footSupport = null; token = refusedToken = -1; airSeen = landed = flipExtended = false; caughtAt = -1; previousAirSourceTime = catchSourceLead = previousAirProgress = 0; previous = landingFrom = default(SkateCaptureFrame); ClearPlantedFeet(); ClearFrame(); }
+    { active = null; footSupport = null; token = refusedToken = -1; airSeen = landed = flipExtended = false; caughtAt = preparedAt = -1; catchPreparationWeight = 0; previousAirSourceTime = catchSourceLead = previousAirProgress = 0; previous = landingFrom = default(SkateCaptureFrame); ClearPlantedFeet(); ClearFrame(); }
     public static void Preload()
     {
         if (loaded) return;
@@ -165,7 +166,7 @@ public static class SkateCapturedTricks
         {
             SkateRiderPose absorbed; SkateVector shift;
             if (!SkateCaptureFootSupport.TryLandingAbsorption(rig, pose, V(SkateRide.ViewNormal), sinceLand,
-                out absorbed, out shift, out error))
+                out absorbed, out shift, out error, catchPreparationWeight))
             { ClearPlantedFeet(); pose = baseline; return false; }
             pose = absorbed;
         }
@@ -296,6 +297,7 @@ public static class SkateCapturedTricks
             int index = SkateCaptureVariants.IndexOf(kind);
             if (index < 0 || clips[index] == null) { if (airborne) refusedToken = nextToken; return false; }
             active = clips[index]; signature = requested; activeStance = SkateRide.Goofy ? SkateStance.Goofy : SkateStance.Regular; token = nextToken; lands = SkateRide.Lands; airSeen = landed = flipExtended = false; beganAt = Time.realtimeSinceStartup; caughtAt = -1; previousAirSourceTime = catchSourceLead = previousAirProgress = 0; previous = default(SkateCaptureFrame);
+            preparedAt = -1; catchPreparationWeight = 0;
             string supportError = null;
             if (!PrepareSupport(index, rig, activeStance, out footSupport, out supportError))
             { Refuse(nextToken, supportError); return false; }
@@ -408,6 +410,23 @@ public static class SkateCapturedTricks
         { Refuse(nextToken, error); return false; }
         if (!footSupport.TryConform(rig, frame, out frame, out error, !landed && (weight < 1 || phase == SkateCapturePhase.Catch)))
         { Refuse(nextToken, error ?? "the blended foot frame cannot follow the shaped deck"); return false; }
+        if (!landed && phase == SkateCapturePhase.Catch &&
+            (frame.Observation.Contacts & (SkateCaptureContacts.LeftFoot | SkateCaptureContacts.RightFoot)) ==
+            (SkateCaptureContacts.LeftFoot | SkateCaptureContacts.RightFoot))
+        {
+            // Start only after the source return and both real catch contacts.
+            // Do not anticipate impact by altering free feet or an active flip.
+            if (preparedAt < 0) preparedAt = now;
+            catchPreparationWeight = SkateCaptureFootSupport.CatchPreparationWeight(now - preparedAt);
+            SkateRiderPose prepared; SkateVector preparationShift;
+            if (!SkateCaptureFootSupport.TryCatchPreparation(rig, frame.Pose, frame.RiderUp, catchPreparationWeight,
+                out prepared, out preparationShift, out error))
+            { Refuse(nextToken, error ?? "authored catch preparation unavailable"); return false; }
+            catchPreparationWeight = SkateCaptureFootSupport.ReachedCatchPreparationWeight(rig, prepared, catchPreparationWeight);
+            frame = new SkateCaptureFrame(prepared, frame.Board, frame.Rotation, frame.LeftSoleUp, frame.RightSoleUp,
+                frame.HasEvent, frame.Observation, frame.PelvisCorrection + preparationShift,
+                frame.LeftHandCorrection, frame.RightHandCorrection, frame.RiderUp);
+        }
         if (landed)
         {
             if (!groundedImpact.Board.Initialized) groundedImpact = frame;
@@ -432,7 +451,7 @@ public static class SkateCapturedTricks
             }
             SkateRiderPose absorbed; SkateVector absorptionShift;
             if (!SkateCaptureFootSupport.TryLandingAbsorption(rig, frame.Pose, frame.RiderUp, now - landedAt,
-                out absorbed, out absorptionShift, out error))
+                out absorbed, out absorptionShift, out error, catchPreparationWeight))
             { Refuse(nextToken, error ?? "authored landing absorption unavailable"); return false; }
             frame = new SkateCaptureFrame(absorbed, frame.Board, frame.Rotation, frame.LeftSoleUp, frame.RightSoleUp,
                 frame.HasEvent, frame.Observation, frame.PelvisCorrection + absorptionShift,
