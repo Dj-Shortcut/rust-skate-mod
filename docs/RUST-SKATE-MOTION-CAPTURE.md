@@ -487,14 +487,30 @@ The first event of each phase remains its timing anchor.
 The first live pop frame retains the procedural pose. The normal route can use
 the known variants' Pop-to-Catch rotation clock to retain their individual foot
 releases. Callers without that option retain the Air-to-Catch clock.
-For the five known single-turn variants, playback precomputes an inverse of the
+For the registered source families, playback precomputes an inverse of the
 source board's unwrapped Y*X*Z rotation progress. The pose follows the last
 unfinished live rotation instead of assuming a linear source-time relationship.
 Each active source axis must advance without reversing; a plateau in the limiting
 progress, a large rotation step, a turn more than five degrees from its expected
 endpoint or a near-gimbal pitch keeps
-the previous linear clock. The startup status reports how many inverse clocks
-were accepted. The arrays are built during loading; lookup does not allocate.
+the previous linear clock. The startup status counts the Air-to-Catch inverse
+clocks and the Pop-to-Catch inverse clocks separately. The arrays are built during
+loading; lookup does not allocate.
+
+The registered `bs-pop-shove-it` and `fs-pop-shove-it` presentations use an
+ordinary ollie stance, zero flip/body spin, and live shove targets of -180 and
++180 degrees respectively. Their canonical source yaw is +180 and -180 degrees.
+Only yaw drives these inverse clocks; the inactive roll stays within five
+degrees and is never used as a divisor or limiting progress. A zero-flip source
+has no held-flip expansion. Existing rotation/contact guards and pack approval
+remain unchanged. This source route does not approve either new capture or
+establish visual or native-game acceptance.
+
+A source's first trusted Air pose can already be beyond half its rotation. Its
+Air-to-Catch inverse then retains the existing guarded fallback, while a valid
+Pop-to-Catch inverse can still drive the normal route. The startup field
+`source pop-to-catch clocks` identifies that route; a zero Air-clock count alone
+does not mean the normal route uses a linear source clock.
 
 For the Air-to-Catch clock, the first trusted air sample can already be partway through its rotation. It is
 held until live progress reaches that fraction, rather than moving back into a

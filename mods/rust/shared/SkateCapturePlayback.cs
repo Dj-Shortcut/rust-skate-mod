@@ -120,7 +120,7 @@ namespace Shortcut.RustMod
             BuildRotationClock(clip, pop, caught, out flightTimes, out flightProgress, out flightKeys);
             int variant = SkateCaptureVariants.IndexOf(clip.MovementKind);
             int source = SkateCaptureVariants.IndexOf(SourceMovementKind);
-            if (variant >= 0 && source >= 0)
+            if (variant >= 0 && source >= 0 && Math.Abs(SkateCaptureVariants.Get(source).Signature.Flip) > .01)
                 extraTurns = Math.Abs(SkateCaptureVariants.Get(variant).Signature.Flip / SkateCaptureVariants.Get(source).Signature.Flip) - 1;
             // Base and derived entries share the same reservation boundary.
             // Extra turns occupy only the fully free body interval, outside
@@ -239,7 +239,7 @@ namespace Shortcut.RustMod
             double u = (p - flightProgress[low]) / (flightProgress[high] - flightProgress[low]);
             return Math.Min(caught - .000001, flightTimes[low] + u * (flightTimes[high] - flightTimes[low]));
         }
-        // Only these known, single-turn Y*X*Z tracks have an unambiguous inverse.
+        // Only these known Y*X*Z tracks have an unambiguous inverse.
         // Unsupported, non-invertible, reversing or near-gimbal tracks retain the old
         // phase clock. Pack validation and gameplay rotation authority are unchanged.
         private static void BuildRotationClock(SkateCaptureClip clip, double air, double caught,
@@ -254,6 +254,8 @@ namespace Shortcut.RustMod
                 case "kickflip": case "fakie-kickflip": rollTurn = 360; break;
                 case "nollie-backside-180-heelflip": rollTurn = -360; yawTurn = 180; break;
                 case "360-flip": case "nollie-360-flip": rollTurn = 360; yawTurn = 360; break;
+                case "bs-pop-shove-it": rollTurn = 0; yawTurn = 180; break;
+                case "fs-pop-shove-it": rollTurn = 0; yawTurn = -180; break;
                 default: return;
             }
             var samples = new double[clip.SampleCount + 2]; int sampleCount = 0;
@@ -284,13 +286,13 @@ namespace Shortcut.RustMod
                     roll += dr; yaw += dy;
                 }
                 previousRoll = r; previousYaw = y; previousTime = t;
-                if (yawTurn == 0 && Math.Abs(yaw) > 5) return;
+                if (yawTurn == 0 && Math.Abs(yaw) > 5 || rollTurn == 0 && Math.Abs(roll) > 5) return;
                 if (t < air) continue;
-                double rp = roll / rollTurn, yp = yawTurn != 0 ? yaw / yawTurn : 0;
+                double rp = rollTurn != 0 ? roll / rollTurn : 0, yp = yawTurn != 0 ? yaw / yawTurn : 0;
                 if (rp < 0 || rp > 1.02 || yp < 0 || yp > 1.02 ||
                     keys > 0 && (rp < lastRollProgress - .00000001 || yp < lastYawProgress - .00000001)) return;
                 lastRollProgress = rp; lastYawProgress = yp;
-                double p = yawTurn != 0 ? Math.Min(rp, yp) : rp;
+                double p = rollTurn == 0 ? yp : yawTurn != 0 ? Math.Min(rp, yp) : rp;
                 // A plateau would make the inverse jump across source body motion.
                 if (!Finite(p) || p < 0 || p > 1.02 || keys > 0 && p <= ps[keys - 1] + .00000001) return;
                 ts[keys] = t; ps[keys++] = p;
