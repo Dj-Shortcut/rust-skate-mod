@@ -79,6 +79,29 @@ working capture. Replace the source paths and calibrate each actual attempt.
   new camera heading from the hips every frame would erase the trick's turn.
 - `body.pelvisKeys`: the declared root estimate in meters. Hip-relative
   detections alone cannot supply a measured world trajectory.
+- `retarget.legPoleTransport`: optional `"source-plane"` transports the original
+  hip/knee/ankle bend plane onto the target hip/ankle axis by its minimal
+  rotation. It avoids projecting the raw thigh directly onto a different leg
+  axis, which can amplify small depth errors into large knee turns. The default
+  remains `"legacy-target-projection"` for existing packs. Degenerate axes,
+  opposing axes and source bend components below 2 mm refuse conversion;
+  uncertain straight-leg observations need explicit reconstruction. This does
+  not improve source confidence or remove root/contact noise.
+- `board.floorEnvelope`: optional `{points, provenance, sourceSha256}` replaces
+  the default eight-corner floor box with 4–4096 finite board-local points in
+  meters, relative to the deck-top origin. Supply the complete geometry needed
+  for floor clearance, including wheels and trucks. `provenance` must explain
+  the envelope (at most 4096 characters); `sourceSha256` identifies its source
+  bytes with a lowercase SHA256. All three extents must exceed 1 mm and point
+  coordinates must remain within 2 m. Captured key-space reflection applies to
+  this envelope as well. The digest records provenance; it does not authenticate
+  an external file. A rest envelope does not simulate moving trucks or wheels.
+- `feet.Left/Right.headingKeys`: optional covering `{t, value}` direction keys
+  in board-local space, with a nonempty `headingProvenance` (at most 4096
+  characters). They apply only while that foot has an observed contact. Free
+  feet retain source-derived headings. Zero, opposing adjacent or sole-parallel
+  headings refuse conversion. Explicit planted headings can prevent model
+  heel/toe noise from rotating a planted shoe; they remain authored estimates.
 - `body.headAnchor`: optional `"nose"` (the unchanged default) or `"ears"`.
   The ear option uses the midpoint of model landmarks 7 and 8, rather than the
   nose, for the shoulder-midpoint-to-head direction. It requires a nonempty
@@ -268,6 +291,15 @@ be attached, change a catch/landing event or move the player. The native collect
 and fitting source require native verification; a passing companion mesh check
 does not establish clearance for Rust's boots. Free-foot motion must still be
 checked against the rotating board, not merely at attached contact samples.
+
+Ordinary takeoff can already be in Air while both soles still have full support.
+Those frames refit against the pitched deck rather than carrying the previous
+flat-ground offset. Released feet retain model calibration without inventing a
+contact. Capture recovery hands back to ordinary riding with a C2 fade over the
+last 0.45 seconds, capped at half the post-landing interval so the original
+landing impact remains intact. This avoids compressing the whole leg-pose
+transition into a 0.12-second linear fade; it does not repair noisy source roots
+or drifting authored foot anchors by itself.
 
 Presentation events may repeat a phase to describe individual foot contacts.
 The initial load has both feet attached; load/pop may release them separately,

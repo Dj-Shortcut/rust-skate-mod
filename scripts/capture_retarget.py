@@ -169,6 +169,29 @@ def interpolate_direction(a, b, weight):
     angle=math.acos(dot)
     return (a*math.sin((1-weight)*angle)+b*math.sin(weight*angle))/math.sin(angle)
 
+def transport_leg_pole(source_hip, source_knee, source_ankle, target_hip, target_ankle):
+    """Carry the SOURCE bend plane onto the measured target chain.
+
+    Projecting a raw thigh directly on a different target leg axis can erase its
+    bend component, amplifying harmless depth noise into a large knee turn.
+    Minimal rotation preserves the observed bend instead of inventing a pole.
+    """
+    source_delta = finite(source_ankle-source_hip, (3,))
+    target_delta = finite(target_ankle-target_hip, (3,))
+    if min(np.linalg.norm(source_delta), np.linalg.norm(target_delta)) < 1e-8:
+        raise CaptureError('Source or target leg axis is degenerate')
+    source_axis = unit(source_delta)
+    target_axis = unit(target_delta)
+    thigh = source_knee-source_hip
+    bend = thigh-source_axis*np.dot(thigh, source_axis)
+    if np.linalg.norm(bend) < .002:
+        raise CaptureError('Source leg bend plane is underdetermined; reconstruct explicit source observations')
+    cosine = float(np.clip(np.dot(source_axis, target_axis), -1, 1))
+    if cosine < -.9995:
+        raise CaptureError('Source and target leg axes oppose; review the contact and carrier reconstruction')
+    cross = np.cross(source_axis, target_axis)
+    return bend+np.cross(cross, bend)+np.cross(cross, np.cross(cross, bend))/(1+cosine)
+
 class AuthoredHeading:
     """Explicit camera-heading reconstruction of the whole already-solved rider.
 
@@ -305,6 +328,9 @@ def retarget(raw, job, provenance):
     opts=job.get('retarget',{});actor=job['source'].get('actorHint')
     arm_interpolation=opts.get('armInterpolation','linear')
     if arm_interpolation not in ('linear','spherical'):raise ValueError('Unknown armInterpolation')
+    leg_pole_transport=opts.get('legPoleTransport','legacy-target-projection')
+    if leg_pole_transport not in ('legacy-target-projection','source-plane'):
+        raise ValueError('Unknown legPoleTransport')
     head_anchor=job.get('body',{}).get('headAnchor','nose')
     if head_anchor not in ('nose','ears'):raise ValueError('Unknown headAnchor')
     head_provenance=job.get('body',{}).get('headAnchorProvenance')
@@ -347,9 +373,16 @@ def retarget(raw, job, provenance):
     for side in ('Left','Right'):
         source_side=('Right' if side=='Left' else 'Left') if reflect_keys else side
         config=feet.get(source_side,{})
-        foot_curves[side]={key:Curve(config[key],duration) for key in ('positionKeys','soleUpKeys','airSoleUpKeys','airPositionKeys') if key in config}
+        foot_curves[side]={key:Curve(config[key],duration) for key in ('positionKeys','soleUpKeys','airSoleUpKeys','airPositionKeys','headingKeys') if key in config}
         if 'airPositionKeys' in config and (not isinstance(config.get('airPositionProvenance'),str) or not config['airPositionProvenance'].strip()):
             raise ValueError('Explicit free-foot paths require airPositionProvenance: '+source_side)
+        if 'headingKeys' in config:
+            note=config.get('headingProvenance')
+            if not isinstance(note,str) or not note.strip() or len(note)>4096:
+                raise ValueError('Explicit contact heading keys require bounded headingProvenance: '+source_side)
+            values=foot_curves[side]['headingKeys'].values
+            if np.any(np.linalg.norm(values,axis=1)<1e-8) or any(np.dot(unit(a),unit(b))<-.9995 for a,b in zip(values,values[1:])):
+                raise ValueError('Contact headings need nonzero unambiguous directions')
         for key in ('soleUpKeys','airSoleUpKeys'):
             if key not in foot_curves[side]:continue
             values=foot_curves[side][key].values
@@ -365,6 +398,21 @@ def retarget(raw, job, provenance):
     if allow_inverted and any(not all(k in foot_curves[s] for k in ('positionKeys','soleUpKeys')) for s in ('Left','Right')):
         raise ValueError('Inverted contact exception requires explicit positionKeys and soleUpKeys for BOTH feet')
     inverted_contacts=[]
+    envelope=board_spec.get('floorEnvelope')
+    if envelope is not None:
+        if not isinstance(envelope,dict) or set(envelope)!={'points','provenance','sourceSha256'}:
+            raise ValueError('floorEnvelope requires points, provenance and sourceSha256')
+        points=envelope['points'];provenance_text=envelope['provenance'];digest=envelope['sourceSha256']
+        if not isinstance(points,list) or not 4<=len(points)<=4096:
+            raise ValueError('floorEnvelope requires 4..4096 board-local points')
+        corners=finite(points,(len(points),3))
+        if np.max(np.abs(corners))>2 or np.any(np.ptp(corners,axis=0)<.001):
+            raise ValueError('floorEnvelope must be a bounded three-dimensional board shape')
+        if not isinstance(provenance_text,str) or not provenance_text.strip() or len(provenance_text)>4096:
+            raise ValueError('floorEnvelope requires bounded provenance')
+        if not isinstance(digest,str) or len(digest)!=64 or any(c not in '0123456789abcdef' for c in digest):
+            raise ValueError('floorEnvelope requires a lowercase source SHA256')
+        if reflect_keys:corners=corners*np.array([-1,1,1])
     frames=[];reaches=[];floor_corrections=[];event_index=0;last_q=None;maximum_chain_error=0.;minimum_floor=float('inf')
     limit=float(opts.get('maxReachCorrectionM',0))
     if not 0<=limit<=.5:raise ValueError('maxReachCorrectionM outside0..0.5')
@@ -416,9 +464,18 @@ def retarget(raw, job, provenance):
                 sole=unit(curves['airSoleUpKeys'](t) if 'airSoleUpKeys' in curves else UP)
             if reflect_keys and not contact:sole[0]*=-1
             heading=unit(w[toe]-w[heel],anatomy)
+            if contact and 'headingKeys' in curves:
+                local_heading=curves['headingKeys'](t)
+                if reflect_keys:local_heading[0]*=-1
+                heading=R@local_heading
+                if np.linalg.norm(heading-sole*np.dot(heading,sole))<1e-8:
+                    raise CaptureError('Explicit contact heading is parallel to its sole normal',dict(t=t,side=side))
             fallback=np.cross(sole,[0,0,1]) if abs(sole[2])<.9 else np.cross(sole,[1,0,0])
             heading=unit(heading-sole*np.dot(heading,sole),fallback)
-            knee,ankle=ik(hips[index],ankle,rig['thigh'],rig['shin'],w[ki]-w[hi],limit,reaches,t,side)
+            pole = w[ki]-w[hi]
+            if leg_pole_transport == 'source-plane':
+                pole = transport_leg_pole(w[hi], w[ki], w[ai], hips[index], ankle)
+            knee,ankle=ik(hips[index],ankle,rig['thigh'],rig['shin'],pole,limit,reaches,t,side)
             j[side+'Hip']=hips[index];j[side+'Knee']=knee;j[side+'Ankle']=ankle
             j[side+'Toe']=ankle+heading*math.sqrt(rig['foot']**2-rig['toeDrop']**2)-sole*rig['toeDrop'];soles[side]=unit(sole)
             si,ei,wi=(11,13,15) if index==0 else (12,14,16)
@@ -439,6 +496,16 @@ def retarget(raw, job, provenance):
     if maximum_chain_error>1e-6:raise CaptureError('Retarget chain length error',dict(maxChainErrorM=maximum_chain_error))
     metadata=dict(id=job['id'],label=job['label'],sourceUrl=job['source']['url'],sourceAuthor=job['source']['author'],movementKind=job['movementKind'],reviewed=job['reviewed'],rights=job['source'].get('rights','No publication/relicensing permission asserted'),canonicalStance='regular',capturedStance=stance,keySpace=key_space,coordinateFrame='Y up, +Z nose, +X right; right-handed quaternion XYZW; origin=deck top',toeContract='Physical toe endpoints include soleUp*toeDrop once; native sampler reconstructs flat toe targets before writer drop',sourceFps=fps,firstSourceFrame=first,lastSourceFrame=last,provenance=provenance,boardProvenance=board_spec['provenance'],boardLimit='Observed keys mean recipe observations/estimates, not calibrated measured3D board mocap',footOrientationLimit='Soles default to board-up in contact and world-up in air unless per-foot keys supplied. Captured heel/toe heading is projected onto that sole; degenerate projections use a perpendicular basis. Not measured shoe orientation.',rootLimit='Pelvis/board trajectory supplied explicitly by recipe; MediaPipe world33 is hip-relative; no player-root/physics authority',sampleLimit='Dense retarget interpolation, not additional measured source frames',camera=job['camera'],rig=rig,metricScale=scale)
     metadata['armInterpolation']=arm_interpolation
+    if leg_pole_transport != 'legacy-target-projection':
+        metadata['legPoleTransport']=dict(mode=leg_pole_transport,
+            method='Source knee bend projected on source hip-ankle axis, then minimal rotation onto target leg axis.',
+            limit='Model-derived direction, not a new confidence observation; underdetermined source bend planes refuse conversion.')
+    if envelope is not None:
+        metadata['boardFloorEnvelope']=dict(points=len(corners),coordinates='Board local, relative to deck-top origin',
+            provenance=envelope['provenance'],sourceSha256=envelope['sourceSha256'],
+            limit='Supplied rest geometry envelope; does not simulate truck or wheel movement.')
+    contact_headings={side:dict(coordinates='Board local; used only with observed foot contact',provenance=feet[('Right' if side=='Left' else 'Left') if reflect_keys else side]['headingProvenance']) for side in ('Left','Right') if 'headingKeys' in foot_curves[side]}
+    if contact_headings:metadata['contactHeadings']=contact_headings
     if frame_times is not None:
         metadata['sourceTiming']=dict(mode='variable-frame-times',frameTimes=frame_times.tolist(),
             frameTimeProvenance=window['frameTimeProvenance'],origin='Window first source frame is t=0',

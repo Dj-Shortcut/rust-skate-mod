@@ -1188,7 +1188,7 @@ public static class RiderRig
             Limb(RUpper, RFore, RHand, joint[RHandJ], joint[RElbowJ], UpperArm, Forearm, "right hand");
         }
 
-        if (!SkateCapturedTricks.HasFrame && OrdinaryFooting(false)) FitEasedFooting(leftSole, rightSole);
+        if (!SkateCapturedTricks.HasFrame && OrdinarySupportedFeet()) FitEasedFooting(leftSole, rightSole);
         Limb(LHip, LKnee, LFoot, joint[LAnkleJ], joint[LKneeJ], Thigh, Shin, "left ankle");
         Limb(RHip, RKnee, RFoot, joint[RAnkleJ], joint[RKneeJ], Thigh, Shin, "right ankle");
         var soleL = SkateBoard.Held ? SkateBoard.HeldUp : leftSole;
@@ -1223,7 +1223,7 @@ public static class RiderRig
             !SkateCaptureFootSupport.TryFootFrame(pose.RightAnkle, pose.RightToe, V(rightUp), out rf)) return;
         var l = leftFootCalibration; var r = rightFootCalibration;
         string error; double lo, ro;
-        if (SkateRide.Mode == RideMode.Ground)
+        if (OrdinarySupportedFeet())
         {
             var board = SkateBoard.PoseFor(SkateRig.LocalT);
             if (!SkateFootContacts.LeftFitter.TryOffset(board, lf, SkateCaptureFootSupport.MaximumOffset - SkateCaptureFootSupport.ContactBand, out lo, out error) ||
@@ -1241,6 +1241,15 @@ public static class RiderRig
 
     private static SkateVector FootLocal(SkateVector v, SkateBoardPose f)
     { return new SkateVector(SkateVector.Dot(v, f.Right), SkateVector.Dot(v, f.Up), SkateVector.Dot(v, f.Forward)); }
+
+    // Takeoff can enter Air before either sole has released. Reusing the last
+    // flat-ground calibration there ignores the board's new pop pitch. Refit
+    // those still-supported soles; free feet only carry their calibration.
+    private static bool OrdinarySupportedFeet()
+    {
+        return OrdinaryFooting(true) && (SkateRide.Mode == RideMode.Ground ||
+            contact.Initialized && contact.FrontFootContact >= .999999 && contact.BackFootContact >= .999999);
+    }
 
     private static void FitEasedFooting(Vector3 leftUp, Vector3 rightUp)
     {

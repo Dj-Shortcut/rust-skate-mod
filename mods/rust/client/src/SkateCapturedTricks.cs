@@ -199,8 +199,7 @@ public static class SkateCapturedTricks
             { Refuse(nextToken, error ?? "landing transition carrier unavailable"); return false; }
         }
         double weight = Math.Max(0, Math.Min(1, (now - beganAt) / .1));
-        if (landed) weight = Math.Min(weight, Math.Max(0, Math.Min(1,
-            (active.Clip.Duration - active.SourceTime(SkateCapturePhase.Land, value)) / .12)));
+        if (landed) weight = Math.Min(weight, active.RecoveryWeight(value));
         if (weight <= 0) return false; // The first live pop frame keeps the exact procedural pose.
         if (!SkateCapturePlayback.TryBlend(rig, baseline, baselineLeftUp, baselineRightUp, frame, weight, out frame, out error))
         { Refuse(nextToken, error); return false; }
