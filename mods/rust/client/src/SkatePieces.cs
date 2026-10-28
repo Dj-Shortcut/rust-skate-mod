@@ -403,6 +403,7 @@ public static class SkatePieces
         Hover = -1; pointer = Vector2.zero; Status = ""; stickChosen = false;
         ListenForReplies();
         HeldClear();
+        Out.Say("PIECES wheel mode=Skate native-wheel=hidden cursor=owned catalogue=" + Names.Length);
         return true;
     }
 
@@ -430,6 +431,7 @@ public static class SkatePieces
         SkateHeld.ResumePlanner();
         rustBuilding = true; rustWheelOpen = false;
         modePlayer = SkateRig.Local; modeBody = SkateRig.Body; modeAwakeAt = SkateRig.AwakeAt;
+        Out.Say("PIECES wheel mode=Rust native-wheel=awaiting-open");
         Said = "Rust building. Release, then hold Back / right click for the Rust wheel. X / Shift + P: Skate building."; SaidAt = now;
     }
 
