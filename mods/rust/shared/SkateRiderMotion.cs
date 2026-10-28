@@ -37,9 +37,12 @@ namespace Shortcut.RustMod
         public readonly bool Initialized;
         public readonly SkateVector Up, LandingUp;
         public readonly double LandingShare;
+        internal readonly SkateVector LandingFromUp;
 
         internal SkateRiderAirFrameState(SkateVector up, SkateVector landingUp, double landingShare)
-        { Initialized = true; Up = up; LandingUp = landingUp; LandingShare = landingShare; }
+            : this(up, landingUp, landingShare, up) { }
+        internal SkateRiderAirFrameState(SkateVector up, SkateVector landingUp, double landingShare, SkateVector landingFromUp)
+        { Initialized = true; Up = up; LandingUp = landingUp; LandingShare = landingShare; LandingFromUp = landingFromUp; }
     }
 
     public static class SkateRiderMotion
@@ -54,13 +57,28 @@ namespace Shortcut.RustMod
         private const double FrameTolerance = 0.000001;
         private const double Substep = 1.0 / 120;
 
-        // Display only: keep the departure support frame until a sensed landing approach,
-        // then meet that plane continuously. Neither apex, catch nor stance levels the flight.
+        // Body presentation leaves the departure lean toward the ballistic apex.
+        // The board keeps its own support/pitch frame; neither path changes physics.
         public const double AirReleaseMinimum = 0.18, AirLandingLead = 0.25, AirFrameRadiansPerSecond = Math.PI * 2;
+        public const double AirBodyFrameRadiansPerSecond = Math.PI * 4;
         public static bool TryAirFrame(SkateRiderAirFrameState state, double dt,
                                        SkateVector takeoffUp, double sinceRelease, double riseAtRelease, double gravity,
                                        SkateVector landingUp, double gapToContact, double closingSpeed,
                                        out SkateVector up, out SkateRiderAirFrameState next, out string error)
+        { return TryAirFrameCore(state, dt, takeoffUp, sinceRelease, riseAtRelease, gravity,
+            landingUp, gapToContact, closingSpeed, true, out up, out next, out error); }
+
+        public static bool TryBoardAirFrame(SkateRiderAirFrameState state, double dt,
+                                            SkateVector takeoffUp, double sinceRelease, double riseAtRelease, double gravity,
+                                            SkateVector landingUp, double gapToContact, double closingSpeed,
+                                            out SkateVector up, out SkateRiderAirFrameState next, out string error)
+        { return TryAirFrameCore(state, dt, takeoffUp, sinceRelease, riseAtRelease, gravity,
+            landingUp, gapToContact, closingSpeed, false, out up, out next, out error); }
+
+        private static bool TryAirFrameCore(SkateRiderAirFrameState state, double dt,
+                                           SkateVector takeoffUp, double sinceRelease, double riseAtRelease, double gravity,
+                                           SkateVector landingUp, double gapToContact, double closingSpeed, bool bodyFrame,
+                                           out SkateVector up, out SkateRiderAirFrameState next, out string error)
         {
             up = takeoffUp; next = state; error = null;
             if (!Finite(dt) || dt < MinimumDelta || dt > MaximumDelta ||
@@ -68,7 +86,8 @@ namespace Shortcut.RustMod
                 !Finite(sinceRelease) || sinceRelease < 0 || !Finite(riseAtRelease) || riseAtRelease < 0 ||
                 !Finite(gravity) || gravity <= 0 || !Finite(gapToContact) || !Finite(closingSpeed) || closingSpeed < 0 ||
                 (state.Initialized && (!Normal(state.Up) || state.Up.Y <= 0 || !Normal(state.LandingUp) || state.LandingUp.Y <= 0 ||
-                    !Finite(state.LandingShare) || state.LandingShare < 0 || state.LandingShare > 1)))
+                    !Finite(state.LandingShare) || state.LandingShare < 0 || state.LandingShare > 1 ||
+                    state.LandingShare > 0 && (!Normal(state.LandingFromUp) || state.LandingFromUp.Y <= 0))))
             { error = "Invalid rider air display frame."; return false; }
             var land = closingSpeed > 0.000001 ? Math.Max(0, Math.Min(1,
                 1 - Math.Max(0, gapToContact) / (closingSpeed * AirLandingLead))) : 0;
@@ -76,19 +95,40 @@ namespace Shortcut.RustMod
             // A missed probe must not undo an already observed landing approach.
             var held = state.Initialized ? state.LandingShare : 0;
             var plane = state.Initialized ? state.LandingUp : landingUp;
-            if (land > 0) plane = held > 0 ? AirTurn(plane, landingUp, dt) : landingUp;
+            double turnRate = bodyFrame ? AirBodyFrameRadiansPerSecond : AirFrameRadiansPerSecond;
+            if (land > 0) plane = held > 0 ? AirTurn(plane, landingUp, dt, turnRate) : landingUp;
             land = Math.Max(held, land);
-            var target = Unit(takeoffUp * (1 - land) + plane * land);
-            up = AirTurn(state.Initialized ? state.Up : takeoffUp, target, dt);
+            var current = state.Initialized ? state.Up : takeoffUp;
+            var landingFrom = held > 0 ? state.LandingFromUp : current;
+            if (!bodyFrame)
+            {
+                var target = Unit(takeoffUp * (1 - land) + plane * land);
+                up = AirTurn(current, target, dt, turnRate);
+            }
+            else if (land > 0)
+            {
+                // Freeze the entry frame when approach is first sensed. A missed
+                // probe retains that anchor and share instead of resuming world-up.
+                var target = Unit(landingFrom * (1 - land) + plane * land);
+                up = AirTurn(current, target, dt, turnRate);
+            }
+            else
+            {
+                double apex = Math.Max(AirReleaseMinimum, riseAtRelease / gravity);
+                double u = Math.Max(0, Math.Min(1, sinceRelease / apex));
+                u = Math.Max(0, Math.Min(1, u * u * u * (10 + u * (-15 + 6 * u))));
+                var target = Unit(takeoffUp * (1 - u) + new SkateVector(0, 1, 0) * u);
+                up = AirTurn(current, target, dt, turnRate);
+            }
             if (!Normal(up) || up.Y <= 0) { up = takeoffUp; error = "Rider air display frame left the upper hemisphere."; return false; }
-            next = new SkateRiderAirFrameState(up, plane, land);
+            next = new SkateRiderAirFrameState(up, plane, land, landingFrom);
             return true;
         }
 
-        private static SkateVector AirTurn(SkateVector from, SkateVector to, double dt)
+        private static SkateVector AirTurn(SkateVector from, SkateVector to, double dt, double radiansPerSecond)
         {
             var cosine = Math.Max(-1, Math.Min(1, SkateVector.Dot(from, to)));
-            var angle = Math.Acos(cosine); var step = AirFrameRadiansPerSecond * dt;
+            var angle = Math.Acos(cosine); var step = radiansPerSecond * dt;
             if (angle <= step) return to;
             return Unit(from * Math.Cos(step) + Unit(to - from * cosine) * Math.Sin(step));
         }

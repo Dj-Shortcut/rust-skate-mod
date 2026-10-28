@@ -46,7 +46,10 @@ public static class SkateRide
     private static float steppedAt = -99f;
     private static Vector3 airViewFrom = Vector3.up;
     private static float airViewAt, airViewRise;
-    private static SkateRiderAirFrameState airView;
+    private static SkateRiderAirFrameState airView, riderAirView;
+    private static Vector3 riderViewNormal = Vector3.up;
+    private static int airViewTrace;
+    private static bool airViewFromGrind;
     public static readonly int GroundMask = ~((1 << 12) | (1 << 17) | (1 << 18) | (1 << 4) | (1 << 10) | (1 << 9) | (1 << 2));
 
     public static RideMode Mode = RideMode.Off;
@@ -58,6 +61,8 @@ public static class SkateRide
     public static bool Frozen;
     public static float Speed, Yaw, Lean, VSpeed, AirTime, AirPeak, Clearance = 99f, Actual, ActualV, Top, Cap = MaxSpeed, ModeAt, LandAt = -99f, LandImpact, PushPhase, CapLoweredAt = -99f;
     public static Vector3 Normal = Vector3.up, Tangent = Vector3.forward, ViewNormal = Vector3.up, Position;
+    public static Vector3 RiderViewNormal { get { return Mode == RideMode.Air && !FootPlanted && !Handplant &&
+        !SkateSurfaceRide.DisplayWall && !SkateSurfaceRide.BodyFlip.Known ? riderViewNormal : ViewNormal; } }
     // In the shared trick module's signs: positive spin and shove are frontside, positive flip is a
     // kickflip. Spin turns rider and board, shove the board alone under his feet.
     public static double SpinDeg, FlipDeg, ShoveDeg;
@@ -323,7 +328,7 @@ public static class SkateRide
         Trick = new SkateTrickState(false); TrickName = ""; ComboPoints = 0; TrickAt = BankedAt = LandAt = jumpWanted = -99f; OffReason = "";
         SkateHud.Clear();
         Normal = ViewNormal = Vector3.up; Position = b.position; Tangent = Dir(yaw);
-        airViewFrom = Vector3.up; airViewAt = airViewRise = 0f; airView = default(SkateRiderAirFrameState);
+        airViewFrom = Vector3.up; airViewAt = airViewRise = 0f; ResetAirDisplay();
         airNoseOffset = airDeckOffset = 0f; comingRound = false;
         SkateWatch.Reset();
         SkateGrind.Reset();
@@ -344,7 +349,7 @@ public static class SkateRide
         SkateRig.ReleaseRootProxy();
         if (Mode == RideMode.Off) return;
         if (SkateOldschoolRide.Active) SkateBoard.ReleaseIndependent(SkateOldschoolRide.Frame, V(SkateOldschoolRide.State.Velocity));
-        airViewFrom = Vector3.up; airViewAt = airViewRise = 0f; airView = default(SkateRiderAirFrameState);
+        airViewFrom = Vector3.up; airViewAt = airViewRise = 0f; ResetAirDisplay();
         Mode = RideMode.Off; SkateActions.Reset(); SkateOldschoolRide.Reset(); SkateSurfaceRide.Reset(); HandplantVariantUsed = SkateHandplantKind.None; GroundGrab = default(SkateGroundGrabState); BoardPath = default(SkateBoardPathSample); wantSpecial = SkateBoardTrickKind.None; wantSpecialDirection = 0; Pump = default(SkatePumpState); PumpHeld = RevertLeft = 0f; Stalling = false; grindClassified = airFromValid = false; OffReason = reason; Grab = SkateGrabKind.None; Manual = NoseManual = false;
         if (SkateKeys.Scripted) SkateKeys.EndStep(); else SkateKeys.Reset();
     }
@@ -450,7 +455,7 @@ public static class SkateRide
             if ((Mode == RideMode.Air || Mode == RideMode.Ground) && SkateSurfaceRide.DisplayWall && SkateSurfaceRide.WallFrame.Initialized)
             {
                 ViewNormal = V(SkateSurfaceRide.WallFrame.Up);
-                airViewFrom = ViewNormal; airViewAt = AirTime; airViewRise = Math.Max(0, VSpeed); airView = default(SkateRiderAirFrameState);
+                airViewFrom = ViewNormal; airViewAt = AirTime; airViewRise = Math.Max(0, VSpeed); ResetAirDisplay();
             }
             else if (Mode == RideMode.Air) AirView(dt);
             else
@@ -1078,11 +1083,12 @@ public static class SkateRide
 
     private static void TakeOff(bool jumped, float vertical)
     {
+        airViewTrace = 0; airViewFromGrind = Mode == RideMode.Grind;
         SkateOldschoolRide.Reset();
         SkateSurfaceRide.Reset();
         SkateActions.Begin(jumped && (wantKind == SkatePopKind.Ollie || wantKind == SkatePopKind.Nollie) && wantSpecial == SkateBoardTrickKind.None && wantFlip == 0 && wantShove == 0 ? wantStyle : SkateOllieStyle.None); wantStyle = SkateOllieStyle.None;
         if (Mode == RideMode.Ground && Grounded) ViewNormal = Normal;
-        airViewFrom = ViewNormal; airViewAt = 0f; airViewRise = Math.Max(0f, vertical); airView = default(SkateRiderAirFrameState);
+        airViewFrom = ViewNormal; airViewAt = 0f; airViewRise = Math.Max(0f, vertical); ResetAirDisplay();
         // Read while the board still rolls: which end leads decides which way is frontside.
         spinSide = (TailFirst ? -1f : 1f) * StanceSign;
         Enter(RideMode.Air);
@@ -1099,14 +1105,14 @@ public static class SkateRide
         wantFlip = 0; wantShove = 0f; wantKind = SkatePopKind.Ollie;
     }
 
-    // ViewNormal is consumed by the drawn rider/board only; movement keeps its own
-    // Normal, Tangent and velocity. A planted foot keeps its support frame until released.
+    // Body and board display frames have separate owners; neither changes movement.
+    // A planted foot retains its support frame until released.
     private static void AirView(float dt)
     {
         if (FootPlanted)
         {
             airViewFrom = ViewNormal; airViewAt = AirTime; airViewRise = Math.Max(0f, VSpeed);
-            airView = default(SkateRiderAirFrameState);
+            ResetAirDisplay();
             return;
         }
         var contact = OnRamp ? BelowNormal : Vector3.up;
@@ -1114,9 +1120,34 @@ public static class SkateRide
         // Align before the existing air-step contact threshold, not after a catch or landing snap.
         var gap = Clearance - Math.Max(0.04f, closing * dt + 0.02f);
         SkateVector shown; SkateRiderAirFrameState next; string error;
-        if (SkateRiderMotion.TryAirFrame(airView, dt, V(airViewFrom), Math.Max(0f, AirTime - airViewAt), airViewRise,
+        if (SkateRiderMotion.TryBoardAirFrame(airView, dt, V(airViewFrom), Math.Max(0f, AirTime - airViewAt), airViewRise,
             AirGravity, V(BelowNormal), gap, closing, out shown, out next, out error))
         { airView = next; ViewNormal = V(shown); }
+        if (SkateRiderMotion.TryAirFrame(riderAirView, dt, V(airViewFrom), Math.Max(0f, AirTime - airViewAt), airViewRise,
+            AirGravity, V(BelowNormal), gap, closing, out shown, out next, out error))
+        { riderAirView = next; riderViewNormal = V(shown); }
+        if (airViewFrom.y < .85f)
+        {
+            TraceAirFrame(1, "departure");
+            if (airViewRise > 0 && VSpeed <= 0) TraceAirFrame(2, "descending");
+            if (airView.Initialized && airView.LandingShare > 0) TraceAirFrame(4, "landing-approach");
+        }
+    }
+
+    private static void ResetAirDisplay()
+    {
+        airView = riderAirView = default(SkateRiderAirFrameState);
+        riderViewNormal = airViewFrom;
+    }
+
+    private static void TraceAirFrame(int bit, string phase)
+    {
+        if ((airViewTrace & bit) != 0) return;
+        airViewTrace |= bit;
+        Out.Say("AIRFRAME phase=" + phase + " mode=" + Mode + " from-grind=" + airViewFromGrind +
+            " jumped=" + Jumped + " nose-yaw=" + NoseYaw.ToString("F0") + " deck-yaw=" + DeckYaw.ToString("F0") +
+            " board-up=" + Out.V1(ViewNormal) + " body-up=" + Out.V1(RiderViewNormal) + " grind-pitch=" + SkateBoard.GrindPitch.ToString("F1") +
+            " grind-roll=" + SkateBoard.GrindRoll.ToString("F1") + " air-pitch=" + SkateBoard.AirPitch.ToString("F1"));
     }
 
     private static float TimeToGround()
@@ -1157,7 +1188,7 @@ public static class SkateRide
             flipLeft = shoveLeft = bodyLeft = 0; pendFlip = 0; pendShove = 0; spinning = spinLate = false;
             Tangent = flat.sqrMagnitude > .0001f ? flat.normalized * sign : Dir(Yaw);
             if (!SkateSurfaceRide.Active)
-            { airViewFrom = ViewNormal; airViewAt = AirTime; airViewRise = Math.Max(0, VSpeed); airView = default(SkateRiderAirFrameState); }
+            { airViewFrom = ViewNormal; airViewAt = AirTime; airViewRise = Math.Max(0, VSpeed); ResetAirDisplay(); }
             if (pos.y - takeOffY > AirPeak) AirPeak = pos.y - takeOffY;
             if (TrickAir) TrickTick(true, false, 0, 0, 0, 0, dt);
             return;

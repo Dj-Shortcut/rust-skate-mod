@@ -708,7 +708,7 @@ public class SkateRig : MonoBehaviour
         {
             var feet = at; var up = SkateRide.ViewNormal; var tilted = up;
             SkateBoard.Tilt(ref feet, ref tilted);
-            var t2 = SkateClock.Now(); RiderRig.Frame(feet, up, !third, frame); SkateClock.Add(SkateClock.Rider, t2);
+            var t2 = SkateClock.Now(); RiderRig.Frame(feet, SkateRide.RiderViewNormal, !third, frame); SkateClock.Add(SkateClock.Rider, t2);
         }
         // Held board placement is produced by this frame's solved pose.
         if (board != null)
