@@ -411,7 +411,7 @@ public static class SkateCapturedTricks
                 SkateRiderPose settled;
                 if (!impact.Board.Initialized || !SkateCaptureFootSupport.TryGroundRecovery(rig, impact.Pose, baseline, frame.Pose,
                     frame.RiderUp, u, gaze, out settled, out error,
-                    active.SourceMovementKind == "nollie-heelflip" || active.SourceMovementKind == "fakie-kickflip" ||
+                    active.SourceMovementKind == "kickflip" || active.SourceMovementKind == "nollie-heelflip" || active.SourceMovementKind == "fakie-kickflip" ||
                     active.SourceMovementKind == "nollie-backside-180-heelflip" || active.SourceMovementKind == "nollie-360-flip"))
                 { Refuse(nextToken, error ?? "supported recovery frame unavailable"); return false; }
                 frame = new SkateCaptureFrame(settled, frame.Board, frame.Rotation, frame.LeftSoleUp, frame.RightSoleUp,

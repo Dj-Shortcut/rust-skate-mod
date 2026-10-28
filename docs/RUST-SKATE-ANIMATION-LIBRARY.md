@@ -94,8 +94,11 @@ footage as a grab reference. Failed body detections are not motion data; explici
 reconstruction must not inflate confidence or evade actor/gap rejection.
 Occluded head authoring is opt-in and leaves its uncertainty in the JSON receipts.
 
-The normal capture registry covers eleven exact flat-ground signatures: the five
-batch-1 sources and six separately reviewable double/triple derivatives. Later
+The normal capture registry covers twelve exact flat-ground signatures: the five
+batch-1 sources, normal kickflip and six separately reviewable double/triple
+derivatives. Normal kickflip includes the source pop-to-catch rotation clock and
+recovery gaze; its source capture remains inactive until separately reviewed and
+approved for the exact pack. Later
 families need their own entry/hold/exit and contact rules rather
 than relaxing that adapter's flat-ground exclusions. Ground, rail and coping
 anchors must come from the active game action. Physics, board rotation, scoring,
