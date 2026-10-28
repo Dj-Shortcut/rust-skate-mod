@@ -136,6 +136,17 @@ namespace Shortcut.RustMod
             playback = new SkateCapturePlayback(clip, times); return true;
         }
         public bool Finished(double sinceLanding) { return sinceLanding >= Clip.Duration - land; }
+        // Retain the source impact before handing recovery back to ordinary
+        // riding. A short linear fade forces the knees through their entire
+        // change of bend direction in a few render frames.
+        public double RecoveryWeight(double sinceLanding)
+        {
+            if (!Finite(sinceLanding)) return 0;
+            double remaining = Clip.Duration - land - sinceLanding;
+            double duration = Math.Min(.45, (Clip.Duration - land) * .5);
+            double u = Math.Max(0, Math.Min(1, remaining / duration));
+            return u * u * u * (10 + u * (-15 + 6 * u));
+        }
         public double SourceTime(SkateCapturePhase phase, double value)
         {
             if (phase == SkateCapturePhase.Load) return load + Math.Max(0, Math.Min(.999999, value)) * (pop - load);
