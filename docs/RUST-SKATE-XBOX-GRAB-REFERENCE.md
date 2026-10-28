@@ -35,14 +35,34 @@ saved entry local rotation each frame, and restores it on release, another pose
 owner, reset or unbind. Missing/degenerate finger bones disable this refinement
 and retain animated hands; riding does not fail. Finger articulation is unchanged.
 
-The private moving check uses literal current native air/board methods, the shared
-airborne/contact/secondary solver, the existing connected reference rider and
-actual 13-part runtime board. Each of the five clips has 133 frames at 60 Hz.
-Its supplied R3.5 transition and top-deck observations produce a perpendicular
-outgoing deck-transfer, including surface approach, flight and top-deck landing.
-This is not ordinary wall reentry or a native collision test. The authored Mega
-asset differs from the constructed native Mega profile. Current departure tilt is
-retained; this work does not resolve the separate halfpipe-air presentation issue.
+The updated private moving review combines these grab profiles with the separate
+point 5 body/board presentation change. `RiderViewNormal` supplies the body basis;
+`ViewNormal` still supplies the independent board/support basis. That change is
+owned by point 5 and is not duplicated in this grab PR. The grab writer still uses
+the actual `DeckFrame` for feet and hand approach.
+
+All five revised clips have 151 frames at 60 Hz. The context comes from the actual
+current `SkateParks.MegaProfile` and `SurfaceMesh`: 60 collider facets per wall,
+R approximately 9.589 m, a 12 m flat and 12 m width. The native five metal carrier
+chords are excluded backing, and the published R3.5 authored asset is different.
+The earlier outgoing top-deck transfer remains a labelled comparison and is
+superseded as the return review.
+
+The controlled route leaves the last 89.25-degree face with the existing 3 m/s
+surface velocity and 6 m/s pop. Literal `Sense`/`RampContact` query the finite mesh;
+the existing landing guard meets that same transition and the projected velocity
+rolls back fakie. A private continuous bottom-sphere sweep bounds displacement
+against those actual mesh faces and edges. It uses computed contact times and
+normals, without a target-position snap, forced landing event or added inward
+steering. It emulates collision outside Unity and does not prove native physics.
+The medium three-quarter moving camera follows departure, apex, return and roll.
+
+The combined review makes the body basis world-up at the apex while retaining the
+board's own steep pitch. Landing also exposes an unresolved support-display gap:
+`SkateBoard.Contact` still follows the player root without compensating the steep
+capsule rest offset; the board can visibly float away from the transition. This
+is not hidden by relocating the preview. Native reentry and visible contact
+remain open.
 
 The reference hand mesh has a palm and thumb, without independent finger bones or
 curled fingers. Its close-up cannot establish a convincing complete grip. Native
@@ -52,6 +72,6 @@ remain open for Shadow. The source is therefore submitted as a draft.
 Validation: all 69 client sources compile as C# 7.3 against 356 verified cached
 reference assemblies with zero warnings/errors. A temporary probe of the actual
 wrist writer covers parent-local entry, full weight, repeated frames, fade,
-release, other-owner restoration, missing basis and reset/unbind. The five moving
+release, other-owner restoration, missing basis and reset/unbind. The five revised moving
 GLBs preserve the reference skin and real board hierarchy; these offline checks
 do not execute Unity native bindings or establish visual acceptance.
