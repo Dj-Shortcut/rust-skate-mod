@@ -36,7 +36,8 @@ owner, reset or unbind. Missing/degenerate finger bones disable this refinement
 and retain animated hands; riding does not fail. Finger articulation is unchanged.
 
 The updated private moving review combines these grab profiles with the separate
-point 5 body/board presentation change. `RiderViewNormal` supplies the body basis;
+[point 5 body/board presentation change (#593)](https://github.com/Dj-Shortcut/rust-skate-mod/pull/593).
+`RiderViewNormal` supplies the body basis;
 `ViewNormal` still supplies the independent board/support basis. That change is
 owned by point 5 and is not duplicated in this grab PR. The grab writer still uses
 the actual `DeckFrame` for feet and hand approach.
@@ -62,7 +63,8 @@ board's own steep pitch. Landing also exposes an unresolved support-display gap:
 `SkateBoard.Contact` still follows the player root without compensating the steep
 capsule rest offset; the board can visibly float away from the transition. This
 is not hidden by relocating the preview. Native reentry and visible contact
-remain open.
+remain open. Grab-specific chest folding also needs visual review; an upright
+body basis does not approve the complete grab silhouette.
 
 The reference hand mesh has a palm and thumb, without independent finger bones or
 curled fingers. Its close-up cannot establish a convincing complete grip. Native
