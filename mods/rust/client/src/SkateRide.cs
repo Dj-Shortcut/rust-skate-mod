@@ -61,6 +61,16 @@ public static class SkateRide
     public static float Speed, Yaw, Lean, VSpeed, AirTime, AirPeak, Clearance = 99f, Actual, ActualV, Top, Cap = MaxSpeed, ModeAt, LandAt = -99f, LandImpact, PushPhase, CapLoweredAt = -99f;
     public static Vector3 Normal = Vector3.up, Tangent = Vector3.forward, ViewNormal = Vector3.up, Position;
     public static Vector3 RiderViewNormal { get { return ViewNormal; } }
+    public static float TransitionLandingApproach
+    {
+        get
+        {
+            if (Mode != RideMode.Air || airViewFrom.y >= .85f || !airView.Initialized || FootPlanted || Handplant ||
+                SkateSurfaceRide.DisplayWall || SkateSurfaceRide.BodyFlip.Known || SkateActions.Owns ||
+                SkateOldschoolRide.Active || SkateRiggingShowcase.Running || Scenarios.Active) return 0f;
+            return (float)airView.LandingShare;
+        }
+    }
     public static float TransitionAirTuck
     {
         get

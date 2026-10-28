@@ -90,6 +90,7 @@ namespace Shortcut.RustMod
                 var target = Unit(landingFrom * (1 - land) + plane * land);
                 up = AirTurn(current, target, dt, turnRate);
             }
+            else if (riseAtRelease <= .000001) up = current;
             else
             {
                 double apex = Math.Max(AirReleaseMinimum, riseAtRelease / gravity);

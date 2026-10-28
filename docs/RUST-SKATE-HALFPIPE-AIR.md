@@ -14,10 +14,16 @@ base board vertical is explicitly rejected.
 A free steep transition air without a pop also gathers the knees toward the
 apex and extends toward reentry. The board rises by at most0.10m while the
 matching crouch keeps rider and feet together. Grabs, popped tricks and
-independently anchored actions keep their own pose timing.
+independently anchored actions keep their own pose timing. A sensed steep-air
+landing approach also raises the ordinary crouch target toward0.6 before contact,
+including after a released grab. It uses the existing monotone observed
+`LandingShare`; it does not predict or trigger contact. Existing impact-driven
+landing compression and recovery continue after ground contact.
 
 The free-air timing uses elapsed release time, release rise and gravity. Rotation
-is continuous and bounded. A landing approach retains its starting up-vector and
+is continuous and bounded. Without positive outgoing rise, the assembly retains
+its departure basis until a landing is sensed, avoiding a brief upright detour on
+an edge drop. A landing approach retains its starting up-vector and
 a monotone share toward the observed plane; a missed probe cannot turn it away
 from an approach already observed. Planted feet retain their support until
 release; wall and handplant routes retain their own frame owners.
