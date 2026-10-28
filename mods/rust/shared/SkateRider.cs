@@ -1011,6 +1011,7 @@ namespace Shortcut.RustMod
             {
                 grab = input.BoardPosition + up * input.DeckOffset + facing * grip.Across +
                     (grip.End ? deckForward : travel) * grip.Along;
+                grab = GrabWrist(definition, grab, facing, grip.End ? deckForward : travel, up);
                 if (grip.Both) secondGrab = input.BoardPosition + up * input.DeckOffset + facing * definition.SecondAcross + (grip.End ? deckForward : travel) * definition.SecondAlong;
                 if (coupledGrab && !framed)
                 {
@@ -1023,7 +1024,9 @@ namespace Shortcut.RustMod
             {
                 double toeSide = SkateVector.Dot(facing, Cross(up, deckForward)) >= 0 ? 1 : -1;
                 double alongSide = grip.End || SkateVector.Dot(travel, deckForward) >= 0 ? 1 : -1;
-                grab = input.DeckFrame.Point(new SkateVector(grip.Across * toeSide, 0, grip.Along * alongSide));
+                grab = GrabWrist(definition,
+                    input.DeckFrame.Point(new SkateVector(grip.Across * toeSide, 0, grip.Along * alongSide)),
+                    input.DeckFrame.Right * toeSide, input.DeckFrame.Forward * alongSide, input.DeckFrame.Up);
                 if (grip.Both) secondGrab = input.DeckFrame.Point(new SkateVector(definition.SecondAcross * toeSide, 0, definition.SecondAlong * alongSide));
             }
             double roll = 0;
@@ -1083,6 +1086,16 @@ namespace Shortcut.RustMod
                 double armLift = (namedGrab ? grip.FreeUp * 0.4 : 0.06) + 0.12 * held + sway;
                 var freeRight = rightShoulder + outward * (armLength * 0.85) + up * (armLength * armLift) - travel * (armLength * 0.1);
                 var freeLeft = leftShoulder - outward * (armLength * 0.85) + up * (armLength * armLift) - travel * (armLength * 0.1);
+                if (namedGrab && definition.FreeArmElevation > 0)
+                {
+                    // The owner's air windows show an arm above the torso, particularly Crail,
+                    // Method and Crossbone. Raise it in the body's frame, not world-up or a grind frame.
+                    double elevation = definition.FreeArmElevation * (0.65 + 0.35 * held) * Math.PI / 180;
+                    freeRight = rightShoulder + (chestRight * Math.Cos(elevation) + chestUp * Math.Sin(elevation)) * (armLength * 0.9)
+                        - chestForward * (armLength * 0.08);
+                    freeLeft = leftShoulder + (chestRight * -Math.Cos(elevation) + chestUp * Math.Sin(elevation)) * (armLength * 0.9)
+                        - chestForward * (armLength * 0.08);
+                }
                 if (namedGrab)
                 {
                     if (grabLeft) { leftTarget = grab; rightTarget = grip.Both ? secondGrab : freeRight; }
@@ -1306,6 +1319,43 @@ namespace Shortcut.RustMod
             if (kind == SkateGrabKind.Seatbelt && backIsLeft != noseIsLeft) turn = -1.2;
             return new GrabGrip(p.LeftHand(backIsLeft, noseIsLeft), p.Across, p.Along, p.FreeUp, p.End, p.Both,
                 p.Tuck, p.Extension, p.LegShift, p.BodyShift, turn, p.HeelTurn);
+        }
+
+        private static SkateVector GrabWrist(SkateGrabDefinition definition, SkateVector rail,
+            SkateVector across, SkateVector along, SkateVector up)
+        {
+            var outwards = definition.End ? along * Math.Sign(definition.Along) : across * Math.Sign(definition.Across);
+            return rail + outwards * definition.HandOutset + up * definition.HandRise;
+        }
+
+        // Full wrist axes are additional presentation data; the existing 18-joint pose API is unchanged.
+        // These axes are authored from a visible board approach, not inferred finger motion in occluded footage.
+        public static bool TryGrabHandFrame(SkateRiderInput input, SkateRiderPose pose, bool left,
+            out SkateBoardPose frame, out double weight)
+        {
+            frame = default(SkateBoardPose); weight = 0;
+            if (!Valid(input) || !Finite(pose) || !input.Airborne || input.Bailed || !input.Grab ||
+                !input.DeckFrame.Initialized || !SkateBoardPath.Valid(input.DeckFrame) ||
+                !SkateGrabCatalog.HasReferenceHand(input.GrabKind)) return false;
+            var definition = SkateGrabCatalog.Get(input.GrabKind);
+            bool backIsLeft = (input.Stance == SkateStance.Goofy) != input.Switch;
+            if (left != definition.LeftHand(backIsLeft, input.Stance == SkateStance.Regular)) return false;
+            weight = input.Contact.Initialized ? input.Contact.GrabWeight : Smooth(Math.Min(1, input.GrabSeconds / GrabIn));
+            if (weight <= 0) return false;
+            var up = Unit(input.BoardUp); var forward = Unit(Project(input.BoardForward, up));
+            var facing = Cross(up, forward) * (input.Stance == SkateStance.Regular ? 1 : -1);
+            var travel = forward * (input.Switch ? -1 : 1);
+            var deckForward = input.DeckForward.LengthSquared > .5 ? input.DeckForward : forward;
+            double toeSide = SkateVector.Dot(facing, Cross(up, deckForward)) >= 0 ? 1 : -1;
+            double alongSide = definition.End || SkateVector.Dot(travel, deckForward) >= 0 ? 1 : -1;
+            var rail = input.DeckFrame.Point(new SkateVector(definition.Across * toeSide, 0, definition.Along * alongSide));
+            var wrist = left ? pose.LeftHand : pose.RightHand;
+            var finger = Unit(rail - wrist);
+            var back = Unit(Project(input.DeckFrame.Up, finger));
+            if (finger.LengthSquared < .5 || back.LengthSquared < .5) { weight = 0; return false; }
+            frame = new SkateBoardPose(wrist, finger, back);
+            if (!SkateBoardPath.Valid(frame)) { frame = default(SkateBoardPose); weight = 0; return false; }
+            return true;
         }
 
         // The handplant, by how far it has gone (0..1): the lead hand planted on the edge beside the

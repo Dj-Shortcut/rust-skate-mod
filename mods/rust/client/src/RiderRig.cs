@@ -45,6 +45,15 @@ public static class RiderRig
     public static SkateRiderPose Posed, Shown; public static Vector3 PosedPlane;
     private static Transform[] spine = new Transform[0];
     private static Vector3 lSole, rSole;
+    private struct GrabHandBasis
+    {
+        public bool Ready, Saved;
+        public Vector3 Finger, Back;
+        public Quaternion OriginalLocal;
+    }
+    private static GrabHandBasis lGrabHand, rGrabHand;
+    private static SkateBoardPose lGrabFrame, rGrabFrame;
+    private static double lGrabWeight, rGrabWeight;
     private static bool failed;
     private static SkateVector leftFootCalibration, rightFootCalibration;
     private static bool footCalibrated;
@@ -412,6 +421,8 @@ public static class RiderRig
 
     public static void Unbind()
     {
+        RestoreGrabHand(LHand, ref lGrabHand); RestoreGrabHand(RHand, ref rGrabHand);
+        lGrabHand = rGrabHand = default(GrabHandBasis);
         ResetPresentation();
         try { Show(false, true); } catch (Exception) { }
         // What cannot be put back now is kept, and tried again from the next frame on.
@@ -549,11 +560,66 @@ public static class RiderRig
             SkateRide.Clamp(rise, 0f, 0.5f));
         // Which way the soles face, seen from each foot bone, while the player stands.
         lSole = Quaternion.Inverse(LFoot.rotation) * up; rSole = Quaternion.Inverse(RFoot.rotation) * up;
+        lGrabHand = MeasureGrabHand(a, LHand); rGrabHand = MeasureGrabHand(a, RHand);
+        Say("grab wrist frames left=" + lGrabHand.Ready + " right=" + rGrabHand.Ready + "; fingers retain avatar animation");
         failed = false; Bound = true; Error = "";
         Say("bound to " + Root.gameObject.name + " spine bones=" + spine.Length + " thigh=" + Thigh.ToString("F3") + " shin=" + Shin.ToString("F3") + " foot=" + Foot.ToString("F3") + " upperArm=" + UpperArm.ToString("F3")
             + " forearm=" + Forearm.ToString("F3") + " hips=" + hipWidth.ToString("F3") + " hipDrop=" + hipDrop.ToString("F3") + " back=" + back.ToString("F3") + " shoulders=" + Rig.ShoulderWidth.ToString("F3")
             + " neck=" + Rig.NeckToHeadLength.ToString("F3") + " headScale=" + Out.V(Head.localScale));
         return true;
+    }
+
+    // Measure each actual hand, including the existing mirrored bone mapping. A missing finger
+    // basis disables this optional wrist refinement, not riding or the arm/contact solve.
+    private static GrabHandBasis MeasureGrabHand(Animator animator, Transform hand)
+    {
+        var result = default(GrabHandBasis);
+        try
+        {
+            bool humanLeft = hand == animator.GetBoneTransform(HumanBodyBones.LeftHand);
+            var middle = animator.GetBoneTransform(humanLeft ? HumanBodyBones.LeftMiddleProximal : HumanBodyBones.RightMiddleProximal);
+            var index = animator.GetBoneTransform(humanLeft ? HumanBodyBones.LeftIndexProximal : HumanBodyBones.RightIndexProximal);
+            var little = animator.GetBoneTransform(humanLeft ? HumanBodyBones.LeftLittleProximal : HumanBodyBones.RightLittleProximal);
+            if (middle == null || index == null || little == null) return result;
+            var finger = middle.position - hand.position;
+            var across = index.position - little.position;
+            var back = humanLeft ? Vector3.Cross(finger, across) : Vector3.Cross(across, finger);
+            if (finger.sqrMagnitude < .000001f || back.sqrMagnitude < .000000001f) return result;
+            var inverse = Quaternion.Inverse(hand.rotation);
+            result.Finger = inverse * finger.normalized; result.Back = inverse * back.normalized;
+            result.Ready = true;
+        }
+        catch (Exception e) { Say("grab wrist basis unavailable: " + e.GetType().Name + "; animated hand retained"); }
+        return result;
+    }
+
+    private static void RestoreGrabHand(Transform hand, ref GrabHandBasis basis)
+    {
+        try { if (basis.Saved && hand != null) hand.localRotation = basis.OriginalLocal; }
+        catch (Exception e) { Say("grab wrist restore unavailable: " + e.GetType().Name); basis.Ready = false; }
+        basis.Saved = false;
+    }
+
+    private static void ApplyGrabHand(Transform hand, ref GrabHandBasis basis, SkateBoardPose frame, double weight)
+    {
+        if (hand == null) return;
+        if (!basis.Ready || !frame.Initialized || weight <= 0)
+        { RestoreGrabHand(hand, ref basis); return; }
+        try
+        {
+            if (!basis.Saved) { basis.OriginalLocal = hand.localRotation; basis.Saved = true; }
+            // Rebuild from the entry's real local hand rotation each frame; never accumulate last
+            // frame's correction. Releasing or another action restores it, including ordinary captures.
+            hand.localRotation = basis.OriginalLocal;
+            var target = Quaternion.LookRotation(V(frame.Forward), V(frame.Up)) *
+                Quaternion.Inverse(Quaternion.LookRotation(basis.Finger, basis.Back));
+            hand.rotation = Quaternion.Slerp(hand.rotation, target, SkateRide.Clamp((float)weight, 0, 1));
+        }
+        catch (Exception e)
+        {
+            RestoreGrabHand(hand, ref basis); basis.Ready = false;
+            Say("grab wrist posing unavailable: " + e.GetType().Name + "; animated hand retained");
+        }
     }
 
     private static void Aim(Transform bone, Transform child, Vector3 want)
@@ -586,6 +652,8 @@ public static class RiderRig
 
     private static void ResetPresentation()
     {
+        RestoreGrabHand(LHand, ref lGrabHand); RestoreGrabHand(RHand, ref rGrabHand);
+        lGrabFrame = rGrabFrame = default(SkateBoardPose); lGrabWeight = rGrabWeight = 0;
         SkateCapturedTricks.Reset();
         SkateFootContacts.Reset();
         footCalibrated = false; calibratedFootVersion = -1; FootSupportError = "";
@@ -659,6 +727,7 @@ public static class RiderRig
     public static void Frame(Vector3 feet, Vector3 up, bool legsOnly, float frameSeconds)
     {
         SkateCapturedTricks.ClearFrame();
+        lGrabFrame = rGrabFrame = default(SkateBoardPose); lGrabWeight = rGrabWeight = 0;
         if (!Bound || failed) return;
         if (SkateRide.Handplant) up = Vector3.up;
         try
@@ -971,10 +1040,19 @@ public static class RiderRig
                 upV = V(captured.RiderUp); leftSole = V(captured.LeftSoleUp); rightSole = V(captured.RightSoleUp);
                 SkateSurfaceRide.Record(captured.Pose, captured.Board, SkateGrabKind.None);
             }
+            if (!wall && !bodyFlip && !SkateActions.Owns && !SkateOldschoolRide.Active && !SkateCapturedTricks.HasFrame)
+            {
+                SkateRider.TryGrabHandFrame(input, Shown, true, out lGrabFrame, out lGrabWeight);
+                SkateRider.TryGrabHandFrame(input, Shown, false, out rGrabFrame, out rGrabWeight);
+            }
             Apply(upV, legsOnly, leftSole, rightSole);
             Applied++;
         }
-        catch (Exception e) { failed = true; Say("pose threw " + e.GetType().Name + ": " + e.Message); }
+        catch (Exception e)
+        {
+            RestoreGrabHand(LHand, ref lGrabHand); RestoreGrabHand(RHand, ref rGrabHand);
+            failed = true; Say("pose threw " + e.GetType().Name + ": " + e.Message);
+        }
     }
 
     // Reuse the measured production solver and the actual bone writer. The preview owns only
@@ -1196,6 +1274,8 @@ public static class RiderRig
             Limb(LUpper, LFore, LHand, joint[LHandJ], joint[LElbowJ], UpperArm, Forearm, "left hand");
             Limb(RUpper, RFore, RHand, joint[RHandJ], joint[RElbowJ], UpperArm, Forearm, "right hand");
         }
+        ApplyGrabHand(LHand, ref lGrabHand, lGrabFrame, legsOnly ? 0 : lGrabWeight);
+        ApplyGrabHand(RHand, ref rGrabHand, rGrabFrame, legsOnly ? 0 : rGrabWeight);
 
         if (!SkateCapturedTricks.HasFrame && OrdinarySupportedFeet()) FitEasedFooting(leftSole, rightSole);
         Limb(LHip, LKnee, LFoot, joint[LAnkleJ], joint[LKneeJ], Thigh, Shin, "left ankle");
