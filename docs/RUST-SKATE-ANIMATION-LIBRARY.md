@@ -39,6 +39,15 @@ than relaxing that adapter's flat-ground exclusions. Ground, rail and coping
 anchors must come from the active game action. Physics, board rotation, scoring,
 catch and landing remain game-owned; animation does not move the player root.
 
+For ordinary halfpipe airs, review the coupled rider and board through departure,
+free flight and re-entry into the transition. Do not automatically straighten the
+rider into a grind posture at the apex or merely because coping is nearby. Only
+an actually entered grind may own that transition; existing grind source does
+not establish a working in-game grind transition. Genuine landing preparation
+must follow the actual landing surface. The translated ground-crouch previews,
+including their later yaw-only correction, are rejected context examples, not
+approved air poses. A lifted static pose cannot validate the flight orientation.
+
 ## Use the actual board for visual contact review
 
 The primary runtime board is `SkateBoardMesh.CreateDetailed()`: its rounded
@@ -47,8 +56,12 @@ outline, concave and kicked nose/tail are part of the contact geometry.
 the current board builder. Do not silently substitute that model or a rectangular
 plank when claiming runtime contact accuracy.
 
-For the detailed mesh, transform each rest vertex with
+For the rigid detailed deck, transform each rest vertex with
 `world = liveFrame.Origin + liveRotation * (vertex - (0, 0.092, 0))`.
+The [truck rig](RUST-SKATE-BOARD-RIG.md) additionally requires the actual hanger
+transforms, attached wheel steering/spin and bushing deformation. Preserve its
+part hierarchy and fixed rest rotations; flattening it into the deck loses the
+coupled steering and suspension even when the outline is correct.
 Preserve the rider's mesh, weights and bind pose when changing the review board.
 Record the selected runtime board variant and geometry hash with the review.
 Fallback board variants need their own check if they are used by the client.
@@ -66,6 +79,10 @@ updated coverage record. Inspect normal-speed and slow playback from approach
 through landing and recovery, on the rigged mesh. Check finite fixed-length
 chains, contact continuity between source keys, visible penetration and pose
 jumps, correct hands/feet, regular/goofy and applicable travel/trick variants.
+An ankle must also turn in an anatomically plausible direction relative to its
+lower-leg and bind frame. Check bend, axial twist and the deformed cuff; sole-up
+angle or deck clearance alone cannot approve a shoe pose. Source-image depth
+ambiguities must be resolved with anatomical evidence before collision ranking.
 
 Exercise interruptions, a changed trick, bail, repeated actions and competing
 presentation owners. Dark catch may deliberately hold an inverted deck; drop-in

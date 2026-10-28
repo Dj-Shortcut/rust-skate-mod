@@ -21,6 +21,20 @@ namespace Shortcut.RustMod
         { clip = source; stance = side; left = l; right = r; }
         internal bool Matches(SkateCaptureClip source, SkateStance side) { return ReferenceEquals(clip, source) && stance == side; }
 
+        // Attached feet use the complete board frame. A free trajectory uses the
+        // upright riding carrier. Transport between these frames at the observed
+        // release/catch boundaries rather than jumping between coordinate systems.
+        // The middle of flight remains independent of the flipping board.
+        internal double FreeBoundaryWeight(int side, double sourceTime)
+        {
+            double span = Math.Min(.08, (caught[side] - release[side]) * .25);
+            if (span <= 0 || sourceTime < release[side] || sourceTime > caught[side]) return 0;
+            double edge = Math.Min(sourceTime - release[side], caught[side] - sourceTime);
+            if (edge >= span) return 0;
+            double u = Math.Max(0, edge / span);
+            return 1 - u * u * u * (10 + u * (-15 + 6 * u));
+        }
+
         public static bool TryCreate(SkateCapturePlayback playback, SkateRiderRig rig, SkateStance stance,
             SkateDeckFootFitter left, SkateDeckFootFitter right, out SkateCaptureFootSupport support, out string error)
         {
@@ -110,9 +124,10 @@ namespace Shortcut.RustMod
             return true;
         }
 
-        // Crossfading two individually supported poses does not preserve support
-        // on a concave deck. Refit only the feet the live sample says are attached.
-        public bool TryConform(SkateRiderRig rig, SkateCaptureFrame frame, out SkateCaptureFrame fitted, out string error)
+        // Crossfading does not preserve support on a concave deck. Attached feet
+        // retain their measured support; entry also clears a released shoe from
+        // the kicked nose using only a positive, geometry-measured offset.
+        public bool TryConform(SkateRiderRig rig, SkateCaptureFrame frame, out SkateCaptureFrame fitted, out string error, bool protectEntryFeet = false)
         {
             fitted = frame; var l = default(SkateVector); var r = default(SkateVector);
             SkateBoardPose foot; double amount; error = null;
@@ -124,11 +139,21 @@ namespace Shortcut.RustMod
                     !Fit(0, frame.Board, foot, out amount, out error)) return false;
                 l = frame.Board.Up * amount;
             }
+            else if (protectEntryFeet && TryFootFrame(frame.Pose.LeftAnkle, frame.Pose.LeftToe, frame.LeftSoleUp, out foot))
+            {
+                string ignored;
+                if (Fit(0, frame.Board, foot, out amount, out ignored)) l = frame.Board.Up * Math.Max(0, amount);
+            }
             if ((frame.Observation.Contacts & SkateCaptureContacts.RightFoot) != 0)
             {
                 if (!TryFootFrame(frame.Pose.RightAnkle, frame.Pose.RightToe, frame.RightSoleUp, out foot) ||
                     !Fit(1, frame.Board, foot, out amount, out error)) return false;
                 r = frame.Board.Up * amount;
+            }
+            else if (protectEntryFeet && TryFootFrame(frame.Pose.RightAnkle, frame.Pose.RightToe, frame.RightSoleUp, out foot))
+            {
+                string ignored;
+                if (Fit(1, frame.Board, foot, out amount, out ignored)) r = frame.Board.Up * Math.Max(0, amount);
             }
             SkateRiderPose pose;
             if (!TryShiftFeet(rig, frame.Pose, l, r, true, out pose, out error)) return false;
@@ -143,8 +168,20 @@ namespace Shortcut.RustMod
         public static bool TryShiftFeet(SkateRiderRig rig, SkateRiderPose body, SkateVector leftShift, SkateVector rightShift,
             bool adjustPelvis, out SkateRiderPose pose, out string error)
         {
+            return TrySetFeet(rig, body, body.LeftAnkle + leftShift, body.LeftToe + leftShift,
+                body.RightAnkle + rightShift, body.RightToe + rightShift, adjustPelvis, out pose, out error);
+        }
+
+        // Keep the foot frames fixed while the body recovers to ordinary riding.
+        // Re-solving a measured chain must transport its bend plane; projecting
+        // its old thigh directly onto a new ankle axis can collapse that plane.
+        public static bool TrySetFeet(SkateRiderRig rig, SkateRiderPose body, SkateVector la, SkateVector lt,
+            SkateVector ra, SkateVector rt, bool adjustPelvis, out SkateRiderPose pose, out string error)
+        {
             pose = body; error = null;
-            var la = body.LeftAnkle + leftShift; var ra = body.RightAnkle + rightShift;
+            if (!Finite(la.LengthSquared) || !Finite(lt.LengthSquared) || !Finite(ra.LengthSquared) || !Finite(rt.LengthSquared) ||
+                Math.Abs((lt - la).Length - rig.FootLength) > .00001 || Math.Abs((rt - ra).Length - rig.FootLength) > .00001)
+            { error = "Invalid measured foot targets."; return false; }
             var pelvis = body.Pelvis;
             if (adjustPelvis)
             {
@@ -156,15 +193,133 @@ namespace Shortcut.RustMod
                 { error = "Shaped-deck support exceeds measured leg reach."; return false; }
             }
             var shift = pelvis - body.Pelvis; var lh = body.LeftHip + shift; var rh = body.RightHip + shift;
-            SkateVector lk, rk;
-            if (!SkateOllieStyles.TryLimb(lh, la, rig.ThighLength, rig.ShinLength, body.LeftKnee - body.LeftHip, out lk, out error) ||
-                !SkateOllieStyles.TryLimb(rh, ra, rig.ThighLength, rig.ShinLength, body.RightKnee - body.RightHip, out rk, out error)) return false;
-            pose = new SkateRiderPose(pelvis, lh, rh, lk, rk, la, ra, body.LeftToe + leftShift, body.RightToe + rightShift,
+            SkateVector lk, rk, lp, rp;
+            if (!TryBendPlane(body.LeftHip, body.LeftKnee, body.LeftAnkle, lh, la, out lp) ||
+                !TryBendPlane(body.RightHip, body.RightKnee, body.RightAnkle, rh, ra, out rp))
+            { error = "Measured leg bend plane is underdetermined."; return false; }
+            if (!SkateOllieStyles.TryLimb(lh, la, rig.ThighLength, rig.ShinLength, lp, out lk, out error) ||
+                !SkateOllieStyles.TryLimb(rh, ra, rig.ThighLength, rig.ShinLength, rp, out rk, out error)) return false;
+            pose = new SkateRiderPose(pelvis, lh, rh, lk, rk, la, ra, lt, rt,
                 body.Chest + shift, body.Neck + shift, body.Head + shift, body.LeftShoulder + shift, body.RightShoulder + shift,
                 body.LeftElbow + shift, body.RightElbow + shift, body.LeftHand + shift, body.RightHand + shift,
                 body.PelvisForward, body.PelvisUp, body.ChestForward, body.ChestUp, body.HeadForward);
             return true;
         }
+
+        public static bool TryBendPlane(SkateVector sourceHip, SkateVector sourceKnee, SkateVector sourceAnkle,
+            SkateVector targetHip, SkateVector targetAnkle, out SkateVector bend)
+        {
+            bend = default(SkateVector);
+            var a = sourceAnkle - sourceHip; var b = targetAnkle - targetHip;
+            if (!Finite(a.LengthSquared) || !Finite(b.LengthSquared) || a.LengthSquared < 1e-12 || b.LengthSquared < 1e-12) return false;
+            a *= 1 / a.Length; b *= 1 / b.Length;
+            var thigh = sourceKnee - sourceHip;
+            var source = thigh - a * SkateVector.Dot(thigh, a);
+            double cosine = SkateVector.Dot(a, b);
+            if (!Finite(source.LengthSquared) || source.LengthSquared < 1e-12 || cosine < -.9995) return false;
+            var cross = SkateBoardPath.Cross(a, b);
+            bend = source + SkateBoardPath.Cross(cross, source) +
+                SkateBoardPath.Cross(cross, SkateBoardPath.Cross(cross, source)) * (1 / (1 + cosine));
+            return Finite(bend.LengthSquared) && bend.LengthSquared > 1e-12;
+        }
+
+        internal static bool TryBlendBendPlanes(SkateVector fromHip, SkateVector fromKnee, SkateVector fromAnkle,
+            SkateVector toHip, SkateVector toKnee, SkateVector toAnkle, SkateVector hip, SkateVector ankle,
+            double weight, out SkateVector bend)
+        {
+            bend = default(SkateVector); SkateVector a, b;
+            if (!TryBendPlane(fromHip, fromKnee, fromAnkle, hip, ankle, out a) ||
+                !TryBendPlane(toHip, toKnee, toAnkle, hip, ankle, out b)) return false;
+            bend = TurnDirection(a, b, weight, ankle - hip);
+            return Finite(bend.LengthSquared) && bend.LengthSquared > .5;
+        }
+
+        // Once both feet are planted, preserve the observed impact's bend
+        // planes, then return them to ordinary supported riding. Single-camera
+        // depth jitter must not twist a planted knee around its hip/ankle axis.
+        // Feet and torso are unchanged; this is explicit contact reconstruction.
+        public static bool TryGroundRecovery(SkateRiderRig rig, SkateRiderPose impact, SkateRiderPose ordinary,
+            SkateRiderPose body, SkateVector supportUp, double weight, double gazeWeight, out SkateRiderPose pose, out string error)
+        {
+            pose = body; error = null;
+            if (!Finite(weight) || weight < 0 || weight > 1 || !Finite(gazeWeight) || gazeWeight < 0 || gazeWeight > 1 ||
+                !Finite(impact.HeadForward.LengthSquared) || impact.HeadForward.LengthSquared < 1e-12 ||
+                !Finite(ordinary.HeadForward.LengthSquared) || ordinary.HeadForward.LengthSquared < 1e-12 ||
+                !Finite(supportUp.LengthSquared) || supportUp.LengthSquared < .5 ||
+                !Finite(body.ChestForward.LengthSquared) || body.ChestForward.LengthSquared < .5)
+            { error = "Invalid supported recovery blend."; return false; }
+            SkateVector la, lb, ra, rb, lk, rk;
+            if (!TryBendPlane(impact.LeftHip, impact.LeftKnee, impact.LeftAnkle, body.LeftHip, body.LeftAnkle, out la) ||
+                !TryBendPlane(ordinary.LeftHip, ordinary.LeftKnee, ordinary.LeftAnkle, body.LeftHip, body.LeftAnkle, out lb) ||
+                !TryBendPlane(impact.RightHip, impact.RightKnee, impact.RightAnkle, body.RightHip, body.RightAnkle, out ra) ||
+                !TryBendPlane(ordinary.RightHip, ordinary.RightKnee, ordinary.RightAnkle, body.RightHip, body.RightAnkle, out rb))
+            { error = "Supported recovery has an ambiguous knee plane."; return false; }
+            if (!SkateOllieStyles.TryLimb(body.LeftHip, body.LeftAnkle, rig.ThighLength, rig.ShinLength,
+                    TurnDirection(la, lb, weight, body.LeftAnkle - body.LeftHip), out lk, out error) ||
+                !SkateOllieStyles.TryLimb(body.RightHip, body.RightAnkle, rig.ThighLength, rig.ShinLength,
+                    TurnDirection(ra, rb, weight, body.RightAnkle - body.RightHip), out rk, out error)) return false;
+            var gaze = RecoveryGaze(impact.HeadForward, ordinary.HeadForward, body.ChestForward, supportUp, gazeWeight);
+            if (!Finite(gaze.LengthSquared) || Math.Abs(gaze.LengthSquared - 1) > .00001)
+            { error = "Supported recovery gaze is degenerate."; return false; }
+            pose = new SkateRiderPose(body.Pelvis, body.LeftHip, body.RightHip, lk, rk,
+                body.LeftAnkle, body.RightAnkle, body.LeftToe, body.RightToe, body.Chest, body.Neck, body.Head,
+                body.LeftShoulder, body.RightShoulder, body.LeftElbow, body.RightElbow, body.LeftHand, body.RightHand,
+                body.PelvisForward, body.PelvisUp, body.ChestForward, body.ChestUp,
+                gaze);
+            return true;
+        }
+
+        private static SkateVector TurnDirection(SkateVector a, SkateVector b, double weight, SkateVector legAxis)
+        {
+            a *= 1 / a.Length; b *= 1 / b.Length;
+            if (weight <= 0) return a;
+            if (weight >= 1) return b;
+            double cosine = Math.Max(-1, Math.Min(1, SkateVector.Dot(a, b)));
+            var axis = SkateBoardPath.Cross(a, b);
+            if (axis.LengthSquared < 1e-12)
+            {
+                if (cosine >= 0) return a;
+                // Both bend directions share the current leg's normal plane.
+                // Keep an antipodal turn in that plane as well.
+                axis = legAxis * (1 / legAxis.Length);
+            }
+            axis *= 1 / axis.Length;
+            double angle = Math.Acos(cosine) * weight, c = Math.Cos(angle), s = Math.Sin(angle);
+            return a * c + SkateBoardPath.Cross(axis, a) * s + axis * (SkateVector.Dot(axis, a) * (1 - c));
+        }
+
+        private static SkateVector RecoveryGaze(SkateVector start, SkateVector target, SkateVector chest, SkateVector support, double weight)
+        {
+            var up = support * (1 / support.Length);
+            start *= 1 / start.Length; target *= 1 / target.Length;
+            double sy = Math.Max(-1, Math.Min(1, SkateVector.Dot(start, up)));
+            double ty = Math.Max(-1, Math.Min(1, SkateVector.Dot(target, up)));
+            var b = target - up * ty;
+            if (b.LengthSquared < 1e-12) b = chest - up * SkateVector.Dot(chest, up);
+            b *= 1 / b.Length;
+            var a = start - up * sy;
+            if (a.LengthSquared < 1e-12) a = b;
+            a *= 1 / a.Length;
+            var facing = chest - up * SkateVector.Dot(chest, up);
+            if (facing.LengthSquared < 1e-12) facing = b;
+            facing *= 1 / facing.Length;
+            double turn = SignedHeading(a, b, up);
+            if (Math.Abs(Math.Abs(turn) - Math.PI) < .00001)
+                turn = Math.PI * (SkateVector.Dot(SkateBoardPath.Cross(up, a), facing) >= 0 ? 1 : -1);
+            var direction = a * Math.Cos(turn * weight) + SkateBoardPath.Cross(up, a) * Math.Sin(turn * weight);
+            // Yaw and elevation are independent. A near-opposite horizontal look
+            // must not take a shortest 3D arc through a vertical head dive.
+            double relative = SignedHeading(facing, direction, up);
+            double initial = Math.Abs(SignedHeading(facing, a, up));
+            double limit = Math.PI * .5 + Math.Max(0, initial - Math.PI * .5) * (1 - weight);
+            relative = Math.Max(-limit, Math.Min(limit, relative));
+            direction = facing * Math.Cos(relative) + SkateBoardPath.Cross(up, facing) * Math.Sin(relative);
+            double elevation = Math.Asin(sy) * (1 - weight) + Math.Asin(ty) * weight;
+            return direction * Math.Cos(elevation) + up * Math.Sin(elevation);
+        }
+
+        private static double SignedHeading(SkateVector a, SkateVector b, SkateVector up)
+        { return Math.Atan2(SkateVector.Dot(up, SkateBoardPath.Cross(a, b)), Math.Max(-1, Math.Min(1, SkateVector.Dot(a, b)))); }
 
         public static bool TryFootFrame(SkateVector ankle, SkateVector toe, SkateVector soleUp, out SkateBoardPose frame)
         {

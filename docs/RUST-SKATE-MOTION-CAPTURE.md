@@ -102,6 +102,22 @@ working capture. Replace the source paths and calibrate each actual attempt.
   feet retain source-derived headings. Zero, opposing adjacent or sole-parallel
   headings refuse conversion. Explicit planted headings can prevent model
   heel/toe noise from rotating a planted shoe; they remain authored estimates.
+- `feet.Left/Right.airHeadingKeys`: optional covering absolute authoring-frame
+  directions used only while that foot is free. Supply a bounded nonempty
+  `airHeadingProvenance`. Captured key-space reflection applies once. Zero or
+  sole-parallel directions, or adjacent turns above 150 degrees, refuse
+  conversion. These keys reconstruct a shoe frame; they do not establish
+  anatomically valid ankle twist or clearance against the rotating board.
+- `legs.Left/Right`: optional explicit bend-plane reconstruction containing
+  `poleKeys`, `provenance` and `uncertainty`. Supply 2–4096 covering direction keys
+  in absolute authoring space, before optional `body.authoredHeading`. Global
+  captured key-space reflection and side exchange apply once. The existing
+  measured-chain solve keeps hips and ankle targets unchanged. Zero, adjacent
+  turns above 150 degrees or a pole parallel to the current hip-to-ankle axis
+  refuse conversion. A declared valid pole can replace an underdetermined model
+  bend plane; it does not bypass actor/confidence gates or add an observation.
+  Reports retain this choice under `legBends`. Check visible knee location and
+  anatomical foot/calf orientation together, including planted feet.
 - `body.headAnchor`: optional `"nose"` (the unchanged default) or `"ears"`.
   The ear option uses the midpoint of model landmarks 7 and 8, rather than the
   nose, for the shoulder-midpoint-to-head direction. It requires a nonempty
@@ -183,8 +199,18 @@ working capture. Replace the source paths and calibrate each actual attempt.
   shrinking model segments. Opposing/degenerate directions fail for review.
   The default `"linear"` preserves earlier reconstruction behavior. Neither
   mode makes an incorrect or occluded source observation trustworthy.
+  Optional `recoverySmoothing` contains `start`, `full`, `passes` (1–4),
+  `provenance` and `uncertainty`. Its C2 window must start at or after Land and
+  reach full before the clip ends. It adds symmetric model interpolation only
+  inside that window. Raw detections/confidence and earlier airborne motion
+  remain unchanged. The report records the largest model-point change; pelvis
+  and contact curves remain separate reconstructions.
 - `sampleHz`: evaluation rate. Interpolation at 120 Hz does not make a 30 fps
-  source into 120 fps measured motion.
+  source into 120 fps measured motion. Check release/catch timestamps against
+  the actual output keys: interpolation across a free/contact boundary can
+  change the measured shoe calibration. For constant-rate footage, an integer
+  multiple of its exact frame rate aligns original-frame observations; fractional
+  observations and variable-rate footage still require an explicit boundary check.
 
 With `keySpace: "canonical"` (the default), body, board and contact keys are
 already regular and are not mirrored again. `keySpace: "captured"` explicitly
@@ -273,6 +299,17 @@ The existing charge pose remains authoritative before the requested trick is
 known. Catch and recovery cannot cause an early gameplay landing. A changed
 trick or interruption relinquishes capture presentation.
 
+The entry weight applies to the complete pose, including a foot still marked as
+Pop contact. Apply its measured deck-support fit after blending; pinning it
+directly to the source target would skip the entry weight and then jump back
+when its release removes that pin. Physical landing anchors remain pinned
+through recovery. During the initial crossfade, a released shoe with a supported
+projection also receives any positive measured clearance offset: blending toward
+a clear source trajectory can otherwise leave the shoe inside the kicked nose.
+This clearance applies only while entry weight is below one, preserves the
+observed contact mask and never pulls a free shoe down onto the deck. These
+adapter rules do not approve the source foot trajectory.
+
 Captured footing also requires measured profiles of the current visible shoes
 and the primary detailed deck geometry. The client collects bounded post-pose
 skin snapshots during ordinary flat-ground riding, separately for first- and
@@ -301,14 +338,32 @@ landing impact remains intact. This avoids compressing the whole leg-pose
 transition into a 0.12-second linear fade; it does not repair noisy source roots
 or drifting authored foot anchors by itself.
 
+The first observed landing records model-fitted board-local foot frames. They remain
+fixed during recovery and ordinary roll-away, including after capture ownership
+ends. A normal or mongo push releases only its moving foot. New actions, stance,
+rig or shoe-profile changes invalidate the corresponding placement. UI loss can
+retain ground support while the body leaves the captured pose with a short C2
+transition.
+
+Supported recovery explicitly reconstructs leg bend direction: it transports the
+first displayed landing's bend planes onto each current hip-to-ankle axis, then
+returns them to the ordinary supported planes with a C2 transition from 0.12 to
+0.47 seconds after landing. Feet, pelvis and torso retain their existing targets;
+this is not a new measured source observation. Gaze returns separately from 0.12
+to 0.72 seconds using heading and elevation, avoiding a vertical shortcut between
+opposite headings. Captured recovery limits displayed head yaw relative to the
+current chest; camera look remains unrestricted. Idle
+riding retains the measured rig's soft knees without adding an extra crouch.
+
 Presentation events may repeat a phase to describe individual foot contacts.
 The initial load has both feet attached; load/pop may release them separately,
 and air has neither foot attached. Catch contacts may accumulate separately;
 land and recovery require both feet. Reattachment before catch, contact loss
 after catch, reversed phases and simultaneous conflicting events are refused.
 The first event of each phase remains its timing anchor.
-The normal air clock starts at the recorded air phase, after both source feet
-have released. The first live pop frame retains the procedural pose.
+The first live pop frame retains the procedural pose. The normal route can use
+the known variants' Pop-to-Catch rotation clock to retain their individual foot
+releases. Callers without that option retain the Air-to-Catch clock.
 For the five known single-turn variants, playback precomputes an inverse of the
 source board's unwrapped Y*X*Z rotation progress. The pose follows the last
 unfinished live rotation instead of assuming a linear source-time relationship.
@@ -318,13 +373,21 @@ endpoint or a near-gimbal pitch keeps
 the previous linear clock. The startup status reports how many inverse clocks
 were accepted. The arrays are built during loading; lookup does not allocate.
 
-The first trusted air sample can already be partway through its rotation. It is
+For the Air-to-Catch clock, the first trusted air sample can already be partway through its rotation. It is
 held until live progress reaches that fraction, rather than moving back into a
 foot-supported pop pose. An unfinished source endpoint is likewise held before
 catch; it is not rescaled into a fictitious complete turn. Catch and landing
 still follow live state. Matching the limiting component does not independently
 match every source/live flip and yaw angle or prove foot clearance. Inspect the
 actual skin and runtime board shape before approving a pack.
+
+At free-foot release/catch boundaries, normal playback can transport the whole
+shoe frame between its upright carrier and the live board frame. A C2 window is
+limited to 80 ms or one quarter of the free interval at each edge; the middle of
+flight remains independent of the flipping board. This avoids a coordinate-frame
+jump, but neither repairs an incorrect source shoe pose nor guarantees that a
+presentation crossfade stays outside the board. Check ankle bend/twist and the
+actual skinned cuff as well as the sole and deck, including intermediate frames.
 
 The [full animation-library batches](RUST-SKATE-ANIMATION-LIBRARY.md) keep code,
 capture quality and native gameplay acceptance separate.

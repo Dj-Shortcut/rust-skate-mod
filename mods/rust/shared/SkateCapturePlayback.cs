@@ -99,11 +99,15 @@ namespace Shortcut.RustMod
         private readonly double load, pop, air, caught, land, recovery;
         private readonly double[] rotationTimes, rotationProgress;
         private readonly int rotationKeys;
+        private readonly double[] flightTimes, flightProgress;
+        private readonly int flightKeys;
         public bool UsesSourceRotationClock { get { return rotationKeys > 1; } }
+        public bool UsesSourceFlightClock { get { return flightKeys > 1; } }
         private SkateCapturePlayback(SkateCaptureClip clip, double[] times)
         {
             Clip = clip; load = times[1]; pop = times[2]; air = times[3]; caught = times[4]; land = times[5]; recovery = times[6];
             BuildRotationClock(clip, air, caught, out rotationTimes, out rotationProgress, out rotationKeys);
+            BuildRotationClock(clip, pop, caught, out flightTimes, out flightProgress, out flightKeys);
         }
         public static bool TryCreate(SkateCaptureClip clip, out SkateCapturePlayback playback, out string error)
         {
@@ -170,6 +174,18 @@ namespace Shortcut.RustMod
             // Land/recovery starts only from the caller's observed physical landing, never a source timestamp.
             return Math.Max(land, Math.Min(Clip.Duration, land + Math.Max(0, value)));
         }
+        public double FlightSourceTime(double value)
+        {
+            double p = Math.Max(0, Math.Min(.999999, value));
+            if (!UsesSourceFlightClock) return SourceTime(SkateCapturePhase.Air, value);
+            if (p <= flightProgress[0]) return flightTimes[0];
+            if (p >= flightProgress[flightKeys - 1]) return caught - .000001;
+            int low = 0, high = flightKeys - 1;
+            while (high - low > 1)
+            { int middle = (low + high) / 2; if (flightProgress[middle] <= p) low = middle; else high = middle; }
+            double u = (p - flightProgress[low]) / (flightProgress[high] - flightProgress[low]);
+            return Math.Min(caught - .000001, flightTimes[low] + u * (flightTimes[high] - flightTimes[low]));
+        }
         // Only these known, single-turn Y*X*Z tracks have an unambiguous inverse.
         // Unsupported, non-invertible, reversing or near-gimbal tracks retain the old
         // phase clock. Pack validation and gameplay rotation authority are unchanged.
@@ -233,7 +249,8 @@ namespace Shortcut.RustMod
         { return angle > 180 ? angle - 360 : angle < -180 ? angle + 360 : angle; }
         public bool TrySample(SkateCapturePhase phase, double value, SkateRiderRig rig, SkateStance stance,
             SkateBoardPose liveBoard, SkateVector liveHeading, SkateVector supportUp,
-            out SkateCaptureFrame shown, out string error, SkateCaptureFootSupport footSupport = null)
+            out SkateCaptureFrame shown, out string error, SkateCaptureFootSupport footSupport = null, bool includePopSequence = false,
+            bool adaptFreeFootBoundaries = false)
         {
             shown = default(SkateCaptureFrame); error = null;
             if (!SkateBoardPath.Valid(liveBoard) || !Finite(value) || (phase < SkateCapturePhase.Load || phase > SkateCapturePhase.Recovery))
@@ -241,7 +258,8 @@ namespace Shortcut.RustMod
             if (footSupport != null && !footSupport.Matches(Clip, stance))
             { error = "Captured foot support belongs to another clip or stance."; return false; }
             SkateCaptureFrame source;
-            if (!SkateCaptureSampler.TrySample(Clip, SourceTime(phase, value), rig, stance, out source, out error)) return false;
+            double sourceTime = includePopSequence && phase == SkateCapturePhase.Air ? FlightSourceTime(value) : SourceTime(phase, value);
+            if (!SkateCaptureSampler.TrySample(Clip, sourceTime, rig, stance, out source, out error)) return false;
             // The pack is canonical board space. Keep real pelvic facing/anticipation; hips are NOT a camera carrier.
             // Only the explicit body-spin descriptor removes source world heading. It has no shove,
             // so board forward isolates that heading even while its local longitudinal flip turns.
@@ -260,13 +278,23 @@ namespace Shortcut.RustMod
             { la = Point(source.Pose.LeftAnkle, source.Board, liveBoard); lt = Point(source.Pose.LeftToe, source.Board, liveBoard); leftUp = Rotate(source.LeftSoleUp, source.Board, liveBoard); }
             if ((contacts & SkateCaptureContacts.RightFoot) != 0)
             { ra = Point(source.Pose.RightAnkle, source.Board, liveBoard); rt = Point(source.Pose.RightToe, source.Board, liveBoard); rightUp = Rotate(source.RightSoleUp, source.Board, liveBoard); }
+            if (adaptFreeFootBoundaries && footSupport != null)
+            {
+                if ((contacts & SkateCaptureContacts.LeftFoot) == 0 &&
+                    !TryFreeBoundary(source.Pose.LeftAnkle, source.Pose.LeftToe, source.LeftSoleUp,
+                        source.Board, liveBoard, footSupport.FreeBoundaryWeight(0, sourceTime), ref la, ref lt, ref leftUp) ||
+                    (contacts & SkateCaptureContacts.RightFoot) == 0 &&
+                    !TryFreeBoundary(source.Pose.RightAnkle, source.Pose.RightToe, source.RightSoleUp,
+                        source.Board, liveBoard, footSupport.FreeBoundaryWeight(1, sourceTime), ref ra, ref rt, ref rightUp))
+                { error = "Capture release/catch has a degenerate foot frame."; return false; }
+            }
             if (footSupport != null)
             {
                 SkateBoardPose leftFoot, rightFoot; SkateVector leftFit, rightFit;
                 if (!SkateCaptureFootSupport.TryFootFrame(la, lt, leftUp, out leftFoot) ||
                     !SkateCaptureFootSupport.TryFootFrame(ra, rt, rightUp, out rightFoot))
                 { error = "Live captured foot frame is degenerate."; return false; }
-                if (!footSupport.TryOffsets(SourceTime(phase, value), contacts, liveBoard, leftFoot, rightFoot,
+                if (!footSupport.TryOffsets(sourceTime, contacts, liveBoard, leftFoot, rightFoot,
                     out leftFit, out rightFit, out error)) return false;
                 la += leftFit; lt += leftFit; ra += rightFit; rt += rightFit;
             }
@@ -274,9 +302,12 @@ namespace Shortcut.RustMod
             double reach = (rig.ThighLength + rig.ShinLength) * (footSupport == null ? 1 : SkateCaptureFootSupport.ReachShare);
             if (!SkateCaptureSampler.FitPelvis(body.Pelvis, la + hipOffset, ra - hipOffset, reach, out pelvis))
             { error = "Live board contacts exceed the measured capture reach bound."; return false; }
-            var shift = pelvis - body.Pelvis; var lh = body.LeftHip + shift; var rh = body.RightHip + shift; SkateVector lk, rk;
-            if (!SkateOllieStyles.TryLimb(lh, la, rig.ThighLength, rig.ShinLength, body.LeftKnee - body.LeftHip, out lk, out error) ||
-                !SkateOllieStyles.TryLimb(rh, ra, rig.ThighLength, rig.ShinLength, body.RightKnee - body.RightHip, out rk, out error)) return false;
+            var shift = pelvis - body.Pelvis; var lh = body.LeftHip + shift; var rh = body.RightHip + shift; SkateVector lk, rk, lp, rp;
+            if (!SkateCaptureFootSupport.TryBendPlane(body.LeftHip, body.LeftKnee, body.LeftAnkle, lh, la, out lp) ||
+                !SkateCaptureFootSupport.TryBendPlane(body.RightHip, body.RightKnee, body.RightAnkle, rh, ra, out rp))
+            { error = "Live board adaptation has an underdetermined leg bend plane."; return false; }
+            if (!SkateOllieStyles.TryLimb(lh, la, rig.ThighLength, rig.ShinLength, lp, out lk, out error) ||
+                !SkateOllieStyles.TryLimb(rh, ra, rig.ThighLength, rig.ShinLength, rp, out rk, out error)) return false;
             var pose = new SkateRiderPose(pelvis, lh, rh, lk, rk, la, ra, lt, rt, body.Chest + shift, body.Neck + shift, body.Head + shift,
                 body.LeftShoulder + shift, body.RightShoulder + shift, body.LeftElbow + shift, body.RightElbow + shift,
                 body.LeftHand + shift, body.RightHand + shift, body.PelvisForward, body.PelvisUp, body.ChestForward, body.ChestUp, body.HeadForward);
@@ -288,21 +319,27 @@ namespace Shortcut.RustMod
         }
         // A presentation crossfade must solve the measured chains again; point lerps alone shrink limbs.
         public static bool TryBlend(SkateRiderRig rig, SkateRiderPose from, SkateVector fromLeftUp, SkateVector fromRightUp,
-            SkateCaptureFrame target, double weight, out SkateCaptureFrame shown, out string error, bool pinFeet = false)
+            SkateCaptureFrame target, double weight, out SkateCaptureFrame shown, out string error, bool pinFeet = false,
+            SkateCaptureContacts pinContacts = SkateCaptureContacts.None)
         {
             shown = target; error = null;
-            if (!Finite(weight) || weight < 0 || weight > 1) { error = "Invalid capture transition weight."; return false; }
+            if (!Finite(weight) || weight < 0 || weight > 1 ||
+                (pinContacts & ~(SkateCaptureContacts.LeftFoot | SkateCaptureContacts.RightFoot)) != 0)
+            { error = "Invalid capture transition weight or foot mask."; return false; }
             if (weight >= 1) return true;
+            bool pinLeft = pinFeet || (pinContacts & SkateCaptureContacts.LeftFoot) != 0;
+            bool pinRight = pinFeet || (pinContacts & SkateCaptureContacts.RightFoot) != 0;
             var b = target.Pose;
             var pelvis = Lerp(from.Pelvis, b.Pelvis, weight);
             var across = Unit(Lerp(from.RightHip - from.LeftHip, b.RightHip - b.LeftHip, weight));
             var pu = Unit(Project(Lerp(from.PelvisUp, b.PelvisUp, weight), across));
             var cu = Unit(Lerp(from.ChestUp, b.ChestUp, weight));
             var shoulders = Unit(Project(Lerp(from.RightShoulder - from.LeftShoulder, b.RightShoulder - b.LeftShoulder, weight), cu));
-            var la = pinFeet ? b.LeftAnkle : Lerp(from.LeftAnkle, b.LeftAnkle, weight);
-            var ra = pinFeet ? b.RightAnkle : Lerp(from.RightAnkle, b.RightAnkle, weight);
+            var la = pinLeft ? b.LeftAnkle : Lerp(from.LeftAnkle, b.LeftAnkle, weight);
+            var ra = pinRight ? b.RightAnkle : Lerp(from.RightAnkle, b.RightAnkle, weight);
             var hipOffset = across * (rig.HipWidth * .5); SkateVector fitted;
-            if (!SkateCaptureSampler.FitPelvis(pelvis, la + hipOffset, ra - hipOffset, rig.ThighLength + rig.ShinLength, out fitted))
+            double reach = (rig.ThighLength + rig.ShinLength) * (pinLeft || pinRight ? SkateCaptureFootSupport.ReachShare : 1);
+            if (!SkateCaptureSampler.FitPelvis(pelvis, la + hipOffset, ra - hipOffset, reach, out fitted))
             { error = "Capture transition cannot preserve the measured leg contacts."; return false; }
             var blendFit = fitted - pelvis; pelvis = fitted; var lh = pelvis - hipOffset; var rh = pelvis + hipOffset;
             var chest = pelvis + cu * rig.SpineLength; var neck = pelvis + cu * (rig.SpineLength * 1.12);
@@ -311,14 +348,19 @@ namespace Shortcut.RustMod
             var ls = shoulderCentre - shoulders * (rig.ShoulderWidth * .5); var rs = shoulderCentre + shoulders * (rig.ShoulderWidth * .5);
             var leftHand = BoundHand(ls, Lerp(from.LeftHand, b.LeftHand, weight), rig.UpperArmLength + rig.ForearmLength);
             var rightHand = BoundHand(rs, Lerp(from.RightHand, b.RightHand, weight), rig.UpperArmLength + rig.ForearmLength);
-            var lu = pinFeet ? target.LeftSoleUp : Unit(Lerp(fromLeftUp, target.LeftSoleUp, weight));
-            var ru = pinFeet ? target.RightSoleUp : Unit(Lerp(fromRightUp, target.RightSoleUp, weight));
-            var lt = pinFeet ? b.LeftToe : la + Unit(Project(Lerp(from.LeftToe - from.LeftAnkle, b.LeftToe - b.LeftAnkle, weight), lu)) * rig.FootLength;
-            var rt = pinFeet ? b.RightToe : ra + Unit(Project(Lerp(from.RightToe - from.RightAnkle, b.RightToe - b.RightAnkle, weight), ru)) * rig.FootLength;
-            SkateVector lk, rk, le, re;
+            var lu = pinLeft ? target.LeftSoleUp : Unit(Lerp(fromLeftUp, target.LeftSoleUp, weight));
+            var ru = pinRight ? target.RightSoleUp : Unit(Lerp(fromRightUp, target.RightSoleUp, weight));
+            var lt = pinLeft ? b.LeftToe : la + Unit(Project(Lerp(from.LeftToe - from.LeftAnkle, b.LeftToe - b.LeftAnkle, weight), lu)) * rig.FootLength;
+            var rt = pinRight ? b.RightToe : ra + Unit(Project(Lerp(from.RightToe - from.RightAnkle, b.RightToe - b.RightAnkle, weight), ru)) * rig.FootLength;
+            SkateVector lk, rk, le, re, lp, rp;
+            if (!SkateCaptureFootSupport.TryBlendBendPlanes(from.LeftHip, from.LeftKnee, from.LeftAnkle,
+                    b.LeftHip, b.LeftKnee, b.LeftAnkle, lh, la, weight, out lp) ||
+                !SkateCaptureFootSupport.TryBlendBendPlanes(from.RightHip, from.RightKnee, from.RightAnkle,
+                    b.RightHip, b.RightKnee, b.RightAnkle, rh, ra, weight, out rp))
+            { error = "Capture transition has an underdetermined leg bend plane."; return false; }
             if (across.LengthSquared < .9 || pu.LengthSquared < .9 || cu.LengthSquared < .9 || shoulders.LengthSquared < .9 || lu.LengthSquared < .9 || ru.LengthSquared < .9 ||
-                !SkateOllieStyles.TryLimb(lh, la, rig.ThighLength, rig.ShinLength, Lerp(from.LeftKnee - from.LeftHip, b.LeftKnee - b.LeftHip, weight), out lk, out error) ||
-                !SkateOllieStyles.TryLimb(rh, ra, rig.ThighLength, rig.ShinLength, Lerp(from.RightKnee - from.RightHip, b.RightKnee - b.RightHip, weight), out rk, out error) ||
+                !SkateOllieStyles.TryLimb(lh, la, rig.ThighLength, rig.ShinLength, lp, out lk, out error) ||
+                !SkateOllieStyles.TryLimb(rh, ra, rig.ThighLength, rig.ShinLength, rp, out rk, out error) ||
                 !SkateOllieStyles.TryLimb(ls, leftHand, rig.UpperArmLength, rig.ForearmLength, Lerp(from.LeftElbow - from.LeftShoulder, b.LeftElbow - b.LeftShoulder, weight), out le, out error) ||
                 !SkateOllieStyles.TryLimb(rs, rightHand, rig.UpperArmLength, rig.ForearmLength, Lerp(from.RightElbow - from.RightShoulder, b.RightElbow - b.RightShoulder, weight), out re, out error))
             { if (error == null) error = "Capture transition frame is degenerate."; return false; }
@@ -345,6 +387,24 @@ namespace Shortcut.RustMod
         }
         private static SkateVector BoundHand(SkateVector shoulder, SkateVector hand, double radius)
         { var d = hand - shoulder; return d.Length > radius ? shoulder + d * ((radius - 1e-9) / d.Length) : hand; }
+        private static bool TryFreeBoundary(SkateVector sourceAnkle, SkateVector sourceToe, SkateVector sourceUp,
+            SkateBoardPose sourceBoard, SkateBoardPose liveBoard, double weight,
+            ref SkateVector ankle, ref SkateVector toe, ref SkateVector soleUp)
+        {
+            if (weight <= 0) return true;
+            var mappedAnkle = Point(sourceAnkle, sourceBoard, liveBoard);
+            var mappedToe = Point(sourceToe, sourceBoard, liveBoard);
+            var mappedUp = Rotate(sourceUp, sourceBoard, liveBoard);
+            SkateBoardPose free, attached;
+            if (!SkateCaptureFootSupport.TryFootFrame(ankle, toe, soleUp, out free) ||
+                !SkateCaptureFootSupport.TryFootFrame(mappedAnkle, mappedToe, mappedUp, out attached)) return false;
+            var localToe = Local(toe - ankle, free);
+            var rotation = SkateCaptureRotation.Slerp(FrameRotation(free), FrameRotation(attached), weight);
+            ankle = Lerp(ankle, mappedAnkle, weight);
+            toe = ankle + rotation.Rotate(localToe);
+            soleUp = rotation.Rotate(new SkateVector(0, 1, 0));
+            return true;
+        }
         private static SkateVector Project(SkateVector v, SkateVector normal) { return v - normal * SkateVector.Dot(v, normal); }
         private static SkateVector Lerp(SkateVector a, SkateVector b, double t) { return a + (b - a) * t; }
         private static SkateVector Local(SkateVector v, SkateBoardPose f)

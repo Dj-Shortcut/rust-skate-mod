@@ -716,7 +716,9 @@ public static class RiderRig
             var inAir = SkateRide.Jumped ? 0.2f + (SkateBoard.Pop + pitchRise) / (float)SkatePose.CrouchDrop : 0.45f;
             var shownGrab = mode == RideMode.Air && !wall && !SkateActions.Owns && !SkateOldschoolRide.Active ? ShownGrab : SkateGrabKind.None;
             if (shownGrab != SkateGrabKind.None) inAir += (0.95f - inAir) * (contact.Initialized ? (float)contact.GrabWeight : 1f);
-            var want = mode == RideMode.Air ? inAir : mode == RideMode.Grind ? GrindCrouch(SkateRide.GrindKind) : SkateRide.Braking ? 0.4f : 0.12f;
+            // Measured riding height already leaves soft knees. An extra idle
+            // crouch made a rider who had stood up after landing squat again.
+            var want = mode == RideMode.Air ? inAir : mode == RideMode.Grind ? GrindCrouch(SkateRide.GrindKind) : SkateRide.Braking ? 0.4f : 0f;
             if (wall) want = .55f;
             else if (SkateSurfaceRide.WallieWeight > 0) want = Math.Max(want, .25f + .55f * SkateSurfaceRide.WallieWeight);
             if (SkateOldschoolRide.Active && SkateOldschoolRide.Kind == SkateOldschoolKind.Caveman &&
@@ -929,6 +931,13 @@ public static class RiderRig
                 leftSole = rightSole = Vector3.Lerp(upV, deckUp, SkateOldschoolRide.FootContact).normalized;
             }
             if (wall) leftSole = rightSole = V(wallDeck.Up);
+            SkateRiderPose plantedPose; SkateVector plantedLeftUp, plantedRightUp; SkateCaptureContacts plantedContacts;
+            if (SkateCapturedTricks.TryGroundedFooting(Rig, SkateRig.LocalT, pose, V(leftSole), V(rightSole), out plantedPose, out plantedLeftUp, out plantedRightUp, out plantedContacts))
+            {
+                pose = plantedPose; leftSole = V(plantedLeftUp); rightSole = V(plantedRightUp); pinHips = true;
+                pinLeft |= (plantedContacts & SkateCaptureContacts.LeftFoot) != 0;
+                pinRight |= (plantedContacts & SkateCaptureContacts.RightFoot) != 0;
+            }
             FitProceduralFooting(ref pose, leftSole, rightSole);
             Shown = pose;
             Ease(pose, plane, toToes, upV, new Vector3((float)fx, (float)fy, (float)fz), now, frameSeconds, pinL, pinR);
