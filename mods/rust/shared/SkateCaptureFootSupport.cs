@@ -15,6 +15,7 @@ namespace Shortcut.RustMod
         public const double LandingImpactSeconds = .065, LandingReleaseSeconds = .30;
         public const double LandingPriorInternalDegrees = 127.5, LandingMaximumDropShare = .14 / .87;
         public const double CatchPreparationSeconds = .04, CatchPriorInternalDegrees = 145;
+        public const double SupportedCatchPreparationSeconds = .12;
         public const string LandingPriorProvenance = "Authored minimum catch preparation and landing absorption; fixed feet and canonical rig, not measured capture.";
         public const string SupportedTorsoProvenance = "Authored BS180 supported torso cleanup for ambiguous source lean; not measured capture.";
         public const string SupportedKneeProvenance = "Authored BS180 supported crouch; 100-degree internal knee target and toe-directed bend planes, not measured capture.";
@@ -215,9 +216,10 @@ namespace Shortcut.RustMod
             return true;
         }
 
-        public static double CatchPreparationWeight(double secondsSinceCatch)
+        public static double CatchPreparationWeight(double secondsSinceCatch, double blendSeconds = CatchPreparationSeconds)
         {
-            double u = Math.Max(0, Math.Min(1, secondsSinceCatch / CatchPreparationSeconds));
+            if (!Finite(secondsSinceCatch) || !Finite(blendSeconds) || blendSeconds <= 0) return double.NaN;
+            double u = Math.Max(0, Math.Min(1, secondsSinceCatch / blendSeconds));
             return Math.Max(0, Math.Min(1, u * u * u * (10 + u * (-15 + 6 * u))));
         }
 

@@ -452,8 +452,9 @@ authored prior and use the same `SkateCaptureFootSupport.TryCatchPreparation` an
 approval remain separate.
 
 The nollie BS180 heelflip uses a deeper authored supported profile: a 100-degree
-internal knee target in Catch and at impact, with the same entry/release clock,
-drop cap and fixed feet. Its knee planes ease toward the ordinary toe-directed
+internal knee target in Catch and at impact. Its deeper catch eases in over
+0.12 seconds, retaining the same impact/release clock, drop cap and fixed feet.
+Its knee planes ease toward the ordinary toe-directed
 guides because retaining the ambiguous source planes still looked straight.
 Normal 360 Flip uses a 135-degree catch target with the default landing target
 and source knee planes. The other families keep the default angles and planes.

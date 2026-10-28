@@ -424,7 +424,8 @@ public static class SkateCapturedTricks
             // Start only after the source return and both real catch contacts.
             // Do not anticipate impact by altering free feet or an active flip.
             if (preparedAt < 0) preparedAt = now;
-            catchPreparationWeight = SkateCaptureFootSupport.CatchPreparationWeight(now - preparedAt);
+            catchPreparationWeight = SkateCaptureFootSupport.CatchPreparationWeight(now - preparedAt,
+                supportedKneePlanes ? SkateCaptureFootSupport.SupportedCatchPreparationSeconds : SkateCaptureFootSupport.CatchPreparationSeconds);
             SkateRiderPose prepared; SkateVector preparationShift;
             if (!SkateCaptureFootSupport.TryCatchPreparation(rig, frame.Pose, frame.RiderUp, catchPreparationWeight,
                 out prepared, out preparationShift, out error, catchKneeDegrees, supportedKneePlanes))
