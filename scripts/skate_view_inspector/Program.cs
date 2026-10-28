@@ -27,8 +27,8 @@ try
         }
     }
     paths = paths.Distinct(StringComparer.Ordinal).ToList();
-    if (paths.Count is < 1 or > 16 || string.IsNullOrWhiteSpace(build) || build.Length > 128 || output == null)
-        throw new ArgumentException("Supply 1..16 assemblies, a build label of at most 128 characters and a new output path.");
+    if (paths.Count is < 1 or > 256 || string.IsNullOrWhiteSpace(build) || build.Length > 128 || output == null)
+        throw new ArgumentException("Supply 1..256 assemblies, a build label of at most 128 characters and a new output path.");
     if (File.Exists(output)) throw new ArgumentException("Output exists; choose a new report path.");
 
     var reports = paths.Select(path => Inspect(path, limit)).ToArray();

@@ -20,11 +20,18 @@ is released. None of this is part of `AcquireRootProxy`: the historical mount
 refusal and unavailable view binding are separate failures.
 
 The privately cached 26 October game/Core wrappers contain no method definition
-named exactly `SetViewVars`. Their selected player/input/eyes declarations do not
-provide a proven replacement. This finding is limited to those files; it is not
-an inspection of the next installed Windows build. Generic/obfuscated member
-names and erased object types do not establish native semantics. No guessed
-Quaternion method has been substituted, and no compass fix is claimed.
+named exactly `SetViewVars`. A later diagnostic generation used the verified
+28 October 2026 Windows client and Unity 6000.3.15 inputs. The diagnostic run disabled
+the cross-reference cache and produced 191 managed assemblies. Its metadata
+traversal also found no method definition named exactly `SetViewVars` across
+those 191 assemblies.
+
+That output is **diagnostic only**: 6,853 method bodies failed restoration, and the
+cross-reference cache is incomplete. It must not be installed or treated as a
+validated interop set. Metadata can establish declarations even when native
+callability is unproven. Obfuscated names and erased object members in the
+player/input/eyes declarations do not identify an equivalent view update. No
+guessed Quaternion method has been substituted, and no compass fix is claimed.
 
 ## Inspect a matching interop set without starting Rust
 
@@ -71,7 +78,8 @@ their declared members, and named/signature clues. Missing types are explicit.
 Those clues are **metadata, not replacement bindings**; even the expected name
 and signature would not prove native callability or compass behavior.
 
-Input is limited to 16 assemblies of at most 256 MiB each. Member/match lists
+Input is limited to 256 assemblies of at most 256 MiB each, so a 191-assembly
+diagnostic set can be inspected in one invocation. Member/match lists
 default to 32 entries each (`--max-members 1..128`); total counts and truncation
 are explicit. A zero count is scoped to the supplied files. Truncated lists
 must not be treated as complete; the inspector does not resolve dependencies or
