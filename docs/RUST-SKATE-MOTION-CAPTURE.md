@@ -512,6 +512,15 @@ Pop-to-Catch inverse can still drive the normal route. The startup field
 `source pop-to-catch clocks` identifies that route; a zero Air-clock count alone
 does not mean the normal route uses a linear source clock.
 
+The normal `hardflip` presentation selects exactly an ollie with a +360-degree
+flip and +180-degree frontside shove, with no switch, tail-leading or body/spin
+modifier. This matches the existing gameplay classifier. Its canonical source
+clock expects +360 roll and -180 yaw. Both active axes must pass the same inverse
+guards; an opposite-yaw or otherwise ambiguous source retains the phase-clock
+fallback. Registration and a readable pack do not establish correct free-foot
+motion, catch or visual acceptance. The captured frontside scoop and toe flick
+need their own reviewed source and both-stance normal-route inspection.
+
 For the Air-to-Catch clock, the first trusted air sample can already be partway through its rotation. It is
 held until live progress reaches that fraction, rather than moving back into a
 foot-supported pop pose. An unfinished source endpoint is likewise held before
