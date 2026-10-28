@@ -451,6 +451,15 @@ authored prior and use the same `SkateCaptureFootSupport.TryCatchPreparation` an
 `TryLandingAbsorption` implementations as normal riding. Source packs and their
 approval remain separate.
 
+The nollie BS180 heelflip also has an explicitly authored supported-torso
+cleanup for its unreliable filmed lean. From Catch through recovery, a 0.12-second
+entry eases the upper body toward a 30-degree lean, with at most 25 degrees of
+correction. It rotates the chest/arm chain together around the pelvis; the helper
+retains the pelvis heading, leg and foot points, and solved world gaze. Board
+rotation, contacts, landing and approval gates are unchanged. Review metadata
+must include `SupportedTorsoProvenance`; this is visual reconstruction, not a
+source observation or acceptance of the entire BS180 clip.
+
 Presentation events may repeat a phase to describe individual foot contacts.
 The initial load has both feet attached; load/pop may release them separately,
 and air has neither foot attached. Catch contacts may accumulate separately;

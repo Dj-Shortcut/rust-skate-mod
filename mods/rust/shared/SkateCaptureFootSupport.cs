@@ -16,6 +16,7 @@ namespace Shortcut.RustMod
         public const double LandingPriorInternalDegrees = 127.5, LandingMaximumDropShare = .14 / .87;
         public const double CatchPreparationSeconds = .04, CatchPriorInternalDegrees = 145;
         public const string LandingPriorProvenance = "Authored minimum catch preparation and landing absorption; fixed feet and canonical rig, not measured capture.";
+        public const string SupportedTorsoProvenance = "Authored BS180 supported torso cleanup for ambiguous source lean; not measured capture.";
         private readonly SkateCaptureClip clip;
         private readonly SkateStance stance;
         private readonly SkateDeckFootFitter left, right;
@@ -388,6 +389,45 @@ namespace Shortcut.RustMod
                 gaze);
             return true;
         }
+
+        public static bool TrySupportedTorso(SkateRiderPose body, SkateVector supportUp, double secondsSinceCatch,
+            out SkateRiderPose pose, out string error)
+        {
+            pose = body; error = null;
+            var torso = body.Neck - body.Pelvis;
+            if (!Finite(secondsSinceCatch) || !Finite(torso.LengthSquared) || torso.LengthSquared < 1e-12 ||
+                !Finite(supportUp.LengthSquared) || supportUp.LengthSquared < .5)
+            { error = "Invalid authored supported torso frame."; return false; }
+            var from = torso * (1 / torso.Length); var up = supportUp * (1 / supportUp.Length);
+            double angle = Math.Acos(Math.Max(-1, Math.Min(1, SkateVector.Dot(from, up))));
+            double u = Math.Max(0, Math.Min(1, secondsSinceCatch / .12));
+            double weight = u * u * u * (10 + u * (-15 + 6 * u));
+            double turn = Math.Min(25 * Math.PI / 180, Math.Max(0, angle - 30 * Math.PI / 180)) * weight;
+            if (turn <= 0) return true;
+            var axis = SkateBoardPath.Cross(from, up);
+            if (axis.LengthSquared < 1e-12)
+            { error = "Authored supported torso swing is ambiguous."; return false; }
+            axis *= 1 / axis.Length;
+            double c = Math.Cos(turn), s = Math.Sin(turn);
+            var chest = body.Pelvis + SwingVector(body.Chest - body.Pelvis, axis, c, s);
+            var neck = body.Pelvis + SwingVector(body.Neck - body.Pelvis, axis, c, s);
+            // Rotate the upper-body chain as a unit. Keep the source pelvis
+            // heading, all leg/foot points and the already solved world gaze.
+            pose = new SkateRiderPose(body.Pelvis, body.LeftHip, body.RightHip, body.LeftKnee, body.RightKnee,
+                body.LeftAnkle, body.RightAnkle, body.LeftToe, body.RightToe, chest, neck, neck + body.Head - body.Neck,
+                body.Pelvis + SwingVector(body.LeftShoulder - body.Pelvis, axis, c, s),
+                body.Pelvis + SwingVector(body.RightShoulder - body.Pelvis, axis, c, s),
+                body.Pelvis + SwingVector(body.LeftElbow - body.Pelvis, axis, c, s),
+                body.Pelvis + SwingVector(body.RightElbow - body.Pelvis, axis, c, s),
+                body.Pelvis + SwingVector(body.LeftHand - body.Pelvis, axis, c, s),
+                body.Pelvis + SwingVector(body.RightHand - body.Pelvis, axis, c, s),
+                body.PelvisForward, body.PelvisUp, SwingVector(body.ChestForward, axis, c, s),
+                SwingVector(body.ChestUp, axis, c, s), body.HeadForward);
+            return true;
+        }
+
+        private static SkateVector SwingVector(SkateVector v, SkateVector axis, double c, double s)
+        { return v * c + SkateBoardPath.Cross(axis, v) * s + axis * (SkateVector.Dot(axis, v) * (1 - c)); }
 
         private static SkateVector TurnDirection(SkateVector a, SkateVector b, double weight, SkateVector legAxis)
         {

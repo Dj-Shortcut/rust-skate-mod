@@ -457,6 +457,15 @@ public static class SkateCapturedTricks
                 frame.HasEvent, frame.Observation, frame.PelvisCorrection + absorptionShift,
                 frame.LeftHandCorrection, frame.RightHandCorrection, frame.RiderUp);
         }
+        if (active.SourceMovementKind == "nollie-backside-180-heelflip" && (phase == SkateCapturePhase.Catch || landed))
+        {
+            SkateRiderPose supported;
+            double sinceCatch = caughtAt >= 0 ? now - caughtAt - catchSourceLead : now - landedAt;
+            if (!SkateCaptureFootSupport.TrySupportedTorso(frame.Pose, frame.RiderUp, sinceCatch, out supported, out error))
+            { Refuse(nextToken, error); return false; }
+            frame = new SkateCaptureFrame(supported, frame.Board, frame.Rotation, frame.LeftSoleUp, frame.RightSoleUp,
+                frame.HasEvent, frame.Observation, frame.PelvisCorrection, frame.LeftHandCorrection, frame.RightHandCorrection, frame.RiderUp);
+        }
         if (phase == SkateCapturePhase.Air) { previousAirSourceTime = active.FlightSourceTime(value); previousAirProgress = value; }
         previous = frame; previousCarrier = carrier; previousAt = now;
         displayed = board; return true;
