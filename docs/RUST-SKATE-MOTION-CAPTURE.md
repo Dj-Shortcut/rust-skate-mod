@@ -112,6 +112,19 @@ working capture. Replace the source paths and calibrate each actual attempt.
   unchanged-format pack; the binary does not add an authoring field. This option never promotes
   confidence or grants visual/native approval. Omitting it preserves the
   existing reconstruction path.
+- `body.authoredHeading`: optional, uncertain correction of a common reconstructed
+  camera-heading error. It requires `yawKeys` (`t`, `degrees`), `provenance` and
+  `uncertainty`. Supply 2–32 increasing keys within the clip, bounded to ±90°,
+  with zero at both window ends; adjacent changes must not exceed 90°.
+  Quintic interpolation rotates the complete solved rider about the unchanged
+  board origin, after the existing filters, IK and head authoring. All joint
+  points, directions and sole normals share that one transform; relative body
+  twist and measured chain lengths remain intact. Original camera/foot/root
+  keys, board rotation, events and confidence remain unchanged. Outside the
+  window the original output is exact. Captured Goofy key space mirrors the
+  heading sign once. Metadata and quality retain the reconstruction and affected
+  times. This is not measured camera motion, a body-spin gameplay action or an
+  approval; compare the resulting motion with the source before using it.
 - `board.positionKeys`: board deck-top origin, in meters.
 - `board.orientation`: full quaternion XYZW or unwrapped Euler degree keys.
   `order` declares Euler order. Continuous 360/720-degree keys preserve complete
@@ -236,6 +249,25 @@ the full live deck frame; it is not added to the game's rotations a second time.
 The existing charge pose remains authoritative before the requested trick is
 known. Catch and recovery cannot cause an early gameplay landing. A changed
 trick or interruption relinquishes capture presentation.
+
+Captured footing also requires measured profiles of the current visible shoes
+and the primary detailed deck geometry. The client collects bounded post-pose
+skin snapshots during ordinary flat-ground riding, separately for first- and
+third-person views. Unsupported, unreadable, morphing or nonrigid foot patches
+remain unavailable; skating retains its procedural route. View/model changes
+invalidate the corresponding fit rather than reusing another shoe's dimensions.
+No fixed assumed shoe thickness is substituted.
+
+The support fit uses the actual concave/kicked deck triangles. It shifts declared
+contacts along the deck normal and solves the measured leg chains again. The
+same model calibration continues through free-foot intervals, and attached feet
+are refitted after presentation blending. Bounded pelvis fitting leaves a small
+reach reserve before the native writer's straight-knee clamp, preserving the
+requested ankle contact instead of silently shortening it. This does not declare a free foot to
+be attached, change a catch/landing event or move the player. The native collector
+and fitting source require native verification; a passing companion mesh check
+does not establish clearance for Rust's boots. Free-foot motion must still be
+checked against the rotating board, not merely at attached contact samples.
 
 Presentation events may repeat a phase to describe individual foot contacts.
 The initial load has both feet attached; load/pop may release them separately,

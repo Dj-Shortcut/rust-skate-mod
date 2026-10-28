@@ -222,11 +222,13 @@ namespace Shortcut.RustMod
         { return angle > 180 ? angle - 360 : angle < -180 ? angle + 360 : angle; }
         public bool TrySample(SkateCapturePhase phase, double value, SkateRiderRig rig, SkateStance stance,
             SkateBoardPose liveBoard, SkateVector liveHeading, SkateVector supportUp,
-            out SkateCaptureFrame shown, out string error)
+            out SkateCaptureFrame shown, out string error, SkateCaptureFootSupport footSupport = null)
         {
             shown = default(SkateCaptureFrame); error = null;
             if (!SkateBoardPath.Valid(liveBoard) || !Finite(value) || (phase < SkateCapturePhase.Load || phase > SkateCapturePhase.Recovery))
             { error = "Invalid live capture presentation frame."; return false; }
+            if (footSupport != null && !footSupport.Matches(Clip, stance))
+            { error = "Captured foot support belongs to another clip or stance."; return false; }
             SkateCaptureFrame source;
             if (!SkateCaptureSampler.TrySample(Clip, SourceTime(phase, value), rig, stance, out source, out error)) return false;
             // The pack is canonical board space. Keep real pelvic facing/anticipation; hips are NOT a camera carrier.
@@ -247,8 +249,19 @@ namespace Shortcut.RustMod
             { la = Point(source.Pose.LeftAnkle, source.Board, liveBoard); lt = Point(source.Pose.LeftToe, source.Board, liveBoard); leftUp = Rotate(source.LeftSoleUp, source.Board, liveBoard); }
             if ((contacts & SkateCaptureContacts.RightFoot) != 0)
             { ra = Point(source.Pose.RightAnkle, source.Board, liveBoard); rt = Point(source.Pose.RightToe, source.Board, liveBoard); rightUp = Rotate(source.RightSoleUp, source.Board, liveBoard); }
+            if (footSupport != null)
+            {
+                SkateBoardPose leftFoot, rightFoot; SkateVector leftFit, rightFit;
+                if (!SkateCaptureFootSupport.TryFootFrame(la, lt, leftUp, out leftFoot) ||
+                    !SkateCaptureFootSupport.TryFootFrame(ra, rt, rightUp, out rightFoot))
+                { error = "Live captured foot frame is degenerate."; return false; }
+                if (!footSupport.TryOffsets(SourceTime(phase, value), contacts, liveBoard, leftFoot, rightFoot,
+                    out leftFit, out rightFit, out error)) return false;
+                la += leftFit; lt += leftFit; ra += rightFit; rt += rightFit;
+            }
             var hipRight = Unit(body.RightHip - body.LeftHip); var hipOffset = hipRight * (rig.HipWidth * .5); SkateVector pelvis;
-            if (!SkateCaptureSampler.FitPelvis(body.Pelvis, la + hipOffset, ra - hipOffset, rig.ThighLength + rig.ShinLength, out pelvis))
+            double reach = (rig.ThighLength + rig.ShinLength) * (footSupport == null ? 1 : SkateCaptureFootSupport.ReachShare);
+            if (!SkateCaptureSampler.FitPelvis(body.Pelvis, la + hipOffset, ra - hipOffset, reach, out pelvis))
             { error = "Live board contacts exceed the measured capture reach bound."; return false; }
             var shift = pelvis - body.Pelvis; var lh = body.LeftHip + shift; var rh = body.RightHip + shift; SkateVector lk, rk;
             if (!SkateOllieStyles.TryLimb(lh, la, rig.ThighLength, rig.ShinLength, body.LeftKnee - body.LeftHip, out lk, out error) ||

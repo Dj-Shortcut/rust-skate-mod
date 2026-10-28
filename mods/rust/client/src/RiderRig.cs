@@ -46,6 +46,11 @@ public static class RiderRig
     private static Transform[] spine = new Transform[0];
     private static Vector3 lSole, rSole;
     private static bool failed;
+    private static SkateVector leftFootCalibration, rightFootCalibration;
+    private static bool footCalibrated;
+    private static int calibratedFootVersion = -1;
+    private static string reportedFootStatus, reportedFootFit;
+    public static string FootSupportError { get; private set; } = "";
 
     // The module answers every frame from that frame's state alone. Between two states (rolling, a
     // push, the air, a grab, a bail) the joints ease over, in the board's own frame so that a turning
@@ -439,6 +444,7 @@ public static class RiderRig
     private static void Say(string m) { Out.Say("RIDER " + m); }
     private static float Dist(Transform a, Transform b) { return Vector3.Distance(a.position, b.position); }
     private static Vector3 V(SkateVector v) { return new Vector3((float)v.X, (float)v.Y, (float)v.Z); }
+    private static SkateVector V(Vector3 v) { return new SkateVector(v.x, v.y, v.z); }
 
     private static bool BindHandedness()
     {
@@ -581,6 +587,9 @@ public static class RiderRig
     private static void ResetPresentation()
     {
         SkateCapturedTricks.Reset();
+        SkateFootContacts.Reset();
+        footCalibrated = false; calibratedFootVersion = -1; FootSupportError = "";
+        reportedFootStatus = reportedFootFit = null;
         grabSince = grabHold = -1f; plantBlend = chestLead = crouchSpeed = 0f; Crouch = 0.18f;
         contact = default(SkateRiderContactState);
         plantStyle = default(SkateHandplantState); plantId = -1; SkateBoard.HeldFrame = default(SkateBoardPose);
@@ -655,6 +664,7 @@ public static class RiderRig
         try
         {
             if (Pelvis == null) { Bound = false; return; }
+            SkateFootContacts.UseView(third, skinSet);
             if (SkateRiggingShowcase.Running) { FramePreview(frameSeconds); return; }
             var wall = SkateSurfaceRide.DisplayWall;
             var bodyFlip = SkateSurfaceRide.BodyFlip.Known;
@@ -868,14 +878,6 @@ public static class RiderRig
             // secondary motion is already contact-aware; another independent trunk lag is not.
             pinHips = wall || bodyFlip || SkateOldschoolRide.Active || SkateActions.Owns || plantBoard.Initialized || groundGrab || dropping || pushing || pinL || pinR || SkateRide.BoardPath.Known;
             pinLeft = wall || bodyFlip || SkateOldschoolRide.Active || SkateActions.Owns || plantBoard.Initialized || groundGrab || dropping || SkateRide.BoardPath.Known || pushing && (!pushLeft || footDown); pinRight = wall || bodyFlip || SkateOldschoolRide.Active || SkateActions.Owns || plantBoard.Initialized || groundGrab || dropping || SkateRide.BoardPath.Known || pushing && (pushLeft || footDown);
-            Shown = pose;
-            Ease(pose, plane, toToes, upV, new Vector3((float)fx, (float)fy, (float)fz), now, frameSeconds, pinL, pinR);
-            if (!wall && !bodyFlip && !SkateActions.Owns && !SkateOldschoolRide.Active && !dropping) Shape(upV);
-            // Pitch/grind balance shapes the free arm, never the hand already holding the board.
-            if (pinL) { joint[LHandJ] = V(pose.LeftHand); joint[LElbowJ] = V(pose.LeftElbow); }
-            if (pinR) { joint[RHandJ] = V(pose.RightHand); joint[RElbowJ] = V(pose.RightElbow); }
-            if (pinL && !pinR) ReachFreeHand(RShoulderJ, RHandJ);
-            if (pinR && !pinL) ReachFreeHand(LShoulderJ, LHandJ);
             // The trunk keeps the support frame; the soles meet the pitched deck. Only the
             // pushing foot rolls onto the ground plane during its existing contact window.
             var groundContact = pushing ? (float)SkateRider.PushContact(input.PushPhase) : 0f;
@@ -927,6 +929,15 @@ public static class RiderRig
                 leftSole = rightSole = Vector3.Lerp(upV, deckUp, SkateOldschoolRide.FootContact).normalized;
             }
             if (wall) leftSole = rightSole = V(wallDeck.Up);
+            FitProceduralFooting(ref pose, leftSole, rightSole);
+            Shown = pose;
+            Ease(pose, plane, toToes, upV, new Vector3((float)fx, (float)fy, (float)fz), now, frameSeconds, pinL, pinR);
+            if (!wall && !bodyFlip && !SkateActions.Owns && !SkateOldschoolRide.Active && !dropping) Shape(upV);
+            // Pitch/grind balance shapes the free arm, never the hand already holding the board.
+            if (pinL) { joint[LHandJ] = V(pose.LeftHand); joint[LElbowJ] = V(pose.LeftElbow); }
+            if (pinR) { joint[RHandJ] = V(pose.RightHand); joint[RElbowJ] = V(pose.RightElbow); }
+            if (pinL && !pinR) ReachFreeHand(RShoulderJ, RHandJ);
+            if (pinR && !pinL) ReachFreeHand(LShoulderJ, LHandJ);
             if (bodyFlip)
             {
                 // All support/contact/easing work stays in the unflipped measured frame.
@@ -1177,6 +1188,7 @@ public static class RiderRig
             Limb(RUpper, RFore, RHand, joint[RHandJ], joint[RElbowJ], UpperArm, Forearm, "right hand");
         }
 
+        if (!SkateCapturedTricks.HasFrame && OrdinaryFooting(false)) FitEasedFooting(leftSole, rightSole);
         Limb(LHip, LKnee, LFoot, joint[LAnkleJ], joint[LKneeJ], Thigh, Shin, "left ankle");
         Limb(RHip, RKnee, RFoot, joint[RAnkleJ], joint[RKneeJ], Thigh, Shin, "right ankle");
         var soleL = SkateBoard.Held ? SkateBoard.HeldUp : leftSole;
@@ -1186,7 +1198,87 @@ public static class RiderRig
         // The feet lie flat on the deck: with the board held against them, their tops face the pelvis.
         Roll(LFoot, (LToe.position - LFoot.position).normalized, lSole, soleL);
         Roll(RFoot, (RToe.position - RFoot.position).normalized, rSole, soleR);
+        SkateFootContacts.ObserveAfterApply(third ? body : legSet, LFoot, LToe, RFoot, RToe,
+            soleL, soleR, OrdinaryFooting(false) && !SkateCapturedTricks.HasFrame);
+        if (OrdinaryFooting(false) && !SkateCapturedTricks.HasFrame)
+            SkateCapturedTricks.WarmFootSupport(Rig, SkateRide.Goofy ? SkateStance.Goofy : SkateStance.Regular);
+        string footStatus = SkateFootContacts.Status;
+        if (footStatus != reportedFootStatus || FootSupportError != reportedFootFit)
+        {
+            reportedFootStatus = footStatus; reportedFootFit = FootSupportError;
+            Say("feet: " + footStatus + (string.IsNullOrEmpty(FootSupportError) ? "" : " | fit refused: " + FootSupportError));
+        }
         HeadPosed = Head.position;
+    }
+
+    // Calibration is per visible shoe mesh. Carry that same model adaptation
+    // through flat-ground flight; removing it at takeoff would create a jump.
+    private static void FitProceduralFooting(ref SkateRiderPose pose, Vector3 leftUp, Vector3 rightUp)
+    {
+        if (calibratedFootVersion != SkateFootContacts.Version)
+        { footCalibrated = false; calibratedFootVersion = SkateFootContacts.Version; }
+        if (!SkateFootContacts.Ready || !OrdinaryFooting(true)) { footCalibrated = false; return; }
+        SkateBoardPose lf, rf;
+        if (!SkateCaptureFootSupport.TryFootFrame(pose.LeftAnkle, pose.LeftToe, V(leftUp), out lf) ||
+            !SkateCaptureFootSupport.TryFootFrame(pose.RightAnkle, pose.RightToe, V(rightUp), out rf)) return;
+        var l = leftFootCalibration; var r = rightFootCalibration;
+        string error; double lo, ro;
+        if (SkateRide.Mode == RideMode.Ground)
+        {
+            var board = SkateBoard.PoseFor(SkateRig.LocalT);
+            if (!SkateFootContacts.LeftFitter.TryOffset(board, lf, SkateCaptureFootSupport.MaximumOffset - SkateCaptureFootSupport.ContactBand, out lo, out error) ||
+                !SkateFootContacts.RightFitter.TryOffset(board, rf, SkateCaptureFootSupport.MaximumOffset - SkateCaptureFootSupport.ContactBand, out ro, out error))
+            { FootSupportError = error; return; }
+            l = FootLocal(board.Up * (lo + SkateCaptureFootSupport.ContactBand), lf);
+            r = FootLocal(board.Up * (ro + SkateCaptureFootSupport.ContactBand), rf);
+        }
+        else if (!footCalibrated) return;
+        SkateRiderPose fitted;
+        if (!SkateCaptureFootSupport.TryShiftFeet(Rig, pose, lf.Rotate(l), rf.Rotate(r), false, out fitted, out error))
+        { FootSupportError = error; return; }
+        pose = fitted; leftFootCalibration = l; rightFootCalibration = r; footCalibrated = true; FootSupportError = "";
+    }
+
+    private static SkateVector FootLocal(SkateVector v, SkateBoardPose f)
+    { return new SkateVector(SkateVector.Dot(v, f.Right), SkateVector.Dot(v, f.Up), SkateVector.Dot(v, f.Forward)); }
+
+    private static void FitEasedFooting(Vector3 leftUp, Vector3 rightUp)
+    {
+        if (!SkateFootContacts.Ready) return;
+        SkateBoardPose lf, rf; double lo, ro; string error;
+        if (!SkateCaptureFootSupport.TryFootFrame(V(joint[LAnkleJ]), V(joint[LToeJ]), V(leftUp), out lf) ||
+            !SkateCaptureFootSupport.TryFootFrame(V(joint[RAnkleJ]), V(joint[RToeJ]), V(rightUp), out rf)) return;
+        var board = SkateBoard.PoseFor(SkateRig.LocalT);
+        if (!SkateFootContacts.LeftFitter.TryOffset(board, lf, SkateCaptureFootSupport.MaximumOffset - SkateCaptureFootSupport.ContactBand, out lo, out error) ||
+            !SkateFootContacts.RightFitter.TryOffset(board, rf, SkateCaptureFootSupport.MaximumOffset - SkateCaptureFootSupport.ContactBand, out ro, out error))
+        { FootSupportError = error; return; }
+        var ls = board.Up * (lo + SkateCaptureFootSupport.ContactBand); var rs = board.Up * (ro + SkateCaptureFootSupport.ContactBand);
+        var la = V(joint[LAnkleJ]) + ls; var ra = V(joint[RAnkleJ]) + rs; SkateVector lk, rk;
+        // Bend() clamps near a straight knee. Refuse that range explicitly here.
+        if ((la - V(LHip.position)).Length >= (Thigh + Shin) * .999 ||
+            (ra - V(RHip.position)).Length >= (Thigh + Shin) * .999 ||
+            (la - V(LHip.position)).Length <= Math.Abs(Thigh - Shin) * 1.001 + .001 ||
+            (ra - V(RHip.position)).Length <= Math.Abs(Thigh - Shin) * 1.001 + .001 ||
+            !SkateOllieStyles.TryLimb(V(LHip.position), la, Thigh, Shin, V(joint[LKneeJ] - LHip.position), out lk, out error) ||
+            !SkateOllieStyles.TryLimb(V(RHip.position), ra, Thigh, Shin, V(joint[RKneeJ] - RHip.position), out rk, out error))
+        { FootSupportError = "Eased shaped-deck support exceeds measured leg reach"; return; }
+        joint[LAnkleJ] = V(la); joint[RAnkleJ] = V(ra); joint[LToeJ] += V(ls); joint[RToeJ] += V(rs);
+        joint[LKneeJ] = V(lk); joint[RKneeJ] = V(rk); FootSupportError = "";
+    }
+
+    private static bool OrdinaryFooting(bool allowAir)
+    {
+        return SkateRide.On && !SkateRide.Frozen && SkateRig.LocalT != null &&
+            (SkateRide.Mode == RideMode.Ground || allowAir && SkateRide.Mode == RideMode.Air) &&
+            !SkateRiggingShowcase.Running && !SkateKeys.Scripted && !Scenarios.Active &&
+            !SkateRide.Manual && !SkateRide.NoseManual && !SkateRide.GroundGrab.Active &&
+            !SkateRide.Grabbing && SkateKeys.Grab == SkateGrabKind.None && !SkateRide.Handplant && !SkateRide.FootPlanted &&
+            !SkateActions.Owns && !SkateOldschoolRide.Active && !SkateRide.BoardPath.Known && !SkateBoard.Held &&
+            !SkateSurfaceRide.DisplayWall && !SkateSurfaceRide.BodyFlip.Known && SkateSurfaceRide.WallieWeight <= 0 &&
+            SkateRide.ViewNormal.y >= .98f && SkateRide.Normal.y >= .98f && !SkateRide.OnRamp &&
+            Math.Abs(SkateBoard.Tip) < .001f && Math.Abs(SkateBoard.GrindPitch) < .01f && Math.Abs(SkateBoard.GrindRoll) < .01f &&
+            SkateRide.RevertLeft == 0 && SkateRide.Powerslide <= .001f && SkateRide.PushPhase <= .001f &&
+            (SkateRide.Mode == RideMode.Air || !SkateRide.Rotating);
     }
 
     private static void Limb(Transform a, Transform b, Transform c, Vector3 target, Vector3 hint, float upper, float lower, string name)

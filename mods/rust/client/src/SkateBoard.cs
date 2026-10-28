@@ -32,6 +32,7 @@ public static class SkateBoard
     public static GameObject Build()
     {
         trucks = new Transform[0]; wheels = new Transform[0];
+        SkateFootContacts.SetBoard(null, RiderRig.DeckTop);
         try { var made = FromParts(); Say("BOARD from the shared mesh in parts: " + trucks.Length + " trucks, " + wheels.Length + " wheels"); return made; }
         catch (Exception e) { Say("board in parts unavailable (" + e.GetType().Name + ": " + e.Message + "); using the one-piece mesh"); trucks = new Transform[0]; wheels = new Transform[0]; }
         try { var made = FromMesh(); Say("BOARD from the shared mesh"); return made; }
@@ -431,6 +432,7 @@ public static class SkateBoard
         trucks = truckList.ToArray(); truckAxes = truckAxis.ToArray(); truckSides = truckSide.ToArray();
         wheels = wheelList.ToArray(); wheelAxes = wheelAxis.ToArray();
         UnityEngine.Object.DontDestroyOnLoad(root);
+        SkateFootContacts.SetBoard(data, RiderRig.DeckTop);
         return root;
     }
 

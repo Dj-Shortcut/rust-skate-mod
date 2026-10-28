@@ -169,6 +169,56 @@ def interpolate_direction(a, b, weight):
     angle=math.acos(dot)
     return (a*math.sin((1-weight)*angle)+b*math.sin(weight*angle))/math.sin(angle)
 
+class AuthoredHeading:
+    """Explicit camera-heading reconstruction of the whole already-solved rider.
+
+    Applying this after filtering and IK preserves relative body twist and all
+    chain lengths. It never rotates the board or turns estimates into evidence.
+    """
+    def __init__(self, spec, duration, reflect_keys):
+        if not isinstance(spec, dict) or set(spec) != {'yawKeys', 'provenance', 'uncertainty'}:
+            raise ValueError('authoredHeading requires yawKeys, provenance and uncertainty')
+        for key in ('provenance', 'uncertainty'):
+            if not isinstance(spec[key], str) or not 1 <= len(spec[key].strip()) <= 4096:
+                raise ValueError('authoredHeading requires explicit bounded ' + key)
+        keys = spec['yawKeys']
+        if not isinstance(keys, list) or not 2 <= len(keys) <= 32:
+            raise ValueError('authoredHeading requires 2..32 explicit yaw keys')
+        self.keys = []
+        for key in keys:
+            if (not isinstance(key, dict) or set(key) != {'t', 'degrees'} or
+                    any(type(key[k]) not in (int, float) for k in ('t', 'degrees'))):
+                raise ValueError('authoredHeading keys require numeric t and degrees')
+            t, degrees = key['t'], key['degrees']
+            if not math.isfinite(t) or not math.isfinite(degrees) or not 0 <= t <= duration or abs(degrees) > 90:
+                raise ValueError('authoredHeading key exceeds time or 90-degree reconstruction bound')
+            if self.keys and (t <= self.keys[-1][0] or abs(degrees - self.keys[-1][1]) > 90):
+                raise ValueError('authoredHeading keys must increase with bounded adjacent turns')
+            self.keys.append((t, degrees))
+        if self.keys[0][1] != 0 or self.keys[-1][1] != 0:
+            raise ValueError('authoredHeading must return to zero at both window ends')
+        self.sign = -1 if reflect_keys else 1
+        self.spec = spec; self.applied = []
+
+    def apply(self, t, joints, directions, soles, origin):
+        if t <= self.keys[0][0] or t >= self.keys[-1][0]: return
+        for (a, x), (b, y) in zip(self.keys, self.keys[1:]):
+            if a <= t <= b:
+                u = (t-a)/(b-a); u = u*u*u*(10+u*(-15+6*u))
+                degrees = (x+(y-x)*u)*self.sign
+                if degrees == 0: return
+                angle = math.radians(degrees); c, s = math.cos(angle), math.sin(angle)
+                rotation = np.array([[c, 0, s], [0, 1, 0], [-s, 0, c]])
+                for key in joints: joints[key] = origin + rotation@(joints[key]-origin)
+                for vectors in (directions, soles):
+                    for key in vectors: vectors[key] = rotation@vectors[key]
+                self.applied.append(dict(t=t, degrees=degrees)); return
+
+    def report(self):
+        return {**self.spec, 'application': 'One common canonical world-Y rotation about the unchanged board origin after filtering, fixed-chain solve and authored head. Board, observations and confidence unchanged.',
+                'interpolation': 'Quintic smoothstep between explicit yaw anchors; zero outside the declared window. Reconstruction, not measured camera or body motion.'}
+
+
 class AuthoredHead:
     """Explicit uncertain chest-local reconstruction; never a confidence repair."""
     def __init__(self,spec,duration,reflect_keys):
@@ -268,6 +318,7 @@ def retarget(raw, job, provenance):
     if stance not in ('regular','goofy') or key_space not in ('canonical','captured'): raise ValueError('Explicit stance/keySpace required')
     goofy=stance=='goofy'; reflect_keys=goofy and key_space=='captured'
     authored_head=AuthoredHead(job['body']['authoredHead'],duration,reflect_keys) if 'authoredHead' in job['body'] else None
+    authored_heading=AuthoredHeading(job['body']['authoredHeading'],duration,reflect_keys) if 'authoredHeading' in job['body'] else None
     if goofy:
         world[:,:,0]*=-1
         for l,r in PAIRS: world[:,[l,r]]=world[:,[r,l]]
@@ -383,6 +434,7 @@ def retarget(raw, job, provenance):
         pelvis_up=unit(torso*.45+UP*.55);pelvis_up=unit(pelvis_up-hip_axis*np.dot(pelvis_up,hip_axis),UP)
         directions=dict(zip(DIRS,(unit(np.cross(hip_axis,pelvis_up)),pelvis_up,unit(np.cross(shoulder_axis,torso)),torso,unit(w[0]-(w[7]+w[8])*.5,anatomy))))
         if authored_head is not None:authored_head.apply(t,j,directions,rig['head'])
+        if authored_heading is not None:authored_heading.apply(t,j,directions,soles,origin)
         frames.append(dict(t=t,sourceFrame=first+t*fps if frame_times is None else first+source_pos,board=dict(origin=origin.tolist(),quaternion=q.tolist()),joints={k:finite(j[k],(3,)).tolist() for k in JOINTS},dirs={k:unit(directions[k]).tolist() for k in DIRS},soleUp={k:v.tolist() for k,v in soles.items()},phase=events[event_index]['phase'],contacts=mask))
     if maximum_chain_error>1e-6:raise CaptureError('Retarget chain length error',dict(maxChainErrorM=maximum_chain_error))
     metadata=dict(id=job['id'],label=job['label'],sourceUrl=job['source']['url'],sourceAuthor=job['source']['author'],movementKind=job['movementKind'],reviewed=job['reviewed'],rights=job['source'].get('rights','No publication/relicensing permission asserted'),canonicalStance='regular',capturedStance=stance,keySpace=key_space,coordinateFrame='Y up, +Z nose, +X right; right-handed quaternion XYZW; origin=deck top',toeContract='Physical toe endpoints include soleUp*toeDrop once; native sampler reconstructs flat toe targets before writer drop',sourceFps=fps,firstSourceFrame=first,lastSourceFrame=last,provenance=provenance,boardProvenance=board_spec['provenance'],boardLimit='Observed keys mean recipe observations/estimates, not calibrated measured3D board mocap',footOrientationLimit='Soles default to board-up in contact and world-up in air unless per-foot keys supplied. Captured heel/toe heading is projected onto that sole; degenerate projections use a perpendicular basis. Not measured shoe orientation.',rootLimit='Pelvis/board trajectory supplied explicitly by recipe; MediaPipe world33 is hip-relative; no player-root/physics authority',sampleLimit='Dense retarget interpolation, not additional measured source frames',camera=job['camera'],rig=rig,metricScale=scale)
@@ -395,8 +447,12 @@ def retarget(raw, job, provenance):
         metadata['headAnchor']=head_anchor
         metadata['headAnchorProvenance']=head_provenance
     if authored_head is not None:metadata['authoredHead']=authored_head.report()
+    if authored_heading is not None:metadata['authoredHeading']=authored_heading.report()
     metadata['freeFootPaths']={side:dict(coordinates='Absolute authoring frame, same as pelvisKeys; reflected with captured keySpace',provenance=feet[('Right' if side=='Left' else 'Left') if reflect_keys else side]['airPositionProvenance']) for side in ('Left','Right') if 'airPositionKeys' in foot_curves[side]}
     selection_frames=[dict(frame=f['frame_index'],selection=f['target_selection']) for f in raw['frames'] if first<=f['frame_index']<=last and f.get('target_selection') is not None]
     quality=dict(status='validated transport/kinematics; visual/native acceptance remains open',reviewed=job['reviewed'],confidence=confidence,actorSelection=selection_frames,cutAudit=dict(declaredOrDetectedFrames=sorted(cuts),startsAtDeclaredCut=first in cuts,limit='No automatic visual cut detector; absent markers are not proof of a continuous shot'),boardRotation=rot_quality,boardFloor=dict(policy=floor_policy,minUncorrectedCornerY=minimum_floor,corrections=floor_corrections),invertedFootContactException=dict(explicitlyAllowed=allow_inverted,sampleTimes=inverted_contacts),reachCorrections=reaches,maxChainErrorM=maximum_chain_error,feetDefaultOffsetsEstimated=[s for s in ('Left','Right') if not foot_curves[s].get('positionKeys')],bodyYaw='Preserved in declared camera basis; no per-frame inferred hip-facing normalization',sourceFrames=last-first+1,outputSamples=len(frames))
     if authored_head is not None:quality['authoredHead']={**authored_head.report(),'sampleTimes':authored_head.applied}
+    if authored_heading is not None:
+        quality['authoredHeading']={**authored_heading.report(),'sampleTimes':authored_heading.applied}
+        quality['bodyYaw']='Preserved in declared camera basis, then explicitly reconstructed by one authored common rider heading; no per-limb heading normalization'
     return dict(format='skate-capture-clip/1',fps=hz,duration=duration,stride=83,jointOrder=JOINTS,directionOrder=DIRS,metadata=metadata,events=events,frames=frames),quality
