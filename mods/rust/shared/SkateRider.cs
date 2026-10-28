@@ -1328,6 +1328,37 @@ namespace Shortcut.RustMod
             return rail + outwards * definition.HandOutset + up * definition.HandRise;
         }
 
+        // Run after contact/secondary solving: those stages rebuild the head from the rolled chest.
+        // Keep the measured neck length and bound gaze yaw; never move a grip or foot contact.
+        public static bool TryReferenceGrabLook(SkateRiderRig rig, SkateRiderInput input, SkateRiderPose source,
+            SkateVector lookDirection, out SkateRiderPose pose)
+        {
+            pose = source;
+            if (!Valid(rig) || !Valid(input) || !Finite(source) || !input.Airborne || input.Bailed ||
+                !SkateGrabCatalog.HasReferenceHand(input.GrabKind) || !Vector(lookDirection)) return false;
+            double share = input.Contact.Initialized ? input.Contact.GrabWeight : Smooth(Math.Min(1, input.GrabSeconds / GrabIn));
+            if (share <= 0) return false;
+            var up = Unit(input.BoardUp);
+            var forward = Unit(Project(source.ChestForward, up));
+            if (forward.LengthSquared < .5) forward = input.BoardForward;
+            var want = Unit(Project(lookDirection, up));
+            if (want.LengthSquared < .5) want = input.BoardForward;
+            double yaw = Math.Atan2(SkateVector.Dot(Cross(forward, want), up), SkateVector.Dot(forward, want));
+            yaw = Math.Max(-Math.PI * .36, Math.Min(Math.PI * .36, yaw));
+            var ahead = RotateAxis(forward, up, yaw);
+            var direction = Unit(lookDirection);
+            double down = direction.LengthSquared > .5 ? Math.Max(0, Math.Min(.35, -SkateVector.Dot(direction, up))) : 0;
+            var targetUp = Unit(up + ahead * (.10 + .35 * down));
+            var headUp = Unit(source.ChestUp * (1 - share) + targetUp * share);
+            var head = source.Neck + headUp * rig.NeckToHeadLength;
+            var gaze = Unit(Project(ahead, headUp));
+            pose = new SkateRiderPose(source.Pelvis, source.LeftHip, source.RightHip, source.LeftKnee, source.RightKnee,
+                source.LeftAnkle, source.RightAnkle, source.LeftToe, source.RightToe, source.Chest, source.Neck, head,
+                source.LeftShoulder, source.RightShoulder, source.LeftElbow, source.RightElbow, source.LeftHand, source.RightHand,
+                source.PelvisForward, source.PelvisUp, source.ChestForward, source.ChestUp, gaze);
+            return Finite(pose);
+        }
+
         // Full wrist axes are additional presentation data; the existing 18-joint pose API is unchanged.
         // These axes are authored from a visible board approach, not inferred finger motion in occluded footage.
         public static bool TryGrabHandFrame(SkateRiderInput input, SkateRiderPose pose, bool left,

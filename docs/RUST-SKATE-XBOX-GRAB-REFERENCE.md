@@ -35,45 +35,49 @@ saved entry local rotation each frame, and restores it on release, another pose
 owner, reset or unbind. Missing/degenerate finger bones disable this refinement
 and retain animated hands; riding does not fail. Finger articulation is unchanged.
 
-The updated private moving review combines these grab profiles with the separate
-[point 5 body/board presentation change (#593)](https://github.com/Dj-Shortcut/rust-skate-mod/pull/593).
-`RiderViewNormal` supplies the body basis;
-`ViewNormal` still supplies the independent board/support basis. That change is
-owned by point 5 and is not duplicated in this grab PR. The grab writer still uses
-the actual `DeckFrame` for feet and hand approach.
+Named reference grabs now keep the head above the neck in the common air basis
+and turn its gaze toward descent, with bounded neck yaw. This runs after contact
+and secondary solving, which otherwise rebuild the head from the rolled chest.
+The native writer skips its generic head lift for these five grabs. Contact
+endpoints, neck-to-head length and all other bone lengths stay unchanged. Existing
+free-arm elevation and entry/held/release progress remain; no new timing model or
+random movement is added.
 
-All five revised clips have 151 frames at 60 Hz. The context comes from the actual
-current `SkateParks.MegaProfile` and `SurfaceMesh`: 60 collider facets per wall,
-R approximately 9.589 m, a 12 m flat and 12 m width. The native five metal carrier
-chords are excluded backing, and the published R3.5 authored asset is different.
-The earlier outgoing top-deck transfer remains a labelled comparison and is
-superseded as the return review.
+The current private v3 review combines these profiles with the separate
+[coupled air presentation change (#593)](https://github.com/Dj-Shortcut/rust-skate-mod/pull/593).
+Rider and board use one common base before relative pitch, grab tweak and flips.
+Its capsule display datum also removes the earlier steep support-display gap.
+That source belongs to point 5 and is not duplicated in this PR.
 
-The controlled route leaves the last 89.25-degree face with the existing 3 m/s
-surface velocity and 6 m/s pop. Literal `Sense`/`RampContact` query the finite mesh;
-the existing landing guard meets that same transition and the projected velocity
-rolls back fakie. A private continuous bottom-sphere sweep bounds displacement
-against those actual mesh faces and edges. It uses computed contact times and
-normals, without a target-position snap, forced landing event or added inward
-steering. It emulates collision outside Unity and does not prove native physics.
-The medium three-quarter moving camera follows departure, apex, return and roll.
+Crail and FS Grab currently have full151-frame v3 clips at60Hz, including approach,
+apex, transition landing and fakie roll. Context uses actual `MegaProfile` and
+`SurfaceMesh`: sixty facets per wall, R approximately9.589m, flat12m and width12m.
+A private continuous bottom-sphere sweep bounds displacement against the finite
+mesh. Literal `Sense`/`RampContact` and the existing landing guard decide reentry;
+there is no target-position snap, forced landing event or added inward steering.
+This emulates collision outside Unity and does not prove native physics. The
+popped-grab case correctly receives none of #593's free-air-only10cm tuck.
 
-The combined review makes the body basis world-up at the apex while retaining the
-board's own steep pitch. Landing also exposes an unresolved support-display gap:
-`SkateBoard.Contact` still follows the player root without compensating the steep
-capsule rest offset; the board can visibly float away from the transition. This
-is not hidden by relocating the preview. Native reentry and visible contact
-remain open. Grab-specific chest folding also needs visual review; an upright
-body basis does not approve the complete grab silhouette.
+The v3 anatomy variant replaces only the original mitten hand surfaces with an
+original palm, four three-segment fingers and an opposing two-segment thumb,
+parented to the existing hand bones. Body vertices, weights and existing rest
+bones remain unchanged; the frozen reference stays untouched. The private wrist
+reach is recomputed from the actual rounded edge, concavity and nose kick using
+a65mm authored wrist-to-MCP measurement. Fingers close/relax through the existing
+grab weight. This is authored anatomy, not tracked fingers from the recording.
 
-The reference hand mesh has a palm and thumb, without independent finger bones or
-curled fingers. Its close-up cannot establish a convincing complete grip. Native
-avatar hands, normal halfpipe reentry, contact appearance and controller feel
-remain open for Shadow. The source is therefore submitted as a draft.
+That prototype's new grip anchor and finger articulation are not yet native
+runtime features. The current runtime preserves avatar finger animation. Measured
+native MCP/reach calibration is the next separate API step; missing finger chains
+must retain avatar animation and report the limitation. Full hand/contact quality,
+grab-specific silhouette and Shadow gameplay remain open. This PR stays draft.
+Some FS close-up angles are occluded by the knees; the complete medium route is
+the primary review. Earlier body-only and outgoing deck-transfer cases are
+preserved as superseded comparisons.
 
-Validation: all 69 client sources compile as C# 7.3 against 356 verified cached
-reference assemblies with zero warnings/errors. A temporary probe of the actual
-wrist writer covers parent-local entry, full weight, repeated frames, fade,
-release, other-owner restoration, missing basis and reset/unbind. The five revised moving
-GLBs preserve the reference skin and real board hierarchy; these offline checks
-do not execute Unity native bindings or establish visual acceptance.
+Validation: all69 client sources compile as C#7.3 against356 verified cached
+reference assemblies with zero warnings/errors. Existing wrist restoration probes
+cover entry, full weight, repeated frames, fade, release, other owners and reset.
+The private v3 clips include the new post-solve head output and preserve the
+reference body and actual13-part runtime board. Offline evidence does not execute
+Unity native bindings or establish full trick acceptance.

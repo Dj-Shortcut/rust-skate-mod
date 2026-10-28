@@ -917,6 +917,14 @@ public static class RiderRig
                 { pose = shown; motion = next; }
                 else { motion = default(SkateRiderMotionState); if (motionError != MotionError) { MotionError = motionError; Say("secondary motion refused: " + motionError); } }
             }
+            if (mode == RideMode.Air && !wall && !bodyFlip && SkateGrabCatalog.HasReferenceHand(grab))
+            {
+                var landingLook = SkateRide.ActionVelocity;
+                if (SkateRide.OnRamp && landingLook.y < 0)
+                    landingLook -= SkateRide.BelowNormal * Vector3.Dot(landingLook, SkateRide.BelowNormal);
+                SkateRiderPose looked;
+                if (SkateRider.TryReferenceGrabLook(Rig, input, pose, V(landingLook), out looked)) pose = looked;
+            }
             SkateSurfaceRide.Record(pose, input.DeckFrame, wall || handplant > .001f ? SkateGrabKind.None : SurfaceGrab(pose, input.DeckFrame, grab));
             // In a handplant the board is against the feet, held: the board follows the pose, from
             // the first of the way up to the last of the way down.
@@ -1264,7 +1272,7 @@ public static class RiderRig
             // head lift most of the way back toward where the board's up is.
             var foldAxis = Vector3.Cross(chestUp, up);
             var fold = (float)(Math.Atan2(foldAxis.magnitude, Vector3.Dot(chestUp, up)) * 180.0 / Math.PI);
-            if (!SkateCapturedTricks.HasFrame && fold > HeadLiftFrom && foldAxis.sqrMagnitude > 0.0001f)
+            if (!SkateCapturedTricks.HasFrame && !SkateGrabCatalog.HasReferenceHand(ShownGrab) && fold > HeadLiftFrom && foldAxis.sqrMagnitude > 0.0001f)
             {
                 var lift = SkateRide.Clamp((fold - HeadLiftFrom) * HeadLiftShare, 0f, HeadLiftMost);
                 Neck.rotation = SkateRide.Turn(lift * 0.35f, foldAxis) * Neck.rotation;
