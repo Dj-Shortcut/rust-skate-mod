@@ -21,8 +21,13 @@ namespace Shortcut.RustMod
         public const string SupportedKneeProvenance = "Authored BS180 supported crouch; 100-degree internal knee target and toe-directed bend planes, not measured capture.";
         public const string CatchRiseProvenance = "Authored capture catch rise limit; fixed current feet, not measured capture.";
         public const string LandingPlacementProvenance = "Authored Switch Heelflip and Nollie 360 Flip catch placement on measured bolt-region footprints; not measured source motion.";
-        public const string KickflipTuckProvenance = "Authored normal Kickflip presentation release at the live flick edge, paired free-foot tuck above the bolt regions and return to source catch; original source contact bits are retained, not asserted live contact.";
+        public const string KickflipTuckProvenance = "Authored normal Kickflip rear pickup after pop, front release at the live flick edge, paired tuck above measured bolt/shoe footprints and return to source catch; original source contact bits are retained, not asserted live contact.";
         private static SkateVector[] kickflipBoardEnvelope;
+        private static int[] kickflipBoardTriangles;
+        private SkateVector[] kickflipProjected;
+        private readonly SkateVector[] kickflipClipA = new SkateVector[8], kickflipClipB = new SkateVector[8];
+        private readonly double[] kickflipMinX = new double[2], kickflipMaxX = new double[2],
+            kickflipMinZ = new double[2], kickflipMaxZ = new double[2];
         private readonly SkateVector[] kickflipCatch = new SkateVector[2], kickflipForward = new SkateVector[2];
         private double kickflipAnkleHeight;
         private readonly SkateCaptureClip clip;
@@ -100,6 +105,17 @@ namespace Shortcut.RustMod
                     { error = "Kickflip catch has no measured shoe frame."; return false; }
                     pending.kickflipCatch[foot] = caughtFoot.Origin + caughtFoot.Rotate(pending.caughtLocal[foot]) - frame.Board.Origin;
                     pending.kickflipForward[foot] = caughtFoot.Forward;
+                    var profile = (foot == 0 ? left : right).Profile;
+                    pending.kickflipMinX[foot] = pending.kickflipMinZ[foot] = double.PositiveInfinity;
+                    pending.kickflipMaxX[foot] = pending.kickflipMaxZ[foot] = double.NegativeInfinity;
+                    for (int n = 0; n < profile.VertexCount; n++)
+                    {
+                        var point = profile.Vertex(n);
+                        pending.kickflipMinX[foot] = Math.Min(pending.kickflipMinX[foot], point.X);
+                        pending.kickflipMaxX[foot] = Math.Max(pending.kickflipMaxX[foot], point.X);
+                        pending.kickflipMinZ[foot] = Math.Min(pending.kickflipMinZ[foot], point.Z);
+                        pending.kickflipMaxZ[foot] = Math.Max(pending.kickflipMaxZ[foot], point.Z);
+                    }
                     // Calibrate the measured shoe in the upright return frame,
                     // not at the source ankle's camera-dependent sole tilt.
                     var up = new SkateVector(0, 1, 0);
@@ -116,8 +132,11 @@ namespace Shortcut.RustMod
                 var mesh = SkateBoardMesh.CreateDetailed(); var points = new SkateVector[mesh.Positions.Length / 3];
                 for (int n = 0; n < points.Length; n++)
                     points[n] = new SkateVector(mesh.Positions[n * 3], mesh.Positions[n * 3 + 1] - .092, mesh.Positions[n * 3 + 2]);
+                kickflipBoardTriangles = (int[])mesh.Triangles.Clone();
                 kickflipBoardEnvelope = points;
             }
+            if (pending.clip.MovementKind == "kickflip")
+                pending.kickflipProjected = new SkateVector[kickflipBoardEnvelope.Length];
             support = pending; return true;
         }
 
@@ -213,14 +232,22 @@ namespace Shortcut.RustMod
                 !Finite(rig.FootLength) || rig.FootLength <= 0 || !Finite(elapsedSeconds) || elapsedSeconds < 0 || !uprightCarrier.Initialized ||
                 !SkateBoardPath.Valid(uprightCarrier) || !frame.Board.Initialized || !SkateBoardPath.Valid(frame.Board))
             { error = "Invalid authored Kickflip free-flight carrier or clock."; return false; }
-            if (elapsedSeconds <= SkateFlipFlick.EdgeReleaseSeconds || sourceTime >= Math.Max(caught[0], caught[1])) return true;
+            if (elapsedSeconds <= .02 || sourceTime >= Math.Max(caught[0], caught[1])) return true;
             var up = uprightCarrier.Up; var forward = uprightCarrier.Forward; var right = uprightCarrier.Right;
-            // The reference runtime mesh contains the deck, trucks, bushings
-            // and all four wheels. Its current rigid orientation determines the
-            // clearance; there is no blanket ankle lift or source-height minimum.
+            // Clip every triangle of the full rigid reference board against
+            // the measured shoes' horizontal bounds at their bolt targets.
+            // A high nose outside either footprint must not raise both feet;
+            // a face crossing a footprint still counts without a vertex inside.
             double top = double.NegativeInfinity;
-            for (int n = 0; n < kickflipBoardEnvelope.Length; n++)
-                top = Math.Max(top, SkateVector.Dot(frame.Board.Rotate(kickflipBoardEnvelope[n]), up));
+            for (int side = 0; side < 2; side++)
+            {
+                var anchor = kickflipCatch[side];
+                var target = right * Math.Max(-.055, Math.Min(.055, anchor.X)) + forward * (anchor.Z >= 0 ? .18 : -.18);
+                SkateBoardPose footprint;
+                if (!TryFootFrame(target, target + uprightCarrier.Rotate(kickflipForward[side]), up, out footprint))
+                { error = "Authored Kickflip footprint is ambiguous."; return false; }
+                top = Math.Max(top, KickflipBoardTop(frame.Board, footprint, side));
+            }
             double height = Math.Max(0, top) + kickflipAnkleHeight + .05;
             var la = frame.Pose.LeftAnkle; var ra = frame.Pose.RightAnkle;
             var lt = frame.Pose.LeftToe; var rt = frame.Pose.RightToe;
@@ -228,8 +255,12 @@ namespace Shortcut.RustMod
             for (int side = 0; side < 2; side++)
             {
                 double untilCatch = caught[side] - sourceTime;
-                double weight = CatchPreparationWeight(elapsedSeconds - SkateFlipFlick.EdgeReleaseSeconds, .05) *
-                    CatchPreparationWeight(untilCatch, .10);
+                // The tail pop releases the rear foot before the front instep
+                // flick. These are authored presentation releases, not source
+                // contact events. Both converge to the same compact Air pair.
+                bool front = kickflipCatch[side].Z >= 0;
+                double weight = CatchPreparationWeight(elapsedSeconds - (front ? SkateFlipFlick.EdgeReleaseSeconds : .02),
+                    front ? .05 : .08) * CatchPreparationWeight(untilCatch, .10);
                 if (weight <= 0) continue;
                 var oldAnkle = side == 0 ? la : ra; var oldToe = side == 0 ? lt : rt;
                 var oldUp = side == 0 ? lu : ru;
@@ -259,6 +290,49 @@ namespace Shortcut.RustMod
                 frame.HasEvent, frame.Observation, frame.PelvisCorrection,
                 frame.LeftHandCorrection, frame.RightHandCorrection, frame.RiderUp);
             return true;
+        }
+
+        private double KickflipBoardTop(SkateBoardPose board, SkateBoardPose footprint, int side)
+        {
+            for (int n = 0; n < kickflipBoardEnvelope.Length; n++)
+            {
+                var p = board.Rotate(kickflipBoardEnvelope[n]) - footprint.Origin;
+                kickflipProjected[n] = new SkateVector(SkateVector.Dot(p, footprint.Right),
+                    SkateVector.Dot(p, footprint.Up), SkateVector.Dot(p, footprint.Forward));
+            }
+            double top = double.NegativeInfinity;
+            for (int n = 0; n < kickflipBoardTriangles.Length; n += 3)
+            {
+                kickflipClipA[0] = kickflipProjected[kickflipBoardTriangles[n]];
+                kickflipClipA[1] = kickflipProjected[kickflipBoardTriangles[n + 1]];
+                kickflipClipA[2] = kickflipProjected[kickflipBoardTriangles[n + 2]];
+                int count = ClipKickflipFootprint(kickflipClipA, 3, kickflipClipB, true, kickflipMinX[side], true);
+                count = ClipKickflipFootprint(kickflipClipB, count, kickflipClipA, true, kickflipMaxX[side], false);
+                count = ClipKickflipFootprint(kickflipClipA, count, kickflipClipB, false, kickflipMinZ[side], true);
+                count = ClipKickflipFootprint(kickflipClipB, count, kickflipClipA, false, kickflipMaxZ[side], false);
+                for (int p = 0; p < count; p++) top = Math.Max(top, kickflipClipA[p].Y);
+            }
+            return top;
+        }
+
+        // Sutherland-Hodgman in the footprint plane, interpolating height at
+        // every cut. A triangle clipped by a rectangle has at most seven points.
+        private static int ClipKickflipFootprint(SkateVector[] input, int count, SkateVector[] output,
+            bool xAxis, double edge, bool greater)
+        {
+            if (count == 0) return 0;
+            int written = 0; var previous = input[count - 1];
+            double before = (xAxis ? previous.X : previous.Z) - edge;
+            bool wasInside = greater ? before >= 0 : before <= 0;
+            for (int n = 0; n < count; n++)
+            {
+                var point = input[n]; double after = (xAxis ? point.X : point.Z) - edge;
+                bool inside = greater ? after >= 0 : after <= 0;
+                if (inside != wasInside) output[written++] = previous + (point - previous) * (before / (before - after));
+                if (inside) output[written++] = point;
+                previous = point; before = after; wasInside = inside;
+            }
+            return written;
         }
 
         private bool Boundary(SkateCaptureFrame frame, int side, out SkateVector local, out string error)
