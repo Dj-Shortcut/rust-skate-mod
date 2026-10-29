@@ -13,6 +13,8 @@
 //   upper centre  the trick that just landed, coloured by its kind, a bail
 //   bottom left   speed, the last tricks landed with their points (the feed), and the controls
 //                 for the first seconds on the board
+//   top left      every trick while Back is held on the controller (three pages), or every key
+//                 while H is held on the keyboard (one page)
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -311,7 +313,7 @@ public static class SkateHud
             if (v.Cap < SkateRide.MaxSpeed - 0.25f && capSince < 3f)
                 Text(40f * k, h - 336f * k, w - 80f * k, "The server put the board back; held to " + (v.Cap * 3.6f).ToString("F0") + " km/h for now", (int)(18 * k), Amber, 0, capSince > 2.5f ? (3f - capSince) / 0.5f : 1f);
             Combo(v, now, w, h, k);
-            if (v.Hints && v.Pad && SkateKeys.Help) { Tricks(w, k); return; }
+            if (v.Hints && SkateKeys.Help) { Tricks(v.Pad, w, k); return; }
             if (v.Hints) Hints(v, w, h, k);
         }
         Middle(v, now, w, h, k);
@@ -466,10 +468,32 @@ public static class SkateHud
         else
         {
             Text(x, y, w - 80f * k, Key("W") + " push   " + Key("S") + " brake   " + Key("A / D") + " carve   " + Key("SPACE") + " ollie   hold " + Key("SHIFT") + " manual   " + Key("K") + " or hold " + Key("CTRL") + " get off   " + Key("L") + " camera", size, Ink, 0, 1f);
-            Text(x, y + 28f * k, w - 80f * k, "In the air: tap " + Key("W") + " kickflip   tap " + Key("S") + " heelflip   " + Key("A / D") + " spin   hold " + Key("CTRL") + " grab", size, Ink, 0, 1f);
+            Text(x, y + 28f * k, w - 80f * k, "In the air: tap " + Key("W") + " kickflip   tap " + Key("S") + " heelflip   tap " + Key("X") + " body varial   " + Key("A / D") + " spin   hold " + Key("CTRL") + " grab", size, Ink, 0, 1f);
         }
-        Text(x, y + 56f * k, w - 80f * k, v.Pad ? "Hold " + Key("BACK") + " on the board to see these controls again" : "Hold " + Key("H") + " to see these controls again", (int)(15 * k), Dim, 0, 1f);
+        Text(x, y + 56f * k, w - 80f * k, v.Pad ? "Hold " + Key("BACK") + " on the board to see these controls again" : "Hold " + Key("H") + " on the board for every key", (int)(15 * k), Dim, 0, 1f);
     }
+
+    // Every keyboard action, while H is held on the board: the Keys table of the client README as
+    // one page. Sides are those of a regular rider going nose first; goofy, or rolling tail first,
+    // they are the other way round.
+    private static readonly string[] KeyTricks = {
+        "@KEYBOARD   every key on the board, while H is held   (regular nose first; goofy/fakie: mirrored)",
+        "@ON THE GROUND",
+        "#W push with the back foot, from the leading end when rolling tail first   #S brake   #A / #D carve   mouse: the board turns toward the view",
+        "#S with #A or #D held faster than walking pace: #Powerslide, the board across the way of travel until the keys are let go (left: frontside, right: backside)",
+        "hold #SHIFT while rolling: #Manual   #K get off   #CTRL or #C held on the ground: pump down a slope when let go quickly, get off when held a moment longer",
+        "#L camera: the view from behind or the game's first person",
+        "@POP",
+        "#SPACE: #Ollie, and off a grind or a stall   #Q held with SPACE: #No Comply   #Z held with SPACE: #Boneless",
+        "@IN THE AIR",
+        "tap #W: #Kickflip   tap #S: #Heelflip, each tap one more flip   hold #A / #D: the rider spins left / right; an odd half turn lands switch",
+        "tap #X: #Body Varial, the rider's half round without the board, landing switch   hold #CTRL or #C: grab",
+        "@EDGES",
+        "come down over an edge while moving along it: grind   square onto an edge: stall, with SHIFT held a tail stall   SPACE pops off either",
+        "#CTRL or #C held when the board meets an edge square: #Handplant",
+        "@ON FOOT",
+        "#K, or SPACE twice quickly: get on   hold #F2 for a second: stance regular / goofy, kept for the next start   hold #H: the controls",
+    };
 
     // Every controller trick, while Back is held on the board. Sides are those of a regular rider
     // going nose first; goofy, or rolling tail first, they are the other way round.
@@ -542,9 +566,10 @@ public static class SkateHud
         "A held variant fades before another one starts. The captured edge anchors the planted hand."
     };
 
-    private static void Tricks(float w, float k)
+    // The controller's three pages while Back is held, or the keyboard's one page while H is held.
+    private static void Tricks(bool pad, float w, float k)
     {
-        var lines = SkateKeys.HelpPage == 0 ? PadTricks : SkateKeys.HelpPage == 1 ? ExtendedGrabs : PlantTricks;
+        var lines = !pad ? KeyTricks : SkateKeys.HelpPage == 0 ? PadTricks : SkateKeys.HelpPage == 1 ? ExtendedGrabs : PlantTricks;
         float x = 40f * k, y = 96f * k, step = 25f * k, width = Math.Min(w - 80f * k, 1320f * k);
         Box(x - 14f * k, y - 10f * k, width + 28f * k, (lines.Length * 25f + 18f) * k, Fade(Dark, 0.72f));
         for (var i = 0; i < lines.Length; i++, y += step)
