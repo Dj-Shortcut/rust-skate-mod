@@ -422,6 +422,10 @@ the deck midpoint; toe direction follows the anatomical facing, with the front
 shoe angled 20 degrees from across the board. The existing shaped-deck fit still
 owns vertical support. A C2 approach begins at most 0.18 source seconds before
 each real catch, preserving the release/catch events and measured leg lengths.
+While a foot is free, its target uses the future catch basis rather than the
+still-turning source deck. The horizontal approach retains its filmed height
+with an authored C2 clearance lift (0.16 m scaled to the thigh, capped at 0.20 m)
+that returns to zero at catch. Attached feet then use the actual deck frame.
 Other source families retain their original placement. Source clips remain
 unchanged; this correction does not approve a pack or establish native boot fit.
 

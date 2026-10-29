@@ -28,6 +28,8 @@ namespace Shortcut.RustMod
         private readonly SkateVector[] releasedLocal = new SkateVector[2], caughtLocal = new SkateVector[2];
         private readonly SkateBoardPose[] landingPlacement = new SkateBoardPose[2];
         private readonly SkateVector[] landingToe = new SkateVector[2];
+        private readonly SkateBoardPose[] freeLanding = new SkateBoardPose[2];
+        private readonly SkateVector[] freeLandingToe = new SkateVector[2];
         private SkateCaptureFootSupport(SkateCaptureClip source, SkateStance side, SkateDeckFootFitter l, SkateDeckFootFitter r)
         { clip = source; stance = side; left = l; right = r; }
         internal bool Matches(SkateCaptureClip source, SkateStance side) { return ReferenceEquals(clip, source) && stance == side; }
@@ -118,6 +120,10 @@ namespace Shortcut.RustMod
                 double down = SkateVector.Dot(toe - ankle, frame.Board.Up) / rig.FootLength;
                 down = Math.Max(-.95, Math.Min(.95, down));
                 landingToe[side] = Local(forward * Math.Sqrt(1 - down * down) + frame.Board.Up * down, frame.Board);
+                // A free shoe approaches the future catch frame, not the frame
+                // of the deck that is still flipping under it.
+                freeLanding[side] = new SkateBoardPose(target.Origin - frame.Board.Origin, target.Forward, target.Up);
+                freeLandingToe[side] = frame.Board.Rotate(landingToe[side]);
             }
             return true;
         }
@@ -138,12 +144,22 @@ namespace Shortcut.RustMod
                 double u = Math.Max(0, Math.Min(1, (sourceTime - start) / (caught[side] - start)));
                 double weight = u * u * u * (10 + u * (-15 + 6 * u));
                 var ankle = side == 0 ? la : ra; var toe = side == 0 ? lt : rt; var sole = side == 0 ? lu : ru;
-                var target = frame.Board.Point(landingPlacement[side].Origin);
-                var direction = (toe - ankle) * ((1 - weight) / rig.FootLength) + frame.Board.Rotate(landingToe[side]) * weight;
-                var up = sole * (1 - weight) + frame.Board.Rotate(landingPlacement[side].Up) * weight;
+                bool free = (frame.Observation.Contacts & (SkateCaptureContacts)(1 << side)) == 0;
+                var target = free ? frame.Board.Origin + freeLanding[side].Origin : frame.Board.Point(landingPlacement[side].Origin);
+                var direction = (toe - ankle) * ((1 - weight) / rig.FootLength) +
+                    (free ? freeLandingToe[side] : frame.Board.Rotate(landingToe[side])) * weight;
+                var up = sole * (1 - weight) +
+                    (free ? freeLanding[side].Up : frame.Board.Rotate(landingPlacement[side].Up)) * weight;
                 if (direction.LengthSquared < .000001 || up.LengthSquared < .000001)
                 { error = "Authored catch approach has an ambiguous foot orientation."; return false; }
-                ankle += (target - ankle) * weight; toe = ankle + direction * (rig.FootLength / direction.Length); up *= 1 / up.Length;
+                double freeHeight = ankle.Y;
+                ankle += (target - ankle) * weight;
+                // Keep free-foot height while centring horizontally and give
+                // that approach a bounded lift above the turning deck. Both
+                // the lift and its velocity return to zero at the real catch.
+                if (free) ankle = new SkateVector(ankle.X,
+                    freeHeight + Math.Min(.20, .16 * rig.ThighLength / .44) * 4 * weight * (1 - weight), ankle.Z);
+                toe = ankle + direction * (rig.FootLength / direction.Length); up *= 1 / up.Length;
                 if (side == 0) { la = ankle; lt = toe; lu = up; } else { ra = ankle; rt = toe; ru = up; }
                 changed = true;
             }
