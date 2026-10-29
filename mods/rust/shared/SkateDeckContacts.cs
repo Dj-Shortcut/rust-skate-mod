@@ -124,6 +124,8 @@ namespace Shortcut.RustMod
     // fitters share immutable geometry and have no shared mutable scratch state.
     public sealed class SkateDeckFootFitter
     {
+        internal SkateDeckContactSurface Surface { get { return surface; } }
+        internal SkateFootContactProfile Profile { get { return profile; } }
         private const int MaximumGridReferences = 262144, MaximumWork = 1000000;
         private readonly SkateDeckContactSurface surface;
         private readonly SkateFootContactProfile profile;
