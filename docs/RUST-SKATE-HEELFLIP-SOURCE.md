@@ -53,3 +53,9 @@ The source pack remains unreviewed. Common Load-entry rate and any remaining
 contact/height/acceleration failures stay visible in the private `trick_check`
 reports and viewer. Shadow, actual input/ownership interruptions and the final
 whole-motion comparison remain separate gates.
+
+The next source-led Air/Catch revision uses this take's own357/362 knee planes,
+a modest front-foot pickup and one coupled lower hip envelope. The previous
+fixed toe-side knee pole hid the source's noseward front-knee fold. These are
+explicit authored depth/body constraints; the heel-contact/board curves and
+attached soles stay unchanged. Visual acceptance and native testing remain open.
