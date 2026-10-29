@@ -306,7 +306,7 @@ namespace Shortcut.RustMod
         public bool TrySample(SkateCapturePhase phase, double value, SkateRiderRig rig, SkateStance stance,
             SkateBoardPose liveBoard, SkateVector liveHeading, SkateVector supportUp,
             out SkateCaptureFrame shown, out string error, SkateCaptureFootSupport footSupport = null, bool includePopSequence = false,
-            bool adaptFreeFootBoundaries = false)
+            bool adaptFreeFootBoundaries = false, SkateVector? liveBodyOrigin = null)
         {
             shown = default(SkateCaptureFrame); error = null;
             if (!SkateBoardPath.Valid(liveBoard) || !Finite(value) || (phase < SkateCapturePhase.Load || phase > SkateCapturePhase.Recovery))
@@ -324,7 +324,9 @@ namespace Shortcut.RustMod
             if (SourceMovementKind == "nollie-backside-180-heelflip")
                 along = Unit(new SkateVector(source.Board.Forward.X, 0, source.Board.Forward.Z));
             var from = new SkateBoardPose(source.Board.Origin, along, new SkateVector(0, 1, 0));
-            var to = new SkateBoardPose(liveBoard.Origin, liveHeading, supportUp);
+            // Authored ordinary flicks keep the body on its upright carrier:
+            // rear-axle nose lift moves the board centre, not the rider's hips.
+            var to = new SkateBoardPose(liveBodyOrigin ?? liveBoard.Origin, liveHeading, supportUp);
             SkateRiderPose body;
             if (!SkateBoardPath.Valid(from) || !SkateBoardPath.Valid(to) || !SkateRider.TryTransformPose(source.Pose, from, to, out body))
             { error = "Capture body carrier is degenerate."; return false; }

@@ -402,8 +402,10 @@ public static class SkateCapturedTricks
         }
         var up = SkateRide.ViewNormal; var heading = SkateBoard.OnFace(up, SkateRide.Dir(SkateRide.NoseYaw));
         var board = SkateBoard.PoseFor(player); string error;
+        var bodyOrigin = flickOwner ? V(SkateBoard.Contact(player)) + V(up) * RiderRig.DeckTop : board.Origin;
         if (!active.TrySample(phase, value, rig, SkateRide.Goofy ? SkateStance.Goofy : SkateStance.Regular,
-            board, V(heading), V(up), out frame, out error, footSupport, true, true)) { Refuse(nextToken, error); return false; }
+            board, V(heading), V(up), out frame, out error, footSupport, true, true,
+            flickOwner ? (SkateVector?)bodyOrigin : null)) { Refuse(nextToken, error); return false; }
         // The source's flip finishes ahead of its shove. Keep the flick foot
         // tucked through the last three source frames as the live board returns,
         // preserving its free shoe orientation and the ordinary catch guards.
@@ -426,7 +428,7 @@ public static class SkateCapturedTricks
             }
         }
         double now = Time.realtimeSinceStartup;
-        var carrier = new SkateBoardPose(board.Origin, V(heading), V(up));
+        var carrier = new SkateBoardPose(bodyOrigin, V(heading), V(up));
         if (phase == SkateCapturePhase.Catch && previous.Board.Initialized)
         {
             var approaching = SkateCapturePlayback.Transport(previous, previousCarrier, carrier);
