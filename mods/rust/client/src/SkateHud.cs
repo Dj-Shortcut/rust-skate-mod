@@ -479,9 +479,9 @@ public static class SkateHud
     private static readonly string[] KeyTricks = {
         "@KEYBOARD   every key on the board, while H is held   (regular nose first; goofy/fakie: mirrored)",
         "@ON THE GROUND",
-        "#W push with the back foot, from the leading end when rolling tail first   #S brake   #A / #D carve   mouse: the board turns toward the view",
-        "#S with #A or #D held faster than walking pace: #Powerslide, the board across the way of travel until the keys are let go (left: frontside, right: backside)",
-        "hold #SHIFT while rolling: #Manual   #K get off   #CTRL or #C held on the ground: pump down a slope when let go quickly, get off when held a moment longer",
+        "#W push with the back foot, from the leading end when rolling tail first   #S brake   #A / #D carve   mouse: the board turns to the view",
+        "#S with #A or #D held above walking pace: #Powerslide, the board across the travel until let go (left: frontside, right: backside)",
+        "hold #SHIFT while rolling: #Manual   #K get off   #CTRL or #C on the ground: pump down a slope when let go quickly, get off when held a moment longer",
         "#L camera: the view from behind or the game's first person",
         "@POP",
         "#SPACE: #Ollie, and off a grind or a stall   #Q held with SPACE: #No Comply   #Z held with SPACE: #Boneless",
