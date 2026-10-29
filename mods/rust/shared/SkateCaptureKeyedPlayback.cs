@@ -1,0 +1,120 @@
+using System;
+
+namespace Shortcut.RustMod
+{
+    // Opt-in for one authored, carrier-local body AND board clip. The caller
+    // retains pack/owner approval, action ownership, physics and scoring.
+    public sealed class SkateCaptureKeyedPlayback
+    {
+        public const string RequiredClipId = "kickflip-source-keyed-v1";
+        public const string Provenance = "Authored source-keyed normal Kickflip; coupled body/board poses and actual clip event ratios, uniformly warped to the physical flight; not measured 3D capture.";
+        public static readonly SkateCaptureTrickSignature RequiredSignature =
+            new SkateCaptureTrickSignature(SkatePopKind.Ollie, false, false, 360, 0, 0, 0);
+        private static readonly SkateBoardPose SourceCarrier = new SkateBoardPose(
+            new SkateVector(0, 0, 0), new SkateVector(0, 0, 1), new SkateVector(0, 1, 0));
+        public readonly SkateCaptureClip Clip;
+        public double SourcePop { get; private set; }
+        public double SourceCatch { get; private set; }
+        public double SourceLand { get; private set; }
+        public double SourceCatchFraction { get { return (SourceCatch - SourcePop) / (SourceLand - SourcePop); } }
+
+        private SkateCaptureKeyedPlayback(SkateCaptureClip clip, double pop, double caught, double land)
+        { Clip = clip; SourcePop = pop; SourceCatch = caught; SourceLand = land; }
+
+        public static bool Accepts(SkateCaptureClip clip, SkateCaptureTrickSignature signature)
+        {
+            return clip != null && clip.Id == RequiredClipId && clip.MovementKind == "kickflip" &&
+                RequiredSignature.Same(signature);
+        }
+
+        public static bool TryCreate(SkateCaptureClip clip, out SkateCaptureKeyedPlayback playback, out string error)
+        {
+            playback = null; error = null;
+            if (!Accepts(clip, RequiredSignature) || !clip.Ready)
+            { error = "The exact bounded source-keyed Kickflip clip is required."; return false; }
+            // Reuse the existing strict event/contact contract. Building its
+            // optional inverse clocks does not make those clocks authoritative.
+            SkateCapturePlayback events;
+            if (!SkateCapturePlayback.TryCreate(clip, out events, out error)) return false;
+            playback = new SkateCaptureKeyedPlayback(clip, events.SourceTime(SkateCapturePhase.Pop, 0),
+                events.SourceTime(SkateCapturePhase.Catch, 0), events.SourceTime(SkateCapturePhase.Land, 0));
+            return true;
+        }
+
+        public bool Finished(double secondsSinceLand, double frozenFlightSeconds)
+        {
+            return ValidFlight(frozenFlightSeconds) && Finite(secondsSinceLand) && secondsSinceLand >= 0 &&
+                secondsSinceLand / frozenFlightSeconds >= (Clip.Duration - SourceLand) / (SourceLand - SourcePop);
+        }
+
+        public bool TrySourceTime(double elapsedSeconds, double frozenFlightSeconds, bool actuallyLanded,
+            double secondsSinceLand, out double sourceSeconds, out string error)
+        {
+            sourceSeconds = 0; error = null;
+            if (!Finite(elapsedSeconds) || elapsedSeconds < 0 || !ValidFlight(frozenFlightSeconds) ||
+                !Finite(secondsSinceLand) || actuallyLanded && secondsSinceLand < 0)
+            { error = "Invalid source-keyed physical flight clock."; return false; }
+            double span = SourceLand - SourcePop;
+            if (actuallyLanded)
+            {
+                // The same uniform time scale continues through authored
+                // recovery, but the physical landing starts that segment.
+                double recovery = Math.Min((Clip.Duration - SourceLand) / span, secondsSinceLand / frozenFlightSeconds);
+                sourceSeconds = Math.Min(Clip.Duration, SourceLand + recovery * span);
+            }
+            else
+            {
+                // A longer real flight holds before the Land event. No source
+                // timestamp may announce a gameplay landing ahead of physics.
+                double beforeLand = SourceLand - span * .0000001;
+                sourceSeconds = Math.Min(beforeLand, SourcePop + Math.Min(1, elapsedSeconds / frozenFlightSeconds) * span);
+            }
+            return true;
+        }
+
+        public bool TrySample(SkateRiderRig rig, SkateStance stance, double elapsedSeconds,
+            double frozenFlightSeconds, bool actuallyLanded, double secondsSinceLand, SkateBoardPose uprightCarrier,
+            out SkateCaptureFrame shown, out string error)
+        {
+            shown = default(SkateCaptureFrame); double seconds;
+            if (!TrySourceTime(elapsedSeconds, frozenFlightSeconds, actuallyLanded, secondsSinceLand, out seconds, out error)) return false;
+            if (!SkateBoardPath.Valid(uprightCarrier) || uprightCarrier.Up.Y < .98)
+            { error = "Source-keyed playback requires the current upright physical carrier."; return false; }
+            SkateCaptureFrame source; SkateRiderPose pose;
+            if (!SkateCaptureSampler.TrySample(Clip, seconds, rig, stance, out source, out error)) return false;
+            // Source coordinates are already carrier-local: do NOT subtract the
+            // current board centre or add another procedural pitch/pop envelope.
+            if (!SkateRider.TryTransformPose(source.Pose, SourceCarrier, uprightCarrier, out pose))
+            { error = "The source-keyed carrier transform is unavailable."; return false; }
+            var board = new SkateBoardPose(uprightCarrier.Point(source.Board.Origin),
+                uprightCarrier.Rotate(source.Board.Forward), uprightCarrier.Rotate(source.Board.Up));
+            if (!SkateBoardPath.Valid(board))
+            { error = "The coupled source-keyed board frame is invalid."; return false; }
+            var rotation = Multiply(FrameRotation(uprightCarrier), source.Rotation);
+            shown = new SkateCaptureFrame(pose, board, rotation,
+                uprightCarrier.Rotate(source.LeftSoleUp), uprightCarrier.Rotate(source.RightSoleUp),
+                source.HasEvent, source.Observation, uprightCarrier.Rotate(source.PelvisCorrection),
+                uprightCarrier.Rotate(source.LeftHandCorrection), uprightCarrier.Rotate(source.RightHandCorrection), uprightCarrier.Up);
+            return true;
+        }
+
+        private static bool ValidFlight(double value) { return Finite(value) && value > 0 && value <= 10; }
+        private static bool Finite(double value) { return !double.IsNaN(value) && !double.IsInfinity(value); }
+        private static SkateCaptureRotation Multiply(SkateCaptureRotation a, SkateCaptureRotation b)
+        {
+            return new SkateCaptureRotation(a.W * b.X + a.X * b.W + a.Y * b.Z - a.Z * b.Y,
+                a.W * b.Y - a.X * b.Z + a.Y * b.W + a.Z * b.X,
+                a.W * b.Z + a.X * b.Y - a.Y * b.X + a.Z * b.W,
+                a.W * b.W - a.X * b.X - a.Y * b.Y - a.Z * b.Z).Unit();
+        }
+        private static SkateCaptureRotation FrameRotation(SkateBoardPose frame)
+        {
+            var r = frame.Right; var u = frame.Up; var f = frame.Forward; double x, y, z, w, s, trace = r.X + u.Y + f.Z;
+            if (trace > 0) { s = Math.Sqrt(trace + 1) * 2; w = .25 * s; x = (u.Z - f.Y) / s; y = (f.X - r.Z) / s; z = (r.Y - u.X) / s; }
+            else if (r.X > u.Y && r.X > f.Z) { s = Math.Sqrt(1 + r.X - u.Y - f.Z) * 2; w = (u.Z - f.Y) / s; x = .25 * s; y = (u.X + r.Y) / s; z = (f.X + r.Z) / s; }
+            else if (u.Y > f.Z) { s = Math.Sqrt(1 + u.Y - r.X - f.Z) * 2; w = (f.X - r.Z) / s; x = (u.X + r.Y) / s; y = .25 * s; z = (f.Y + u.Z) / s; }
+            else { s = Math.Sqrt(1 + f.Z - r.X - u.Y) * 2; w = (r.Y - u.X) / s; x = (f.X + r.Z) / s; y = (f.Y + u.Z) / s; z = .25 * s; }
+            return new SkateCaptureRotation(x, y, z, w).Unit();
+        }
+    }
+}
