@@ -950,7 +950,7 @@ public static class RiderRig
                 if (SkateRider.TryAirLook(Rig, input, pose, V(landingLook), Math.Min(1, SkateRide.AirTime / .12f), out looked))
                 { pose = looked; airLookFrame = true; }
             }
-            SkateSurfaceRide.Record(pose, input.DeckFrame, wall || handplant > .001f ? SkateGrabKind.None : SurfaceGrab(pose, input.DeckFrame, grab));
+            SkateSurfaceRide.Record(pose, input.DeckFrame, wall || handplant > .001f ? SkateGrabKind.None : SurfaceGrab(pose, input, grab));
             // In a handplant the board is against the feet, held: the board follows the pose, from
             // the first of the way up to the last of the way down.
             SkateBoard.Held = handplant > 0.001f;
@@ -1138,12 +1138,20 @@ public static class RiderRig
     private static SkateVector WallLocal(SkateVector direction, SkateBoardPose support)
     { return new SkateVector(SkateVector.Dot(direction, support.Right), SkateVector.Dot(direction, support.Up), SkateVector.Dot(direction, support.Forward)); }
 
-    private static SkateGrabKind SurfaceGrab(SkateRiderPose pose, SkateBoardPose deck, SkateGrabKind kind)
+    private static SkateGrabKind SurfaceGrab(SkateRiderPose pose, SkateRiderInput input, SkateGrabKind kind)
     {
+        var deck = input.DeckFrame;
         if (kind == SkateGrabKind.None || !SkateGrabCatalog.Valid(kind) || !deck.Initialized || !SkateBoardPath.Valid(deck)) return SkateGrabKind.None;
         bool left, right;
-        SkateRider.GrabHands(SkateRide.Goofy ? SkateStance.Goofy : SkateStance.Regular, SkateRide.TailFirst, kind, out left, out right);
-        if ((!left && !right) || left && !SurfaceHand(pose.LeftHand, deck) || right && !SurfaceHand(pose.RightHand, deck)) return SkateGrabKind.None;
+        SkateRider.GrabHands(input.Stance, input.Switch, kind, out left, out right);
+        if (!left && !right) return SkateGrabKind.None;
+        if (SkateGrabCatalog.HasReferenceHand(kind))
+        {
+            SkateVector contact;
+            if (left && !SkateRider.TryReferenceGrabContact(Rig, input, pose, true, out contact) ||
+                right && !SkateRider.TryReferenceGrabContact(Rig, input, pose, false, out contact)) return SkateGrabKind.None;
+        }
+        else if (left && !SurfaceHand(pose.LeftHand, deck) || right && !SurfaceHand(pose.RightHand, deck)) return SkateGrabKind.None;
         return kind;
     }
 
@@ -1291,7 +1299,7 @@ public static class RiderRig
             Aim(spine[0], Neck, joint[NeckJ] - spine[0].position);
             Aim(Neck, Head, joint[HeadJ] - joint[NeckJ]);
             var chestForward = joint[ChestForwardJ]; var headForward = joint[HeadForwardJ];
-            var lookUp = airLookFrame ? (joint[HeadJ] - joint[NeckJ]).normalized : chestUp;
+            var lookUp = airLookFrame || motionLookFrame ? (joint[HeadJ] - joint[NeckJ]).normalized : chestUp;
             var cf = chestForward - lookUp * Vector3.Dot(chestForward, lookUp); var hf = headForward - lookUp * Vector3.Dot(headForward, lookUp);
             if (cf.sqrMagnitude > 0.0001f && hf.sqrMagnitude > 0.0001f)
             {
