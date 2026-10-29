@@ -107,6 +107,18 @@ namespace Shortcut.RustMod
         }
     }
 
+    // The actual overlap feature producing an accepted support offset. FootPoint
+    // is before applying that offset; FootPoint + deck.Up * offset meets DeckPoint.
+    // Triangle IDs refer to the bound profiles, including a rigid re-expression.
+    public readonly struct SkateDeckContactWitness
+    {
+        public readonly bool Initialized;
+        public readonly int FootTriangle, DeckTriangle;
+        public readonly SkateVector FootPoint, DeckPoint;
+        internal SkateDeckContactWitness(int footTriangle, int deckTriangle, SkateVector foot, SkateVector deck)
+        { Initialized = true; FootTriangle = footTriangle; DeckTriangle = deckTriangle; FootPoint = foot; DeckPoint = deck; }
+    }
+
     // One instance per foot/owner: cached grid, transformed vertices and clipping
     // buffers are reused. Do not call the same instance concurrently. Separate
     // fitters share immutable geometry and have no shared mutable scratch state.
@@ -150,7 +162,14 @@ namespace Shortcut.RustMod
 
         public bool TryOffset(SkateBoardPose deck, SkateBoardPose foot, double maximumOffset, out double offset, out string error)
         {
-            offset = 0; error = null;
+            SkateDeckContactWitness witness;
+            return TryOffset(deck, foot, maximumOffset, out offset, out witness, out error);
+        }
+
+        public bool TryOffset(SkateBoardPose deck, SkateBoardPose foot, double maximumOffset,
+            out double offset, out SkateDeckContactWitness witness, out string error)
+        {
+            offset = 0; witness = default(SkateDeckContactWitness); error = null;
             if (!SkateBoardPath.Valid(deck) || !deck.Initialized || !SkateBoardPath.Valid(foot) || !foot.Initialized ||
                 !SkateDeckContactMath.Finite(maximumOffset) || maximumOffset < 0 || maximumOffset > .5)
             { error = "Invalid deck or foot support frame or offset bound."; return false; }
@@ -193,9 +212,17 @@ namespace Shortcut.RustMod
                         if (top.MaxX < triangle.MinX - 1e-12 || top.MinX > triangle.MaxX + 1e-12 ||
                             top.MaxZ < triangle.MinZ - 1e-12 || top.MinZ > triangle.MaxZ + 1e-12 ||
                             top.MaxY - triangle.MinY < best - 1e-12) continue;
-                        double gap; int result = Intersect(triangle, top, out gap);
+                        double gap; SkateDeckContactMath.Point point;
+                        int result = Intersect(triangle, top, out gap, out point);
                         if (result < 0) { error = "Deck support projection is numerically unstable."; return false; }
-                        if (result > 0) best = Math.Max(best, gap);
+                        if (result > 0)
+                        {
+                            if (gap > best)
+                                witness = new SkateDeckContactWitness(n, id,
+                                    deck.Origin + right * point.X + up * triangle.Height(point) + forward * point.Z,
+                                    deck.Origin + right * point.X + up * top.Height(point) + forward * point.Z);
+                            best = Math.Max(best, gap);
+                        }
                     }
                 }
             }
@@ -205,9 +232,10 @@ namespace Shortcut.RustMod
             offset = best; return true;
         }
 
-        private int Intersect(SkateDeckContactMath.Triangle foot, SkateDeckContactMath.Triangle deck, out double gap)
+        private int Intersect(SkateDeckContactMath.Triangle foot, SkateDeckContactMath.Triangle deck, out double gap,
+            out SkateDeckContactMath.Point point)
         {
-            gap = 0; var source = polygonA; var target = polygonB; int count = 3;
+            gap = 0; point = default(SkateDeckContactMath.Point); var source = polygonA; var target = polygonB; int count = 3;
             source[0] = new SkateDeckContactMath.Point(foot.A.X, foot.A.Z);
             source[1] = new SkateDeckContactMath.Point(foot.B.X, foot.B.Z);
             source[2] = new SkateDeckContactMath.Point(foot.C.X, foot.C.Z);
@@ -235,7 +263,11 @@ namespace Shortcut.RustMod
             }
             gap = double.NegativeInfinity;
             for (int n = 0; n < count; n++)
-                gap = Math.Max(gap, deck.Height(source[n]) - foot.Height(source[n]));
+            {
+                double value = deck.Height(source[n]) - foot.Height(source[n]);
+                if (value > gap) point = source[n];
+                gap = Math.Max(gap, value);
+            }
             return 1;
         }
         private static double Distance(SkateVector a, SkateVector b, SkateDeckContactMath.Point p)
