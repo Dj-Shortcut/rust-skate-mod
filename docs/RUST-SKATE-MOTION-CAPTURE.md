@@ -552,8 +552,11 @@ shoe heading remains upright. The final entry-blended free foot is fitted again;
 an unsafe blend restores the native foot targets. Steep, inverted or unsupported projections retain
 the native free-foot clearance, with no sole/contact guard relaxation. Both
 native feet own completed Catch and Land; the captured body uses the canonical
-chain solver, a bounded entry fade, physical landing transition, shared landing
-absorption and recovery fade. Bail, another action, path release, changed stance
+chain solver, a bounded entry fade, physical landing transition and recovery fade.
+After native completion and both source Catch contacts, the existing shared Catch
+prior bends the body over those fixed native feet. Its reached knee floor carries
+into the same shared landing absorption, including the first physical Land frame.
+These are the existing authored priors, not additional measured observations. Bail, another action, path release, changed stance
 or changed visible-foot geometry relinquishes the adapter for that pop.
 
 `SkateCapturedBoardPaths.Provenance` must remain visible in review metadata.
