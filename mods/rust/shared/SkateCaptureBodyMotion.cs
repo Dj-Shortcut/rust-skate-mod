@@ -35,7 +35,7 @@ namespace Shortcut.RustMod
             out SkateCaptureFrame shown, out string error)
         {
             shown = frame; error = null;
-            if (!initialized || !Finite(seconds) || seconds <= 0 || seconds > .100001 || !Valid(frame.Pose) ||
+            if (!initialized || !Finite(seconds) || seconds < 0 || seconds > .100001 || !Valid(frame.Pose) ||
                 !Finite(rig.ThighLength) || !Finite(rig.ShinLength) || !Finite(rig.FootLength) ||
                 rig.ThighLength <= 0 || rig.ShinLength <= 0 || rig.FootLength <= 0)
             { Reset(); error = "Invalid or uninitialized vertical body motion step."; return false; }

@@ -213,11 +213,7 @@ namespace Shortcut.RustMod
                 !Finite(rig.FootLength) || rig.FootLength <= 0 || !Finite(elapsedSeconds) || elapsedSeconds < 0 || !uprightCarrier.Initialized ||
                 !SkateBoardPath.Valid(uprightCarrier) || !frame.Board.Initialized || !SkateBoardPath.Valid(frame.Board))
             { error = "Invalid authored Kickflip free-flight carrier or clock."; return false; }
-            double untilCatch = Math.Min(caught[0], caught[1]) - sourceTime;
-            if (elapsedSeconds <= SkateFlipFlick.EdgeReleaseSeconds || untilCatch <= 0) return true;
-            double weight = CatchPreparationWeight(elapsedSeconds - SkateFlipFlick.EdgeReleaseSeconds, .05) *
-                CatchPreparationWeight(untilCatch, .10);
-            if (weight <= 0) return true;
+            if (elapsedSeconds <= SkateFlipFlick.EdgeReleaseSeconds || sourceTime >= Math.Max(caught[0], caught[1])) return true;
             var up = uprightCarrier.Up; var forward = uprightCarrier.Forward; var right = uprightCarrier.Right;
             // The reference runtime mesh contains the deck, trucks, bushings
             // and all four wheels. Its current rigid orientation determines the
@@ -231,6 +227,10 @@ namespace Shortcut.RustMod
             var lu = frame.LeftSoleUp; var ru = frame.RightSoleUp;
             for (int side = 0; side < 2; side++)
             {
+                double untilCatch = caught[side] - sourceTime;
+                double weight = CatchPreparationWeight(elapsedSeconds - SkateFlipFlick.EdgeReleaseSeconds, .05) *
+                    CatchPreparationWeight(untilCatch, .10);
+                if (weight <= 0) continue;
                 var oldAnkle = side == 0 ? la : ra; var oldToe = side == 0 ? lt : rt;
                 var oldUp = side == 0 ? lu : ru;
                 var anchor = kickflipCatch[side];
