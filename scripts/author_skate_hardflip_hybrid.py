@@ -65,6 +65,7 @@ def attached(spec, frame, side):
 def instep(spec, frame):
     o,r,_=board(spec,frame);shape=spec['hybrid']['popContact'];p=np.array(spec['instepDeckFeature'])
     normal=unit(np.array([-2*shape['concave']*p[0]/shape['deckHalfWidth']**2,1.,-2*shape['kickRise']*(p[2]-shape['kickStart'])/shape['kickSpan']**2]))
+    p[1]=shape['kickRise']*((p[2]-shape['kickStart'])/shape['kickSpan'])**2+shape['concave']*(p[0]/shape['deckHalfWidth'])**2+.002
     source_normal=unit(spec['instepSurfaceNormal']);source_forward=unit(np.array([0.,0.,1.])-source_normal*source_normal[2])
     target_normal=-normal;target_forward=unit(np.array([.9,0.,.35])-target_normal*np.dot(target_normal,[.9,0.,.35]))
     source=np.column_stack([source_forward,np.cross(source_normal,source_forward),source_normal])

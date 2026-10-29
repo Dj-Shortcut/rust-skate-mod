@@ -14,8 +14,9 @@ same direction. The selector does not opt other family IDs into this route.
 | --- | --- |
 | 132–140 | Low approach and rising preparation |
 | 141 | Direct pop and front-foot release begins |
-| 142 | Rear-tail support and instep slide |
-| 143–144 | Rear sole releases; instep exits; free Air |
+| 141–142 | Front instep exits before the strongly pitched free board |
+| 142 | Rear-tail support |
+| 143–144 | Rear sole releases; free Air |
 | 146–152 | Steep frontside shove/kickflip, asymmetric pickup |
 | 158 | Both soles catch the completed board |
 | 160 | Landing |

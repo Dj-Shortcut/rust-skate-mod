@@ -5,9 +5,9 @@
   "sourceFps": 29.97002997002997,
   "popFrame": 141,
   "tailStrikeFrame": 142,
-  "frontSoleReleaseFrame": 141.15,
+  "frontSoleReleaseFrame": 141.05,
   "rearSoleReleaseFrame": 143,
-  "instepReleaseFrame": 143.35,
+  "instepReleaseFrame": 141.85,
   "airFrame": 144,
   "catchFrame": 158,
   "landFrame": 160,
@@ -2138,10 +2138,16 @@
   ],
   "frontAirKeys": [
     [
-      143.35,
-      0.23,
+      141.85,
+      0.18,
+      0.12,
+      0.27
+    ],
+    [
+      142,
       0.2,
-      0.3
+      0.13,
+      0.27
     ],
     [
       144,
@@ -2349,9 +2355,9 @@
     0.03674
   ],
   "instepDeckFeature": [
-    -0.073,
-    0.035,
-    0.375
+    -0.09,
+    0.018,
+    0.315
   ],
   "landingBodyWindow": [
     154,
@@ -2361,12 +2367,12 @@
     "sourceUrl": "https://www.youtube.com/watch?v=_oRoo1x1uzM&t=192.4044",
     "sourceAuthor": "The Berrics",
     "rights": "Original authored reconstruction and source-derived retarget controls. Reference footage stays private; no footage redistribution or relicensing grant asserted.",
-    "uncertainties": "Own black-shirt/red-shoe Hardflip retarget directions; actor140/141/152 was explicitly reconstructed in the earlier retarget. Hidden hands near144, camera depth and knee planes remain uncertain, not measured3D.",
+    "uncertainties": "Own black-shirt/red-shoe Hardflip retarget directions; actor140/141/152 was explicitly reconstructed in the earlier retarget. Hidden hands near144, camera depth and knee planes remain uncertain, not measured3D. The initial long nose-follow was rejected after mesh inspection; front upper contact ends before the strongly pitched free board, matching the already released front foot in source142.",
     "execution": "Back-foot frontside scoop plus front instep kickflip; roll+360/canonical yaw\u2212180. Source board3D and hidden upper-shoe contact are reconstructed. Original source confidence is unchanged."
   },
   "frontAirDorsiKeys": [
     [
-      143.35,
+      141.85,
       -20
     ],
     [
