@@ -7,7 +7,7 @@ using UnityEngine;
 public static class SkateCapturedBoardPaths
 {
     public const string MovementKind = "impossible";
-    public const string Provenance = "Captured Impossible body and safely supported free-foot motion; native BoardPath owns wrap, pivot, authored hook-foot pickup, catch and landing. Authored free-front-foot tuck and shared supported knee prior through wrap, catch and landing; not measured hook contact.";
+    public const string Provenance = "Captured Impossible body and safely supported free-foot motion; native BoardPath owns the original vertical wrap, pivot, authored hook-foot pickup, catch and landing. Authored toe-down sole contact follows the real tail. Authored free-front-foot tuck and shared supported knee prior through wrap, catch and landing; not measured hook contact.";
     private static SkateCapturePlayback approved;
     private static bool active, landed;
     private static int token = -1, refused = -1, lands, footVersion;
@@ -63,6 +63,45 @@ public static class SkateCapturedBoardPaths
         else if (u.Y > f.Z) { n = Math.Sqrt(1 + u.Y - r.X - f.Z) * 2; w = (f.X - r.Z) / n; x = (u.X + r.Y) / n; y = .25 * n; z = (f.Y + u.Z) / n; }
         else { n = Math.Sqrt(1 + f.Z - r.X - u.Y) * 2; w = (r.Y - u.X) / n; x = (f.X + r.Z) / n; y = (f.Y + u.Z) / n; z = .25 * n; }
         return new SkateCaptureRotation(x, y, z, w).Unit();
+    }
+
+    private static bool TryHookContact(SkateRiderRig rig, SkateCaptureFrame source, SkateBoardPathSample path,
+        bool rearLeft, double entryWeight, out SkateCaptureFrame result, out string error)
+    {
+        result = source; error = null;
+        var body = source.Pose;
+        var ankle = rearLeft ? body.LeftAnkle : body.RightAnkle;
+        var toe = rearLeft ? body.LeftToe : body.RightToe;
+        var sole = rearLeft ? source.LeftSoleUp : source.RightSoleUp;
+        SkateBoardPose foot;
+        if (!SkateCaptureFootSupport.TryFootFrame(ankle, toe, sole, out foot))
+        { error = "Impossible hook foot frame is invalid."; return false; }
+        double weight = Math.Pow(Math.Sin(Math.PI * path.Progress), 2) * entryWeight;
+        var axis = SkateBoardPath.Cross(foot.Forward, foot.Up);
+        var toward = SkateBoardPath.Turn(foot.Forward, axis, -75 * weight);
+        var up = SkateBoardPath.Turn(foot.Up, axis, -75 * weight);
+        double along = rig.FootLength * .75, under = -RiderRig.AnkleHeight;
+        var from = ankle + foot.Forward * along + foot.Up * under;
+        // Hook the outside bevel, not the deck centre through the shoe.
+        // These are the outline and outer-edge dimensions of the runtime deck.
+        double kick = (.37 - .245) / .155, round = (.37 - .288) / .112;
+        double width = .102 * Math.Sqrt(1 - round * round);
+        double side = SkateVector.Dot(foot.Forward, source.Board.Right) >= 0 ? 1 : -1;
+        var rim = source.Board.Point(new SkateVector(side * (width + .002),
+            .05 * kick * kick + .008 * width * width / (.102 * .102) - .0045, -.37));
+        var contact = from * (1 - weight) + rim * weight;
+        var a = contact - toward * along - up * under;
+        var t = a + toward * rig.FootLength;
+        SkateRiderPose fitted;
+        if (!SkateCaptureFootSupport.TrySetFeet(rig, body,
+            rearLeft ? a : body.LeftAnkle, rearLeft ? t : body.LeftToe,
+            rearLeft ? body.RightAnkle : a, rearLeft ? body.RightToe : t,
+            false, out fitted, out error)) return false;
+        result = new SkateCaptureFrame(fitted, source.Board, source.Rotation,
+            rearLeft ? up : source.LeftSoleUp, rearLeft ? source.RightSoleUp : up,
+            source.HasEvent, source.Observation, source.PelvisCorrection,
+            source.LeftHandCorrection, source.RightHandCorrection, source.RiderUp);
+        return true;
     }
 
     public static bool TryFrame(SkateRiderRig rig, Transform player, SkateRiderPose baseline,
@@ -217,6 +256,10 @@ public static class SkateCapturedBoardPaths
             frame = new SkateCaptureFrame(absorbed, board, frame.Rotation, lu, ru, true, sample.Observation,
                 frame.PelvisCorrection + shift, frame.LeftHandCorrection, frame.RightHandCorrection, carrier.Up);
         }
+        // Hook ownership follows the native path, not a sole pin from the source.
+        // Rock about the actual tail/forefoot contact rather than wrapping into
+        // a flat ankle. Catch restores the native two-foot stance at progress1.
+        if (air && path.Active && !TryHookContact(rig, frame, path, !frontLeft, blend, out frame, out error)) return Stop(error);
         double height = SkateVector.Dot(frame.Pose.Pelvis - carrier.Origin, carrier.Up);
         if (SkateVector.Dot(frame.Pose.PelvisUp, carrier.Up) < .25 || height < .15 || height > 1.5)
             return Stop("Impossible capture does not fit the current upright support");

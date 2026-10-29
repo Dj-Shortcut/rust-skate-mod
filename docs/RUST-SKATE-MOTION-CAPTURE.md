@@ -539,28 +539,30 @@ switch, tail-leading or body/spin modifiers is supported in Regular and Goofy.
 Other special actions retain their existing native presentation.
 
 The existing `BoardPath` owns the wrap, pivot, physical progression and completion.
-Normal rear-foot Impossible uses an authored reference-shoe clearance envelope:
-the rear foot follows its native hook while contact travels around the shoe and onto the
-real curved tail, including its kick height, to clear the shin during inversion.
-It closes one vertical 360-degree turn with no added yaw. Its ordinary ollie AirPitch is suppressed
-because the wrap already owns that rotation. Its authored native rear-foot pickup supplies up to 0.30 m
-of descending-wrap clearance and returns for Catch; the separate ordinary ollie
-visual lift is excluded for this family. Physics and scoring are unchanged.
-Direction -1, nollie/reversed and other special trajectories retain their prior paths.
+Normal rear-foot Impossible retains the original native circle, with no added yaw.
+Its authored rear-foot pickup supplies up to 0.30 m of descending-wrap clearance
+and returns for Catch. The separate ordinary ollie pitch/lift is excluded for
+this family. Physics and scoring are unchanged here; the flatground flight
+profile is maintained separately. Direction -1, nollie/reversed and other special
+trajectories retain their prior paths.
 Its progress maps the source's first Pop to first Catch; the actual completion
 starts source Catch and the observed physical landing starts source Land/recovery.
 The source's estimated wrapping-board origin is removed about the rear-foot pivot
 before transporting its body to the upright physical carrier. No source root,
 board quaternion or timestamp changes movement, scoring or the live board.
 
-The native hook ankle/toe targets and upright sole remain authoritative during the wrap. An
+The native path owns a toe-down forefoot/sole contact with the outside bevel of the real curved tail.
+The existing ankle-to-sole height defines that contact point; canonical IK fits
+the leg without moving the upper body or adding a source contact flag. The
+contact rock follows native progress with eased entry and returns to the native
+two-foot Catch. This is an authored hook reconstruction, not measured sole mocap. An
 authored 0.26 m free-front-foot tuck follows native path progress with eased entry
 and return, only while that source foot is released. The existing supported
 knee prior uses the family-specific 100-degree limit and toe-directed bend plane
 through wrap, catch and landing, preserving deeper source crouches. The
 free front ankle can follow the source only while its source contact is absent
 and the existing measured foot fitter accepts the live projection; its native
-shoe heading remains upright. The final entry-blended free foot is fitted again;
+free shoe heading remains upright. The final entry-blended free foot is fitted again;
 an unsafe blend restores the native foot targets before the separately labelled
 free-foot tuck. Steep, inverted or unsupported source projections retain native
 foot orientation and clearance rather than weakening the sole/contact guard. Both

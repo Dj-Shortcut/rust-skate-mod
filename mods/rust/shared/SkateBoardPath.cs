@@ -46,7 +46,7 @@ namespace Shortcut.RustMod
         // Physical front/nose foot is +1, rear/tail foot -1; nollie exchanges the popped end.
         public int Foot { get { return (Kind == SkateBoardTrickKind.FrontFootImpossible || Kind == SkateBoardTrickKind.Underflip ? 1 : -1) * (Nollie ? -1 : 1) * (Reversed ? -1 : 1); } }
         private bool ReferenceRearWrap { get { return Kind == SkateBoardTrickKind.Impossible && Direction == 1 && !Nollie && !Reversed; } }
-        public SkateVector Pivot { get { return new SkateVector(0, ReferenceRearWrap ? SkateBoardPath.ImpossiblePivotHeight + SkateBoardPath.ImpossibleHookLift(Progress) : SkateBoardPath.FootRadius, SkateBoardPath.Axle * Foot); } }
+        public SkateVector Pivot { get { return new SkateVector(0, SkateBoardPath.FootRadius + (ReferenceRearWrap ? SkateBoardPath.ImpossibleHookLift(Progress) : 0), SkateBoardPath.Axle * Foot); } }
         public double Contact
         {
             get
@@ -69,16 +69,10 @@ namespace Shortcut.RustMod
             if (!Known) return value;
             if (ReferenceRearWrap)
             {
-                // Keep the deck hooked to the native rear-foot path around the
-                // shoe. Contact travels onto the tail during the inverted half
-                // so the finite deck passes beside the shin, not through it.
-                double slide = Math.Pow(Math.Sin(Math.PI * Progress), 4) * .20;
-                double along = Pivot.Z - slide;
-                // As contact travels onto the tail kick, include its real rise;
-                // otherwise the inverted curved tip cuts back into the ankle.
-                double tailRise = Math.Max(0, (Math.Min(.4, Math.Abs(along)) - .245) / .155);
-                var localPivot = new SkateVector(0, SkateBoardPath.ImpossibleWrapRadius(WrapAngle) + .05 * tailRise * tailRise, along);
-                return Pivot + Rotate(value - localPivot);
+                // The ankle/sole hooks the real tail independently of this
+                // original native circle. Only the descending pickup is added.
+                var restPivot = new SkateVector(0, SkateBoardPath.FootRadius, Pivot.Z);
+                return Pivot + Rotate(value - restPivot);
             }
             if (Kind != SkateBoardTrickKind.Underflip) return Pivot + Rotate(value - Pivot);
             double u = Progress <= 0.25 ? 0 : (Progress - 0.25) / 0.75;
@@ -86,17 +80,15 @@ namespace Shortcut.RustMod
             return Rotate(value) + new SkateVector(Direction * 0.06 * kick, 0.03 * kick, 0);
         }
         public SkateVector KickPoint
-        { get { return Kind == SkateBoardTrickKind.Underflip ? Point(new SkateVector(0, -0.025, Foot * SkatePose.FootOffset)) : Pivot; } }
+        { get { return Kind == SkateBoardTrickKind.Underflip ? Point(new SkateVector(0, -0.025, Foot * SkatePose.FootOffset)) :
+            ReferenceRearWrap ? Pivot + new SkateVector(0, SkateBoardPath.ImpossibleAnkleHeight - SkateBoardPath.FootRadius, 0) : Pivot; } }
     }
 
     public static class SkateBoardPath
     {
         public const double Axle = 0.23, FootRadius = 0.045;
-        // Authored normal rear-foot envelope from the unchanged reference shoe.
-        // Nollie/reversed and other special paths retain their previous curves.
-        private const double ImpossibleSoleDepth = .095, ImpossibleInstepHeight = .064;
-        private const double ImpossibleSideRadius = .07, ImpossibleClearance = .005;
-        internal const double ImpossiblePivotHeight = ImpossibleSoleDepth + ImpossibleClearance;
+        // The native ankle reference is distinct from the deck's orbital pivot.
+        internal const double ImpossibleAnkleHeight = .10;
         internal static double ImpossibleHookLift(double progress)
         {
             // Pick the hook foot up for the descending nose, then return it for
@@ -105,14 +97,6 @@ namespace Shortcut.RustMod
             double u = t * t * t * (10 + t * (-15 + 6 * t));
             return .30 * 4 * u * (1 - u);
         }
-        internal static double ImpossibleWrapRadius(double degrees)
-        {
-            double angle = degrees * Math.PI / 180, c = Math.Cos(angle), s = Math.Sin(angle);
-            double centre = (ImpossibleInstepHeight - ImpossibleSoleDepth) * .5;
-            double half = (ImpossibleInstepHeight + ImpossibleSoleDepth) * .5;
-            return -centre * c + Math.Sqrt(half * half * c * c + ImpossibleSideRadius * ImpossibleSideRadius * s * s) + ImpossibleClearance;
-        }
-
         public static double Duration(SkateBoardTrickKind kind)
         { return kind == SkateBoardTrickKind.None ? 0 : (kind == SkateBoardTrickKind.Underflip ? 720 : 360) / SkateMotion.FlipRate; }
         public static bool TrySample(SkateBoardTrickKind kind, double progress, int direction, bool nollie,
