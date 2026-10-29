@@ -47,7 +47,11 @@ and foot gestures retain the Tre's own execution. One authored local-height
 curve removes monocular board-root drift; that same translation reaches the
 body and free feet. The late X/Z catch segment regularizes the estimated
 actor root from source416–420 instead of snapping only the body at419–420.
-The source408/412 gestures and pre-416 poses remain unchanged by that repair.
+That root repair preserves the source408/412 gestures and pre-416 poses.
+The separate front-chain reconstruction follows the noseward, nearly horizontal
+front thigh visible in source408–416. During the free-foot window it raises
+the front ankle coherently with that knee plane; it changes neither the
+collected rear chain nor the source420 Catch and landing endpoints.
 
 A small explicit rear depth reconstruction follows the estimated source-camera
 ray. Only the original board surface underneath each shoe can require

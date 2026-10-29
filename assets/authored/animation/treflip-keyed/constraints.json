@@ -2596,6 +2596,25 @@
       "height": 0.8,
       "speed": 1.7,
       "stopSeconds": 0.06
+    },
+    "frontAirPickup": {
+      "window": [
+        406,
+        408,
+        416,
+        420
+      ],
+      "upperDirection": [
+        0.1,
+        -0.02,
+        1.0
+      ],
+      "sourceFrames": [
+        408,
+        412,
+        416
+      ],
+      "meaning": "Authored occluded-depth reconstruction of the source noseward, near-horizontal front thigh; rear chain and caught endpoints unchanged."
     }
   },
   "signature": {

@@ -132,7 +132,15 @@ def sample(c,s,sf):
     if look:
         az=unit(d['HeadForward']*np.array([1.,0.,1.]));gaze=unit(az-UP*.70);headup=unit(UP-gaze*np.dot(UP,gaze));headup=unit(unit(j['Head']-j['Neck'])*(1-look)+headup*look);j['Head']=j['Neck']+headup*.12;d['HeadForward']=unit(d['HeadForward']*(1-look)+gaze*look)
     for side in feet:
-        hip=j[side+'Hip'];a=ankles[side];F=feet[side];pole=unit(np.array([1.,0.,.1])*.85+F[:,2]*.15);j[side+'Knee']=limb(hip,a,.44,.43,pole);j[side+'Ankle']=a;sole[side]=F[:,1];j[side+'Toe']=a+F[:,2]*math.sqrt(.14**2-.07**2)-F[:,1]*.07
+        hip=j[side+'Hip'];a=ankles[side];F=feet[side];pole=unit(np.array([1.,0.,.1])*.85+F[:,2]*.15)
+        if side=='Left':
+            pickup=s['authored']['frontAirPickup'];start,full,hold,stop=pickup['window'];weight=smooth((sf-start)/(full-start))*(1-smooth((sf-hold)/(stop-hold)))
+            if weight:
+                # The filmed front thigh rises toward the nose. Its old low
+                # ankle made that plane impossible, regardless of knee angle.
+                direction=unit(np.array(pickup['upperDirection']));knee=hip+direction*.44;shin=unit(original['LeftAnkle']-original['LeftKnee']);target=knee+shin*.43
+                a=a*(1-weight)+target*weight;a[1]+=free_foot_clearance(s,o,R,a,F);pole=unit(pole*(1-weight)+direction*weight)
+        j[side+'Knee']=limb(hip,a,.44,.43,pole);j[side+'Ankle']=a;sole[side]=F[:,1];j[side+'Toe']=a+F[:,2]*math.sqrt(.14**2-.07**2)-F[:,1]*.07
     phase='Load';contacts=3
     for e in events(s):
         if e['sourceFrame']<=sf+1e-9:phase=e['phase'].title();contacts=sum({'LeftFoot':1,'RightFoot':2}[v]for v in e['contacts'])
