@@ -512,6 +512,25 @@ Pop-to-Catch inverse can still drive the normal route. The startup field
 `source pop-to-catch clocks` identifies that route; a zero Air-clock count alone
 does not mean the normal route uses a linear source clock.
 
+The normal `hardflip` presentation selects exactly an ollie with a +360-degree
+flip and +180-degree frontside shove, with no switch, tail-leading or body/spin
+modifier. This matches the existing gameplay classifier. Its canonical source
+clock expects +360 roll and -180 yaw. Both active axes must pass the same inverse
+guards; an opposite-yaw or otherwise ambiguous source retains the phase-clock
+fallback. Registration and a readable pack do not establish correct free-foot
+motion, catch or visual acceptance. The captured frontside scoop and toe flick
+need their own reviewed source and both-stance normal-route inspection.
+
+Normal Hardflip adds an explicitly authored early free-front-foot tuck. It lifts
+the anatomical front ankle and toe together, up to a reference-scaled 0.28 m,
+using the existing canonical leg solver without moving the pelvis or torso.
+Only a foot without source contact is eligible. The C2 prior occupies the first
+half of the trusted Air-to-Catch source interval, peaks at two sevenths, and
+respects the existing capture-entry weight. It ends before late air/catch;
+the shared catch and landing remain unchanged. Review metadata must retain
+`HardflipEarlyTuckProvenance`; this is presentation authoring, not measured motion
+or permission to approve the source pack.
+
 For the Air-to-Catch clock, the first trusted air sample can already be partway through its rotation. It is
 held until live progress reaches that fraction, rather than moving back into a
 foot-supported pop pose. An unfinished source endpoint is likewise held before
