@@ -121,7 +121,12 @@ namespace Shortcut.RustMod
                     var up = new SkateVector(0, 1, 0);
                     var reference = new SkateBoardPose(frame.Board.Origin, new SkateVector(0, 0, 1), up);
                     var anchor = pending.kickflipCatch[foot];
-                    var calibration = new SkateBoardPose(reference.Point(new SkateVector(anchor.X, .10, anchor.Z)), caughtFoot.Forward, up);
+                    // This calibration is upright, even when the source Catch
+                    // sole has a small pitch. Keep its heading, not that pitch.
+                    var along = caughtFoot.Forward - up * SkateVector.Dot(caughtFoot.Forward, up);
+                    if (!Finite(along.LengthSquared) || along.LengthSquared < .000001)
+                    { error = "Catch calibration has no upright heading."; return false; }
+                    var calibration = new SkateBoardPose(reference.Point(new SkateVector(anchor.X, .10, anchor.Z)), along * (1 / along.Length), up);
                     double amount;
                     if (!pending.Fit(foot, reference, calibration, out amount, out error)) return false;
                     pending.kickflipAnkleHeight = Math.Max(pending.kickflipAnkleHeight, .10 + amount);
