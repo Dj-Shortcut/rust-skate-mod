@@ -17,7 +17,8 @@ public static class SkateCapturedBoardPaths
     private static Transform owner;
     private static SkateStance stance;
     private static double airAt, flight, landedAt, departedAt;
-    private static SkateVector groundOrigin;
+    private static SkateVector groundOrigin, entryRoot, entryVelocity, entryTarget, entryTargetVelocity;
+    private static double entrySeconds; private static bool entry;
     private static SkateCaptureFrame previous;
     private static SkateBoardPose previousCarrier;
     public static double SourceSeconds { get; private set; }
@@ -73,12 +74,12 @@ public static class SkateCapturedBoardPaths
     }
     internal static void ClearApproval() { approved = null; Reset(); }
     public static void Reset()
-    { active = landed = departing = HasFrame = false; token = refused = -1; owner = null; previous = default(SkateCaptureFrame); SourceSeconds = ClearanceShift = 0; }
+    { active = landed = departing = entry = HasFrame = false; token = refused = -1; owner = null; previous = default(SkateCaptureFrame); SourceSeconds = ClearanceShift = 0; }
     private static bool Stop(string why)
     {
         HasFrame = false;
         if (active) { refused = token; Status = "Impossible capture fallback: " + why; Out.Say("CAPTURE " + Status); }
-        active = departing = false; owner = null; previous = default(SkateCaptureFrame); return false;
+        active = departing = entry = false; owner = null; previous = default(SkateCaptureFrame); return false;
     }
     private static bool Eligible()
     {
@@ -112,7 +113,8 @@ public static class SkateCapturedBoardPaths
             V(SkateBoard.OnFace(up, SkateRide.Dir(SkateRide.NoseYaw))), V(up));
     }
     public static bool TryFrame(SkateRiderRig rig, Transform player, SkateRiderPose baseline,
-        SkateVector baselineLeftUp, SkateVector baselineRightUp, out SkateCaptureFrame frame, SkateVector? observedGroundOrigin = null)
+        SkateVector baselineLeftUp, SkateVector baselineRightUp, out SkateCaptureFrame frame, SkateVector? observedGroundOrigin = null,
+        SkateVector? observedLocalRoot = null, SkateVector? observedLocalVelocity = null)
     {
         frame = default(SkateCaptureFrame); HasFrame = false; ClearanceShift = 0;
         if (approved == null || player == null) return false;
@@ -128,7 +130,21 @@ public static class SkateCapturedBoardPaths
             active = true; landed = departing = false; token = SkateRide.Pops; lands = SkateRide.Lands;
             footVersion = SkateFootContacts.Version; stance = SkateRide.Goofy ? SkateStance.Goofy : SkateStance.Regular;
             owner = player; epoch = SkateKeys.InputEpoch; flight = predicted; airAt = SkateRide.ModeAt;
-            groundOrigin = observedGroundOrigin.Value;
+            groundOrigin = observedGroundOrigin.Value; entry = false;
+            if (observedLocalRoot.HasValue && observedLocalVelocity.HasValue)
+            {
+                // Same world-continuous quintic entry as the source-keyed route.
+                // Source482.25 is on its own compact Air plateau; feet/board stay exact.
+                double targetTime = pop + (land - pop) * (5.25 / 16), step = .005;
+                SkateCaptureFrame target, before, after; string entryError;
+                if (!SkateCaptureSampler.TrySample(approved, targetTime, rig, stance, out target, out entryError) ||
+                    !SkateCaptureSampler.TrySample(approved, targetTime - step, rig, stance, out before, out entryError) ||
+                    !SkateCaptureSampler.TrySample(approved, targetTime + step, rig, stance, out after, out entryError)) return Stop(entryError);
+                entrySeconds = flight * (5.25 / 16); entryRoot = observedLocalRoot.Value;
+                entryVelocity = observedLocalVelocity.Value - new SkateVector(0, SkateFlatgroundPop.Gravity * flight * .5, 0);
+                entryTarget = target.Pose.Pelvis; entryTargetVelocity = (after.Pose.Pelvis - before.Pose.Pelvis) * ((land - pop) / (2 * step * flight));
+                entry = true;
+            }
             Status = "Impossible source-keyed rear hook active";
         }
         if (token != SkateRide.Pops || owner != player || epoch != SkateKeys.InputEpoch || !SkateFootContacts.Ready || footVersion != SkateFootContacts.Version ||
@@ -202,6 +218,21 @@ public static class SkateCapturedBoardPaths
                     frame.HasEvent, frame.Observation, frame.PelvisCorrection, frame.LeftHandCorrection, frame.RightHandCorrection, carrier.Up);
                 ClearanceShift = needed;
             }
+        }
+        if (entry && !landed && elapsed < entrySeconds)
+        {
+            double u = elapsed / entrySeconds, u3 = u * u * u;
+            var a = entryVelocity * entrySeconds; var b = entryTargetVelocity * entrySeconds; var d = entryTarget - entryRoot;
+            var root = entryRoot + a * u + (d * 10 - a * 6 - b * 4) * u3 +
+                (d * -15 + a * 8 + b * 7) * u3 * u + (d * 6 - a * 3 - b * 3) * u3 * u * u;
+            var delta = carrier.Point(root) - frame.Pose.Pelvis;
+            var identity = new SkateBoardPose(default(SkateVector), new SkateVector(0, 0, 1), new SkateVector(0, 1, 0));
+            var shiftedFrame = new SkateBoardPose(delta, identity.Forward, identity.Up); SkateRiderPose shifted, pinned;
+            if (!SkateRider.TryTransformPose(frame.Pose, identity, shiftedFrame, out shifted) ||
+                !SkateCaptureFootSupport.TrySetFeet(rig, shifted, frame.Pose.LeftAnkle, frame.Pose.LeftToe,
+                    frame.Pose.RightAnkle, frame.Pose.RightToe, false, out pinned, out error)) return Stop(error ?? "Impossible entry root is unreachable");
+            frame = new SkateCaptureFrame(pinned, frame.Board, frame.Rotation, frame.LeftSoleUp, frame.RightSoleUp, frame.HasEvent,
+                frame.Observation, frame.PelvisCorrection + delta, frame.LeftHandCorrection, frame.RightHandCorrection, carrier.Up);
         }
         previous = frame; previousCarrier = carrier; HasFrame = true; return true;
     }

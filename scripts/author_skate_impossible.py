@@ -20,7 +20,7 @@ def value(keys,sf):return float(curve([k[0]for k in keys],[[k[1]]for k in keys],
 def basis(f,u):
  u=unit(u);f=unit(f-u*np.dot(f,u));return np.column_stack((unit(np.cross(u,f)),u,f))
 def blend_frame(a,b,u):return qmatrix(slerp(matrix_quat(a),matrix_quat(b),smooth(u)))
-def upper(c,sf,pelvis):
+def upper(c,s,sf,pelvis):
  rows=c['rows'];i=max(0,min(len(rows)-2,int(sf)-c['firstSourceFrame']));a,b=rows[i:i+2];u=float(np.clip(sf-a['frame'],0,1))
  raw={k:np.asarray(a['joints'][k])*(1-u)+np.asarray(b['joints'][k])*u for k in JOINTS};dirs={k:unit(np.asarray(a['dirs'][k])*(1-u)+np.asarray(b['dirs'][k])*u)for k in DIRS}
  torso=unit(raw['Neck']-raw['Pelvis']);hipaxis=unit(raw['RightHip']-raw['LeftHip']);shoulders=unit(raw['RightShoulder']-raw['LeftShoulder']);shoulders=unit(shoulders-torso*np.dot(shoulders,torso))
@@ -29,6 +29,13 @@ def upper(c,sf,pelvis):
   j[side+'Hip']=pelvis+hipaxis*(sign*.09);j[side+'Shoulder']=pelvis+torso*.44+shoulders*(sign*.18)
   j[side+'Elbow']=j[side+'Shoulder']+unit(raw[side+'Elbow']-raw[side+'Shoulder'])*.29
   j[side+'Hand']=j[side+'Elbow']+unit(raw[side+'Hand']-raw[side+'Elbow'])*.27
+ # The visible front arm stays low; detector486–488 wrongly raises that tracked low arm.
+ if 485<sf<489:
+  aa,bb=rows[485-c['firstSourceFrame']],rows[489-c['firstSourceFrame']];w=(sf-485)/4
+  segment=lambda row,tip,base:unit(np.array(row['joints'][tip])-np.array(row['joints'][base]))
+  arm=unit(segment(aa,'LeftElbow','LeftShoulder')*(1-w)+segment(bb,'LeftElbow','LeftShoulder')*w)
+  fore=unit(segment(aa,'LeftHand','LeftElbow')*(1-w)+segment(bb,'LeftHand','LeftElbow')*w)
+  j['LeftElbow']=j['LeftShoulder']+arm*.29;j['LeftHand']=j['LeftElbow']+fore*.27
  # Exact input-owned Load at Pop, then the actual source upper gesture.
  n=c['neutralCharge'];w=smooth((sf-477)/2.5)
  for k in ('Chest','Neck','Head','LeftShoulder','RightShoulder','LeftElbow','RightElbow','LeftHand','RightHand'):
@@ -41,7 +48,33 @@ def upper(c,sf,pelvis):
  shoulderaxis=unit(j['RightShoulder']-j['LeftShoulder']);shoulderaxis=unit(shoulderaxis-torso*np.dot(shoulderaxis,torso))
  for side,sign in [('Left',-1),('Right',1)]:
   arm=unit(j[side+'Elbow']-j[side+'Shoulder']);fore=unit(j[side+'Hand']-j[side+'Elbow']);j[side+'Shoulder']=pelvis+torso*.44+shoulderaxis*(sign*.18);j[side+'Elbow']=j[side+'Shoulder']+arm*.29;j[side+'Hand']=j[side+'Elbow']+fore*.27
+ # The source Catch folds over the board; repair only the visible upper chain.
+ weight=value(s['catchFold'],sf)
+ if weight>0:
+  old=unit(j['Neck']-pelvis);forward=dirs['ChestForward'].copy();forward[1]=0;forward=unit(forward)
+  lean=math.radians(s['catchLeanDegrees']);wanted=forward*math.sin(lean)+UP*math.cos(lean);new=unit(old*(1-weight)+wanted*weight)
+  axis=np.cross(old,new);sin=float(np.linalg.norm(axis));cos=float(np.dot(old,new))
+  if sin>1e-9:
+   axis/=sin;x,y,z=axis;k=np.array([[0.,-z,y],[z,0.,-x],[-y,x,0.]]);rotation=np.eye(3)+k*sin+(k@k)*(1-cos)
+   for name in ('Chest','Neck','Head','LeftShoulder','RightShoulder','LeftElbow','RightElbow','LeftHand','RightHand'):j[name]=pelvis+rotation@(j[name]-pelvis)
+   dirs['ChestForward']=unit(rotation@dirs['ChestForward']);dirs['ChestUp']=new
+  down=math.radians(s['catchGazeDownDegrees']);gaze=unit(dirs['HeadForward']*(1-weight)+(forward*math.cos(down)-UP*math.sin(down))*weight)
+  headup=unit(UP-gaze*np.dot(UP,gaze));j['Head']=j['Neck']+headup*.12;dirs['HeadForward']=gaze
  return j,dirs
+
+def pelvis_height(s,sf):
+ local=lambda f:value(s['pelvisLocalY'],f)
+ a,b=s['landingCarrierWindow']
+ if not a<=sf<=b:return local(sf)
+ pop,land=s['pop'],s['land'];flight=s['referenceFlight'];g=s['gravity']
+ ref=lambda f:.5*g*flight*flight*float(np.clip((f-pop)/(land-pop),0,1))*(1-float(np.clip((f-pop)/(land-pop),0,1)))
+ velocity=lambda f:g*flight*(.5-(f-pop)/(land-pop))if pop<f<land else 0.
+ derivative=lambda k,f:float(curve([x[0]for x in s[k]],[[x[1]]for x in s[k]],f,derivative=True)[0])
+ duration=(b-a)/(land-pop)*flight;first=local(a)+ref(a);last=local(b)+ref(b)
+ v0=velocity(a)*duration+derivative('pelvisLocalY',a)*(b-a)
+ v1=velocity(b)*duration+derivative('pelvisLocalY',b)*(b-a)
+ u=(sf-a)/(b-a);d=last-first
+ return first+v0*u+(10*d-6*v0-4*v1)*u**3+(-15*d+8*v0+7*v1)*u**4+(6*d-3*v0-3*v1)*u**5-ref(sf)
 
 def sample(c,s,sf):
  f=float(np.clip((sf-s['pop'])/(s['land']-s['pop']),0,1));href=.5*s['gravity']*s['referenceFlight']**2*f*(1-f)
@@ -77,14 +110,14 @@ def sample(c,s,sf):
   width_slope=-shape['deckHalfWidth']*(abs(dz)-.288)*np.sign(dz)/(.112**2*max(.01,math.sqrt(max(0,1-((abs(dz)-.288)/.112)**2))))
   edge=unit(np.array([-1.,0.,-width_slope]));cone=np.column_stack((face,edge));weights=np.maximum(0,np.linalg.lstsq(cone,-r.T@outward,rcond=None)[0]);weights[1]*=hook_weight
   normal=unit(cone@weights) if np.linalg.norm(weights)>1e-8 else face
-  local_normal=ru.T@r@normal;support_feature=float(np.min(np.array(s['hookToeSurface'])@local_normal));offset=(support_feature-float(np.dot(feature,local_normal)))*wrap
+  local_normal=ru.T@r@normal;support_feature=float(np.min(np.array(s['hookToeSurface'])@local_normal));offset=(support_feature-float(np.dot(feature,local_normal)))*hook_weight
   if not math.isfinite(offset):raise ValueError('Impossible toe contact has an invalid frozen surface projection')
   feature=feature+local_normal*offset
   hooked=rear+ru@feature-r@deck
   # Pressure ends at the existing .005m-tail-contact plateau; thereafter the
   # board follows the rear feature throughout its full vertical winding.
-  board=on_ground*(1-hook_weight)+hooked*hook_weight
-  airclear=.025*smooth((sf-479)/2)*(1-smooth((sf-490)/3));needed=airclear-(board[1]-support)
+  board=hooked
+  airclear=s['airClearance']*smooth((sf-479)/2)*(1-smooth((sf-490)/3));needed=airclear-(board[1]-support)
   if needed>0:
    board+=UP*needed;rear+=UP*needed
  # Return to actual flat two-foot riding; source gesture continues through514.
@@ -95,7 +128,7 @@ def sample(c,s,sf):
    target=np.array([-.055,.187+href,.22 if side=='Left' else -.22]);target_basis=foot_basis(65 if side=='Left' else 85)
    if side=='Left':front=front*(1-recovery)+target*recovery;lu=blend_frame(lu,target_basis,recovery)
    else:rear=rear*(1-recovery)+target*recovery;ru=blend_frame(ru,target_basis,recovery)
- pelvis=np.array([-.055,value(s['pelvisLocalY'],sf),-.001]);j,dirs=upper(c,sf,pelvis)
+ pelvis=np.array([-.055,pelvis_height(s,sf),-.001]);j,dirs=upper(c,s,sf,pelvis)
  # Native carrier contributes exactly one physical arc; subtract the reference
  # arc from authored absolute foot/board controls, never from source directions.
  front-=UP*href;rear-=UP*href;board-=UP*href
@@ -116,7 +149,7 @@ def main():
  times=np.unique(np.r_[np.linspace(first,s['end'],85),[477,477.75,478.25,480,481,482,483,484,485,486,487,488,489,490,493,499]])
  frames=[sample(c,s,float(sf))for sf in times]
  events=[dict(t=(sf-first)/c['sourceFps'],phase=phase.lower(),contacts=contacts)for sf,phase,contacts in [(472,'Load',['LeftFoot','RightFoot']),(477,'Pop',['RightFoot']),(480,'Air',['RightFoot']),(490,'Catch',['LeftFoot','RightFoot']),(493,'Land',['LeftFoot','RightFoot']),(499,'Recovery',['LeftFoot','RightFoot'])]]
- meta=dict(id=s['id'],label='Normal Impossible - rear-foot vertical wrap',movementKind='impossible',reviewed=False,sourceUrl=c['sourceUrl'],sourceAuthor=c['sourceAuthor'],canonicalStance='regular',authored=True,capturedBody=True,sourceFps=c['sourceFps'],firstSourceFrame=first,lastSourceFrame=s['end'],sourcePoseSha256=c['sourcePoseSha256'],provenance=s['provenance'],rearPathProvenance=s['rearPathProvenance'],hookSurfaceProvenance=s['hookSurfaceProvenance'],rearHookContract='Canonical right/rear foot owns the tail through Pop and Air; front is free. Rear hook is not a flat sole-support event. Goofy mirrors anatomically.',sourceRootMotion='Source estimated world root and board discarded. Absolute board/foot reference subtracts T=.6/g8 once; native upright carrier adds actual physical root once.')
+ meta=dict(id=s['id'],label='Normal Impossible - rear-foot vertical wrap',movementKind='impossible',reviewed=False,sourceUrl=c['sourceUrl'],sourceAuthor=c['sourceAuthor'],canonicalStance='regular',authored=True,capturedBody=True,sourceFps=c['sourceFps'],firstSourceFrame=first,lastSourceFrame=s['end'],sourcePoseSha256=c['sourcePoseSha256'],provenance=s['provenance'],upperVisiblePrior=s['upperVisiblePrior'],rearPathProvenance=s['rearPathProvenance'],hookSurfaceProvenance=s['hookSurfaceProvenance'],rearHookContract='Canonical right/rear foot owns the tail through Pop and Air; front is free. Rear hook is not a flat sole-support event. Goofy mirrors anatomically.',sourceRootMotion='Source estimated world root and board discarded. Absolute board/foot reference subtracts T=.6/g8 once; native upright carrier adds actual physical root once.')
  clip=dict(format='skate-authored-impossible/1',metadata=meta,stance='regular',fps=(len(frames)-1)/duration,duration=duration,events=contact_events(events,duration),frames=frames)
  packed=encode_pack([clip]);a.output.mkdir(parents=True,exist_ok=True);(a.output/(s['id']+'.json')).write_text(json.dumps(clip,indent=2)+'\n');temp=a.output/'.skate_captures.skmc.tmp';temp.write_bytes(packed);temp.replace(a.output/'skate_captures.skmc');print('IMPOSSIBLE_SOURCE_READY',len(frames),len(packed),hashlib.sha256(packed).hexdigest(),'reviewed=false')
 if __name__=='__main__':main()

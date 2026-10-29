@@ -414,7 +414,9 @@ public static class SkateCapturedTricks
             keyedBaselineEpoch == SkateKeys.InputEpoch && keyedBaselinePops + 1 == SkateRide.Pops && keyedBaselineCharging &&
             Time.realtimeSinceStartup - keyedBaselineAt >= 0 && Time.realtimeSinceStartup - keyedBaselineAt <= .1
             ? keyedGroundOrigin : null;
-        if (SkateCapturedBoardPaths.TryFrame(rig, player, baseline, baselineLeftUp, baselineRightUp, out frame, impossibleGround))
+        if (SkateCapturedBoardPaths.TryFrame(rig, player, baseline, baselineLeftUp, baselineRightUp, out frame, impossibleGround,
+            impossibleGround.HasValue ? (SkateVector?)keyedBaselineRoot : null,
+            impossibleGround.HasValue ? (SkateVector?)keyedBaselineVelocity : null))
         { displayed = frame.Board; return true; }
         bool airborne = SkateRide.Mode == RideMode.Air, queued = SkateRide.PresentationQueued;
         var entryUp = SkateRide.ViewNormal;

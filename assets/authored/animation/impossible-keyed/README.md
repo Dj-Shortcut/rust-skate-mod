@@ -68,10 +68,17 @@ family exceptions; they must not erase its rear hook or high free-front-foot
 knee. Native skin/contact, interruption and final visual approval remain
 required before an installation pack is approved.
 
-Current offline status: both normal and shorter-flight routes build and keep the
-rear hook/full winding on the unchanged real mesh. The general `trick_check.py`
-is run unchanged. Free-front-foot and vertical-board proximity checks differ
-intentionally from a free flip; the filmed balance arm also rises above the
-head. Its entry/landing acceleration warnings remain real open timing work.
-The source Catch upper-body lean and early hook rim still need visual review.
-This development candidate is not marked finished or approved for installation.
+Current development status: the world-continuous root entry reuses the existing
+quintic handoff method with the observed ground root/velocity. Feet, board and
+source clock remain independently owned. The landing body height subtracts the
+reference carrier through489–497 so its combined world trajectory is smooth.
+Both normal/short routes retain all Air frames without refusal; entry peaks
+improve from178 to75/85m/s² and landing from132 to22/29m/s². The remaining short
+entry warning is not hidden by a threshold change.
+
+The source Catch fold/downward gaze and a false second high-arm detection are
+labelled upper-body reconstructions. One genuinely raised balance arm and the
+source's low vertical board remain; no extra clearance or lower Air body was
+added for the subsequently retracted critique. The unchanged family-aware
+`trick_check.py` runs on each export. Native Rust/Shadow and final whole-motion
+visual acceptance remain open; this is not an approved installation pack.
