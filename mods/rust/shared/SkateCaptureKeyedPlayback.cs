@@ -91,9 +91,10 @@ namespace Shortcut.RustMod
             if (!ValidFlight(frozenFlightSeconds) || !Finite(localRoot.LengthSquared) || !Finite(localVelocity.LengthSquared) ||
                 groundCarrierOrigin.HasValue && !Finite(groundCarrierOrigin.Value.LengthSquared))
             { error = "Invalid source-keyed entry baseline."; return false; }
-            // Source264 is the compact coupled Air after the early pressure rise.
+            // Kick source264 and Tre source408 are their own compact Air poses.
             // The independent upper entry and exact foot/board paths stay short.
-            double rootFraction = Clip.Id == RequiredClipId ? .3125 : .125;
+            double rootFraction = Clip.Id == RequiredClipId ? .3125 :
+                Clip.Id == TreFlipClipId && groundCarrierOrigin.HasValue ? 5.0 / 21.0 : .125;
             double span = (SourceLand - SourcePop) * rootFraction;
             double targetTime = SourcePop + span, step = Math.Min(.005, span * .1);
             SkateCaptureFrame target, before, after;
@@ -105,7 +106,7 @@ namespace Shortcut.RustMod
             // The observed flatground launch span supplies its actual takeoff
             // speed. Subtract the carrier derivative in local space so adding
             // that carrier preserves the held body's world velocity at release.
-            if (Clip.Id == RequiredClipId && groundCarrierOrigin.HasValue)
+            if ((Clip.Id == RequiredClipId || Clip.Id == TreFlipClipId) && groundCarrierOrigin.HasValue)
                 entryVelocity -= new SkateVector(0, SkateFlatgroundPop.Gravity * frozenFlightSeconds * .5, 0);
             entryUpper = localBody; entryUpperSeconds = frozenFlightSeconds * .125;
             groundOrigin = groundCarrierOrigin;
