@@ -958,9 +958,12 @@ public static class RiderRig
             inAir = Math.Max(inAir, .2f + .4f * SkateRide.TransitionLandingApproach);
             var shownGrab = mode == RideMode.Air && !wall && !SkateActions.Owns && !SkateOldschoolRide.Active ? ShownGrab : SkateGrabKind.None;
             if (shownGrab != SkateGrabKind.None) inAir += (0.95f - inAir) * (contact.Initialized ? (float)contact.GrabWeight : 1f);
-            // Measured riding height already leaves soft knees. An extra idle
-            // crouch made a rider who had stood up after landing squat again.
             var want = mode == RideMode.Air ? inAir : mode == RideMode.Grind ? GrindCrouch(SkateRide.GrindKind) : SkateRide.Braking ? 0.4f : 0f;
+            var ordinaryRolling = mode == RideMode.Ground && Math.Abs(SkateRide.Speed) > .5f &&
+                !wall && !bodyFlip && !SkateActions.Owns && !SkateOldschoolRide.Active &&
+                !SkateRide.GroundGrab.Active && !SkateRide.Handplant && PlantBlend <= .001f &&
+                !SkateRide.FootPlanted && SkateRide.PushPhase <= .001f && !SkateSurfaceRide.DropInMotion.Active;
+            if (ordinaryRolling) want = Math.Max(want, .18f);
             if (wall) want = .55f;
             else if (SkateSurfaceRide.WallieWeight > 0) want = Math.Max(want, .25f + .55f * SkateSurfaceRide.WallieWeight);
             if (SkateOldschoolRide.Active && SkateOldschoolRide.Kind == SkateOldschoolKind.Caveman &&

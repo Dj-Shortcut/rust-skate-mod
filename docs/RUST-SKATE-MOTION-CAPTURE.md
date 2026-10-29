@@ -605,6 +605,14 @@ head axis with the settled recovery gaze; Switch retains its existing authoring.
 The [full animation-library batches](RUST-SKATE-ANIMATION-LIBRARY.md) keep code,
 capture quality and native gameplay acceptance separate.
 
+Ordinary ground rolling above 0.5 m/s keeps an authored minimum crouch of 0.18
+through the real rider spring, including after captured recovery ends. Standing
+still keeps its existing target. Charge, pump and braking can bend farther;
+push, plant, drop-in and other action-owned poses keep their own targets. Air
+and grab targets are unchanged. This is a runtime source posture rule, not a
+viewer start-height adjustment; coupled visual review and the in-game test
+remain separate gates.
+
 The approval file is strict UTF-8 (at most 32 KiB), with these lines and one to
 256 unique canonical clip ids:
 
@@ -643,3 +651,7 @@ Where the source cannot be trusted, follow the owner's
 [visible-result rule](AUTONOMY.md#visible-result-over-source-fidelity-owner-28-october-2026):
 a labelled authored correction that looks right beats an unlabelled faithful
 copy of a reconstruction error.
+
+What each trick has to look like (start position, pop, flick, tuck, catch,
+landing) is in [the trick anatomy reference](RUST-SKATE-TRICK-ANATOMY.md). Read
+the trick's section before authoring or repairing it.
