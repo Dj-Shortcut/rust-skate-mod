@@ -2606,7 +2606,7 @@
       ],
       "upperDirection": [
         0.1,
-        -0.02,
+        -0.2,
         1.0
       ],
       "sourceFrames": [
@@ -2614,7 +2614,13 @@
         412,
         416
       ],
-      "meaning": "Authored occluded-depth reconstruction of the source noseward, near-horizontal front thigh; rear chain and caught endpoints unchanged."
+      "meaning": "Source-led front thigh slightly down toward nose with open forward/down shin. About two thirds of the first vertical pickup; rear chain and caught endpoints unchanged.",
+      "strength": 1.0,
+      "shinDirection": [
+        0.15,
+        -0.9,
+        0.42
+      ]
     }
   },
   "signature": {
