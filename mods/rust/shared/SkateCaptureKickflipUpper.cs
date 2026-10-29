@@ -36,7 +36,7 @@ namespace Shortcut.RustMod
             out SkateRiderPose folded, out string error)
         {
             folded = pose; error = null;
-            if (!Valid(pose) || !SkateBoardPath.Valid(uprightCarrier) || uprightCarrier.Up.Y < .999 ||
+            if (!Valid(pose) || !SkateBoardPath.Valid(uprightCarrier) || uprightCarrier.Up.Y < .98 ||
                 !Finite(chargeWeight) || chargeWeight < 0 || chargeWeight > 1)
             { error = "Invalid ordinary charge upper-body fold."; return false; }
             double weight = Smooth(chargeWeight);
@@ -61,11 +61,12 @@ namespace Shortcut.RustMod
         {
             shown = frame; error = null;
             if (!ready || !ValidRig(rig) || !Valid(frame.Pose) || !SkateBoardPath.Valid(uprightCarrier) ||
-                uprightCarrier.Up.Y < .999 || !Finite(setupElapsed) || setupElapsed < 0 ||
+                uprightCarrier.Up.Y < .98 || !Finite(setupElapsed) || setupElapsed < 0 ||
                 !Finite(secondsSinceCatch) || !Finite(secondsSinceLand) || ((int)heldContacts & ~15) != 0)
             { error = "Invalid Kickflip upper-body frame."; return false; }
             double weight = Smooth(setupElapsed / SetupSeconds);
-            if (secondsSinceCatch >= 0) weight *= 1 - Smooth(secondsSinceCatch / ReturnSeconds);
+            // Keep the over-board trunk through Catch and wheel contact; the
+            // actual landing starts the return to ordinary rollaway.
             if (secondsSinceLand >= 0) weight = Math.Min(weight, 1 - Smooth(secondsSinceLand / ReturnSeconds));
             if (weight <= 0) return true;
             var p = frame.Pose; var turn = Swing(p, uprightCarrier, weight);
