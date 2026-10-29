@@ -31,6 +31,8 @@ public static class SkateRide
     public const float AirGravity = 16f, OlliePop = 6f, MaxFall = 30f, BailImpact = 12f, BailSeconds = 1.3f, BailDecel = 10f, PushPeriod = 0.8f, SeaLevel = -1.1f, LowestCap = 2f, LagStep = 0.1f, RaiseWait = 3f, CapForget = 30f, ManualPace = 1f, ManualHold = 0.3f, HopGrace = 0.3f;
     // These are frozen when the flight starts, not recomputed from a later ray/held grab.
     private static bool flatgroundFlight;
+    private static float flatgroundFlightSeconds;
+    public static float FlatgroundFlightSeconds { get { return flatgroundFlight ? flatgroundFlightSeconds : 0f; } }
     private static bool initialFlipFlick;
     private static float flightGravity = AirGravity;
     public static float CurrentAirGravity { get { return Mode == RideMode.Air ? flightGravity : AirGravity; } }
@@ -1041,6 +1043,9 @@ public static class SkateRide
         if (flat.sqrMagnitude > 0.0001f) Yaw = (float)(Math.Atan2(flat.x * sign, flat.z * sign) * 180.0 / Math.PI);
         Speed = flat.magnitude * sign;
         TakeOff(pop > 0f, outgoing.y + gravity * dt, flatground);
+        // Equal-height presentation span from the actual charged launch, before
+        // the one-step gravity compensation. It never changes player motion.
+        flatgroundFlightSeconds = flatground && outgoing.y > 0f ? 2f * outgoing.y / gravity : 0f;
         KeepAirPose(nose, deck);
     }
 
@@ -1133,6 +1138,7 @@ public static class SkateRide
     private static void TakeOff(bool jumped, float vertical, bool flatground = false)
     {
         flatgroundFlight = flatground;
+        flatgroundFlightSeconds = 0f;
         initialFlipFlick = flatground && jumped && wantFlip != 0 && wantSpecial == SkateBoardTrickKind.None;
         flightGravity = flatground ? (float)SkateFlatgroundPop.Gravity : AirGravity;
         airViewTrace = 0; airViewFromGrind = Mode == RideMode.Grind;
