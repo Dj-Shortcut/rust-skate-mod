@@ -519,6 +519,14 @@ public static class SkateCapturedTricks
             frame = new SkateCaptureFrame(supported, frame.Board, frame.Rotation, frame.LeftSoleUp, frame.RightSoleUp,
                 frame.HasEvent, frame.Observation, frame.PelvisCorrection, frame.LeftHandCorrection, frame.RightHandCorrection, frame.RiderUp);
         }
+        if (!landed && phase == SkateCapturePhase.Air && active.SourceMovementKind == "heelflip")
+        {
+            double sourceTime = active.FlightSourceTime(value);
+            if (!SkateCaptureBalance.TryHeelflip(rig, frame,
+                now - beganAt,
+                active.SourceTime(SkateCapturePhase.Catch, 0) - sourceTime, out frame, out error))
+            { Refuse(nextToken, error ?? "authored Heelflip balance unavailable"); return false; }
+        }
         if (phase == SkateCapturePhase.Air) { previousAirSourceTime = active.FlightSourceTime(value); previousAirProgress = value; }
         previous = frame; previousCarrier = carrier; previousAt = now;
         displayed = board; return true;
