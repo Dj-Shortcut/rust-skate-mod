@@ -51,10 +51,18 @@ a default-layer hit alone does not imply wood. Speed affects gain and pitch,
 and loop gains crossfade. This remains a coarse substrate mapping, not native
 per-triangle material recognition.
 
-Playback is still local **2D audio** (`spatialBlend = 0`), with no observer
-replication, positional multiplayer sound or server audio change. It respects
-the existing listener/mute state. Event timing, transitions and mix balance still
-need in-game listening.
+Playback uses local **3D sources** (`spatialBlend = 1`), with linear attenuation
+from 1 to 25 metres. Seven loop channels follow the current board position.
+One-shots use eight cached voices and retain their event positions as the rider
+moves away: board contacts originate at the board, push at the foot, and body
+impact near the rider. An idle voice is reused first; a full pool replaces its
+oldest tail. Source creation stays in off-board preparation, with one source per
+preparation unit. Native source settings are read back before readiness is logged.
+
+Doppler is disabled because the existing speed/airborne logic already controls
+pitch. The listener/mute state is unchanged. These are local emitters; observer
+replication, positional multiplayer events and server audio are separate work.
+Native attenuation, event timing and mix balance still need in-game listening.
 
 ## Loading, failure and lifecycle
 
@@ -105,13 +113,26 @@ They are not relicensed as CC0. Keep provenance and applicable usage terms with
 the private pack, as described in the sound brief. The historical procedural API
 and its separately authored assets retain their own existing licences.
 
-Offline reader/playback fixtures and a genuine cached-reference C# compile cover
-their stated source scope. Historical procedural-audio tests remain API coverage;
-they do not validate these sounds. All 18 selected private WAVs now pass format,
-peak/clipping, DC, onset/tail and repeated loop-join checks. The actual client
-reader decoded the full pack with float samples matching the PCM bytes. Absolute
-LUFS targets and the requested drop/landing level difference remain unmet; no
-compressor or limiter was used to conceal those limits. Current-build startup and
-native loading of all eighteen clips are evidenced for 0.18.62. Actual event playback,
-public-tool staging, teardown, performance, repeated-loop artifacts, output mix and
-heard quality remain open. Boarding failed before a ride could establish those results.
+The owner authorized shortening the four late onsets and dynamics processing.
+The current private preparation retains the original provider WAVs, all seven
+validated loops and every one-shot's complete tail duration. Ollie, Scrape, Slam
+and Bail lose only their measured quiet preroll, retaining five milliseconds
+before the prior measured onset. Disclosed lookahead peak compression and a final
+50 ms end fade provide safe PCM output; there is no voice or watermark processing.
+
+All 18 final WAVs pass format, peak/clipping, DC, onset/tail and repeated loop-join
+checks. Eight of the eleven previous absolute-LUFS misses now meet the original
+0.5 LU tolerance. Three remain: Landing −13.59 LUFS (target −12), Drop −10.59
+(target −9), and Slam −14.59 (target −13). Those misses remain explicit; the meter
+and criteria were not changed. Drop is 3 LU above the actual Landing, Slam 1 LU
+below it, and Push 10 LU below the actual Ollie. Further flattening of the short
+Landing transient was not used to claim an absolute-loudness pass. This does not
+fully complete the sound-quality brief.
+
+The actual client reader decoded the final pack with float samples matching the
+PCM bytes. Private source fixtures cover moving loop origins, independent impact
+tails, bounded voice reuse and lifecycle/failure handling. A cached-reference
+compile covers the complete current client source. These checks do not prove
+native spatial playback or subjective audio quality. Historical native startup
+and WAV loading at version 0.18.62 do not validate these changes. Installation,
+current-game event playback, public-tool staging and heard balance remain open.
