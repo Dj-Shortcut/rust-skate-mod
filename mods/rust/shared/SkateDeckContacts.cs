@@ -148,6 +148,31 @@ namespace Shortcut.RustMod
             }
         }
 
+        // Centre the measured footprint, not its ankle, on an authored bolt region.
+        // Vertical support still belongs to TryOffset and its existing bound.
+        internal bool TryCenteredPlacement(SkateBoardPose deck, SkateBoardPose foot, double centreZ,
+            out SkateBoardPose placed, out string error)
+        {
+            placed = default(SkateBoardPose); error = null;
+            if (!SkateBoardPath.Valid(deck) || !SkateBoardPath.Valid(foot) || !deck.Initialized || !foot.Initialized ||
+                !SkateDeckContactMath.Finite(centreZ) || Math.Abs(centreZ) > .25)
+            { error = "Invalid authored landing placement frame."; return false; }
+            double minX = double.PositiveInfinity, minZ = minX, maxX = double.NegativeInfinity, maxZ = maxX;
+            for (int n = 0; n < profile.VertexCount; n++)
+            {
+                var p = foot.Rotate(profile.Vertex(n));
+                double x = SkateVector.Dot(p, deck.Right), z = SkateVector.Dot(p, deck.Forward);
+                minX = Math.Min(minX, x); maxX = Math.Max(maxX, x);
+                minZ = Math.Min(minZ, z); maxZ = Math.Max(maxZ, z);
+            }
+            double height = SkateVector.Dot(foot.Origin - deck.Origin, deck.Up);
+            var origin = deck.Origin + deck.Right * ((surface.MinimumX + surface.MaximumX - minX - maxX) * .5) +
+                deck.Forward * (centreZ - (minZ + maxZ) * .5) + deck.Up * height;
+            if ((origin - foot.Origin).Length > .25)
+            { error = "Authored landing placement exceeds its horizontal bound."; return false; }
+            placed = new SkateBoardPose(origin, foot.Forward, foot.Up); return true;
+        }
+
         public bool TryOffset(SkateBoardPose deck, SkateBoardPose foot, double maximumOffset, out double offset, out string error)
         {
             offset = 0; error = null;
