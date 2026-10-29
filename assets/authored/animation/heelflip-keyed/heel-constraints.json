@@ -2058,12 +2058,27 @@
     [
       353,
       -0.01,
-      -0.25
+      -0.2
     ],
     [
-      358,
+      357,
       -0.02,
-      -0.24
+      -0.13
+    ],
+    [
+      359,
+      -0.02,
+      -0.15
+    ],
+    [
+      360,
+      -0.025,
+      -0.17
+    ],
+    [
+      361,
+      -0.035,
+      -0.21
     ],
     [
       362,
@@ -2260,22 +2275,16 @@
         -0.08
       ],
       [
-        354,
-        0.83,
+        353,
+        1,
         0,
-        -0.56
+        0.0875
       ],
       [
         357,
-        0.873,
-        0,
-        -0.488
-      ],
-      [
-        360,
         1,
         0,
-        -0.15
+        0.0875
       ],
       [
         362,
@@ -2301,5 +2310,44 @@
   "landingBodyWindow": [
     363,
     371
-  ]
+  ],
+  "rearAirLiftKeys": [
+    [
+      350.75,
+      0
+    ],
+    [
+      353,
+      0
+    ],
+    [
+      355,
+      0
+    ],
+    [
+      357,
+      -0.025
+    ],
+    [
+      359,
+      -0.02
+    ],
+    [
+      360,
+      -0.01
+    ],
+    [
+      361,
+      0
+    ],
+    [
+      362,
+      0
+    ],
+    [
+      385,
+      0
+    ]
+  ],
+  "rearPickupPrior": "Authored source357 asymmetric rear pickup: keep ankle near the body toe-plane, collect it modestly toward board center between the truck sets, and keep it lower than the noseward front foot. Rear knee stays toe-facing rather than tail-splayed. No lateral sidekick or deeper common squat; unchanged Catch/entry/board/heel. Monocular depth is reconstructed."
 }
