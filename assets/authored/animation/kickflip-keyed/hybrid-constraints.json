@@ -12,15 +12,16 @@
     "provenance": "Captured body retained; local flick, sole/upper-contact semantics, late foot clearance and soft landing are explicitly authored.",
     "uncertainties": "Reference filmed stance is uncertain; canonical Regular and its anatomical Goofy mirror are authoring mappings. Flick contact anatomy, hidden depth and Catch273 within blurred272\u2013274 are authored.",
     "authoredContactSemantics": "Authored semantic markers, not measured confidence: rear-sole support ends at tail-pop259; front-sole support ends at260 before the ankle-roll. Upper-shoe nose-rim contact at261 is authored instep contact;262 is free carrier-space release, never sole support.",
-    "authoredKeyRepair": "Captured body is the basis. Labelled upper reconstruction259\u2013278 is retained. A single authored pop/slide/instep/release trajectory uses the live curved board frame and original shoe outline before the retained free-Air tuck. Source knee planes, board path, hip/upper envelope, event markers and landing are unchanged by this contact repair.",
+    "authoredKeyRepair": "Captured body remains the basis with labelled upper reconstruction259\u2013278. The front live-deck slide/instep/release is retained; a vertical rear pickup replaces the former sideways release. Short free-Air toe/body-directed knee planes repair displaced-ankle anatomy without angle caps. Board path, pelvis/hips, event markers and landing are unchanged by this repair.",
     "bodyProvenance": "Captured skeletal basis from captured-body.json. Labelled short upper-body reconstruction, authored board and local foot/contact constraints; not fully captured or fully hand-authored body motion.",
     "rearSolePopCompliance": "Attached rear sole matches the authored board through259, then C2 releases over one source frame into the same captured rear path/clearance. Old captured board pitch/arc is not treated as sole support for the new board.",
-    "authoredFreeAirDepth": "Source266/267 images show a compact free-Air tuck. One C2 reconstructed-depth path pair is blended only262.5\u2013272. The rear foot stays outside the rising tail before lowering to the compact source267 target. Captured pelvis/hips and the authored board, flick and Catch markers remain unchanged by this foot channel. Upper-body reconstruction is separately labelled. Absolute target curves replace rather than add to the late clearance channel; hidden depth remains unreviewed.",
-    "authoredRearClearance": "Rear sole tracks the moving curved tail through the pop, then moves outside the deck before carrier-space pickup. The fixed source259 board-pose release and captured rear-distance offset no longer own the early release.",
+    "authoredFreeAirDepth": "Source266/267 images show a compact free-Air tuck. One C2 reconstructed-depth path pair is blended262.5\u2013272. The rear foot rises over the rear board half while the tail turns, then returns to the retained compact source267 target. Pelvis/hips, board, front flick and Catch markers are unchanged by this rear channel; hidden depth remains unreviewed.",
+    "authoredRearClearance": "Rear sole follows the current tail frame while rising along its normal, then lifts vertically into an upright free path above the rear board half. Lateral positions remain0\u2013.055m; the former.24m sideways release is removed. Source267 compact tuck target is retained; hidden depth is authored.",
     "authoredCatchRecovery": "Completed Catch pins feet over source272\u2013273. Hip recovery starts at273 and reaches its authored landing envelope at277, retaining captured Catch extension before the impact bend.",
     "authoredEarlyBoardClearance": "Keys261/262 reduce the relative board lag to-.09m. Paired pitch and X/Z origin preserve the previous nose-rim position at both keys; this changes the tail path rather than adding a second flight arc.",
-    "authoredUpperReconstruction": "Short source-led upper-body reconstruction259\u2013278 repairs visible captured misses: raised arms261, forward torso40deg and board-directed gaze267, asymmetric arms273. Canonical reconstruction depth is authored, not measured. The captured pelvis/hips, lower body, feet, board and contacts remain unchanged; upper limbs retain fixed lengths. Captured motion resumes outside the C2 window.",
-    "authoredPopFlickPath": "One coupled pop-to-flick path: both soles fit the current curved deck while attached; the rear foot leaves sideways in the live tail frame before entering a free carrier path. Front sole slide ends260, upper/outside shoe contacts the true heel-side nose corner261, then releases outward262 into the retained tuck. Foot roles and contact markers are unchanged. Shape controls reuse original project deck/shoe dimensions; hidden contact depth remains authored and unreviewed."
+    "authoredUpperReconstruction": "Short source-led upper-body reconstruction259\u2013278 repairs visible captured misses: raised arms261, forward torso40deg and board-directed gaze267. Far arm273 is occluded/blurred with no reliable observed chain; a restrained authored balance pose keeps its wrist below the head crown, rather than asserting an overhead gesture. Near arm stays down. Captured pelvis/hips remain unchanged; limbs retain fixed lengths. Capture resumes outside the C2 window.",
+    "authoredPopFlickPath": "One coupled pop-to-flick path: front sole follows the current curved deck through260, upper/outside shoe contacts the heel-side nose corner261, then releases outward262. Rear foot rises over the tail rather than kicking sideways, and enters the existing compact source267 tuck. Foot roles and contact markers are unchanged. Shape controls reuse original project deck/shoe dimensions; hidden depth remains authored and unreviewed.",
+    "authoredKneeAim": "During free Air260\u2013273, displaced ankle targets use a C2 blend toward the current toe/body-forward bend plane instead of blindly transporting an uncertain captured knee plane. Fixed thigh/shin lengths and foot targets determine flexion; no knee-angle cap is applied."
   },
   "sourceRootMotion": {
     "origin": "Physical support anchor local(0,0,0)",
@@ -641,8 +642,8 @@
       "Right": [
         [
           264.5,
-          0.18,
-          0.435,
+          0.045,
+          0.46,
           -0.3
         ],
         [
@@ -788,14 +789,14 @@
           0.29528360024349
         ],
         "LeftUpper": [
-          -0.01953848107695236,
-          0.747203222080077,
-          -0.6643083566163811
+          -0.456952885283529,
+          0.10355607461569956,
+          -0.8834422448814895
         ],
         "LeftFore": [
-          -0.19735347318649632,
-          0.9559937503105925,
-          0.21708882050514597
+          -0.7952557267277045,
+          0.6052275326688025,
+          -0.03560846537586737
         ]
       },
       {
@@ -872,21 +873,21 @@
       "rollClearance": 0.025,
       "rearFreeKeys": [
         [
-          261,
-          0.24,
-          0.13,
+          262,
+          0.025,
+          0.35,
+          -0.29
+        ],
+        [
+          263,
+          0.04,
+          0.48,
           -0.3
         ],
         [
-          262,
-          0.24,
-          0.2,
-          -0.31
-        ],
-        [
           264.5,
-          0.18,
-          0.435,
+          0.045,
+          0.46,
           -0.3
         ]
       ],
@@ -895,6 +896,12 @@
         0.452524564505643,
         0.20870675311161074
       ]
-    }
+    },
+    "kneeAimWindow": [
+      260,
+      262,
+      269,
+      273
+    ]
   }
 }

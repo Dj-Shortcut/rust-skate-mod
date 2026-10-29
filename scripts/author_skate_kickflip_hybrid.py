@@ -133,6 +133,7 @@ def sample(controls,spec,keys,t):
     sy=curve([q[0]for q in h['softHipKeys']],[[q[1]]for q in h['softHipKeys']],frame)[0]
     delta=UP*((sy-joints['Pelvis'][1])*land_weight)
     for name in joints:joints[name]=joints[name]+delta
+    upper_reconstruction(joints,dirs,frame,h)
     i=max(0,min(len(keys)-2,int(np.searchsorted(times,t,side='right'))-1));u=float(np.clip((t-times[i])/(times[i+1]-times[i]),0,1))
     late=window(frame,h['lateClearanceWindow'])*h['lateClearance']
     ground=smooth((frame-h['groundPinStart'])/(h['groundPinFull']-h['groundPinStart']))
@@ -157,10 +158,10 @@ def sample(controls,spec,keys,t):
             if frame<=259:
                 ankle,foot=deck_shoe(spec,origin,br,0.,-.24,88,h['popContact']['soleGap'])
             elif frame<264.5:
-                slide=smooth(frame-259)
-                attached,attached_r=deck_shoe(spec,origin,br,.24*slide,-.24-.03*slide,88,h['popContact']['soleGap']+.02*slide)
+                pickup=smooth((frame-259)/2)
+                attached,attached_r=deck_shoe(spec,origin,br,.02*pickup,-.24-.02*pickup,88,h['popContact']['soleGap']+.13*pickup)
                 rows=h['popContact']['rearFreeKeys'];free=curve([r[0]for r in rows],[r[1:]for r in rows],frame)
-                released=smooth(frame-260)
+                released=smooth((frame-260.5)/1.5)
                 ankle=attached*(1-released)+free*released
                 foot=qmatrix(slerp(matrix_quat(attached_r),matrix_quat(basis(ff,UP)),released))
         elif frame<=262:
@@ -193,9 +194,15 @@ def sample(controls,spec,keys,t):
         if ss>1e-8:
             axis=cross/ss;bend=bend*dot+np.cross(axis,bend)*ss+axis*np.dot(axis,bend)*(1-dot)
         elif dot<0:raise ValueError('Ambiguous opposite captured knee plane')
+        knee_weight=window(frame,h['kneeAimWindow'])
+        if knee_weight:
+            toe_forward=foot[:,2]-UP*np.dot(foot[:,2],UP)
+            body_forward=dirs['ChestForward']-UP*np.dot(dirs['ChestForward'],UP)
+            anatomical=unit(toe_forward*.6+body_forward*.4)
+            anatomical=unit(anatomical-target_axis*np.dot(anatomical,target_axis))
+            bend=unit(unit(bend)*(1-knee_weight)+anatomical*knee_weight)
         joints[side+'Knee']=limb(hip,ankle,.44,.43,unit(bend));joints[side+'Ankle']=ankle;soles[side]=foot[:,1]
         joints[side+'Toe']=ankle+foot[:,2]*math.sqrt(.14*.14-.07*.07)-foot[:,1]*.07
-    upper_reconstruction(joints,dirs,frame,h)
     event=next(e for e in reversed(spec['events'])if e['t']<=t+1e-9)
     return dict(t=t,sourceFrame=min(frame,296),sourceCacheTime=min(frame,296)/spec['sourceFps'],sourceVideoTime=136+min(frame,296)/spec['sourceFps'],capturedBody=True,authoredLocalContacts=True,
         joints={k:joints[k].tolist()for k in JOINTS},dirs={k:dirs[k].tolist()for k in DIRS},soleUp={k:soles[k].tolist()for k in soles},board=dict(origin=origin.tolist(),quaternion=rotation.tolist()),phase=event['phase'],contacts=sum({'LeftFoot':1,'RightFoot':2}.get(x,0)for x in event['contacts']),authoredBoardEuler=angles.tolist())

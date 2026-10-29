@@ -32,6 +32,7 @@ public static class SkateCapturedTricks
     private static bool keyedBaselineGoofy;
     private static double keyedBaselineAt = -1;
     private static SkateVector keyedBaselineRoot, keyedBaselineVelocity;
+    private static SkateRiderPose? keyedBaselinePose;
     public static bool UsesCoupledKeys { get { return HasFrame && keyed != null; } }
     public static double KeyedSourceSeconds { get; private set; }
     private static SkateCaptureFlick flick;
@@ -63,7 +64,7 @@ public static class SkateCapturedTricks
     public static string Status { get; private set; } = "Captured riding not loaded";
     public static void ClearFrame() { displayed = default(SkateBoardPose); flickApplied = false; }
     public static void Reset()
-    { active = null; footSupport = null; ResetFlick(); keyedBaselinePlayer = null; keyedBaselineAt = -1; token = refusedToken = -1; airSeen = landed = flipExtended = false; caughtAt = preparedAt = -1; catchPreparationWeight = 0; previousAirSourceTime = catchSourceLead = previousAirProgress = 0; previous = landingFrom = default(SkateCaptureFrame); ClearPlantedFeet(); ClearFrame(); }
+    { active = null; footSupport = null; ResetFlick(); keyedBaselinePlayer = null; keyedBaselinePose = null; keyedBaselineAt = -1; token = refusedToken = -1; airSeen = landed = flipExtended = false; caughtAt = preparedAt = -1; catchPreparationWeight = 0; previousAirSourceTime = catchSourceLead = previousAirProgress = 0; previous = landingFrom = default(SkateCaptureFrame); ClearPlantedFeet(); ClearFrame(); }
     public static void Preload()
     {
         if (loaded) return;
@@ -396,6 +397,10 @@ public static class SkateCapturedTricks
                 ? (baselineRoot - keyedBaselineRoot) * (1 / dt) : default(SkateVector);
             keyedBaselineRoot = baselineRoot; keyedBaselineAt = baselineNow;
             keyedBaselinePlayer = player; keyedBaselineGoofy = SkateRide.Goofy;
+            SkateRiderPose localBaseline;
+            keyedBaselinePose = SkateRider.TryTransformPose(baseline, entryCarrier,
+                new SkateBoardPose(default(SkateVector), new SkateVector(0, 0, 1), new SkateVector(0, 1, 0)), out localBaseline)
+                ? (SkateRiderPose?)localBaseline : null;
         }
         if (queued && !airborne) { active = null; ClearPlantedFeet(); return false; } // The flick is not known during most of the live load.
         int nextToken = SkateRide.Pops + (queued && !airborne ? 1 : 0);
@@ -440,7 +445,8 @@ public static class SkateCapturedTricks
                     entryDelta >= 0 && entryDelta <= .12;
                 if (!keyed.BeginEntry(rig, activeStance,
                     observedEntry ? keyedBaselineRoot + keyedBaselineVelocity * entryDelta : baselineRoot,
-                    observedEntry ? keyedBaselineVelocity : default(SkateVector), keyedFlightSeconds, out supportError))
+                    observedEntry ? keyedBaselineVelocity : default(SkateVector), keyedFlightSeconds, out supportError,
+                    observedEntry ? keyedBaselinePose : null))
                 { Refuse(nextToken, supportError); return false; }
             }
             flickOwner = !sourceKeyed && SkateRide.FlipFlickKnown && !SkateRide.TailFirst && !SkateRide.DeckReversed &&

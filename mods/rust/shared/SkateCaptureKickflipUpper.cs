@@ -41,7 +41,16 @@ namespace Shortcut.RustMod
             { error = "Invalid ordinary charge upper-body fold."; return false; }
             double weight = Smooth(chargeWeight);
             if (weight <= 0) return true;
-            var turn = Swing(pose, uprightCarrier, weight); var p = pose;
+            var facing = Unit(pose.ChestForward - uprightCarrier.Up * SkateVector.Dot(pose.ChestForward, uprightCarrier.Up));
+            var targetUp = uprightCarrier.Up * Math.Cos(ForwardLeanDegrees * Math.PI / 180) +
+                facing * Math.Sin(ForwardLeanDegrees * Math.PI / 180);
+            double cosine = SkateVector.Dot(pose.ChestUp, targetUp);
+            if (!Normal(facing) || cosine < -.9999)
+            { error = "Ordinary charge facing is degenerate."; return false; }
+            var axis = SkateBoardPath.Cross(pose.ChestUp, targetUp);
+            var turn = SkateCaptureRotation.Slerp(new SkateCaptureRotation(0, 0, 0, 1),
+                new SkateCaptureRotation(axis.X, axis.Y, axis.Z, 1 + cosine), weight);
+            var p = pose;
             folded = new SkateRiderPose(p.Pelvis, p.LeftHip, p.RightHip, p.LeftKnee, p.RightKnee,
                 p.LeftAnkle, p.RightAnkle, p.LeftToe, p.RightToe,
                 p.Pelvis + turn.Rotate(p.Chest - p.Pelvis), p.Pelvis + turn.Rotate(p.Neck - p.Pelvis),

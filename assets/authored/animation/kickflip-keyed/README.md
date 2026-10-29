@@ -46,23 +46,29 @@ forward torso/head direction267 and asymmetric arms273. It rotates the upper
 group around the unchanged pelvis and reconstructs the fixed-length arm/head
 segments. Hidden depth and these poses are authored source-led estimates.
 Outside its C2 window the captured upper motion is retained exactly. Changed
-foot targets use measured fixed-length chains and the transported captured knee
-plane; there is no generic knee-angle cap or legacy runtime correction stack.
+foot targets use measured fixed-length chains. During free Air a short C2
+blend aims the knees toward the actual toes/body front when displaced ankles
+make the uncertain captured plane unreliable; outside that interval the
+captured plane is retained. There is no knee-angle cap or legacy runtime stack.
 Upper-shoe contact is not represented as sole support. Sole markers end before
 the ankle roll. Source-frame uncertainty and every local constraint are recorded
 in the generated metadata.
 
 The pop uses the current curved deck frame for both soles. The front sole
 slides to the nose through260, rolls onto an upper/outside shoe feature at the
-heel-side nose corner261, then releases outward262. The rear sole follows the
-moving tail while leaving sideways; a frozen board pose at259 no longer
-controls its release. Compact sole/deck shape controls reuse the original
+heel-side nose corner261, then releases outward262. The rear sole rises along
+the moving tail normal and enters a vertical pickup above the rear board half;
+it does not kick sideways to evade the board. Compact sole/deck shape controls reuse the original
 project geometry, including the nose kick and concavity. One
-free-Air target curve lifts the rear foot outside the rising tail before returning
+free-Air target curve lifts the rear foot above the rotating tail before returning
 both feet to the compact source-led tuck. The Catch foot pin completes at273;
 the hip impact envelope starts there and reaches its minimum after landing,
 rather than shortening the legs before Catch. These are local reconstructions,
 not measured hidden depth.
+
+The far arm around273 is occluded and blurred in the reference. Its restrained
+balance reconstruction keeps the wrist below the head crown; the data does not
+claim an observed overhead gesture.
 
 At board keys261/262 a paired pitch and carrier-local X/Z translation reduces
 the early relative lag while retaining the previously keyed nose-rim point.

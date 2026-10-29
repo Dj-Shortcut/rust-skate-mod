@@ -20,6 +20,8 @@ namespace Shortcut.RustMod
         private bool entry;
         private double entrySeconds;
         private SkateVector entryRoot, entryVelocity, entryTarget, entryTargetVelocity;
+        private SkateRiderPose? entryUpper;
+        private double entryUpperSeconds;
 
         private SkateCaptureKeyedPlayback(SkateCaptureClip clip, double pop, double caught, double land)
         { Clip = clip; SourcePop = pop; SourceCatch = caught; SourceLand = land; }
@@ -51,9 +53,9 @@ namespace Shortcut.RustMod
         }
 
         public bool BeginEntry(SkateRiderRig rig, SkateStance stance, SkateVector localRoot,
-            SkateVector localVelocity, double frozenFlightSeconds, out string error)
+            SkateVector localVelocity, double frozenFlightSeconds, out string error, SkateRiderPose? localBody = null)
         {
-            entry = false; error = null;
+            entry = false; entryUpper = null; error = null;
             if (!ValidFlight(frozenFlightSeconds) || !Finite(localRoot.LengthSquared) || !Finite(localVelocity.LengthSquared))
             { error = "Invalid source-keyed entry baseline."; return false; }
             double span = (SourceLand - SourcePop) * .3125;
@@ -64,6 +66,7 @@ namespace Shortcut.RustMod
                 !SkateCaptureSampler.TrySample(Clip, targetTime + step, rig, stance, out after, out error)) return false;
             entrySeconds = frozenFlightSeconds * .3125;
             entryRoot = localRoot; entryVelocity = localVelocity; entryTarget = target.Pose.Pelvis;
+            entryUpper = localBody; entryUpperSeconds = frozenFlightSeconds * (2.0 / 15.0);
             entryTargetVelocity = (after.Pose.Pelvis - before.Pose.Pelvis) *
                 ((SourceLand - SourcePop) / (2 * step * frozenFlightSeconds));
             entry = true; return true;
@@ -137,6 +140,33 @@ namespace Shortcut.RustMod
                 uprightCarrier.Rotate(source.LeftSoleUp), uprightCarrier.Rotate(source.RightSoleUp),
                 source.HasEvent, source.Observation, uprightCarrier.Rotate(source.PelvisCorrection) + entryShift,
                 uprightCarrier.Rotate(source.LeftHandCorrection), uprightCarrier.Rotate(source.RightHandCorrection), uprightCarrier.Up);
+            if (entryUpper.HasValue && !actuallyLanded && elapsedSeconds < entryUpperSeconds)
+            {
+                SkateRiderPose incoming;
+                if (!SkateRider.TryTransformPose(entryUpper.Value, SourceCarrier, uprightCarrier, out incoming))
+                { error = "The observed upper-body entry frame is invalid."; return false; }
+                var shift = pose.Pelvis - incoming.Pelvis;
+                var from = new SkateRiderPose(pose.Pelvis, pose.LeftHip, pose.RightHip, pose.LeftKnee, pose.RightKnee,
+                    pose.LeftAnkle, pose.RightAnkle, pose.LeftToe, pose.RightToe,
+                    incoming.Chest + shift, incoming.Neck + shift, incoming.Head + shift,
+                    incoming.LeftShoulder + shift, incoming.RightShoulder + shift, incoming.LeftElbow + shift,
+                    incoming.RightElbow + shift, incoming.LeftHand + shift, incoming.RightHand + shift,
+                    pose.PelvisForward, pose.PelvisUp, incoming.ChestForward, incoming.ChestUp, incoming.HeadForward);
+                double weight = SkateCaptureFootSupport.CatchPreparationWeight(elapsedSeconds, entryUpperSeconds);
+                SkateCaptureFrame blended;
+                if (!SkateCapturePlayback.TryBlend(rig, from, shown.LeftSoleUp, shown.RightSoleUp,
+                    shown, weight, out blended, out error, true)) return false;
+                var upper = blended.Pose; var align = pose.Pelvis - upper.Pelvis;
+                var joined = new SkateRiderPose(pose.Pelvis, pose.LeftHip, pose.RightHip, pose.LeftKnee, pose.RightKnee,
+                    pose.LeftAnkle, pose.RightAnkle, pose.LeftToe, pose.RightToe,
+                    upper.Chest + align, upper.Neck + align, upper.Head + align,
+                    upper.LeftShoulder + align, upper.RightShoulder + align, upper.LeftElbow + align,
+                    upper.RightElbow + align, upper.LeftHand + align, upper.RightHand + align,
+                    pose.PelvisForward, pose.PelvisUp, upper.ChestForward, upper.ChestUp, upper.HeadForward);
+                shown = new SkateCaptureFrame(joined, shown.Board, shown.Rotation, shown.LeftSoleUp, shown.RightSoleUp,
+                    shown.HasEvent, shown.Observation, shown.PelvisCorrection,
+                    shown.LeftHandCorrection, shown.RightHandCorrection, shown.RiderUp);
+            }
             return true;
         }
 

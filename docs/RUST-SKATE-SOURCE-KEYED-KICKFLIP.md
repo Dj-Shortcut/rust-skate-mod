@@ -28,6 +28,13 @@ signature, stance, action owner or foot geometry falls back to ordinary riding.
 The renderer uses the resulting captured board frame; input, player forces,
 collision, native rotation accounting and scoring retain their authority.
 
+Entry retains the last observed riding pose in the upright carrier. Its root
+position and velocity join the captured root, while the upper body joins over
+the first short part of the physical flight. The current foot and board paths
+remain fixed through that handoff. Neutral charging hinges toward the rider's
+own facing direction in either stance; it does not require knowing the later
+trick family or twist every charge along the board's nose axis.
+
 Source authoring, pack validation, comparison on the rig, native installation
 and Shadow approval are separate gates. The rejected v2 checkpoint is retained
 in PR #611; this source path alone does not approve the new animation.
