@@ -283,6 +283,10 @@ namespace Shortcut.RustMod
 
         public static bool TryStep(SkateTrickState state, SkateTrickInput input, double dt, double maximumLandingImpact,
                                    out SkateTrickResult result, out string error)
+        { return TryStep(state, input, dt, maximumLandingImpact, 1, out result, out error); }
+
+        public static bool TryStep(SkateTrickState state, SkateTrickInput input, double dt, double maximumLandingImpact,
+                                   double rotationRateScale, out SkateTrickResult result, out string error)
         {
             result = new SkateTrickResult(state, state.Spin, state.Flip, state.GrindSeconds, SkateTrickEvents.None, null, 0, 0);
             error = null;
@@ -292,6 +296,7 @@ namespace Shortcut.RustMod
                 !Finite(input.RollingSpeed) || input.RollingSpeed < 0 || input.RollingSpeed > 100000 ||
                 (input.Airborne && input.Grinding) || (input.Manual && input.NoseManual) ||
                 !Finite(dt) || dt <= 0 || dt > SkateMotion.MaximumStep ||
+                !Finite(rotationRateScale) || rotationRateScale < 1 || rotationRateScale > 2 ||
                 !Finite(maximumLandingImpact) || maximumLandingImpact <= 0 || maximumLandingImpact > 100000)
             { error = "Invalid skate trick step."; return false; }
             if (state.DarkslideCaught && !input.Airborne &&
@@ -329,17 +334,17 @@ namespace Shortcut.RustMod
                     if ((path.Known && (path.Kind != request.Kind || path.Direction != request.Direction || path.Nollie != request.Nollie || path.Reversed != request.Reversed)) ||
                         (!path.Known && state.DarkslideCaught) ||
                         request.Nollie != (popKind == SkatePopKind.Nollie) || (popKind != SkatePopKind.Ollie && popKind != SkatePopKind.Nollie) ||
-                        request.Progress < previous || request.Progress - previous > dt / request.Duration + 0.000001)
+                        request.Progress < previous || request.Progress - previous > dt * rotationRateScale / request.Duration + 0.000001)
                     { error = "Invalid special board path progression."; return false; }
                     path = request;
                 }
-                double expectedFlip = path.Known ? (path.Roll - (state.Airborne && state.BoardPath.Known ? state.BoardPath.Roll : 0)) / (SkateMotion.FlipRate * dt) : input.Flip;
+                double expectedFlip = path.Known ? (path.Roll - (state.Airborne && state.BoardPath.Known ? state.BoardPath.Roll : 0)) / (SkateMotion.FlipRate * rotationRateScale * dt) : input.Flip;
                 if (path.Known && (Math.Abs(input.Flip - expectedFlip) > 0.000001 || input.Shove != 0 || (path.Active && input.Grab)))
                 { error = "A special board path owns the released deck."; return false; }
-                spin = BoundedAngle(spin + input.Spin * SkateMotion.RotationRate * dt);
-                flip = BoundedAngle(flip + input.Flip * SkateMotion.FlipRate * dt);
-                shove = BoundedAngle(shove + input.Shove * SkateMotion.ShoveRate * dt);
-                bodySpin = Math.Max(-180, Math.Min(180, bodySpin + input.BodySpin * SkateMotion.RotationRate * dt));
+                spin = BoundedAngle(spin + input.Spin * SkateMotion.RotationRate * rotationRateScale * dt);
+                flip = BoundedAngle(flip + input.Flip * SkateMotion.FlipRate * rotationRateScale * dt);
+                shove = BoundedAngle(shove + input.Shove * SkateMotion.ShoveRate * rotationRateScale * dt);
+                bodySpin = Math.Max(-180, Math.Min(180, bodySpin + input.BodySpin * SkateMotion.RotationRate * rotationRateScale * dt));
                 late |= input.Late && (input.Flip != 0 || input.Shove != 0);
                 if (input.GrabKind != SkateGrabKind.None) grabKind = input.GrabKind;
             }

@@ -29,6 +29,13 @@ public static class SkateRide
     public static float SteerRate;
     private static bool strokeBack;
     public const float AirGravity = 16f, OlliePop = 6f, MaxFall = 30f, BailImpact = 12f, BailSeconds = 1.3f, BailDecel = 10f, PushPeriod = 0.8f, SeaLevel = -1.1f, LowestCap = 2f, LagStep = 0.1f, RaiseWait = 3f, CapForget = 30f, ManualPace = 1f, ManualHold = 0.3f, HopGrace = 0.3f;
+    // These are frozen when the flight starts, not recomputed from a later ray/held grab.
+    private static bool flatgroundFlight;
+    private static float flightGravity = AirGravity;
+    public static float CurrentAirGravity { get { return Mode == RideMode.Air ? flightGravity : AirGravity; } }
+    public static float LaunchPopImpulse { get { return Mode == RideMode.Air && flatgroundFlight ? (float)SkateFlatgroundPop.ReferencePop : OlliePop; } }
+    public static float CurrentRotationRateScale { get { return Mode == RideMode.Air && flatgroundFlight ? (float)SkateFlatgroundPop.RotationRateScale : 1f; } }
+    public static float AirPopLift { get { return Mode == RideMode.Air && flatgroundFlight ? (float)SkateFlatgroundPop.VisualLift : SkateBoard.PopMost; } }
     // Pumping: the shared SkateRidePhysics judges it (a crouch held down a transition, let go
     // through its bottom); PumpCharge only shapes the rider's crouch. Landing: the fall becomes
     // roll on a slope by LandRoll (the shared landing rule); a revert within RevertWindow of a
@@ -79,7 +86,7 @@ public static class SkateRide
                 FootPlanted || Handplant || Grabbing || SkateBoard.GrabFold > .001f ||
                 SkateSurfaceRide.DisplayWall || SkateSurfaceRide.BodyFlip.Known ||
                 SkateActions.Owns || SkateOldschoolRide.Active || SkateRiggingShowcase.Running || Scenarios.Active) return 0f;
-            var apex = Math.Max(.18f, airViewRise / AirGravity);
+            var apex = Math.Max(.18f, airViewRise / CurrentAirGravity);
             var phase = Clamp(1f - Math.Abs((AirTime - airViewAt) / apex - 1f), 0f, 1f);
             return phase * phase * (3f - 2f * phase) * (1f - (float)airView.LandingShare);
         }
@@ -326,7 +333,7 @@ public static class SkateRide
 
     public static void Mount(Rigidbody b, float yaw)
     {
-        body = b; Yaw = yaw;
+        body = b; Yaw = yaw; flatgroundFlight = false; flightGravity = AirGravity;
         try
         {
             var cap = b.gameObject.GetComponent<CapsuleCollider>();
@@ -380,6 +387,7 @@ public static class SkateRide
         // A pump's pass lives on the ground: leaving it (air, grind, bail) forgets the charge, so a
         // crouch let go in the air cannot be paid out on the next ground step.
         if (m != RideMode.Ground && Mode == RideMode.Ground) { Pump = default(SkatePumpState); PumpHeld = 0f; RevertLeft = revertTurned = 0f; }
+        if (m != RideMode.Air) { flatgroundFlight = false; flightGravity = AirGravity; }
         Mode = m; ModeAt = Time.realtimeSinceStartup;
     }
 
@@ -864,7 +872,7 @@ public static class SkateRide
         {
             Pops++; jumpWanted = -99f;
             if (SkateTricks.IsPlant(wantKind)) PlantedUntil = now + PlantSeconds;
-            Launch(tangent, OlliePop * wantScale * PopHeight(wantKind), dt);
+            Launch(tangent, OlliePop * wantScale * PopHeight(wantKind), dt, true);
             AirStep(Position, dt);
             return;
         }
@@ -1010,8 +1018,15 @@ public static class SkateRide
 
     // Leaving the ground: the velocity along it is kept whole, the pop added straight up; the air
     // step takes its gravity off at once, which the launch gives back for that one step.
-    private static void Launch(Vector3 tangent, float pop, float dt)
+    private static void Launch(Vector3 tangent, float pop, float dt, bool ordinaryGroundPop = false)
     {
+        var flatground = ordinaryGroundPop && Mode == RideMode.Ground && Grounded && !OnRamp &&
+            Normal.y >= .9995f && Math.Abs(tangent.y * Speed) <= .05f &&
+            (wantKind == SkatePopKind.Ollie || wantKind == SkatePopKind.Nollie) &&
+            Grab == SkateGrabKind.None && SkateKeys.Grab == SkateGrabKind.None &&
+            wantStyle == SkateOllieStyle.None && !SkateActions.Owns && !SkateOldschoolRide.Owns && !SkateSurfaceRide.DisplayWall;
+        var gravity = flatground ? (float)SkateFlatgroundPop.Gravity : AirGravity;
+        if (flatground) pop = (float)SkateFlatgroundPop.ScaleImpulse(pop);
         SkateLaunchResult r; string error;
         var surface = tangent * Speed;
         Vector3 outgoing;
@@ -1021,7 +1036,7 @@ public static class SkateRide
         var flat = Flat(outgoing); var sign = Speed < 0f ? -1f : 1f;
         if (flat.sqrMagnitude > 0.0001f) Yaw = (float)(Math.Atan2(flat.x * sign, flat.z * sign) * 180.0 / Math.PI);
         Speed = flat.magnitude * sign;
-        TakeOff(pop > 0f, outgoing.y + AirGravity * dt);
+        TakeOff(pop > 0f, outgoing.y + gravity * dt, flatground);
         KeepAirPose(nose, deck);
     }
 
@@ -1111,8 +1126,10 @@ public static class SkateRide
         if (carry) KeepAirPose(nose, deck);
     }
 
-    private static void TakeOff(bool jumped, float vertical)
+    private static void TakeOff(bool jumped, float vertical, bool flatground = false)
     {
+        flatgroundFlight = flatground;
+        flightGravity = flatground ? (float)SkateFlatgroundPop.Gravity : AirGravity;
         airViewTrace = 0; airViewFromGrind = Mode == RideMode.Grind;
         SkateOldschoolRide.Reset();
         SkateSurfaceRide.Reset();
@@ -1150,7 +1167,7 @@ public static class SkateRide
         var gap = Clearance - Math.Max(0.04f, closing * dt + 0.02f);
         SkateVector shown; SkateRiderAirFrameState next; string error;
         if (SkateRiderMotion.TryAirFrame(airView, dt, V(airViewFrom), Math.Max(0f, AirTime - airViewAt), airViewRise,
-            AirGravity, V(BelowNormal), gap, closing, out shown, out next, out error))
+            CurrentAirGravity, V(BelowNormal), gap, closing, out shown, out next, out error))
         { airView = next; ViewNormal = V(shown); }
         if (airViewFrom.y < .85f)
         {
@@ -1181,7 +1198,8 @@ public static class SkateRide
         // Over a transition's face the gap is read along its normal: the fall to it is longer.
         if (OnRamp && h > 0f) h /= Math.Max(BelowNormal.y, 0.2f);
         h = h > AirProbe ? AirProbe : h < 0f ? 0f : h;
-        return (VSpeed + (float)Math.Sqrt(VSpeed * VSpeed + 2f * AirGravity * h)) / AirGravity;
+        var gravity = CurrentAirGravity;
+        return (VSpeed + (float)Math.Sqrt(VSpeed * VSpeed + 2f * gravity * h)) / gravity;
     }
 
     private static void AirStep(Vector3 pos, float dt)
@@ -1202,6 +1220,9 @@ public static class SkateRide
         if (SkateSurfaceRide.StepWall(pos, Dir(Yaw) * Speed + Vector3.up * VSpeed, dt, SkateKeys.WallHeld, wallPop, out wallVelocity))
         {
             if (Mode != RideMode.Air) return;
+            // A newly acquired wall action owns its physical velocity/gravity from here.
+            // A late grab alone does not replace a flight's frozen launch profile.
+            flatgroundFlight = false; flightGravity = AirGravity;
             var nose = NoseYaw; var deck = DeckYaw;
             var flat = Flat(wallVelocity); var sign = Speed < 0 ? -1f : 1f;
             if (flat.sqrMagnitude > .0001f) Yaw = (float)(Math.Atan2(flat.x * sign, flat.z * sign) * 180 / Math.PI);
@@ -1218,7 +1239,7 @@ public static class SkateRide
             if (TrickAir) TrickTick(true, false, 0, 0, 0, 0, dt);
             return;
         }
-        VSpeed -= AirGravity * dt; if (VSpeed < -MaxFall) VSpeed = -MaxFall;
+        VSpeed -= CurrentAirGravity * dt; if (VSpeed < -MaxFall) VSpeed = -MaxFall;
         if (pos.y - takeOffY > AirPeak) AirPeak = pos.y - takeOffY;
         var dir = Dir(Yaw);
         SkateOldschoolRide.AirStep(pos, dt); if (Mode != RideMode.Air) return;
@@ -1239,7 +1260,7 @@ public static class SkateRide
             // As in Skate: a flip is started whenever it is asked for. One asked too late does not
             // come round before the ground, and that is a bail, unless the board meets an edge half
             // way round (a darkslide).
-            if (left < (Math.Abs(flipLeft) + 360f * Math.Abs(flips)) / (float)SkateMotion.FlipRate) Late("a flip", left);
+            if (left < (Math.Abs(flipLeft) + 360f * Math.Abs(flips)) / ((float)SkateMotion.FlipRate * CurrentRotationRateScale)) Late("a flip", left);
             flipLeft += 360f * flips; TrickAir = true; if (lateFlips) LateTrick = true;
         }
         else if (flips != 0 && grabbing) SkateHud.Notice("No flip during a grab");
@@ -1248,7 +1269,7 @@ public static class SkateRide
         if (lateShove != 0f && !grabbing && (Math.Abs(shoveLeft) < 0.001f || Math.Sign(shoveLeft) == Math.Sign(lateShove))) pendShove += lateShove;
         if (pendShove != 0f)
         {
-            if (left < (Math.Abs(shoveLeft) + Math.Abs(pendShove)) / (float)SkateMotion.ShoveRate) Late("a shove-it", left);
+            if (left < (Math.Abs(shoveLeft) + Math.Abs(pendShove)) / ((float)SkateMotion.ShoveRate * CurrentRotationRateScale)) Late("a shove-it", left);
             shoveLeft += pendShove; TrickAir = true; if (lateShove != 0f && AirTime > LateAfter) LateTrick = true;
             pendShove = 0f;
         }
@@ -1259,14 +1280,14 @@ public static class SkateRide
         var body = Jumped && !carryingBoard && !SkateSurfaceRide.BodyFlip.Known ? SkateKeys.BodyVarial : 0f;
         if (body != 0f && Math.Abs(bodyLeft) < 0.001f && Math.Abs(BodyDeg) < 0.001)
         {
-            if (left < Math.Abs(body) / (float)SkateMotion.RotationRate) Late("a body varial", left);
+            if (left < Math.Abs(body) / ((float)SkateMotion.RotationRate * CurrentRotationRateScale)) Late("a body varial", left);
             bodyLeft = body; TrickAir = true;
         }
         var spinAxis = carryingBoard || SkateSurfaceRide.BodyFlip.Known ? 0f : SpinAxis(left, dt);
         Grab = TrickAir && !SkateActions.Owns && !SkateOldschoolRide.Active && !BoardPath.Active && !FootPlanted && Math.Abs(flipLeft) < 0.001f && Math.Abs(shoveLeft) < 0.001f ? SkateKeys.Grab : SkateGrabKind.None;
         SkateSurfaceRide.TickFlip(pos, dt, TimeToGround(), SkateKeys.BodyFlipRequest); if (Mode != RideMode.Air) return;
 
-        var flipStep = (float)SkateMotion.FlipRate * dt; var shoveStep = (float)SkateMotion.ShoveRate * dt; var bodyStep = (float)SkateMotion.RotationRate * dt;
+        var flipStep = (float)SkateMotion.FlipRate * CurrentRotationRateScale * dt; var shoveStep = (float)SkateMotion.ShoveRate * CurrentRotationRateScale * dt; var bodyStep = (float)SkateMotion.RotationRate * CurrentRotationRateScale * dt;
         var flipAxis = Clamp(flipLeft / flipStep, -1f, 1f); var shoveAxis = Clamp(shoveLeft / shoveStep, -1f, 1f); var bodyAxis = Clamp(bodyLeft / bodyStep, -1f, 1f);
 
         stuck = VSpeed < -2f && Math.Abs(ActualV) < 0.3f && AirTime > 0.2f ? stuck + 1 : 0;
@@ -1325,10 +1346,11 @@ public static class SkateRide
             if (BoardPath.Active)
             {
                 var previous = BoardPath; SkateBoardPathSample next; string error;
-                if (SkateBoardPath.TrySample(previous.Kind, Math.Min(1, previous.Progress + dt / previous.Duration), previous.Direction, previous.Nollie, previous.Reversed, out next, out error))
+                if (SkateBoardPath.TrySample(previous.Kind, Math.Min(1, previous.Progress + dt * CurrentRotationRateScale / previous.Duration), previous.Direction, previous.Nollie, previous.Reversed, out next, out error))
                 { BoardPath = next; flipAxis = Clamp((float)((next.Roll - previous.Roll) / flipStep), -1f, 1f); }
             }
-            if (SkateActions.Finger.Initialized) flipAxis = SkateActions.FlipAxis(dt);
+            // The finger owner reports a real angular delta, not a faster flatground request.
+            if (SkateActions.Finger.Initialized) flipAxis = SkateActions.FlipAxis(dt) / CurrentRotationRateScale;
             TrickTick(true, false, spinAxis, flipAxis, shoveAxis, 0, dt, bodyAxis);
             if (!BoardPath.Known && !SkateActions.Finger.Initialized) flipLeft -= flipAxis * flipStep;
             shoveLeft -= shoveAxis * shoveStep; bodyLeft -= bodyAxis * bodyStep;
@@ -1341,7 +1363,7 @@ public static class SkateRide
     // landing itself takes a few degrees either way.
     private static float SpinAxis(float left, float dt)
     {
-        var rate = (float)SkateMotion.RotationRate; var step = rate * dt;
+        var rate = (float)SkateMotion.RotationRate * CurrentRotationRateScale; var step = rate * dt;
         var want = -SkateKeys.Spin * spinSide;
         // A fall without a jump becomes a trick when a turn is asked for afresh, not by a stick that
         // was steering when the ground ended.
@@ -1376,7 +1398,8 @@ public static class SkateRide
     private static string AirLine(string end)
     {
         return "air " + end + " time=" + AirTime.ToString("F2") + " peak=" + AirPeak.ToString("F2") + " impact=" + (-VSpeed).ToString("F1") + " spin=" + SpinDeg.ToString("F0") + " flip=" + FlipDeg.ToString("F0")
-            + (Math.Abs(ShoveDeg) > 0.5 ? " shove=" + ShoveDeg.ToString("F0") : "") + " jumped=" + Jumped + " speed=" + Speed.ToString("F1");
+            + (Math.Abs(ShoveDeg) > 0.5 ? " shove=" + ShoveDeg.ToString("F0") : "") + " jumped=" + Jumped + " speed=" + Speed.ToString("F1")
+            + " profile=" + (flatgroundFlight ? "flatground" : "standard") + " gravity=" + CurrentAirGravity.ToString("F2") + " rotation-rate=" + CurrentRotationRateScale.ToString("F2");
     }
 
     private static void Land(Vector3 incoming, bool recovery, float dt)
@@ -1444,7 +1467,7 @@ public static class SkateRide
             Math.Abs(Speed), airborne ? popKind : SkatePopKind.None, grinding ? GrindKind : SkateGrindKind.None, grinding && GrindFrontside,
             airborne && LateTrick && (flipAxis != 0f || shoveAxis != 0f), airborne ? bodyAxis : 0f, TailFirst != DeckReversed,
             airborne ? BoardPath : default(SkateBoardPathSample));
-        if (!SkateTricks.TryStep(Trick, input, dt, BailImpact, out r, out error))
+        if (!SkateTricks.TryStep(Trick, input, dt, BailImpact, CurrentRotationRateScale, out r, out error))
         {
             Out.Say("SKATE trick step refused: " + error);
             return;
