@@ -67,16 +67,18 @@ namespace Shortcut.RustMod
         public static bool TryChargeSetup(SkateRiderRig rig, SkateRiderPose pose, SkateBoardPose uprightCarrier,
             SkateBoardPose actualShapedDeck, double chargeWeight, bool nosePop,
             SkateDeckFootFitter leftFitter, SkateDeckFootFitter rightFitter,
-            out SkateRiderPose posed, out SkateVector leftUp, out SkateVector rightUp, out string error)
+            out SkateRiderPose posed, out SkateVector leftUp, out SkateVector rightUp, out string error,
+            double? initialPelvisOffset = null)
         {
             posed = pose; leftUp = rightUp = actualShapedDeck.Up; error = null;
             if (!ValidRig(rig) || !Valid(pose) || !SkateBoardPath.Valid(uprightCarrier) ||
                 !SkateBoardPath.Valid(actualShapedDeck) || uprightCarrier.Up.Y < .98 || actualShapedDeck.Up.Y < .98 ||
-                !Finite(chargeWeight) || chargeWeight < 0 || chargeWeight > 1 || leftFitter == null || rightFitter == null)
+                !Finite(chargeWeight) || chargeWeight < 0 || chargeWeight > 1 || leftFitter == null || rightFitter == null ||
+                initialPelvisOffset.HasValue && !Finite(initialPelvisOffset.Value))
             { error = "Invalid ordinary measured charge setup."; return false; }
             if (chargeWeight == 0) return true;
             double setup = Math.Min(1, chargeWeight / .35), footWeight = Smooth(setup);
-            double bodySetup = Math.Min(1, chargeWeight / .7), bodyWeight = Smooth(bodySetup);
+            double bodySetup = Math.Min(1, chargeWeight / .8), bodyWeight = ChargeProgress(bodySetup);
             SkateBoardPose lf, rf, lg, rg;
             if (!SkateCaptureFootSupport.TryFootFrame(pose.LeftAnkle, pose.LeftToe, leftUp, out lf) ||
                 !SkateCaptureFootSupport.TryFootFrame(pose.RightAnkle, pose.RightToe, rightUp, out rf))
@@ -96,7 +98,10 @@ namespace Shortcut.RustMod
             double pelvisHeight;
             if (!ChargePelvisHeight(rig, pose, la, ra, uprightCarrier.Up, out pelvisHeight))
             { error = "Deep charge setup exceeds the fixed-foot leg geometry."; return false; }
-            var shift = uprightCarrier.Up * ((pelvisHeight - SkateVector.Dot(pose.Pelvis, uprightCarrier.Up)) * bodyWeight);
+            double currentHeight = SkateVector.Dot(pose.Pelvis, uprightCarrier.Up);
+            double startHeight = initialPelvisOffset.HasValue
+                ? SkateVector.Dot(uprightCarrier.Origin, uprightCarrier.Up) + initialPelvisOffset.Value : currentHeight;
+            var shift = uprightCarrier.Up * (startHeight * (1 - bodyWeight) + pelvisHeight * bodyWeight - currentHeight);
             SkateRiderPose lowered, fitted, folded;
             var world = new SkateBoardPose(default(SkateVector), new SkateVector(0, 0, 1), new SkateVector(0, 1, 0));
             if (!SkateRider.TryTransformPose(pose, world, new SkateBoardPose(shift, world.Forward, world.Up), out lowered) ||
@@ -106,6 +111,22 @@ namespace Shortcut.RustMod
             // the lowered torso. Knee-directed wrists inverted the elbow bend.
             posed = folded;
             return true;
+        }
+
+        private static double ChargeProgress(double u)
+        {
+            if (u <= 0) return 0; if (u >= 1) return 1;
+            const double ramp = .15;
+            bool ending = u > 1 - ramp; double v = ending ? 1 - u : u;
+            double area;
+            if (v < ramp)
+            {
+                double x = v / ramp, x2 = x * x, x4 = x2 * x2;
+                area = ramp * x4 * (2.5 - 3 * x + x2);
+            }
+            else area = v - ramp * .5;
+            double value = area / (1 - ramp);
+            return ending ? 1 - value : value;
         }
 
         private static bool ChargePelvisHeight(SkateRiderRig rig, SkateRiderPose p, SkateVector la, SkateVector ra,
