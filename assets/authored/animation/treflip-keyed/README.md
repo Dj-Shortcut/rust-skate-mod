@@ -42,15 +42,17 @@ The same full reference flightT=.6/g8 is used only to cancel the source press
 against the physical carrier. A bounded source-side floor clearance during
 the combined turn accounts for the real board envelope. Catch is already
 bent and impact absorption flows into a stable body-facing recovery plane.
-Foot roles and strict fixed limb lengths remain intact. The rear Air leg uses
-an explicit authored depth behind the rider along the estimated source-camera
-ray, while the front leg remains more open. This is an occluded depth
+Foot roles and strict fixed limb lengths remain intact. Air retains the own captured hip and time-varying foot gestures. A small
+explicit rear depth reconstruction follows the estimated source-camera ray;
+only the actual own-board surface beneath each shoe can require clearance.
+A remote high nose cannot force both feet into a generic tuck. This is an occluded depth
 reconstruction, not a measured3D track or an angle cap. Native shared charge
 owns Load before trick selection; the source Load controls remain reference
 material rather than a prediction of the future input. The hidden head look
 is authored toward the board; the raw upward gaze was visibly wrong. The
 Air-only clearance margin returns tozero before Land, so the board actually
-rests on the floor and its outbound carrier does not drop in one frame. Source camera estimates are inherited
+rests on the floor and its outbound carrier does not drop in one frame. The compact own-board-surface data contains only original model geometry,
+without textures or third-party data. Source camera estimates are inherited
 from this Tre clip, not the unrelated Kickflip reference.
 
 ```sh

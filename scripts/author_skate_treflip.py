@@ -71,6 +71,24 @@ def entry_foot(s,side,origin,R,u,x,z,yaw):
 def instep(s,R):
     a=s['shoe'];x,_,z=s['flickPatch']['deckLocal'];N=unit(np.array([-2*a['concave']*x/a['deckHalfWidth']**2,1.,-2*a['kickRise']*max(0.,abs(z)-a['kickStart'])/a['kickSpan']**2]));n=-R@N;t=np.array(s['entryFeet']['Left']['forward']);t=unit(t-n*np.dot(n,t));local=unit(np.array(a['instepSurfaceNormalLocal']));f=unit(np.array([0.,0.,1.])-local*local[2]);return np.column_stack((n,t,unit(np.cross(n,t))))@np.column_stack((local,f,unit(np.cross(local,f)))).T
 
+def free_foot_clearance(s,origin,R,ankle,F):
+    """Upper own-board hull only beneath this shoe, not its remote nose/wheels."""
+    vertices=(s['_surfacePoints']@R.T+origin-ankle)@F
+    high=-float('inf');half=max(row[1]for row in s['shoe']['soleRows']);lo=min(row[0]for row in s['shoe']['soleRows']);hi=max(row[0]for row in s['shoe']['soleRows'])
+    all_faces=s['_surfaceTriangles'];blocks=vertices[all_faces];valid=(blocks[:,:,0].min(axis=1)<=half)&(blocks[:,:,0].max(axis=1)>=-half)&(blocks[:,:,2].min(axis=1)<=hi)&(blocks[:,:,2].max(axis=1)>=lo)
+    for face in all_faces[valid]:
+        polygon=[vertices[i].copy()for i in face]
+        for axis,sign,bound in((0,1,half),(0,-1,half),(2,1,hi),(2,-1,-lo)):
+            if not polygon:break
+            clipped=[]
+            for a,b in zip(polygon,polygon[1:]+polygon[:1]):
+                da=bound-sign*a[axis];db=bound-sign*b[axis]
+                if da>=0:clipped.append(a)
+                if(da>=0)!=(db>=0):clipped.append(a+(b-a)*da/(da-db))
+            polygon=clipped
+        if polygon:high=max(high,max(point[1]for point in polygon))
+    return max(0.,high-s['shoe']['soleLocalY']+s['authored']['minimumAirSoleClearance'])
+
 def sample(c,s,sf):
     t=(sf-s['firstSourceFrame'])/s['sourceFps'];j,d,sole=body_at(c,t);o,q,R,H=board_at(s,sf);original={k:v.copy()for k,v in j.items()};feet={side:basis(unit(j[side+'Toe']-j[side+'Ankle']+sole[side]*.07),sole[side])for side in('Left','Right')};ankles={side:j[side+'Ankle'].copy()for side in feet};pop=s['pop'];release=s['pressRelease'];end=s['pressEnd']
     if sf<end:
@@ -79,17 +97,16 @@ def sample(c,s,sf):
         free=smooth((sf-release)/(end-release));front=front*(1-free)+original['LeftAnkle']*free;rear=rear*(1-free)+original['RightAnkle']*free;rr=qmatrix(slerp(matrix_quat(rr),matrix_quat(feet['Right']),free));fr=qmatrix(slerp(matrix_quat(fr),matrix_quat(feet['Left']),free));ankles.update(Left=front,Right=rear);feet.update(Left=fr,Right=rr)
         pressure=smooth((sf-(pop-.5))/.5)*(1-smooth((sf-release-.25)/(end-release-.25)));reach=curve([pop,release,release+.25,end],[[.88],[.97],[.97],[.86]],sf)[0]*.87;hip=rear+np.array([-.04,math.sqrt(reach*reach-.04**2-.06**2),.06]);shift=(hip-(j['RightHip']-j['Pelvis'])-j['Pelvis'])*pressure
         for name in j:j[name]+=shift
-    air=smooth((sf-release)/(end-release));caught=smooth((sf-s['authored']['catchStart'])/(s['catch']-s['authored']['catchStart']));upper=float((np.array(s['support']['board'])@R.T)[:,1].max());height=o[1]+upper-s['shoe']['soleLocalY']+s['authored']['minimumAirSoleClearance']
+    air=smooth((sf-release)/(end-release));caught=smooth((sf-s['authored']['catchStart'])/(s['catch']-s['authored']['catchStart']))
     if air:
-        # Tre-specific scissor: the small front flick returns first; the scooping
-        # rear leg stays compact above it. Neither trajectory is a Kickflip relabel.
-        collect=air*(1-caught);targets={'Left':np.array([-.04,height,.26]),'Right':np.array([s['authored']['rearAirXZ'][0],height,s['authored']['rearAirXZ'][1]])}
+        # Keep the Tre's own time-varying body/foot gestures. Only the hidden
+        # rear depth and local shoe/board overlap are reconstructed; a remote
+        # high nose must not pull both feet up into a generic Kickflip tuck.
+        board_delta=o-np.array([0.,.092,0.]);depth=smooth((sf-404)/4)*(1-smooth((sf-414)/6));ray=np.array([-.934,0.,-.356]);collect=air*(1-caught)
+        targets={side:original[side+'Ankle']+board_delta for side in feet};targets['Left']-=ray*.08*depth;targets['Right']+=ray*.40*depth;targets['Right'][1]=targets['Right'][1]*(1-depth)+(targets['Left'][1]+.03)*depth
         for side in feet:
-            ankles[side]=ankles[side]*(1-collect)+targets[side]*collect;flat=basis(np.array(s['entryFeet'][side]['forward']),UP);feet[side]=qmatrix(slerp(matrix_quat(feet[side]),matrix_quat(flat),collect))
-        keys=s['authored']['airPelvisKeys'];target=curve([k[0]for k in keys],[[k[1]]for k in keys],sf)[0];delta=UP*((target-j['Pelvis'][1])*air)
-        if sf< s['catch']:
-            mid=(ankles['Left']+ankles['Right'])/2;delta+=np.array([-mid[0],0.,-mid[2]])*air*.5
-        else:delta+=np.array([-.10-j['Pelvis'][0],0.,-j['Pelvis'][2]])
+            flat=basis(np.array(s['entryFeet'][side]['forward']),UP);target=targets[side];target[1]+=free_foot_clearance(s,o,R,target,flat);ankles[side]=ankles[side]*(1-collect)+target*collect;feet[side]=qmatrix(slerp(matrix_quat(feet[side]),matrix_quat(flat),collect))
+        keys=s['authored']['airPelvisKeys'];target=curve([k[0]for k in keys],[[k[1]]for k in keys],sf)[0];delta=board_delta*air;delta+=UP*(target-(j['Pelvis'][1]+delta[1]))*caught;delta+=np.array([-.10-j['Pelvis'][0],0.,-j['Pelvis'][2]])*caught
         for name in j:j[name]+=delta
     if caught:
         for side,z,yaw in(('Left',.24,65),('Right',-.24,85)):
@@ -110,7 +127,7 @@ def events(s):
     return[dict(sourceFrame=s['firstSourceFrame'],phase='load',contacts=['LeftFoot','RightFoot']),dict(sourceFrame=s['pop'],phase='pop',contacts=['RightFoot']),dict(sourceFrame=s['pressRelease'],phase='air',contacts=[]),dict(sourceFrame=s['pressEnd'],phase='air',contacts=[]),dict(sourceFrame=s['catch'],phase='catch',contacts=['LeftFoot','RightFoot']),dict(sourceFrame=s['land'],phase='land',contacts=['LeftFoot','RightFoot']),dict(sourceFrame=430,phase='recovery',contacts=['LeftFoot','RightFoot'])]
 
 def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);a=p.parse_args();s=json.loads((ASSET/'constraints.json').read_text());raw=(ASSET/'captured-body.json').read_bytes();assert hashlib.sha256(raw).hexdigest()==s['sourceBodySha256'];c=json.loads(raw);duration=(s['lastSourceFrame']-s['firstSourceFrame'])/s['sourceFps'];times=np.linspace(0,duration,98);critical=[s['pop'],s['pressRelease'],s['pressEnd'],s['catch'],s['land'],*s['reference']['hold']];times=np.unique(np.r_[times,[(sf-s['firstSourceFrame'])/s['sourceFps']for sf in critical]]);frames=[]
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);a=p.parse_args();s=json.loads((ASSET/'constraints.json').read_text());surface_raw=(ASSET/'own-board-surface.json').read_bytes();assert hashlib.sha256(surface_raw).hexdigest()==s['sourceSurfaceSha256'];surface=json.loads(surface_raw);s['_surfacePoints']=np.array(surface['points']);s['_surfaceTriangles']=np.array(surface['triangles']);raw=(ASSET/'captured-body.json').read_bytes();assert hashlib.sha256(raw).hexdigest()==s['sourceBodySha256'];c=json.loads(raw);duration=(s['lastSourceFrame']-s['firstSourceFrame'])/s['sourceFps'];times=np.linspace(0,duration,98);critical=[s['pop'],s['pressRelease'],s['pressEnd'],s['catch'],s['land'],*s['reference']['hold']];times=np.unique(np.r_[times,[(sf-s['firstSourceFrame'])/s['sourceFps']for sf in critical]]);frames=[]
     for t in times:
         row=sample(c,s,s['firstSourceFrame']+float(t)*s['sourceFps']);row['t']=float(t);frames.append(row)
     meta=dict(id=s['id'],label=s['label'],movementKind=s['movementKind'],reviewed=False,authored=True,capturedBody=True,sourceUrl=s['sourceUrl'],sourceAuthor=s['sourceAuthor'],canonicalStance='regular',sourceFilmedStance='goofy',sourceFps=s['sourceFps'],firstSourceFrame=s['firstSourceFrame'],lastSourceFrame=s['lastSourceFrame'],sourceRootMotion=s['sourceRootMotion'],provenance=s['provenance'],capturedBodyControlSha256=s['sourceBodySha256'],sourcePoseSha256=c['sourcePoseSha256'],combinedWinding=dict(nativeFlip=360,nativeShove=-360,visualShove=360),referenceGroundPress=s['reference'])
