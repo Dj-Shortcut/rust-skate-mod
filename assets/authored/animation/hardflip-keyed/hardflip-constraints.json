@@ -3,11 +3,11 @@
   "firstSourceFrame": 132,
   "lastSourceFrame": 184,
   "sourceFps": 29.97002997002997,
-  "popFrame": 141,
+  "popFrame": 138,
   "tailStrikeFrame": 142,
-  "frontSoleReleaseFrame": 141.05,
+  "frontSoleReleaseFrame": 140.6,
   "rearSoleReleaseFrame": 143,
-  "instepReleaseFrame": 141.85,
+  "instepReleaseFrame": 141.5,
   "airFrame": 144,
   "catchFrame": 158,
   "landFrame": 160,
@@ -1925,11 +1925,11 @@
     ],
     [
       150,
-      42
+      -8
     ],
     [
       152,
-      18
+      -4
     ],
     [
       155,
@@ -1950,35 +1950,31 @@
       0
     ],
     [
-      142,
+      141.5,
       0
     ],
     [
-      143.35,
-      12
+      142,
+      25
+    ],
+    [
+      144,
+      105
     ],
     [
       146,
-      90
+      180
     ],
     [
       148,
-      160
+      270
     ],
     [
       150,
-      225
+      350
     ],
     [
       152,
-      285
-    ],
-    [
-      155,
-      344
-    ],
-    [
-      158,
       360
     ],
     [
@@ -1992,35 +1988,27 @@
       0
     ],
     [
-      142,
+      141.5,
       0
     ],
     [
-      143.35,
-      -8
+      142,
+      -5
+    ],
+    [
+      144,
+      -30
     ],
     [
       146,
-      -40
+      -90
     ],
     [
       148,
-      -76
+      -155
     ],
     [
       150,
-      -110
-    ],
-    [
-      152,
-      -142
-    ],
-    [
-      155,
-      -171
-    ],
-    [
-      158,
       -180
     ],
     [
@@ -2067,11 +2055,11 @@
     ],
     [
       158,
-      0.78
+      0.86
     ],
     [
       160,
-      0.78
+      0.86
     ],
     [
       164,
@@ -2092,7 +2080,7 @@
   ],
   "frontAirKeys": [
     [
-      141.85,
+      141.5,
       -0.0652895,
       0.1290997,
       0.093338
@@ -2375,24 +2363,25 @@
     0.03674
   ],
   "instepDeckFeature": [
-    -0.09,
-    0.018,
-    0.315
+    -0.1,
+    0.008,
+    0.255
   ],
   "landingBodyWindow": [
-    154,
-    167
+    158,
+    168
   ],
   "metadata": {
     "sourceUrl": "https://www.youtube.com/watch?v=_oRoo1x1uzM&t=192.4044",
     "sourceAuthor": "The Berrics",
     "rights": "Original authored reconstruction and source-derived retarget controls. Reference footage stays private; no footage redistribution or relicensing grant asserted.",
     "uncertainties": "Own black-shirt/red-shoe Hardflip retarget directions; actor140/141/152 was explicitly reconstructed in the earlier retarget. Hidden hands near144, camera depth and knee planes remain uncertain, not measured3D. The initial long nose-follow was rejected after mesh inspection; front upper contact ends before the strongly pitched free board, matching the already released front foot in source142. Free-Air feet, toe-side balance and knee planes now follow this take\u2019s retained retarget rather than a generic compact pose. Its vertical Hardflip has a genuinely higher front foot and rear chain; horizontal-deck hip/sole caps are not treated as calibrated truth.",
-    "execution": "Back-foot frontside scoop plus front instep kickflip; roll+360/canonical yaw\u2212180. Source board3D and hidden upper-shoe contact are reconstructed. Original source confidence is unchanged."
+    "execution": "Back-foot frontside scoop plus front instep kickflip; roll+360/canonical yaw\u2212180. Source board3D and hidden upper-shoe contact are reconstructed. Original source confidence is unchanged.",
+    "phaseResearch": "Visible release/body-rise onset138, actual wood strike142, upper-shoe exit141.5, rear release143, strong pickup144\u2013148, grip returned150\u2013152, Catch158 and Land160; source oldPop141 fell inside the rising-body phase. The action onset is distinct from wood strike; native input/physics remains immediate."
   },
   "frontAirDorsiKeys": [
     [
-      141.85,
+      141.5,
       -20
     ],
     [

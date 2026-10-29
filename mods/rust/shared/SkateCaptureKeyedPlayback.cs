@@ -33,6 +33,9 @@ namespace Shortcut.RustMod
         private double entryUpperSeconds;
         private double pressStart = 1.0 / 16, pressEnd = 3.0 / 16;
         private SkateVector? groundOrigin;
+        private static SkateVector[] hardflipSupport;
+        public double GroundClearanceCorrection { get; private set; }
+        public double MaximumGroundClearanceCorrection { get; private set; }
 
         private SkateCaptureKeyedPlayback(SkateCaptureClip clip, double pop, double caught, double land)
         { Clip = clip; SourcePop = pop; SourceCatch = caught; SourceLand = land; }
@@ -92,6 +95,7 @@ namespace Shortcut.RustMod
             SkateVector? groundCarrierOrigin = null)
         {
             entry = false; entryUpper = null; groundOrigin = null; error = null;
+            GroundClearanceCorrection = MaximumGroundClearanceCorrection = 0;
             if (!ValidFlight(frozenFlightSeconds) || !Finite(localRoot.LengthSquared) || !Finite(localVelocity.LengthSquared) ||
                 groundCarrierOrigin.HasValue && !Finite(groundCarrierOrigin.Value.LengthSquared))
             { error = "Invalid source-keyed entry baseline."; return false; }
@@ -99,7 +103,7 @@ namespace Shortcut.RustMod
             // The independent upper entry and exact foot/board paths stay short.
             double rootFraction = Clip.Id == RequiredClipId ? .3125 :
                 Clip.Id == HeelflipClipId && groundCarrierOrigin.HasValue ? 1.0 / 3.0 :
-                Clip.Id == HardflipClipId && groundCarrierOrigin.HasValue ? 7.0 / 19.0 : .125;
+                Clip.Id == HardflipClipId && groundCarrierOrigin.HasValue ? 5.0 / 11.0 : .125;
             double span = (SourceLand - SourcePop) * rootFraction;
             double targetTime = SourcePop + span, step = Math.Min(.005, span * .1);
             SkateCaptureFrame target, before, after;
@@ -142,6 +146,44 @@ namespace Shortcut.RustMod
                 double beforeLand = SourceLand - span * .0000001;
                 sourceSeconds = Math.Min(beforeLand, SourcePop + Math.Min(1, elapsedSeconds / frozenFlightSeconds) * span);
             }
+            return true;
+        }
+
+        private bool TryHardflipFloor(SkateCaptureFrame frame, bool actuallyLanded, SkateVector up,
+            double fraction, out SkateCaptureFrame result, out string error)
+        {
+            result = frame; error = null; GroundClearanceCorrection = 0;
+            // Only this exact flatground family, with its observed takeoff plane.
+            // The caller already requires the frozen flatground flight span.
+            if (Clip.Id != HardflipClipId || actuallyLanded || !groundOrigin.HasValue) return true;
+            if (hardflipSupport == null)
+            {
+                var mesh = SkateBoardMesh.CreateDetailed();
+                if (mesh.Parts.Length != 13) { error = "Hardflip needs the complete original board hull."; return false; }
+                var points = new SkateVector[mesh.Positions.Length / 3];
+                for (int n = 0; n < points.Length; n++) points[n] = new SkateVector(
+                    mesh.Positions[n * 3], mesh.Positions[n * 3 + 1] - .092, mesh.Positions[n * 3 + 2]);
+                hardflipSupport = points;
+            }
+            double lowest = double.PositiveInfinity;
+            foreach (var point in hardflipSupport)
+                lowest = Math.Min(lowest, SkateVector.Dot(frame.Board.Point(point) - groundOrigin.Value, up));
+            double margin = .003 * (1 - PressRelease(fraction, pressStart, pressEnd));
+            double amount = Math.Max(0, margin - lowest);
+            if (!Finite(amount)) { error = "Invalid Hardflip observed-floor envelope."; return false; }
+            GroundClearanceCorrection = amount;
+            MaximumGroundClearanceCorrection = Math.Max(MaximumGroundClearanceCorrection, amount);
+            if (amount > .12) { error = "Hardflip presentation exceeds the bounded observed-floor correction."; return false; }
+            if (amount == 0) return true;
+            var lift = up * amount;
+            SkateRiderPose pose;
+            if (!SkateRider.TryTransformPose(frame.Pose, SourceCarrier,
+                new SkateBoardPose(lift, SourceCarrier.Forward, SourceCarrier.Up), out pose))
+            { error = "Invalid coupled Hardflip floor translation."; return false; }
+            result = new SkateCaptureFrame(pose,
+                new SkateBoardPose(frame.Board.Origin + lift, frame.Board.Forward, frame.Board.Up), frame.Rotation,
+                frame.LeftSoleUp, frame.RightSoleUp, frame.HasEvent, frame.Observation,
+                frame.PelvisCorrection + lift, frame.LeftHandCorrection, frame.RightHandCorrection, frame.RiderUp);
             return true;
         }
 
@@ -240,7 +282,8 @@ namespace Shortcut.RustMod
                     shown.HasEvent, shown.Observation, shown.PelvisCorrection,
                     shown.LeftHandCorrection, shown.RightHandCorrection, shown.RiderUp);
             }
-            return true;
+            return TryHardflipFloor(shown, actuallyLanded, uprightCarrier.Up,
+                (seconds - SourcePop) / (SourceLand - SourcePop), out shown, out error);
         }
 
         private static bool ValidFlight(double value) { return Finite(value) && value > 0 && value <= 10; }

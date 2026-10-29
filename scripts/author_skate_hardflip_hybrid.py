@@ -48,7 +48,12 @@ def board(spec, frame):
     u = float(np.clip((frame-spec['popFrame'])/(spec['landFrame']-spec['popFrame']),0,1))
     release = 1-smooth((frame-spec['rearSoleReleaseFrame'])/2)
     floor = -float((np.array(spec['hybrid']['support']['board'])@rotation.T)[:,1].min())
-    y = floor*release + (.092+h+spec['visualLift']*math.sin(math.pi*u)**2)*(1-release)
+    free = 1-release
+    flight = .092+h+spec['visualLift']*math.sin(math.pi*u)**2
+    safe_floor = floor+.025*free
+    delta = flight-safe_floor
+    safe_flight = .5*(flight+safe_floor+math.sqrt(delta*delta+.004**2))
+    y = floor*release+safe_flight*free
     if frame < spec['popFrame'] or frame >= spec['landFrame']: y=.092
     return np.array([0.,y,0.]),rotation,h
 
@@ -57,9 +62,9 @@ def attached(spec, frame, side):
     o,r,_=board(spec,frame);entry=spec['hybrid']['loadEntryFeet'][side]
     u=smooth((frame-spec['popFrame'])/(spec['rearSoleReleaseFrame']-spec['popFrame']))
     x,z=entry['ankle'][0],entry['ankle'][2]
-    if side=='Left': x=x*(1-u)-.045*u;z=z*(1-u)+.31*u
+    if side=='Left': x=x*(1-u)-.055*u;z=z*(1-u)+.22*u
     else: x+=.035*u # Authored frontside tail pocket; exact hidden depth uncertain.
-    return deck_shoe(spec,o,r,x,z,65+15*u if side=='Left' else 85,.003)
+    return deck_shoe(spec,o,r,x,z,65-20*u if side=='Left' else 85,.003)
 
 
 def instep(spec, frame):
@@ -92,7 +97,7 @@ def foot(spec, frame, side):
     target=o+local;flat=foot_basis(80 if side=='Left' else 85,0,scalar(spec['frontAirDorsiKeys'] if side=='Left' else spec['rearAirDorsiKeys'],frame))
     start,sr=instep(spec,release) if side=='Left' else attached(spec,release,side)
     start+=UP*(h-reference_height(spec,release))
-    w=smooth((frame-release)/2.4);ankle=start*(1-w)+target*w;fr=blend_frame(sr,flat,w)
+    w=smooth((frame-release)/(1.0 if side=='Left' else 2.4));ankle=start*(1-w)+target*w;fr=blend_frame(sr,flat,w)
     landing,lr=catch_foot(spec,frame,side);caught=smooth((frame-(spec['catchFrame']-3))/3)
     return ankle*(1-caught)+landing*caught,blend_frame(fr,lr,caught)
 

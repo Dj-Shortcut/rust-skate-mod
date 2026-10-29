@@ -12,12 +12,13 @@ same direction. The selector does not opt other family IDs into this route.
 
 | Source-cache frame | Phase |
 | --- | --- |
-| 132–140 | Low approach and rising preparation |
-| 141 | Direct pop and front-foot release begins |
-| 141–142 | Front instep exits before the strongly pitched free board |
+| 132–137 | Low approach |
+| 138 | Visible release/body-rise onset; physics/input is immediate |
+| 140.6–141.5 | Front sole rolls to a short instep exit before the steep nose |
 | 142 | Rear-tail support |
 | 143–144 | Rear sole releases; free Air |
-| 146–152 | Steep frontside shove/kickflip, asymmetric pickup |
+| 144–148 | Steep frontside shove/kickflip and asymmetric pickup |
+| 150–152 | Grip returns before the feet descend for Catch |
 | 158 | Both soles catch the completed board |
 | 160 | Landing |
 | 164–184 | Absorption, gradual recovery and rolling away |
@@ -57,3 +58,11 @@ body balance and knee planes come from this Hardflip retarget. Scalar checks
 written for a horizontal board can therefore miss their default hip/sole-gap
 or equal-foot-height limits. Those results stay visible for family/source
 review; no checker threshold or physics has been relaxed.
+
+The steep board has a complete13-part model-floor envelope. Authored pressure
+release first stays above its full support hull. During an observed ordinary
+flatground flight, an exact-Hardflip-only runtime bound can translate the whole
+coupled pose and board together above the cached takeoff plane. Its maximum
+correction is reported; over12cm refuses the capture instead of changing any
+physics, landing, foot/reach guard or other family. This is labelled authored
+presentation, not a new collision solver or a terrain query.
