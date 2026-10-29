@@ -67,3 +67,11 @@ checks that demand both feet be free or close to a flat deck are intentional
 family exceptions; they must not erase its rear hook or high free-front-foot
 knee. Native skin/contact, interruption and final visual approval remain
 required before an installation pack is approved.
+
+Current offline status: both normal and shorter-flight routes build and keep the
+rear hook/full winding on the unchanged real mesh. The general `trick_check.py`
+is run unchanged. Free-front-foot and vertical-board proximity checks differ
+intentionally from a free flip; the filmed balance arm also rises above the
+head. Its entry/landing acceleration warnings remain real open timing work.
+The source Catch upper-body lean and early hook rim still need visual review.
+This development candidate is not marked finished or approved for installation.
