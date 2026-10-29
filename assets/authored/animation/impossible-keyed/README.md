@@ -35,7 +35,10 @@ at the starting tail position. Its true outside deck edge contact selects the
 matching bevel side as the board inverts, keeping the leg out of the deck.
 The hook follows the original frozen shoe's real toe-cap surface near
 `[0,-.0642,.1629]` in ankle/flat-toe/sole-up coordinates. Its earlier guessed
-feature lay outside the visible shoe and was rejected. Mesh, bind pose,
+feature lay outside the visible shoe and was rejected. A compact support hull
+from that same original toe box keeps its neighbouring surface outside the
+contact plane; the hook can roll over the toe surface without a tangential
+vertex switch. Skeleton, foot rotation and board winding are unchanged. Mesh, bind pose,
 materials and weights are unchanged.
 
 The board and feet subtract one T=.6s/g8 reference rise; playback adds the

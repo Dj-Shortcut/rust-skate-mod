@@ -65,10 +65,21 @@ def sample(c,s,sf):
   deck0=np.array([0.,h(0,-.32),-.32]);feature0=nb['Right'].T@(UP*.092+deck0-nj['RightAnkle'])
   wrap=smooth((sf-479)/3)*(1-smooth((sf-487)/3))
   feature=feature0*(1-wrap)+np.array(s['hookShoeLocal'])*wrap
-  dz=-.32-.025*wrap;width=shape['deckHalfWidth']*math.sqrt(max(0,1-((abs(dz)-.288)/.112)**2));dx=-(width+.002)*wrap
+  dz=-.32-.025*wrap;width=shape['deckHalfWidth']*math.sqrt(max(0,1-((abs(dz)-.288)/.112)**2));dx=-(width+.002)*hook_weight
   outward=unit((ru@np.array([0.,-1.,0.]))*(1-wrap)+(ru@np.array(s['hookSurfaceNormalLocal']))*wrap)
   underside=smooth((float(np.dot(outward,r[:,1]))+.1)/.2)*wrap
   deck=np.array([dx,h(dx,dz)-s['deckThickness']*underside,dz])
+  # A surface point alone can cut through the neighbouring toe box. Keep the
+  # real frozen toe surface outside its contact plane, with continuous support
+  # distance; no vertex-switch tangential jumps and no altered foot rotation.
+  grip=unit(np.array([-2*shape['concave']*dx/shape['deckHalfWidth']**2,1.,-2*shape['kickRise']*max(0,abs(dz)-shape['kickStart'])*np.sign(dz)/shape['kickSpan']**2]))
+  face=grip*(1-2*underside)
+  width_slope=-shape['deckHalfWidth']*(abs(dz)-.288)*np.sign(dz)/(.112**2*max(.01,math.sqrt(max(0,1-((abs(dz)-.288)/.112)**2))))
+  edge=unit(np.array([-1.,0.,-width_slope]));cone=np.column_stack((face,edge));weights=np.maximum(0,np.linalg.lstsq(cone,-r.T@outward,rcond=None)[0]);weights[1]*=hook_weight
+  normal=unit(cone@weights) if np.linalg.norm(weights)>1e-8 else face
+  local_normal=ru.T@r@normal;support_feature=float(np.min(np.array(s['hookToeSurface'])@local_normal));offset=(support_feature-float(np.dot(feature,local_normal)))*wrap
+  if not math.isfinite(offset):raise ValueError('Impossible toe contact has an invalid frozen surface projection')
+  feature=feature+local_normal*offset
   hooked=rear+ru@feature-r@deck
   # Pressure ends at the existing .005m-tail-contact plateau; thereafter the
   # board follows the rear feature throughout its full vertical winding.
