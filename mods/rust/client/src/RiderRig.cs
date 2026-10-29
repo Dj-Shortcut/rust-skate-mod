@@ -991,7 +991,7 @@ public static class RiderRig
             var handplant = wall || bodyFlip ? 0 : PlantBlend;
             // The opposite foot slides away from the popped end, including when the tail leads.
             // The shared take-off description chooses that foot without changing the ride's inputs.
-            var noseSlide = !wall && !SkateOldschoolRide.Active && !SkateActions.Finger.Initialized && mode == RideMode.Air && SkateRide.Jumped && grab == SkateGrabKind.None && contact.Trick.FootPop ? SkateRide.Clamp(1f - SkateRide.VSpeed / SkateRide.OlliePop, 0f, 1f) * (1f - (float)contact.Catch) : 0f;
+            var noseSlide = !wall && !SkateOldschoolRide.Active && !SkateActions.Finger.Initialized && mode == RideMode.Air && SkateRide.Jumped && grab == SkateGrabKind.None && contact.Trick.FootPop ? SkateRide.Clamp(1f - SkateRide.VSpeed / SkateRide.LaunchPopImpulse, 0f, 1f) * (1f - (float)contact.Catch) : 0f;
             var groundGrab = !wall && (mode == RideMode.Ground || mode == RideMode.Air) && SkateRide.GroundGrab.Active;
             var pushing = mode == RideMode.Ground && !groundGrab && SkateRide.PushPhase > 0f;
             var deckFace = SkateBoard.OnFace(upV, SkateRide.Dir(SkateRide.DeckYaw));
