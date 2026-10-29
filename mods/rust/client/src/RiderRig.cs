@@ -37,6 +37,7 @@ public static class RiderRig
     private static int chargePosePop = -1;
     private static uint chargePoseEpoch;
     private static float chargePoseAmount;
+    private static double? chargeInitialPelvisOffset;
     private static bool chargeOwnedGround, chargeSetupGrounded, chargeNosePop, chargeEntryShown;
     private static Transform chargeOwnerPlayer, chargeEntryPlayer;
     private static bool chargeOwnerGoofy, chargeEntryGoofy;
@@ -840,7 +841,7 @@ public static class RiderRig
         grabSince = grabHold = -1f; plantBlend = chestLead = crouchSpeed = 0f; Crouch = 0.18f;
         chargePosePop = -1; chargePoseEpoch = 0; chargePoseAmount = 0;
         chargeOwnedGround = chargeSetupGrounded = false;
-        chargeNosePop = chargeEntryShown = false; chargeOwnerPlayer = null; ClearChargeEntry();
+        chargeNosePop = chargeEntryShown = false; chargeInitialPelvisOffset = null; chargeOwnerPlayer = null; ClearChargeEntry();
         contact = default(SkateRiderContactState);
         plantStyle = default(SkateHandplantState); plantId = -1; SkateBoard.HeldFrame = default(SkateBoardPose);
         pinLeft = pinRight = pinHips = false;
@@ -987,7 +988,7 @@ public static class RiderRig
                 chargeOwnerGoofy != SkateRide.Goofy || chargePoseEpoch != SkateKeys.InputEpoch || chargePosePop != SkateRide.Pops + 1))
             {
                 // The held stick end is known now; PopKind still belongs to the last release.
-                chargeNosePop = SkateKeys.Pad && SkatePad.RightY > 0;
+                chargeNosePop = SkateKeys.Pad && SkatePad.RightY > 0; chargeInitialPelvisOffset = null;
                 chargeOwnerPlayer = SkateRig.LocalT; chargeOwnerGoofy = SkateRide.Goofy; ClearChargeEntry();
                 SkateCapturedTricks.Reset();
             }
@@ -1248,10 +1249,12 @@ public static class RiderRig
                 if (ordinaryCharging && SkateFootContacts.Ready)
                 {
                     SkateVector chargeLeftUp, chargeRightUp;
+                    if (!chargeInitialPelvisOffset.HasValue)
+                        chargeInitialPelvisOffset = SkateVector.Dot(pose.Pelvis - chargeCarrier.Origin, chargeCarrier.Up);
                     if (SkateCaptureKickflipUpper.TryChargeSetup(Rig, pose, chargeCarrier,
                         SkateBoard.PoseFor(SkateRig.LocalT), chargeFold, chargeNosePop,
                         SkateFootContacts.LeftFitter, SkateFootContacts.RightFitter,
-                        out charged, out chargeLeftUp, out chargeRightUp, out chargeError))
+                        out charged, out chargeLeftUp, out chargeRightUp, out chargeError, chargeInitialPelvisOffset))
                     {
                         Posed = pose = charged; leftSole = V(chargeLeftUp); rightSole = V(chargeRightUp);
                         pinHips = pinLeft = pinRight = chargeSetupGrounded = true; FootSupportError = "";
