@@ -2,6 +2,29 @@ using System;
 
 namespace Shortcut.RustMod
 {
+    public readonly struct SkateHandMeasurements
+    {
+        public readonly bool Initialized, Measured;
+        public readonly double McpLength, KnuckleSpan;
+        private SkateHandMeasurements(double mcp, double span, bool measured)
+        { Initialized = true; Measured = measured; McpLength = mcp; KnuckleSpan = span; }
+        public static SkateHandMeasurements Reference { get { return new SkateHandMeasurements(.065, .054, false); } }
+        public static bool TryMeasured(double mcp, double span, out SkateHandMeasurements result)
+        {
+            result = default(SkateHandMeasurements);
+            if (double.IsNaN(mcp) || double.IsInfinity(mcp) || mcp < .02 || mcp > .14 ||
+                double.IsNaN(span) || double.IsInfinity(span) || span < .01 || span > .12) return false;
+            result = new SkateHandMeasurements(mcp, span, true); return true;
+        }
+    }
+
+    public readonly struct SkateHandGripFrame
+    {
+        public readonly SkateVector Edge, Wrist, Forward, Back;
+        public SkateHandGripFrame(SkateVector edge, SkateVector wrist, SkateVector forward, SkateVector back)
+        { Edge = edge; Wrist = wrist; Forward = forward; Back = back; }
+    }
+
     public enum SkateGrabHand { Leading, Trailing, Nose, Tail }
 
     // Authored contact targets in the rider's frame: X toward the toes, Y up, Z toward the nose.
@@ -11,7 +34,8 @@ namespace Shortcut.RustMod
         public readonly SkateGrabHand Hand;
         public readonly bool Both, End, FeetOnTail;
         public readonly double Across, Along, SecondAcross, SecondAlong, FreeUp, Tuck, Extension,
-            LegShift, BodyShift, ChestTurn, HeelTurn, Roll, Pitch, Yaw;
+            LegShift, BodyShift, ChestTurn, HeelTurn, Roll, Pitch, Yaw,
+            FreeArmElevation, HandOutset, HandRise;
         public readonly SkateVector FrontFoot, BackFoot;
         public bool FrontReleased { get { return FrontFoot.LengthSquared > 0; } }
         public bool BackReleased { get { return BackFoot.LengthSquared > 0; } }
@@ -19,12 +43,14 @@ namespace Shortcut.RustMod
             bool both = false, bool end = false, double secondAcross = 0.1, double secondAlong = -0.06,
             double freeUp = 0.25, double tuck = 0.05, double extension = 0, double legShift = 0,
             double bodyShift = 0, double chestTurn = 0, double heelTurn = 1.2, double yaw = 0,
-            SkateVector frontFoot = default(SkateVector), SkateVector backFoot = default(SkateVector), bool feetOnTail = false)
+            SkateVector frontFoot = default(SkateVector), SkateVector backFoot = default(SkateVector), bool feetOnTail = false,
+            double freeArmElevation = 0, double handOutset = 0, double handRise = 0)
         {
             Hand = hand; Across = across; Along = along; Roll = roll; Pitch = pitch; Both = both; End = end;
             SecondAcross = secondAcross; SecondAlong = secondAlong; FreeUp = freeUp; Tuck = tuck;
             Extension = extension; LegShift = legShift; BodyShift = bodyShift; ChestTurn = chestTurn;
             HeelTurn = heelTurn; Yaw = yaw; FrontFoot = frontFoot; BackFoot = backFoot; FeetOnTail = feetOnTail;
+            FreeArmElevation = freeArmElevation; HandOutset = handOutset; HandRise = handRise;
         }
         public bool LeftHand(bool backIsLeft, bool noseIsLeft)
         { return Hand == SkateGrabHand.Nose ? noseIsLeft : Hand == SkateGrabHand.Tail ? !noseIsLeft :
@@ -33,6 +59,50 @@ namespace Shortcut.RustMod
 
     public static class SkateGrabCatalog
     {
+        private static readonly SkateVector[] GripOutline = BuildGripOutline();
+        private static SkateVector[] BuildGripOutline()
+        {
+            var points = new SkateVector[40]; int n = 0;
+            for (int i = 0; i <= 18; i++) { double a = i * Math.PI / 18; points[n++] = new SkateVector(.102 * Math.Cos(a), 0, .288 + .112 * Math.Sin(a)); }
+            points[n++] = new SkateVector(-.102, 0, 0);
+            for (int i = 0; i <= 18; i++) { double a = Math.PI + i * Math.PI / 18; points[n++] = new SkateVector(.102 * Math.Cos(a), 0, -.288 + .112 * Math.Sin(a)); }
+            points[n] = new SkateVector(.102, 0, 0); return points;
+        }
+        public static bool TryGrip(SkateBoardPose frame, double across, double along, SkateHandMeasurements hand,
+            out SkateHandGripFrame grip)
+        {
+            grip = default(SkateHandGripFrame);
+            if (!SkateBoardPath.Valid(frame) || !frame.Initialized || double.IsNaN(across) || double.IsInfinity(across) ||
+                double.IsNaN(along) || double.IsInfinity(along) || Math.Abs(across) > .3 || Math.Abs(along) > .5) return false;
+            if (!hand.Initialized) hand = SkateHandMeasurements.Reference;
+            var seed = new SkateVector(across, 0, along); var edge = default(SkateVector); int selected = 0; double best = double.MaxValue;
+            for (int i = 0; i < GripOutline.Length; i++)
+            {
+                var a = GripOutline[i]; var d = GripOutline[(i + 1) % GripOutline.Length] - a;
+                double t = Math.Max(0, Math.Min(1, SkateVector.Dot(seed - a, d) / d.LengthSquared));
+                var p = a + d * t; double distance = (p - seed).LengthSquared;
+                if (distance < best) { best = distance; edge = p; selected = i; }
+            }
+            double kick = Math.Max(0, (Math.Abs(edge.Z) - .245) / .155);
+            edge = new SkateVector(edge.X, .05 * kick * kick + .008 * Math.Pow(edge.X / .102, 2), edge.Z);
+            var normal = HandUnit(new SkateVector(-.016 * edge.X / (.102 * .102), 1, -.1 * kick / .155 * Math.Sign(edge.Z)));
+            var tangent = GripOutline[(selected + 1) % GripOutline.Length] - GripOutline[selected];
+            var outward = new SkateVector(tangent.Z, 0, -tangent.X);
+            outward = HandUnit(outward - normal * SkateVector.Dot(outward, normal));
+            double tilt = 20 * Math.PI / 180;
+            var forward = normal * -Math.Cos(tilt) + outward * Math.Sin(tilt);
+            var back = outward * Math.Cos(tilt) + normal * Math.Sin(tilt);
+            var mcp = edge + outward * .020 + normal * .013;
+            grip = new SkateHandGripFrame(frame.Point(edge), frame.Point(mcp - forward * hand.McpLength), frame.Rotate(forward), frame.Rotate(back));
+            return true;
+        }
+        private static SkateVector HandUnit(SkateVector value) { return value * (1 / value.Length); }
+
+        // Owner's Xbox air windows supply silhouette/reach timing, not finger tracking.
+        // Only these five profiles opt into the authored raised free arm and wrist approach.
+        public static bool HasReferenceHand(SkateGrabKind kind)
+        { return kind == SkateGrabKind.Frontside || kind == SkateGrabKind.Method || kind == SkateGrabKind.Crossbone ||
+                 kind == SkateGrabKind.Weddle || kind == SkateGrabKind.Crail; }
         public const int Count = (int)SkateGrabKind.Superdude + 1;
         public const int ModifierButtons = 0x200 | 0x1000 | 0x2000 | 0x4000;
         private static readonly string[] Names = {
@@ -110,23 +180,28 @@ namespace Shortcut.RustMod
             {
                 case SkateGrabKind.Legacy: return new SkateGrabDefinition(back, .1, -.12, -15);
                 case SkateGrabKind.Backside: return new SkateGrabDefinition(lead, -.1, .06, -20, bodyShift: -.15);
-                case SkateGrabKind.Frontside: return new SkateGrabDefinition(back, .1, -.08, 25);
+                case SkateGrabKind.Frontside: return new SkateGrabDefinition(back, .1, -.08, 25,
+                    freeArmElevation: 25, handOutset: .035, handRise: .02);
                 case SkateGrabKind.Double: return new SkateGrabDefinition(lead, -.1, .06, both: true, tuck: .035, bodyShift: .1);
                 case SkateGrabKind.Tail: return new SkateGrabDefinition(tail, 0, -.36, pitch: -15, freeUp: .3, end: true);
                 case SkateGrabKind.Nose: return new SkateGrabDefinition(nose, 0, .36, pitch: 15, freeUp: .3, end: true);
                 case SkateGrabKind.Stalefish: return new SkateGrabDefinition(back, -.1, -.15, -20, -8, freeUp: .4);
-                case SkateGrabKind.Crail: return new SkateGrabDefinition(back, .1, .3, 15, 12, freeUp: .2, end: true);
+                case SkateGrabKind.Crail: return new SkateGrabDefinition(back, .055, .385, 15, 12, freeUp: .2, end: true,
+                    freeArmElevation: 70, handOutset: .035, handRise: .02);
                 case SkateGrabKind.Seatbelt: return new SkateGrabDefinition(lead, .1, -.3, 15, -12, freeUp: .35, end: true);
                 case SkateGrabKind.Melon: return new SkateGrabDefinition(lead, -.1, -.06, -30, -6, freeUp: .35, tuck: .035, bodyShift: -.15, heelTurn: .3);
-                case SkateGrabKind.Method: return new SkateGrabDefinition(lead, -.1, .04, -40, 8, freeUp: .45, tuck: .015, bodyShift: -.18);
+                case SkateGrabKind.Method: return new SkateGrabDefinition(lead, -.1, .04, -40, 8, freeUp: .45, tuck: .015, bodyShift: -.18,
+                    freeArmElevation: 60, handOutset: .035, handRise: .02);
                 case SkateGrabKind.Nosebone: return new SkateGrabDefinition(tail, 0, -.36, pitch: -18, freeUp: .3, end: true, extension: .9, legShift: -.2, chestTurn: -.35);
                 case SkateGrabKind.Tailbone: return new SkateGrabDefinition(nose, 0, .36, pitch: 18, freeUp: .3, end: true, extension: .9, legShift: .2, chestTurn: .35);
-                case SkateGrabKind.Weddle: return new SkateGrabDefinition(lead, .1, .03, 22, -4, tuck: .025, bodyShift: .08);
+                case SkateGrabKind.Weddle: return new SkateGrabDefinition(lead, .1, .03, 22, -4, tuck: .025, bodyShift: .08,
+                    freeArmElevation: 40, handOutset: .035, handRise: .02);
                 case SkateGrabKind.RocketAir: return new SkateGrabDefinition(nose, -.055, .34, pitch: 42, both: true, end: true, secondAcross: .055, secondAlong: .34, extension: .6, legShift: -.18, feetOnTail: true);
                 case SkateGrabKind.TuckKnee: return new SkateGrabDefinition(back, .1, -.08, 35, 10, tuck: .005, legShift: .06, bodyShift: .12);
                 case SkateGrabKind.Stiffy: return new SkateGrabDefinition(back, .1, -.08, 12, -8, extension: .9, legShift: -.08);
                 case SkateGrabKind.BacksideTweak: return new SkateGrabDefinition(lead, -.1, .06, -38, -12, legShift: -.08, bodyShift: -.18, heelTurn: .5);
-                case SkateGrabKind.Crossbone: return new SkateGrabDefinition(lead, -.1, .04, -28, 15, extension: .65, legShift: .12, chestTurn: -.4, yaw: -18);
+                case SkateGrabKind.Crossbone: return new SkateGrabDefinition(lead, -.1, .04, -28, 15, extension: .65, legShift: .12, chestTurn: -.4, yaw: -18,
+                    freeArmElevation: 60, handOutset: .035, handRise: .02);
                 case SkateGrabKind.TailNosebone: return new SkateGrabDefinition(tail, 0, -.36, pitch: -28, end: true, extension: .85, legShift: -.22);
                 case SkateGrabKind.NoseTailbone: return new SkateGrabDefinition(nose, 0, .36, pitch: 28, end: true, extension: .85, legShift: .22);
                 case SkateGrabKind.FrontsideShiftyTail: return new SkateGrabDefinition(tail, 0, -.36, 8, -12, end: true, yaw: 32, chestTurn: -.35);
