@@ -31,11 +31,15 @@ public static class SkateRide
     public const float AirGravity = 16f, OlliePop = 6f, MaxFall = 30f, BailImpact = 12f, BailSeconds = 1.3f, BailDecel = 10f, PushPeriod = 0.8f, SeaLevel = -1.1f, LowestCap = 2f, LagStep = 0.1f, RaiseWait = 3f, CapForget = 30f, ManualPace = 1f, ManualHold = 0.3f, HopGrace = 0.3f;
     // These are frozen when the flight starts, not recomputed from a later ray/held grab.
     private static bool flatgroundFlight;
+    private static bool initialFlipFlick;
     private static float flightGravity = AirGravity;
     public static float CurrentAirGravity { get { return Mode == RideMode.Air ? flightGravity : AirGravity; } }
     public static float LaunchPopImpulse { get { return Mode == RideMode.Air && flatgroundFlight ? (float)SkateFlatgroundPop.ReferencePop : OlliePop; } }
     public static float CurrentRotationRateScale { get { return Mode == RideMode.Air && flatgroundFlight ? (float)SkateFlatgroundPop.RotationRateScale : 1f; } }
     public static float AirPopLift { get { return Mode == RideMode.Air && flatgroundFlight ? (float)SkateFlatgroundPop.VisualLift : SkateBoard.PopMost; } }
+    public static bool FlipFlickKnown { get { return Mode == RideMode.Air && initialFlipFlick; } }
+    public static float FlipFlickElapsed { get { return FlipFlickKnown ? Math.Max(0f, AirTime) : 0f; } }
+    public static bool FlipFlickActive { get { return FlipFlickKnown && SkateFlipFlick.RemainingDelay(FlipFlickElapsed) > 0; } }
     // Pumping: the shared SkateRidePhysics judges it (a crouch held down a transition, let go
     // through its bottom); PumpCharge only shapes the rider's crouch. Landing: the fall becomes
     // roll on a slope by LandRoll (the shared landing rule); a revert within RevertWindow of a
@@ -333,7 +337,7 @@ public static class SkateRide
 
     public static void Mount(Rigidbody b, float yaw)
     {
-        body = b; Yaw = yaw; flatgroundFlight = false; flightGravity = AirGravity;
+        body = b; Yaw = yaw; flatgroundFlight = initialFlipFlick = false; flightGravity = AirGravity;
         try
         {
             var cap = b.gameObject.GetComponent<CapsuleCollider>();
@@ -387,7 +391,7 @@ public static class SkateRide
         // A pump's pass lives on the ground: leaving it (air, grind, bail) forgets the charge, so a
         // crouch let go in the air cannot be paid out on the next ground step.
         if (m != RideMode.Ground && Mode == RideMode.Ground) { Pump = default(SkatePumpState); PumpHeld = 0f; RevertLeft = revertTurned = 0f; }
-        if (m != RideMode.Air) { flatgroundFlight = false; flightGravity = AirGravity; }
+        if (m != RideMode.Air) { flatgroundFlight = initialFlipFlick = false; flightGravity = AirGravity; }
         Mode = m; ModeAt = Time.realtimeSinceStartup;
     }
 
@@ -1129,6 +1133,7 @@ public static class SkateRide
     private static void TakeOff(bool jumped, float vertical, bool flatground = false)
     {
         flatgroundFlight = flatground;
+        initialFlipFlick = flatground && jumped && wantFlip != 0 && wantSpecial == SkateBoardTrickKind.None;
         flightGravity = flatground ? (float)SkateFlatgroundPop.Gravity : AirGravity;
         airViewTrace = 0; airViewFromGrind = Mode == RideMode.Grind;
         SkateOldschoolRide.Reset();
@@ -1222,7 +1227,7 @@ public static class SkateRide
             if (Mode != RideMode.Air) return;
             // A newly acquired wall action owns its physical velocity/gravity from here.
             // A late grab alone does not replace a flight's frozen launch profile.
-            flatgroundFlight = false; flightGravity = AirGravity;
+            flatgroundFlight = initialFlipFlick = false; flightGravity = AirGravity;
             var nose = NoseYaw; var deck = DeckYaw;
             var flat = Flat(wallVelocity); var sign = Speed < 0 ? -1f : 1f;
             if (flat.sqrMagnitude > .0001f) Yaw = (float)(Math.Atan2(flat.x * sign, flat.z * sign) * 180 / Math.PI);
@@ -1244,6 +1249,7 @@ public static class SkateRide
         var dir = Dir(Yaw);
         SkateOldschoolRide.AirStep(pos, dt); if (Mode != RideMode.Air) return;
         SkateActions.Tick(dt, TimeToGround()); if (Mode != RideMode.Air) return;
+        CancelFlipFlickForOwner();
         Tangent = dir; SteerRate = 0f; Lean += (0f - Lean) * (1f - (float)Math.Exp(-12f * dt));
 
         // A rotation is only started when the arc lasts long enough to finish it: an unfinished one is a bail.
@@ -1257,13 +1263,13 @@ public static class SkateRide
         if (grabbing && Math.Abs(shoveLeft) < 0.001f) pendShove = 0f;
         if (flips != 0 && !grabbing && (Math.Abs(flipLeft) < 0.001f || Math.Sign(flipLeft) == Math.Sign(flips)))
         {
-            // As in Skate: a flip is started whenever it is asked for. One asked too late does not
-            // come round before the ground, and that is a bail, unless the board meets an edge half
-            // way round (a darkslide).
-            if (left < (Math.Abs(flipLeft) + 360f * Math.Abs(flips)) / ((float)SkateMotion.FlipRate * CurrentRotationRateScale)) Late("a flip", left);
+            // Keep every requested turn, including an initial flick's unspent edge release.
+            // A request too late to finish still bails, unless an edge catches a darkslide.
+            var flipTime = left - (initialFlipFlick ? (float)SkateFlipFlick.RemainingDelay(AirTime) : 0f);
+            if (flipTime < (Math.Abs(flipLeft) + 360f * Math.Abs(flips)) / ((float)SkateMotion.FlipRate * CurrentRotationRateScale)) Late("a flip", flipTime);
             flipLeft += 360f * flips; TrickAir = true; if (lateFlips) LateTrick = true;
         }
-        else if (flips != 0 && grabbing) SkateHud.Notice("No flip during a grab");
+        else if (flips != 0 && grabbing) { initialFlipFlick = false; SkateHud.Notice("No flip during a grab"); }
         // A shove asked for in the air goes on top of what is under way, the same way round.
         var lateShove = Jumped && !SkateActions.Owns && !SkateOldschoolRide.Active && !SkateSurfaceRide.BodyFlip.Known && !BoardPath.Known ? SkateKeys.LateShove : 0f;
         if (lateShove != 0f && !grabbing && (Math.Abs(shoveLeft) < 0.001f || Math.Sign(shoveLeft) == Math.Sign(lateShove))) pendShove += lateShove;
@@ -1286,9 +1292,12 @@ public static class SkateRide
         var spinAxis = carryingBoard || SkateSurfaceRide.BodyFlip.Known ? 0f : SpinAxis(left, dt);
         Grab = TrickAir && !SkateActions.Owns && !SkateOldschoolRide.Active && !BoardPath.Active && !FootPlanted && Math.Abs(flipLeft) < 0.001f && Math.Abs(shoveLeft) < 0.001f ? SkateKeys.Grab : SkateGrabKind.None;
         SkateSurfaceRide.TickFlip(pos, dt, TimeToGround(), SkateKeys.BodyFlipRequest); if (Mode != RideMode.Air) return;
+        CancelFlipFlickForOwner();
 
         var flipStep = (float)SkateMotion.FlipRate * CurrentRotationRateScale * dt; var shoveStep = (float)SkateMotion.ShoveRate * CurrentRotationRateScale * dt; var bodyStep = (float)SkateMotion.RotationRate * CurrentRotationRateScale * dt;
-        var flipAxis = Clamp(flipLeft / flipStep, -1f, 1f); var shoveAxis = Clamp(shoveLeft / shoveStep, -1f, 1f); var bodyAxis = Clamp(bodyLeft / bodyStep, -1f, 1f);
+        var flipFraction = initialFlipFlick ? (float)(SkateFlipFlick.ActiveSeconds(AirTime, dt) / dt) : 1f;
+        var flipAxis = flipFraction > 0 ? Clamp(flipLeft / (flipStep * flipFraction), -1f, 1f) * flipFraction : 0f;
+        var shoveAxis = Clamp(shoveLeft / shoveStep, -1f, 1f); var bodyAxis = Clamp(bodyLeft / bodyStep, -1f, 1f);
 
         stuck = VSpeed < -2f && Math.Abs(ActualV) < 0.3f && AirTime > 0.2f ? stuck + 1 : 0;
         // Touching a curve is decided along its normal, not by world-up: the rider can
@@ -1355,6 +1364,12 @@ public static class SkateRide
             if (!BoardPath.Known && !SkateActions.Finger.Initialized) flipLeft -= flipAxis * flipStep;
             shoveLeft -= shoveAxis * shoveStep; bodyLeft -= bodyAxis * bodyStep;
         }
+    }
+
+    private static void CancelFlipFlickForOwner()
+    {
+        if (SkateActions.Owns || SkateActions.Finger.Initialized || SkateOldschoolRide.Active ||
+            SkateSurfaceRide.BodyFlip.Known || BoardPath.Known || Grabbing) initialFlipFlick = false;
     }
 
     // The rider turns for as long as the turn is held and the next half turn can still be reached

@@ -74,3 +74,4 @@ mods/rust/client/src/SkateFootContacts.cs
 mods/rust/shared/SkateDeckContacts.cs
 mods/rust/shared/SkateCaptureFootSupport.cs
 mods/rust/shared/SkateFlatgroundPop.cs
+mods/rust/shared/SkateFlipFlick.cs
