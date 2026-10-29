@@ -620,3 +620,7 @@ Where the source cannot be trusted, follow the owner's
 [visible-result rule](AUTONOMY.md#visible-result-over-source-fidelity-owner-28-october-2026):
 a labelled authored correction that looks right beats an unlabelled faithful
 copy of a reconstruction error.
+
+What each trick has to look like (start position, pop, flick, tuck, catch,
+landing) is in [the trick anatomy reference](RUST-SKATE-TRICK-ANATOMY.md). Read
+the trick's section before authoring or repairing it.
