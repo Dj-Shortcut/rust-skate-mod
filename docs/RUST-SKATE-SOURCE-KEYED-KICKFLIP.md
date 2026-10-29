@@ -29,8 +29,9 @@ The renderer uses the resulting captured board frame; input, player forces,
 collision, native rotation accounting and scoring retain their authority.
 
 Entry retains the last observed riding pose in the upright carrier. Its root
-position and velocity join the captured root, while the upper body joins over
-the first short part of the physical flight. The current foot and board paths
+position and world velocity join the compact captured Air. The local entry
+velocity accounts for the observed physical carrier at release; the upper body
+keeps its shorter entry. The current foot and board paths
 remain fixed through that handoff. Neutral charging hinges toward the rider's
 own facing direction in either stance; it does not require knowing the later
 trick family or twist every charge along the board's nose axis.
@@ -41,8 +42,8 @@ front footprint near the middle at +0.06 m. A known nose charge reverses those
 ends. These are footprint centres, not guessed ankle positions. The early C2
 setup reaches a deep, fixed-foot stance near a 75-degree internal knee angle,
 with the ordinary bent arm shape, and holds before release. Foot preparation
-settles first; the body finishes its crouch over about 0.2 seconds of the normal
-0.3-second charge. The normal bone writer preserves
+settles first; the body descends from its observed initial height at a smooth
+rate, finishing over about 0.24 seconds of the normal 0.3-second charge. The normal bone writer preserves
 this coherent pose instead of adding ordinary Shape, foot refitting or HeadLift
 again. Existing action/manual/grab/push exclusions and measured reach refusals
 remain active.
@@ -58,7 +59,10 @@ placements reconstructed from occluded reference views are labelled authored.
 The outside-instep contact aligns the actual shoe surface normal with the
 opposing curved nose surface, starting the ankle roll during the grip slide.
 One authored local envelope couples Air feet and hip height around the unchanged
-rotating board, then joins a bent Catch and impact absorption. Recovery keeps
+rotating board, then joins a bent Catch and impact absorption. The local hip
+envelope accounts for the existing reference carrier across landing, keeping
+the combined body trajectory continuous when the real wheels reach ground.
+Recovery keeps
 stable body-facing knee planes while the measured feet remain planted. Natural
 clip completion uses the existing 0.15-second body departure into ordinary riding,
 with the floor-versus-deck carrier offset preserved.

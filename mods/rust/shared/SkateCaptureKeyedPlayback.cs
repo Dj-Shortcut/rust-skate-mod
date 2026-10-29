@@ -61,16 +61,22 @@ namespace Shortcut.RustMod
             if (!ValidFlight(frozenFlightSeconds) || !Finite(localRoot.LengthSquared) || !Finite(localVelocity.LengthSquared) ||
                 groundCarrierOrigin.HasValue && !Finite(groundCarrierOrigin.Value.LengthSquared))
             { error = "Invalid source-keyed entry baseline."; return false; }
-            // Source263.5 is the compact coupled Air after the early pressure rise.
+            // Source264 is the compact coupled Air after the early pressure rise.
             // The independent upper entry and exact foot/board paths stay short.
-            double span = (SourceLand - SourcePop) * .28125;
+            double rootFraction = Clip.Id == RequiredClipId ? .3125 : .125;
+            double span = (SourceLand - SourcePop) * rootFraction;
             double targetTime = SourcePop + span, step = Math.Min(.005, span * .1);
             SkateCaptureFrame target, before, after;
             if (!SkateCaptureSampler.TrySample(Clip, targetTime, rig, stance, out target, out error) ||
                 !SkateCaptureSampler.TrySample(Clip, targetTime - step, rig, stance, out before, out error) ||
                 !SkateCaptureSampler.TrySample(Clip, targetTime + step, rig, stance, out after, out error)) return false;
-            entrySeconds = frozenFlightSeconds * .28125;
+            entrySeconds = frozenFlightSeconds * rootFraction;
             entryRoot = localRoot; entryVelocity = localVelocity; entryTarget = target.Pose.Pelvis;
+            // The observed flatground launch span supplies its actual takeoff
+            // speed. Subtract the carrier derivative in local space so adding
+            // that carrier preserves the held body's world velocity at release.
+            if (Clip.Id == RequiredClipId && groundCarrierOrigin.HasValue)
+                entryVelocity -= new SkateVector(0, SkateFlatgroundPop.Gravity * frozenFlightSeconds * .5, 0);
             entryUpper = localBody; entryUpperSeconds = frozenFlightSeconds * .125;
             groundOrigin = groundCarrierOrigin;
             entryTargetVelocity = (after.Pose.Pelvis - before.Pose.Pelvis) *
