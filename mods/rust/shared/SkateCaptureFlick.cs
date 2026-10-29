@@ -34,6 +34,7 @@ namespace Shortcut.RustMod
     // Caller gates normal Kickflip/Heelflip and supplies the actual board trajectory.
     public sealed class SkateCaptureFlick
     {
+        public const double ReturnSeconds = .09;
         public const string Provenance = "Authored normal flip path and geometry-inferred regions; actual mesh support witness and upright release, not measured source contact. Frozen-model surfaces checked; native upper/outsole boundary unverified.";
         private readonly Shoe left, right;
         private readonly SkateDeckContactSurface surface;
@@ -64,21 +65,27 @@ namespace Shortcut.RustMod
         // releaseDeck is an explicit unflipped release endpoint, transported to
         // this frame's world carrier. A first call after D computes that same
         // endpoint without retrospectively claiming that contact was displayed.
+        // Optional setup age is presentation-only; physical release stays authoritative.
         public bool TryPose(SkateRiderRig rig, SkateCaptureFrame current, SkateRiderPose ordinary,
             SkateVector ordinaryLeftSoleUp, SkateVector ordinaryRightSoleUp,
             SkateBoardPose uprightCarrier, SkateBoardPose releaseDeck,
             double elapsedSeconds, double releaseSeconds, SkateStance stance, bool heel,
-            out SkateCaptureFrame result, out string error)
+            out SkateCaptureFrame result, out string error, double? setupElapsedSeconds = null)
         {
             result = current; error = null; Contact = default(SkateCaptureFlickContact);
-            if (!Finite(elapsedSeconds) || elapsedSeconds < 0 || !Finite(releaseSeconds) || releaseSeconds <= 0 || releaseSeconds > .25 ||
+            if (!Finite(elapsedSeconds) || elapsedSeconds < 0 ||
+                (setupElapsedSeconds.HasValue && (!Finite(setupElapsedSeconds.Value) || setupElapsedSeconds.Value < 0)) || !Finite(releaseSeconds) || releaseSeconds <= 0 || releaseSeconds > .25 ||
                 (stance != SkateStance.Regular && stance != SkateStance.Goofy) ||
                 !Frame(uprightCarrier) || !Frame(releaseDeck) || !Frame(current.Board))
             { Reset(); error = "Invalid authored flick clock, stance or explicit carrier/deck frame."; return false; }
             if (elapsedSeconds < previousSeconds || ownerStance != stance || ownerHeel != heel || ownerDuration != releaseSeconds) Reset();
             ownerStance = stance; ownerHeel = heel; ownerDuration = releaseSeconds; previousSeconds = elapsedSeconds;
-            double u = elapsedSeconds / releaseSeconds;
-            if (u >= 4) return true;
+            double poseSeconds = setupElapsedSeconds.HasValue ? Math.Max(elapsedSeconds, setupElapsedSeconds.Value) : elapsedSeconds;
+            // Rendering may reveal setup between physics steps, but only the
+            // physical clock can reach the release witness or begin Return.
+            double u = elapsedSeconds < releaseSeconds ? Math.Min(poseSeconds / releaseSeconds, 1 - 1e-9) :
+                elapsedSeconds == releaseSeconds ? 1 : poseSeconds / releaseSeconds;
+            if (elapsedSeconds > releaseSeconds && poseSeconds >= releaseSeconds + ReturnSeconds) return true;
             bool isLeft = stance == SkateStance.Regular;
             var shoe = isLeft ? left : right;
             SkateBoardPose ordinaryFoot;
@@ -122,7 +129,7 @@ namespace Shortcut.RustMod
                 if (!SkateCaptureFootSupport.TryFootFrame(isLeft ? current.Pose.LeftAnkle : current.Pose.RightAnkle,
                     isLeft ? current.Pose.LeftToe : current.Pose.RightToe, isLeft ? current.LeftSoleUp : current.RightSoleUp, out free))
                 { error = "Authored flick requires the current free-foot frame for its return."; return false; }
-                foot = Blend(FromFrame(releaseLocal, uprightCarrier), free, Ease((u - 1) / 3));
+                foot = Blend(FromFrame(releaseLocal, uprightCarrier), free, Ease((poseSeconds - releaseSeconds) / ReturnSeconds));
                 // Return has no support witness. It never follows the flipping deck.
             }
             var toe = foot.Origin + foot.Forward * along + foot.Up * down;

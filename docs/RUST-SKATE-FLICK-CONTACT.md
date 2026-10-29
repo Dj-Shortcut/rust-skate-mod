@@ -60,10 +60,19 @@ misreported as the actual mesh contact point.
   same vertices and the inverse frame turn for projection. World geometry is
   unchanged. Original sole profiles, source checks and existing fitter guards
   remain intact.
+- An optional `setupElapsedSeconds` argument follows the two `out` arguments;
+  existing callers remain valid. Pass the actual render age since the same pop.
+  Before physical release, the pose may use the greater age to show setup between
+  physics steps, but stays strictly before the release endpoint. At physical D,
+  it uses exactly the existing fitted Edge witness, regardless of render age.
+  This clock changes presentation only: no earlier release, scoring or pop.
 - At release, cache the fitted foot frame in upright-carrier coordinates. Return
-  blends from it toward the current free pose over three release durations,
-  independently of board roll. Starting after release computes the same analytic
-  endpoint without claiming that a skipped contact phase was displayed.
+  blends from it toward the current free pose over the authored C2
+  `ReturnSeconds = 0.09`, independently of board roll. After physical release it
+  uses the greater of physical and optional render age. Starting after release
+  computes the same analytic endpoint without claiming that a skipped contact
+  phase was displayed. The shorter return lets the existing paired tuck own Air
+  rather than holding the nose-up shoe after the board's nose pulse has returned.
 - Reset on a new action, interruption, bail, dismount, unbind or owner change.
   Clock regression or family/stance/duration changes also clear the endpoint.
   Instances are not concurrently callable.
