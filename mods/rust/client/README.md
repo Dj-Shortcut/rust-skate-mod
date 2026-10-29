@@ -419,7 +419,7 @@ line carrying `SKATE-PROBE` as an `INBOX` line. It acts on nothing; it shows whe
 | `X` | | Tap: body varial, the rider's half round without the board; the landing is switch |
 | `Ctrl` or `C` | Held for a moment: get off | Held: grab |
 | `L` | View from behind or the game's first person | |
-| `H` held | The controls: on the board the panel at the bottom left, on foot the line that says how to get on and which stance is set. Held, never tapped, so a stray press leaves nothing on the screen. Not yet seen in game. | |
+| `H` held | The controls: on the board a page at the top left with every row of this table (the first nine seconds on the board show a short panel at the bottom left by themselves), on foot the line that says how to get on and which stance is set. Held, never tapped, so a stray press leaves nothing on the screen. Not yet seen in game. | |
 | `F2` held for a second (on foot; on a Mac keyboard `fn`+`F2`; `Back`+`Y` held on the controller) | Stance: regular (left foot forward, the right foot pushes) or goofy, the mirror image. A tap changes nothing: a stray press of Y in the menu, or of J, used to switch the stance unseen; J is the game's own clan key, whose screen frees the cursor, so the switch has its own key. Kept in `skate-stance.txt` in the game's own data folder (`AppData\LocalLow\Facepunch Studios LTD\Rust`) for the next start; the hint on foot names the current one. | |
 
 Coming down over an edge while moving along it starts a grind. A turn is called frontside when it

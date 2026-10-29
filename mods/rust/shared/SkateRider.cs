@@ -639,6 +639,44 @@ namespace Shortcut.RustMod
             return true;
         }
 
+        public static bool TryAirLook(SkateRiderRig rig, SkateRiderInput input, SkateRiderPose source,
+            SkateVector lookDirection, double weight, out SkateRiderPose pose)
+        {
+            pose = source;
+            if (!Valid(rig) || !Valid(input) || !Finite(source) || !input.Airborne || input.Bailed || input.Handplant > .001 ||
+                !Vector(lookDirection) || !Finite(weight) || weight <= 0 || weight > 1) return false;
+            var worldUp = new SkateVector(0, 1, 0);
+            var forward = Unit(Project(source.ChestForward, worldUp));
+            if (forward.LengthSquared < .5) forward = Unit(Project(source.HeadForward, worldUp));
+            if (forward.LengthSquared < .5) forward = new SkateVector(0, 0, 1);
+            var want = Unit(Project(lookDirection, worldUp));
+            if (want.LengthSquared < .5) want = Unit(Project(input.BoardForward, worldUp));
+            if (want.LengthSquared < .5) want = forward;
+            double yaw = Math.Atan2(SkateVector.Dot(Cross(forward, want), worldUp), SkateVector.Dot(forward, want));
+            yaw = Math.Max(-Math.PI * .36, Math.Min(Math.PI * .36, yaw));
+            var ahead = RotateAxis(forward, worldUp, yaw);
+            double horizontal = Math.Sqrt(lookDirection.X * lookDirection.X + lookDirection.Z * lookDirection.Z);
+            double down = Math.Min(Math.PI / 4, Math.Atan2(Math.Max(0, -lookDirection.Y), Math.Max(.01, horizontal)));
+            var gaze = ahead * Math.Cos(down) - worldUp * Math.Sin(down);
+            var targetUp = worldUp * Math.Cos(down) + ahead * Math.Sin(down);
+            double share = Smooth(weight);
+            var originalGaze = Unit(source.HeadForward);
+            if (originalGaze.LengthSquared < .5) originalGaze = forward;
+            var axis = Cross(originalGaze, gaze);
+            double turn = Math.Atan2(axis.Length, SkateVector.Dot(originalGaze, gaze));
+            if (axis.LengthSquared < .000000001) axis = Project(worldUp, originalGaze);
+            gaze = axis.LengthSquared > .000000001 ? RotateAxis(originalGaze, Unit(axis), turn * share) : originalGaze;
+            var headUp = Unit(Project(source.ChestUp * (1 - share) + targetUp * share, gaze));
+            if (headUp.LengthSquared < .5) headUp = Unit(Project(worldUp, gaze));
+            if (headUp.LengthSquared < .5) return false;
+            var head = source.Neck + headUp * rig.NeckToHeadLength;
+            pose = new SkateRiderPose(source.Pelvis, source.LeftHip, source.RightHip, source.LeftKnee, source.RightKnee,
+                source.LeftAnkle, source.RightAnkle, source.LeftToe, source.RightToe, source.Chest, source.Neck, head,
+                source.LeftShoulder, source.RightShoulder, source.LeftElbow, source.RightElbow, source.LeftHand, source.RightHand,
+                source.PelvisForward, source.PelvisUp, source.ChestForward, source.ChestUp, gaze);
+            return Finite(pose);
+        }
+
         private static bool Riding(SkateRiderRig rig, SkateRiderInput input, out SkateRiderPose pose, out string error)
         {
             pose = default(SkateRiderPose); error = null;

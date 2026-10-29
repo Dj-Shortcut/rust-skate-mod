@@ -700,6 +700,7 @@ public class SkateRig : MonoBehaviour
             var v = SkateRide.VSpeed / SkateRide.OlliePop;
             rise = SkateBoard.PopMost * SkateRide.Clamp(1f - v * v, 0f, 1f);
         }
+        rise += .10f * SkateRide.TransitionAirTuck;
         // A grab pulls the board up further, to the rider's hands, as the body folds into it.
         if (SkateRide.On && SkateRide.Mode == RideMode.Air) rise += SkateBoard.GrabRise * SkateBoard.GrabFold;
         SkateBoard.Pop += (rise - SkateBoard.Pop) * SkateRide.Clamp(frame * 18f, 0f, 1f);
@@ -708,7 +709,7 @@ public class SkateRig : MonoBehaviour
         {
             var feet = at; var up = SkateRide.ViewNormal; var tilted = up;
             SkateBoard.Tilt(ref feet, ref tilted);
-            var t2 = SkateClock.Now(); RiderRig.Frame(feet, up, !third, frame); SkateClock.Add(SkateClock.Rider, t2);
+            var t2 = SkateClock.Now(); RiderRig.Frame(feet, SkateRide.RiderViewNormal, !third, frame); SkateClock.Add(SkateClock.Rider, t2);
         }
         // Held board placement is produced by this frame's solved pose.
         if (board != null)

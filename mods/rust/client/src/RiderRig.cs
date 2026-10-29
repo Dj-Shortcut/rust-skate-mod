@@ -37,6 +37,7 @@ public static class RiderRig
     public static float Miss;
     public static string MissAt = "", Error = "", MotionError = "";
     private static SkateRiderMotionState motion;
+    private static bool airLookFrame;
     private static RideMode motionMode = RideMode.Ground;
     public static int Applied, Refusals, WithoutPush;
     // Where the head was left by the last pose, so the watch can tell a head moved after it.
@@ -664,6 +665,7 @@ public static class RiderRig
         RestoreGrabHand(LHand, ref lGrabHand); RestoreGrabHand(RHand, ref rGrabHand);
         lGrabFrame = rGrabFrame = default(SkateBoardPose); lGrabWeight = rGrabWeight = 0;
         travelLookWeight = 0; motionLookFrame = false;
+        airLookFrame = false;
         SkateCapturedTricks.Reset();
         SkateFootContacts.Reset();
         footCalibrated = false; calibratedFootVersion = -1; FootSupportError = "";
@@ -739,6 +741,7 @@ public static class RiderRig
         SkateCapturedTricks.ClearFrame();
         lGrabFrame = rGrabFrame = default(SkateBoardPose); lGrabWeight = rGrabWeight = 0;
         motionLookFrame = false;
+        airLookFrame = false;
         if (!Bound || failed) return;
         if (SkateRide.Handplant) up = Vector3.up;
         try
@@ -794,6 +797,8 @@ public static class RiderRig
             // The ollie's pitch about the tail lifts the deck's middle too; the legs fold by that as well.
             var pitchRise = SkateBoard.Axle * (float)Math.Abs(Math.Sin(SkateBoard.AirPitch * Math.PI / 180.0));
             var inAir = SkateRide.Jumped ? 0.2f + (SkateBoard.Pop + pitchRise) / (float)SkatePose.CrouchDrop : 0.45f;
+            inAir += .10f * SkateRide.TransitionAirTuck / (float)SkatePose.CrouchDrop;
+            inAir = Math.Max(inAir, .2f + .4f * SkateRide.TransitionLandingApproach);
             var shownGrab = mode == RideMode.Air && !wall && !SkateActions.Owns && !SkateOldschoolRide.Active ? ShownGrab : SkateGrabKind.None;
             if (shownGrab != SkateGrabKind.None) inAir += (0.95f - inAir) * (contact.Initialized ? (float)contact.GrabWeight : 1f);
             // Measured riding height already leaves soft knees. An extra idle
@@ -940,6 +945,11 @@ public static class RiderRig
             { pose = looked; motionLookFrame = true; }
             if (ordinaryLook && travelLookWeight > 0 && SkateRider.TryTravelLook(Rig, input, pose, V(landingLook), travelLookWeight, out looked))
             { pose = looked; motionLookFrame = true; }
+            if (ordinaryLook && mode == RideMode.Air && grab == SkateGrabKind.None && !SkateRide.FootPlanted)
+            {
+                if (SkateRider.TryAirLook(Rig, input, pose, V(landingLook), Math.Min(1, SkateRide.AirTime / .12f), out looked))
+                { pose = looked; airLookFrame = true; }
+            }
             SkateSurfaceRide.Record(pose, input.DeckFrame, wall || handplant > .001f ? SkateGrabKind.None : SurfaceGrab(pose, input.DeckFrame, grab));
             // In a handplant the board is against the feet, held: the board follows the pose, from
             // the first of the way up to the last of the way down.
@@ -1038,7 +1048,7 @@ public static class RiderRig
             if (pinL) { joint[LHandJ] = V(pose.LeftHand); joint[LElbowJ] = V(pose.LeftElbow); }
             if (pinR) { joint[RHandJ] = V(pose.RightHand); joint[RElbowJ] = V(pose.RightElbow); }
             // Ease and Shape rebuild the head from the chest; restore the independent look afterward.
-            if (motionLookFrame)
+            if (motionLookFrame || airLookFrame)
             {
                 joint[HeadJ] = joint[NeckJ] + V(pose.Head - pose.Neck).normalized * (float)Rig.NeckToHeadLength;
                 joint[HeadForwardJ] = V(pose.HeadForward);
@@ -1061,6 +1071,7 @@ public static class RiderRig
             SkateCaptureFrame captured;
             if (SkateCapturedTricks.TryFrame(Rig, SkateRig.LocalT, pose, new SkateVector(leftSole.x, leftSole.y, leftSole.z), new SkateVector(rightSole.x, rightSole.y, rightSole.z), out captured))
             {
+                airLookFrame = false;
                 Posed = Shown = captured.Pose; PosedPlane = V(captured.Board.Origin); Error = "";
                 pinHips = pinLeft = pinRight = true; motion = default(SkateRiderMotionState);
                 // Keep the SAME local basis as the normal route, including on capture exit mid-flip.
@@ -1280,20 +1291,21 @@ public static class RiderRig
             Aim(spine[0], Neck, joint[NeckJ] - spine[0].position);
             Aim(Neck, Head, joint[HeadJ] - joint[NeckJ]);
             var chestForward = joint[ChestForwardJ]; var headForward = joint[HeadForwardJ];
-            var cf = chestForward - chestUp * Vector3.Dot(chestForward, chestUp); var hf = headForward - chestUp * Vector3.Dot(headForward, chestUp);
+            var lookUp = airLookFrame ? (joint[HeadJ] - joint[NeckJ]).normalized : chestUp;
+            var cf = chestForward - lookUp * Vector3.Dot(chestForward, lookUp); var hf = headForward - lookUp * Vector3.Dot(headForward, lookUp);
             if (cf.sqrMagnitude > 0.0001f && hf.sqrMagnitude > 0.0001f)
             {
                 cf = cf.normalized; hf = hf.normalized;
-                var turn = (float)(Math.Atan2(Vector3.Dot(Vector3.Cross(cf, hf), chestUp), Vector3.Dot(cf, hf)) * 180.0 / Math.PI);
+                var turn = (float)(Math.Atan2(Vector3.Dot(Vector3.Cross(cf, hf), lookUp), Vector3.Dot(cf, hf)) * 180.0 / Math.PI);
                 turn = SkateRide.Clamp(turn, -75f, 75f);
-                Neck.rotation = SkateRide.Turn(turn * 0.4f, chestUp) * Neck.rotation;
-                Head.rotation = SkateRide.Turn(turn * 0.6f, chestUp) * Head.rotation;
+                Neck.rotation = SkateRide.Turn(turn * 0.4f, lookUp) * Neck.rotation;
+                Head.rotation = SkateRide.Turn(turn * 0.6f, lookUp) * Head.rotation;
             }
             // With the chest folded far forward the rider would look at the board; the neck and the
             // head lift most of the way back toward where the board's up is.
             var foldAxis = Vector3.Cross(chestUp, up);
             var fold = (float)(Math.Atan2(foldAxis.magnitude, Vector3.Dot(chestUp, up)) * 180.0 / Math.PI);
-            if (!SkateCapturedTricks.HasFrame && !motionLookFrame && fold > HeadLiftFrom && foldAxis.sqrMagnitude > 0.0001f)
+            if (!SkateCapturedTricks.HasFrame && !motionLookFrame && !airLookFrame && fold > HeadLiftFrom && foldAxis.sqrMagnitude > 0.0001f)
             {
                 var lift = SkateRide.Clamp((fold - HeadLiftFrom) * HeadLiftShare, 0f, HeadLiftMost);
                 Neck.rotation = SkateRide.Turn(lift * 0.35f, foldAxis) * Neck.rotation;
