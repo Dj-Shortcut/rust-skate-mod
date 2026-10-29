@@ -704,3 +704,31 @@ returns to ordinary riding. This is an authored presentation correction during
 physical ground recovery; the source clock, airborne motion, feet, board and
 capture approval gate are unchanged. Viewer review and Shadow playtesting
 remain separate checks.
+
+### Observed-ground pop for the original five sources
+
+The initial Switch Heelflip, Nollie Heelflip, Fakie Kickflip, Nollie BS180
+Heelflip and Nollie360Flip IDs/signatures have a separate authored legacy-pop
+presentation. Their old ordinary air pitch left the tail above the ground.
+The new presentation starts from the last actual charged shoe frames and ground
+normal. It derives support from the original thirteen-part board geometry,
+keeps measured shoe support through the short press and releases to each
+source's existing free-foot motion. Nollies press the nose; the popping foot is
+identified from the observed deck placement, rather than a fixed left/right
+assumption. The real flick gate advances the short source Pop while the scorer
+still holds zero flip degrees; the original rotation clock resumes without a
+backward source-time jump.
+
+Kick-type members close a measured upper-side forefoot face on the actual
+riding skin, then release into their own free-foot motion. The existing rigid
+sideways query preserves the complete shoe geometry and fitting bound; the
+carried-foot markers stop at the real flick gate. Heel variants retain their
+own heel direction.
+
+A bounded world-space C2 body join starts at that observed ground pose. It is a
+presentation correction, not an added jump or force. Physics, scoring, source
+approval and the existing geometric reach refusals stay authoritative. The
+source-keyed normal Kickflip, Heelflip, Tre and Impossible routes do not use this
+helper. A missing or stale observed stance does not create an invented anchor. This
+bounded pop repair does not approve the older airborne body reconstruction or
+landing; those still require their own visible source comparisons.
