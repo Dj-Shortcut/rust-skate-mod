@@ -44,7 +44,7 @@ public static class SkateCapturedTricks
     public static string Status { get; private set; } = "Captured riding not loaded";
     public static void ClearFrame() { displayed = default(SkateBoardPose); }
     public static void Reset()
-    { active = null; footSupport = null; token = refusedToken = -1; airSeen = landed = flipExtended = false; caughtAt = preparedAt = -1; catchPreparationWeight = 0; previousAirSourceTime = catchSourceLead = previousAirProgress = 0; previous = landingFrom = default(SkateCaptureFrame); ClearPlantedFeet(); ClearFrame(); }
+    { SkateCapturedBoardPaths.Reset(); active = null; footSupport = null; token = refusedToken = -1; airSeen = landed = flipExtended = false; caughtAt = preparedAt = -1; catchPreparationWeight = 0; previousAirSourceTime = catchSourceLead = previousAirProgress = 0; previous = landingFrom = default(SkateCaptureFrame); ClearPlantedFeet(); ClearFrame(); }
     public static void Preload()
     {
         if (loaded) return;
@@ -72,12 +72,19 @@ public static class SkateCapturedTricks
             SkateCaptureLibrary library;
             using (var stream = new MemoryStream(bytes))
                 if (!SkateCapturePack.TryRead(stream, out library, out error)) { Status = error; return; }
+            SkateCapturePlayback pendingImpossible = null;
             var pending = new SkateCapturePlayback[SkateCaptureVariants.Count]; int accepted = 0, unsupported = 0, rotationClocks = 0, flightClocks = 0;
             for (int n = 0; n < approval.Count; n++)
             {
                 SkateCaptureClip clip = null;
                 for (int c = 0; c < library.Count; c++) if (library.GetClip(c).Id == approval.GetId(n)) clip = library.GetClip(c);
                 if (clip == null || !clip.Reviewed) { Status = "Captured riding disabled: approved clip missing or unreviewed"; return; }
+                if (clip.MovementKind == SkateCapturedBoardPaths.MovementKind)
+                {
+                    if (pendingImpossible != null) { Status = "Captured riding disabled: duplicate Impossible approval"; return; }
+                    if (!SkateCapturePlayback.TryCreate(clip, out pendingImpossible, out error)) { Status = error; return; }
+                    continue;
+                }
                 int kind = SkateCaptureVariants.IndexOf(clip.MovementKind);
                 if (kind < 0) { unsupported++; continue; }
                 if (SkateCaptureVariants.Get(kind).Derived && clip.Id != clip.MovementKind)
@@ -90,8 +97,10 @@ public static class SkateCapturedTricks
                 pending[kind] = playback; accepted++;
             }
             Array.Copy(pending, clips, clips.Length);
+            SkateCapturedBoardPaths.SetApproved(pendingImpossible);
             Status = "Captured riding ready: " + accepted + " approved variants; source rotation clocks=" + rotationClocks +
                 "; source pop-to-catch clocks=" + flightClocks +
+                (pendingImpossible != null ? "; Impossible path=1" : "") +
                 (unsupported > 0 ? "; " + unsupported + " unsupported approvals ignored" : "") + "; restart client after replacing pack";
         }
         catch (Exception e) { Status = "Captured riding disabled: " + e.GetType().Name; }
@@ -284,6 +293,9 @@ public static class SkateCapturedTricks
         frame = default(SkateCaptureFrame); ClearFrame();
         // Loading is done once by BeginRide, never by this per-frame path.
         if (!loaded || player == null) return false;
+        if (SkateCapturedBoardPaths.TryFrame(rig, player, baseline, baselineLeftUp, baselineRightUp, out frame))
+        { displayed = frame.Board; return true; }
+
         bool airborne = SkateRide.Mode == RideMode.Air, queued = SkateRide.PresentationQueued;
         if (queued && !airborne) { active = null; ClearPlantedFeet(); return false; } // The flick is not known during most of the live load.
         int nextToken = SkateRide.Pops + (queued && !airborne ? 1 : 0);

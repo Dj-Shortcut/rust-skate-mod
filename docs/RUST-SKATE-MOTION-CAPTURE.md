@@ -531,6 +531,38 @@ the shared catch and landing remain unchanged. Review metadata must retain
 `HardflipEarlyTuckProvenance`; this is presentation authoring, not measured motion
 or permission to approve the source pack.
 
+The `impossible` capture uses a separate special-action adapter, not an ordinary
+zero-flip/shove variant. The same reviewed-bit, explicit owner-id and exact pack
+digest gates load its own slot; duplicate Impossible approvals disable loading.
+Only the normal rear-foot Impossible, direction +1, without nollie, reversed,
+switch, tail-leading or body/spin modifiers is supported in Regular and Goofy.
+Other special actions retain their existing native presentation.
+
+The existing `BoardPath` owns the wrap, pivot, physical progression and completion.
+Its progress maps the source's first Pop to first Catch; the actual completion
+starts source Catch and the observed physical landing starts source Land/recovery.
+The source's estimated wrapping-board origin is removed about the rear-foot pivot
+before transporting its body to the upright physical carrier. No source root,
+board quaternion or timestamp changes movement, scoring or the live board.
+
+The native hook ankle/toe and upright sole remain fixed during the wrap. The
+free front ankle can follow the source only while its source contact is absent
+and the existing measured foot fitter accepts the live projection; its native
+shoe heading remains upright. The final entry-blended free foot is fitted again;
+an unsafe blend restores the native foot targets. Steep, inverted or unsupported projections retain
+the native free-foot clearance, with no sole/contact guard relaxation. Both
+native feet own completed Catch and Land; the captured body uses the canonical
+chain solver, a bounded entry fade, physical landing transition, shared landing
+absorption and recovery fade. Bail, another action, path release, changed stance
+or changed visible-foot geometry relinquishes the adapter for that pop.
+
+`SkateCapturedBoardPaths.Provenance` must remain visible in review metadata.
+This is source-assisted special presentation, not measured hook contact. The
+private source remains unreviewed; bounded reader and controlled normal-route
+checks do not approve its estimated or low-visibility observations. Inspect both
+stances with the real board before source approval; Unity/native and Shadow
+acceptance remain separate open gates.
+
 For the Air-to-Catch clock, the first trusted air sample can already be partway through its rotation. It is
 held until live progress reaches that fraction, rather than moving back into a
 foot-supported pop pose. An unfinished source endpoint is likewise held before
