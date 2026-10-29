@@ -1,0 +1,973 @@
+{
+  "format": "original-authored-skate-keys/1",
+  "firstSourceFrame": 254,
+  "sourceFps": 29.97002997002997,
+  "sampleCount": 83,
+  "duration": 1.3666666666666667,
+  "metadata": {
+    "label": "Kickflip \u2014 original source-keyed authored v1",
+    "sourceUrl": "https://www.youtube.com/watch?v=YcmPDIj2BFo&t=144",
+    "sourceAuthor": "Original authored keys; The Berrics visual reference",
+    "rights": "Original authored motion/control data. Source footage/pixels are not included or relicensed.",
+    "provenance": "Coupled body and board keyed from25 actual reference frames; not monocular detector output or prior correction stack.",
+    "uncertainties": "Reference filmed stance is uncertain; canonical Regular and its anatomical Goofy mirror are authoring mappings. Flick contact anatomy, hidden depth and Catch273 within blurred272\u2013274 are authored."
+  },
+  "sourceRootMotion": {
+    "origin": "Physical support anchor local(0,0,0)",
+    "axes": "+Yup/+Znose/+XRegular toes",
+    "groundDeckTopY": 0.092,
+    "ballisticArcIncluded": false,
+    "horizontalTravelIncluded": false,
+    "extraction": "One common support carrier is absent from every joint and board sample. No per-sample board-centre subtraction.",
+    "runtime": "Add Contact(player)-up*genericPop once; do not add another DeckTop. Keep all authored local board pitch/lift.",
+    "preview": "One separate physical root arc is added only for display.",
+    "recovery": "Beyond true source278: AUTHORED0.4s gentle upright rollaway, same foot/bolt anchors, ordinary0.18-like soft knees and forward gaze; sourceFrame/video map clamps at278."
+  },
+  "flickPatch": {
+    "shoeLocal": [
+      -0.040465750591869465,
+      -0.05407619476318374,
+      0.12613568849940346
+    ],
+    "deckLocal": [
+      -0.07519391494290231,
+      0.02048405182815259,
+      0.33206511706438546
+    ],
+    "provenance": "Original frozen companion upper/outside-forefoot support feature and real nose rim. Authored contact, not measured source pixels."
+  },
+  "keys": [
+    {
+      "sourceFrame": 254,
+      "pelvis": [
+        -0.06,
+        0.74,
+        0.0
+      ],
+      "leanDegrees": 32,
+      "boardPitch": 0,
+      "boardRoll": 0,
+      "boardLift": 0,
+      "feet": {
+        "Left": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            0.22
+          ],
+          "angles": [
+            45,
+            0,
+            0
+          ]
+        },
+        "Right": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            -0.26
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "arms": {
+        "Left": [
+          [
+            0.5,
+            -0.85,
+            0.05
+          ],
+          [
+            0.8,
+            -0.5,
+            0.1
+          ]
+        ],
+        "Right": [
+          [
+            0.25,
+            -0.95,
+            -0.1
+          ],
+          [
+            0.5,
+            -0.8,
+            -0.1
+          ]
+        ]
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D.",
+      "headForward": [
+        0,
+        -0.25881904510252074,
+        0.9659258262890683
+      ],
+      "headPitchDegreesAuthored": 15
+    },
+    {
+      "sourceFrame": 257,
+      "pelvis": [
+        -0.06,
+        0.69,
+        0.0
+      ],
+      "leanDegrees": 42,
+      "boardPitch": 0,
+      "boardRoll": 0,
+      "boardLift": 0,
+      "feet": {
+        "Left": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            0.22
+          ],
+          "angles": [
+            45,
+            0,
+            0
+          ]
+        },
+        "Right": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            -0.26
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "arms": {
+        "Left": [
+          [
+            0.5,
+            -0.85,
+            0.05
+          ],
+          [
+            0.8,
+            -0.5,
+            0.1
+          ]
+        ],
+        "Right": [
+          [
+            0.25,
+            -0.95,
+            -0.1
+          ],
+          [
+            0.5,
+            -0.8,
+            -0.1
+          ]
+        ]
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D.",
+      "headForward": [
+        0,
+        -0.25881904510252074,
+        0.9659258262890683
+      ],
+      "headPitchDegreesAuthored": 15
+    },
+    {
+      "sourceFrame": 259,
+      "pelvis": [
+        -0.06,
+        0.81,
+        0.0
+      ],
+      "leanDegrees": 38,
+      "boardPitch": 12,
+      "boardRoll": 0,
+      "boardLift": 0,
+      "feet": {
+        "Left": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            0.22
+          ],
+          "angles": [
+            45,
+            0,
+            0
+          ]
+        },
+        "Right": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            -0.26
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "arms": {
+        "Left": [
+          [
+            0.5,
+            -0.85,
+            0.05
+          ],
+          [
+            0.8,
+            -0.5,
+            0.1
+          ]
+        ],
+        "Right": [
+          [
+            0.25,
+            -0.95,
+            -0.1
+          ],
+          [
+            0.5,
+            -0.8,
+            -0.1
+          ]
+        ]
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D.",
+      "headForward": [
+        0,
+        -0.25881904510252074,
+        0.9659258262890683
+      ],
+      "headPitchDegreesAuthored": 15
+    },
+    {
+      "sourceFrame": 261,
+      "pelvis": [
+        -0.06,
+        0.8,
+        0.0
+      ],
+      "leanDegrees": 34,
+      "boardPitch": 50,
+      "boardRoll": 0,
+      "boardLift": 0,
+      "feet": {
+        "Left": {
+          "space": "deck",
+          "position": [
+            -0.035,
+            0.106,
+            0.305
+          ],
+          "angles": [
+            62,
+            0,
+            0
+          ]
+        },
+        "Right": {
+          "space": "carrier",
+          "position": [
+            -0.055,
+            0.11,
+            -0.28
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "arms": {
+        "Left": [
+          [
+            0.65,
+            0.15,
+            0.6
+          ],
+          [
+            0.8,
+            0.1,
+            0.3
+          ]
+        ],
+        "Right": [
+          [
+            0.25,
+            -0.35,
+            -0.25
+          ],
+          [
+            0.65,
+            -0.2,
+            -0.1
+          ]
+        ]
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D. Raised source-facing front arm and retained rear ankle near the real tail through release; authored hidden depth.",
+      "headForward": [
+        0,
+        -0.3420201433256687,
+        0.9396926207859084
+      ],
+      "headPitchDegreesAuthored": 20
+    },
+    {
+      "sourceFrame": 262,
+      "pelvis": [
+        -0.06,
+        0.8,
+        0.0
+      ],
+      "leanDegrees": 32,
+      "boardPitch": 55,
+      "boardRoll": 25,
+      "boardLift": 0,
+      "feet": {
+        "Left": {
+          "space": "upper-patch",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "angles": [
+            75,
+            40,
+            25
+          ]
+        },
+        "Right": {
+          "space": "carrier",
+          "position": [
+            -0.055,
+            0.11,
+            -0.29
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "arms": {
+        "Left": [
+          [
+            0.65,
+            0.15,
+            0.6
+          ],
+          [
+            0.8,
+            0.1,
+            0.3
+          ]
+        ],
+        "Right": [
+          [
+            0.25,
+            -0.35,
+            -0.25
+          ],
+          [
+            0.65,
+            -0.2,
+            -0.1
+          ]
+        ]
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D. Raised source-facing front arm and retained rear ankle near the real tail through release; authored hidden depth.",
+      "headForward": [
+        0,
+        -0.3420201433256687,
+        0.9396926207859084
+      ],
+      "headPitchDegreesAuthored": 20
+    },
+    {
+      "sourceFrame": 264,
+      "pelvis": [
+        -0.06,
+        0.82,
+        0.0
+      ],
+      "leanDegrees": 30,
+      "boardPitch": 18,
+      "boardRoll": 115,
+      "boardLift": 0.035,
+      "feet": {
+        "Left": {
+          "space": "carrier",
+          "position": [
+            -0.055,
+            0.46,
+            0.34
+          ],
+          "angles": [
+            80,
+            5,
+            8
+          ]
+        },
+        "Right": {
+          "space": "carrier",
+          "position": [
+            -0.055,
+            0.41,
+            -0.3
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "arms": {
+        "Left": [
+          [
+            0.65,
+            -0.45,
+            0.4
+          ],
+          [
+            0.8,
+            -0.3,
+            0.25
+          ]
+        ],
+        "Right": [
+          [
+            0.2,
+            -0.65,
+            -0.35
+          ],
+          [
+            0.65,
+            -0.6,
+            -0.1
+          ]
+        ]
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D.",
+      "headForward": [
+        0,
+        -0.3420201433256687,
+        0.9396926207859084
+      ],
+      "headPitchDegreesAuthored": 20
+    },
+    {
+      "sourceFrame": 267,
+      "pelvis": [
+        -0.06,
+        0.82,
+        0.0
+      ],
+      "leanDegrees": 33,
+      "boardPitch": 2,
+      "boardRoll": 205,
+      "boardLift": 0.055,
+      "feet": {
+        "Left": {
+          "space": "carrier",
+          "position": [
+            -0.055,
+            0.43,
+            0.3
+          ],
+          "angles": [
+            80,
+            5,
+            8
+          ]
+        },
+        "Right": {
+          "space": "carrier",
+          "position": [
+            -0.055,
+            0.41,
+            -0.3
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "arms": {
+        "Left": [
+          [
+            0.65,
+            -0.45,
+            0.4
+          ],
+          [
+            0.8,
+            -0.3,
+            0.25
+          ]
+        ],
+        "Right": [
+          [
+            0.2,
+            -0.65,
+            -0.35
+          ],
+          [
+            0.65,
+            -0.6,
+            -0.1
+          ]
+        ]
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D.",
+      "headForward": [
+        0,
+        -0.3420201433256687,
+        0.9396926207859084
+      ],
+      "headPitchDegreesAuthored": 20
+    },
+    {
+      "sourceFrame": 269,
+      "pelvis": [
+        -0.06,
+        0.8,
+        0.0
+      ],
+      "leanDegrees": 28,
+      "boardPitch": -5,
+      "boardRoll": 285,
+      "boardLift": 0.035,
+      "feet": {
+        "Left": {
+          "space": "carrier",
+          "position": [
+            -0.055,
+            0.43,
+            0.3
+          ],
+          "angles": [
+            80,
+            5,
+            8
+          ]
+        },
+        "Right": {
+          "space": "carrier",
+          "position": [
+            -0.055,
+            0.41,
+            -0.3
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "arms": {
+        "Left": [
+          [
+            0.65,
+            -0.45,
+            0.4
+          ],
+          [
+            0.8,
+            -0.3,
+            0.25
+          ]
+        ],
+        "Right": [
+          [
+            0.2,
+            -0.65,
+            -0.35
+          ],
+          [
+            0.65,
+            -0.6,
+            -0.1
+          ]
+        ]
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D.",
+      "headForward": [
+        0,
+        -0.3420201433256687,
+        0.9396926207859084
+      ],
+      "headPitchDegreesAuthored": 20
+    },
+    {
+      "sourceFrame": 273,
+      "pelvis": [
+        -0.06,
+        0.84,
+        0.0
+      ],
+      "leanDegrees": 25,
+      "boardPitch": 0,
+      "boardRoll": 360,
+      "boardLift": 0,
+      "feet": {
+        "Left": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            0.22
+          ],
+          "angles": [
+            45,
+            0,
+            0
+          ]
+        },
+        "Right": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            -0.26
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "arms": {
+        "Left": [
+          [
+            0.5,
+            -0.85,
+            0.05
+          ],
+          [
+            0.8,
+            -0.5,
+            0.1
+          ]
+        ],
+        "Right": [
+          [
+            0.25,
+            -0.95,
+            -0.1
+          ],
+          [
+            0.5,
+            -0.8,
+            -0.1
+          ]
+        ]
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D.",
+      "headForward": [
+        0,
+        -0.25881904510252074,
+        0.9659258262890683
+      ],
+      "headPitchDegreesAuthored": 15
+    },
+    {
+      "sourceFrame": 275,
+      "pelvis": [
+        -0.06,
+        0.76,
+        0.0
+      ],
+      "leanDegrees": 32,
+      "boardPitch": 0,
+      "boardRoll": 360,
+      "boardLift": 0,
+      "feet": {
+        "Left": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            0.22
+          ],
+          "angles": [
+            45,
+            0,
+            0
+          ]
+        },
+        "Right": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            -0.26
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "arms": {
+        "Left": [
+          [
+            0.5,
+            -0.85,
+            0.05
+          ],
+          [
+            0.8,
+            -0.5,
+            0.1
+          ]
+        ],
+        "Right": [
+          [
+            0.25,
+            -0.95,
+            -0.1
+          ],
+          [
+            0.5,
+            -0.8,
+            -0.1
+          ]
+        ]
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D.",
+      "headForward": [
+        0,
+        -0.25881904510252074,
+        0.9659258262890683
+      ],
+      "headPitchDegreesAuthored": 15
+    },
+    {
+      "sourceFrame": 278,
+      "pelvis": [
+        -0.06,
+        0.78,
+        0.0
+      ],
+      "leanDegrees": 25,
+      "boardPitch": 0,
+      "boardRoll": 360,
+      "boardLift": 0,
+      "feet": {
+        "Left": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            0.22
+          ],
+          "angles": [
+            45,
+            0,
+            0
+          ]
+        },
+        "Right": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            -0.26
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "arms": {
+        "Left": [
+          [
+            0.5,
+            -0.85,
+            0.05
+          ],
+          [
+            0.8,
+            -0.5,
+            0.1
+          ]
+        ],
+        "Right": [
+          [
+            0.25,
+            -0.95,
+            -0.1
+          ],
+          [
+            0.5,
+            -0.8,
+            -0.1
+          ]
+        ]
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D.",
+      "headForward": [
+        0,
+        -0.08715574274765817,
+        0.9961946980917455
+      ],
+      "headPitchDegreesAuthored": 5
+    },
+    {
+      "sourceFrame": null,
+      "pelvis": [
+        -0.06,
+        0.925,
+        0
+      ],
+      "leanDegrees": 8,
+      "boardPitch": 0,
+      "boardRoll": 360,
+      "boardLift": 0,
+      "feet": {
+        "Left": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            0.22
+          ],
+          "angles": [
+            45,
+            0,
+            0
+          ]
+        },
+        "Right": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            -0.26
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "arms": {
+        "Left": [
+          [
+            0.5,
+            -0.85,
+            0.05
+          ],
+          [
+            0.8,
+            -0.5,
+            0.1
+          ]
+        ],
+        "Right": [
+          [
+            0.25,
+            -0.95,
+            -0.1
+          ],
+          [
+            0.5,
+            -0.8,
+            -0.1
+          ]
+        ]
+      },
+      "uncertainty": "AUTHORED beyond source278: gentle0.4s body recovery toward ordinary0.18 soft-knee stance. Same board/bolt foot anchors.",
+      "headForward": [
+        0,
+        -0.0,
+        1.0
+      ],
+      "t": 1.2008,
+      "authoredRecovery": true,
+      "headPitchDegreesAuthored": 0
+    }
+  ],
+  "events": [
+    {
+      "t": 0,
+      "phase": "load",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "t": 0.16683333333333333,
+      "phase": "pop",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "t": 0.23356666666666667,
+      "phase": "pop",
+      "contacts": [
+        "LeftFoot"
+      ]
+    },
+    {
+      "t": 0.26693333333333336,
+      "phase": "air",
+      "contacts": []
+    },
+    {
+      "t": 0.6339666666666667,
+      "phase": "catch",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "t": 0.7007,
+      "phase": "land",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "t": 0.8008000000000001,
+      "phase": "recovery",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    }
+  ]
+}
