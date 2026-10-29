@@ -13,7 +13,8 @@
     "uncertainties": "Reference filmed stance is uncertain; canonical Regular and its anatomical Goofy mirror are authoring mappings. Flick contact anatomy, hidden depth and Catch273 within blurred272\u2013274 are authored.",
     "authoredContactSemantics": "Authored semantic markers, not measured confidence: rear-sole support ends at tail-pop259; front-sole support ends at260 before the ankle-roll. Upper-shoe nose-rim contact at261 is authored instep contact;262 is free carrier-space release, never sole support.",
     "authoredKeyRepair": "Captured torso/arms/head and source knee planes are the body basis. Short authored front upper-shoe/rear-foot contact repairs and late clearance are baked; early board pitch/lag and smooth landing height are authored. No claim that the previous all-body keys or board curve are unchanged.",
-    "bodyProvenance": "Captured skeletal basis from captured-body.json; authored board and short local foot/contact constraints only."
+    "bodyProvenance": "Captured skeletal basis from captured-body.json; authored board and short local foot/contact constraints only.",
+    "rearSolePopCompliance": "Attached rear sole matches the authored board through259, then C2 releases over one source frame into the same captured rear path/clearance. Old captured board pitch/arc is not treated as sole support for the new board."
   },
   "sourceRootMotion": {
     "origin": "Physical support anchor local(0,0,0)",

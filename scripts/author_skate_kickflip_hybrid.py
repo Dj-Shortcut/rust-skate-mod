@@ -11,7 +11,7 @@ import json
 import math
 from pathlib import Path
 import numpy as np
-from author_skate_kickflip import authored_keys, curve, limb
+from author_skate_kickflip import authored_keys, curve, foot_basis, limb
 from capture_math import JOINTS, DIRS, UP, contact_events, encode_pack, euler_quat, matrix_quat, qmatrix, slerp, unit
 
 ROOT=Path(__file__).resolve().parents[1]
@@ -78,6 +78,20 @@ def sample(controls,spec,keys,t):
         else:
             weight=window(frame,h['rearWindow']);target=original[side+'Ankle']+np.array(h['rearAnkleOffset']);target_r=basis(ff,UP)
         ankle=ankle*(1-weight)+target*weight;foot=qmatrix(slerp(matrix_quat(foot),matrix_quat(target_r),weight))
+        if side=='Right':
+            # An attached tail-pop sole must agree with the NEW board, rather
+            # than retaining the old capture's unrelated pitch/vertical arc.
+            flat_rear=np.array([0.,.106,-.24])
+            if frame<=259:
+                ankle=origin+br@flat_rear;foot=br@foot_basis(88)
+            elif frame<260:
+                pop=next(k for k in keys if k['sourceFrame']==259)
+                pop_r=qmatrix(euler_quat(pop['boardAngles']))
+                release_ankle=pop['boardOrigin']+pop_r@flat_rear
+                release_r=pop_r@foot_basis(88)
+                released=smooth(frame-259)
+                ankle=release_ankle*(1-released)+ankle*released
+                foot=qmatrix(slerp(matrix_quat(release_r),matrix_quat(foot),released))
         # Only the completed Catch pins the feet. Earlier late-Air lift remains free.
         flat=np.array([0.,.106,.24 if side=='Left'else-.24]);ground_ankle=origin+br@flat
         gf=ff-UP*np.dot(ff,UP);ground_r=br@basis(gf,UP)
