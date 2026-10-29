@@ -2144,23 +2144,23 @@
     ],
     [
       354,
-      0.67
+      0.7
     ],
     [
       357,
-      0.66
+      0.7
     ],
     [
       360,
-      0.65
+      0.72
     ],
     [
       362,
-      0.64
+      0.73
     ],
     [
       366,
-      0.64
+      0.7
     ],
     [
       370,
@@ -2188,11 +2188,11 @@
     ],
     [
       354,
-      0.06
+      0.03
     ],
     [
       357,
-      0.07
+      0.04
     ],
     [
       360,
@@ -2228,16 +2228,22 @@
         0.817
       ],
       [
-        362,
-        0.62,
+        360,
+        0.8,
         0,
-        0.78
+        0.45
+      ],
+      [
+        362,
+        1,
+        0,
+        0.174
       ],
       [
         366,
-        0.6,
+        1,
         0,
-        0.8
+        0.174
       ],
       [
         372,
@@ -2266,16 +2272,22 @@
         -0.488
       ],
       [
-        362,
-        0.715,
+        360,
+        1,
         0,
-        -0.7
+        -0.15
+      ],
+      [
+        362,
+        1,
+        0,
+        0.0875
       ],
       [
         366,
-        0.48,
+        1,
         0,
-        -0.88
+        0.0875
       ],
       [
         372,
@@ -2285,5 +2297,9 @@
       ]
     ]
   },
-  "compactBodyPrior": "Authored source-led coupled Air/Catch root height with the own357/362 knee-plane observations; front foot rises modestly toward the visibly raised source front knee. Board, heel-contact and attached soles unchanged. Occluded depth is reconstructed, not measured."
+  "compactBodyPrior": "Authored source-led coupled Air/Catch root height with the own357/362 knee-plane observations; front foot rises modestly toward the visibly raised source front knee. Board, heel-contact and attached soles unchanged. Occluded depth is reconstructed, not measured. Free-Air knee planes return to the actual shoe-forward directions before both soles attach. Own363\u2013371 world-height join retains both source-curve endpoint derivatives for a soft real landing.",
+  "landingBodyWindow": [
+    363,
+    371
+  ]
 }

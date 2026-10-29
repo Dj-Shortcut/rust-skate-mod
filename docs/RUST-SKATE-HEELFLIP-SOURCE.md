@@ -59,3 +59,11 @@ a modest front-foot pickup and one coupled lower hip envelope. The previous
 fixed toe-side knee pole hid the source's noseward front-knee fold. These are
 explicit authored depth/body constraints; the heel-contact/board curves and
 attached soles stay unchanged. Visual acceptance and native testing remain open.
+
+The grounded Heel root now joins its own compact source354 over6/18 of the
+flight, with the observed carrier velocity removed at release. The upper entry
+stays short; board and heel-contact paths stay source-owned. This is gated to
+exact Heel with an observed ground origin. Kick and Tre frame parity is retained.
+Catch knee planes return toward the attached shoes rather than holding the free
+leg's outward swing. A source363–371 world-height curve uses both analytic
+endpoint derivatives so the physical landing does not create a body-speed snap.

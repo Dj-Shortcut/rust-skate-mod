@@ -75,6 +75,21 @@ def foot(spec,sf,side):
  caught=smooth((sf-(spec['catchFrame']-2.5))/2.5)
  return ankle*(1-caught)+ground*caught,orientation(fr,gr,caught)
 
+def compact_body_height(spec,sf,origin):
+ target=origin[1]+scalar(spec['compactBodyHeightKeys'],sf)
+ a,b=spec['landingBodyWindow']
+ if not a<sf<b:return target
+ pop,land=spec['popFrame'],spec['landFrame'];span=land-pop
+ keys=spec['compactBodyHeightKeys'];ts=[k[0]for k in keys];values=[[k[1]]for k in keys]
+ def endpoint(frame):
+  f=float(np.clip((frame-pop)/span,0,1));lift=spec['visualLift']*math.sin(math.pi*f)**2
+  height=.092+lift+scalar(keys,frame)+reference_height(spec,frame)
+  derivative=float(curve(ts,values,frame,derivative=True)[0])
+  if pop<frame<land:derivative+=(spec['visualLift']*math.pi*math.sin(2*math.pi*f)+.5*spec['gravity']*spec['referenceFlight']**2*(1-2*f))/span
+  return height,derivative*(b-a)
+ first,va=endpoint(a);last,vb=endpoint(b);u=(sf-a)/(b-a);delta=last-first
+ return first+va*u+(10*delta-6*va-4*vb)*u**3+(-15*delta+8*va+7*vb)*u**4+(6*delta-3*va-3*vb)*u**5
+
 def source_upper(controls,sf):
  rows=controls['frames'];ts=[r['frame']for r in rows]
  rel={k:curve(ts,[r['relative'][k]for r in rows],sf)for k in rows[0]['relative']}
@@ -91,7 +106,7 @@ def sample(controls,spec,sf):
   heights.append(ankle[1]+math.sqrt(distance2-horizontal));maximum.append(ankle[1]+math.sqrt((.87*.995)**2-horizontal))
  pelvis[1]=min(sum(heights)*.5,min(maximum))
  a,b,c,e=spec['compactBodyWindow'];weight=smooth((sf-a)/(b-a))*(1-smooth((sf-c)/(e-c)))
- target=o[1]+scalar(spec['compactBodyHeightKeys'],sf)
+ target=compact_body_height(spec,sf,o)
  pelvis[1]=min(pelvis[1]*(1-weight)+target*weight,min(maximum));j={};j['Pelvis']=pelvis
  for side,ankle,fr,offset in [('Left',la,lf,.09),('Right',ra,rf,-.09)]:
   hip=pelvis+np.array([0,0,offset]);pole=unit(vector(spec['kneePlaneKeys'][side],sf));j[side+'Hip']=hip;j[side+'Knee']=limb(hip,ankle,.44,.43,pole);j[side+'Ankle']=ankle;j[side+'Toe']=ankle+fr[:,2]*math.sqrt(.14**2-.07**2)-fr[:,1]*.07
