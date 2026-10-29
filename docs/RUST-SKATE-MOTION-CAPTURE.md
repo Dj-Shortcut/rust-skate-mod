@@ -474,6 +474,19 @@ source families, the torso, head, feet and source contact masks are unchanged.
 This is reconstructed presentation, not newly measured source motion; it still
 requires a moving mesh review in both stances.
 
+Normal Kickflip has an explicitly authored paired free-foot presentation prior.
+At the existing live flick-edge release it may lift both feet even while the
+source still labels the rear foot attached; the original source contact bits
+remain unchanged and are not relabelled as live contact. Both ankles settle
+over the bolt regions at one height, using the measured upright shoe support
+and the current rigid envelope of the reference deck, trucks and wheels plus a
+small gap. This replaces ambiguous monocular free-foot depth, not the rig or
+physical jump. The source Catch owns the C2 return. The prior preserves the
+upper body and uses the existing measured IK and positive-only return fit;
+other source families do not enter it. Apply it before the front-foot flick
+owner so that the flick can return toward the compact pair. This is authored
+presentation; a source pass alone does not approve its coupled visible result.
+
 The ordinary capture body enters with a C2 blend over 0.10 seconds. Its landing
 carrier transition uses the same C2 curve over the 0.15-second impact window,
 preserving fitted feet and the existing source-owned BS pop-foot entry. This
