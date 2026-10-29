@@ -72,7 +72,7 @@ def instep(s,R):
     a=s['shoe'];x,_,z=s['flickPatch']['deckLocal'];N=unit(np.array([-2*a['concave']*x/a['deckHalfWidth']**2,1.,-2*a['kickRise']*max(0.,abs(z)-a['kickStart'])/a['kickSpan']**2]));n=-R@N;t=np.array(s['entryFeet']['Left']['forward']);t=unit(t-n*np.dot(n,t));local=unit(np.array(a['instepSurfaceNormalLocal']));f=unit(np.array([0.,0.,1.])-local*local[2]);return np.column_stack((n,t,unit(np.cross(n,t))))@np.column_stack((local,f,unit(np.cross(local,f)))).T
 
 def free_foot_clearance(s,origin,R,ankle,F):
-    """Upper own-board hull only beneath this shoe, not its remote nose/wheels."""
+    """Upper own-board surface only beneath this shoe, not its remote nose/wheels."""
     vertices=(s['_surfacePoints']@R.T+origin-ankle)@F
     high=-float('inf');half=max(row[1]for row in s['shoe']['soleRows']);lo=min(row[0]for row in s['shoe']['soleRows']);hi=max(row[0]for row in s['shoe']['soleRows'])
     all_faces=s['_surfaceTriangles'];blocks=vertices[all_faces];valid=(blocks[:,:,0].min(axis=1)<=half)&(blocks[:,:,0].max(axis=1)>=-half)&(blocks[:,:,2].min(axis=1)<=hi)&(blocks[:,:,2].max(axis=1)>=lo)
@@ -103,10 +103,14 @@ def sample(c,s,sf):
         # rear depth and local shoe/board overlap are reconstructed; a remote
         # high nose must not pull both feet up into a generic Kickflip tuck.
         board_delta=o-np.array([0.,.092,0.]);depth=smooth((sf-404)/4)*(1-smooth((sf-414)/6));ray=np.array([-.934,0.,-.356]);collect=air*(1-caught)
-        targets={side:original[side+'Ankle']+board_delta for side in feet};targets['Left']-=ray*.08*depth;targets['Right']+=ray*.40*depth;targets['Right'][1]=targets['Right'][1]*(1-depth)+(targets['Left'][1]+.03)*depth
+        root_keys=s['authored']['airPelvisKeys'];root_y=curve([k[0]for k in root_keys],[[k[1]]for k in root_keys],sf)[0];source_shift=UP*(root_y-original['Pelvis'][1])*air;root_xz=np.array([original['Pelvis'][0],0.,original['Pelvis'][2]]);start,end_root=s['authored']['catchRootWindow'];
+        if sf>=start:
+            from_root=np.array(s['authored']['catchRootStart']);to_root=np.array([-.10,0.,0.]);root_xz=from_root+(to_root-from_root)*smooth((sf-start)/(end_root-start));source_shift+=(root_xz-original['Pelvis']*np.array([1.,0.,1.]))*air
+        targets={side:original[side+'Ankle']+source_shift for side in feet};targets['Right']+=ray*.40*depth;targets['Right'][1]=targets['Right'][1]*(1-depth)+(targets['Left'][1]+.03)*depth
         for side in feet:
             flat=basis(np.array(s['entryFeet'][side]['forward']),UP);target=targets[side];target[1]+=free_foot_clearance(s,o,R,target,flat);ankles[side]=ankles[side]*(1-collect)+target*collect;feet[side]=qmatrix(slerp(matrix_quat(feet[side]),matrix_quat(flat),collect))
-        keys=s['authored']['airPelvisKeys'];target=curve([k[0]for k in keys],[[k[1]]for k in keys],sf)[0];delta=board_delta*air;delta+=UP*(target-(j['Pelvis'][1]+delta[1]))*caught;delta+=np.array([-.10-j['Pelvis'][0],0.,-j['Pelvis'][2]])*caught
+        keys=s['authored']['airPelvisKeys'];target=curve([k[0]for k in keys],[[k[1]]for k in keys],sf)[0];delta=UP*(target-j['Pelvis'][1])*air
+        if sf>=start:delta+=(root_xz-j['Pelvis']*np.array([1.,0.,1.]))*air
         for name in j:j[name]+=delta
     if caught:
         for side,z,yaw in(('Left',.24,65),('Right',-.24,85)):
