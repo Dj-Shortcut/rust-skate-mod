@@ -42,18 +42,40 @@ The same full reference flightT=.6/g8 is used only to cancel the source press
 against the physical carrier. A bounded source-side floor clearance during
 the combined turn accounts for the real board envelope. Catch is already
 bent and impact absorption flows into a stable body-facing recovery plane.
-Foot roles and strict fixed limb lengths remain intact. Air retains the own captured hip and time-varying foot gestures. A small
-explicit rear depth reconstruction follows the estimated source-camera ray;
-only the actual own-board surface beneath each shoe can require clearance.
-A remote high nose cannot force both feet into a generic tuck. This is an occluded depth
-reconstruction, not a measured3D track or an angle cap. Native shared charge
-owns Load before trick selection; the source Load controls remain reference
-material rather than a prediction of the future input. The hidden head look
-is authored toward the board; the raw upward gaze was visibly wrong. The
-Air-only clearance margin returns tozero before Land, so the board actually
-rests on the floor and its outbound carrier does not drop in one frame. The compact own-board-surface data contains only original model geometry,
-without textures or third-party data. Source camera estimates are inherited
-from this Tre clip, not the unrelated Kickflip reference.
+Foot roles and strict fixed limb lengths remain intact. Captured segment
+and foot gestures retain the Tre's own execution. One authored local-height
+curve removes monocular board-root drift; that same translation reaches the
+body and free feet. The late X/Z catch segment regularizes the estimated
+actor root from source416–420 instead of snapping only the body at419–420.
+The source408/412 gestures and pre-416 poses remain unchanged by that repair.
+
+A small explicit rear depth reconstruction follows the estimated source-camera
+ray. Only the original board surface underneath each shoe can require
+clearance; a remote high nose cannot force both feet into a generic tuck.
+These are authored occluded-depth/contact choices, not measured3D tracks or
+angle caps. Native shared charge owns Load before trick selection. The source
+Load controls remain reference material. The hidden head look is authored
+toward the board. Air-only clearance returns tozero before Land. The compact
+own-board surface contains original model geometry only, without textures or
+third-party data. The Tre's source-camera estimate is separate from Kickflip.
+
+The exact Tre runtime opt-in joins its source408 collected-Air pose at5/21
+of the flight and uses the observed world-entry velocity. This retains the
+other families' separate entry rules. Physics and the native scorer remain
+authoritative; the viewer adds no jump, root or pose correction.
+
+## Source-specific review
+
+The [original source around253–255s](https://www.youtube.com/watch?v=_oRoo1x1uzM&t=253)
+shows raised V-arms and an open front/collected rear scissor around source412.
+Source420 (about254.01s) has a relatively extended late Catch, followed by
+knee preparation before contact and impact absorption. The authored landing
+profile follows that execution; it does not substitute an early Kickflip squat.
+
+Keep generic diagnostic FAILs visible. A hand-above-head limit, both-soles
+proximity throughout the middle of the flip, or a bent-Catch limit starting
+before this clip's actual Catch can conflict with those visible source poses.
+This is a source-specific review point, not permission to weaken the checks.
 
 ```sh
 python scripts/author_skate_treflip.py --output /absolute/private/output

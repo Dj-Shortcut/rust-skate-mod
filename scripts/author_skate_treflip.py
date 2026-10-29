@@ -89,6 +89,17 @@ def free_foot_clearance(s,origin,R,ankle,F):
         if polygon:high=max(high,max(point[1]for point in polygon))
     return max(0.,high-s['shoe']['soleLocalY']+s['authored']['minimumAirSoleClearance'])
 
+def root_height(s,sf):
+    keys=s['authored']['airPelvisKeys'];base=lambda f:curve([k[0]for k in keys],[[k[1]]for k in keys],f)[0]
+    land=s['land'];profile=s['authored']['landing'];reference_rate=(land-s['pop'])/s['reference']['flightSeconds'];elapsed=(sf-land)/reference_rate
+    if elapsed<=0:return base(sf)
+    speed,stop=profile['speed'],profile['stopSeconds'];height=profile['height']
+    if elapsed<stop:return height-speed*elapsed+.5*speed/stop*elapsed*elapsed
+    first=land+stop*reference_rate;last=430.;low=height-.5*speed*stop
+    if sf>=last:return base(sf)
+    u=(sf-first)/(last-first);slope=(base(last+.001)-base(last-.001))/.002
+    return(2*u**3-3*u*u+1)*low+(-2*u**3+3*u*u)*base(last)+(u**3-u*u)*(last-first)*slope
+
 def sample(c,s,sf):
     t=(sf-s['firstSourceFrame'])/s['sourceFps'];j,d,sole=body_at(c,t);o,q,R,H=board_at(s,sf);original={k:v.copy()for k,v in j.items()};feet={side:basis(unit(j[side+'Toe']-j[side+'Ankle']+sole[side]*.07),sole[side])for side in('Left','Right')};ankles={side:j[side+'Ankle'].copy()for side in feet};pop=s['pop'];release=s['pressRelease'];end=s['pressEnd']
     if sf<end:
@@ -103,13 +114,13 @@ def sample(c,s,sf):
         # rear depth and local shoe/board overlap are reconstructed; a remote
         # high nose must not pull both feet up into a generic Kickflip tuck.
         board_delta=o-np.array([0.,.092,0.]);depth=smooth((sf-404)/4)*(1-smooth((sf-414)/6));ray=np.array([-.934,0.,-.356]);collect=air*(1-caught)
-        root_keys=s['authored']['airPelvisKeys'];root_y=curve([k[0]for k in root_keys],[[k[1]]for k in root_keys],sf)[0];source_shift=UP*(root_y-original['Pelvis'][1])*air;root_xz=np.array([original['Pelvis'][0],0.,original['Pelvis'][2]]);start,end_root=s['authored']['catchRootWindow'];
+        root_keys=s['authored']['airPelvisKeys'];root_y=root_height(s,sf);source_shift=UP*(root_y-original['Pelvis'][1])*air;root_xz=np.array([original['Pelvis'][0],0.,original['Pelvis'][2]]);start,end_root=s['authored']['catchRootWindow'];
         if sf>=start:
             from_root=np.array(s['authored']['catchRootStart']);to_root=np.array([-.10,0.,0.]);root_xz=from_root+(to_root-from_root)*smooth((sf-start)/(end_root-start));source_shift+=(root_xz-original['Pelvis']*np.array([1.,0.,1.]))*air
         targets={side:original[side+'Ankle']+source_shift for side in feet};targets['Right']+=ray*.40*depth;targets['Right'][1]=targets['Right'][1]*(1-depth)+(targets['Left'][1]+.03)*depth
         for side in feet:
             flat=basis(np.array(s['entryFeet'][side]['forward']),UP);target=targets[side];target[1]+=free_foot_clearance(s,o,R,target,flat);ankles[side]=ankles[side]*(1-collect)+target*collect;feet[side]=qmatrix(slerp(matrix_quat(feet[side]),matrix_quat(flat),collect))
-        keys=s['authored']['airPelvisKeys'];target=curve([k[0]for k in keys],[[k[1]]for k in keys],sf)[0];delta=UP*(target-j['Pelvis'][1])*air
+        keys=s['authored']['airPelvisKeys'];target=root_height(s,sf);delta=UP*(target-j['Pelvis'][1])*air
         if sf>=start:delta+=(root_xz-j['Pelvis']*np.array([1.,0.,1.]))*air
         for name in j:j[name]+=delta
     if caught:

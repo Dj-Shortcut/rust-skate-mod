@@ -2544,20 +2544,28 @@
         0.88
       ],
       [
+        416,
+        0.9
+      ],
+      [
         418,
-        0.86
+        0.93
       ],
       [
         420,
-        0.81
+        0.94
+      ],
+      [
+        423.5,
+        0.8
       ],
       [
         424,
-        0.75
+        0.8
       ],
       [
         426,
-        0.7
+        0.749
       ],
       [
         430,
@@ -2583,7 +2591,12 @@
       -0.22710447501724945,
       0.0,
       -0.2873872862379812
-    ]
+    ],
+    "landing": {
+      "height": 0.8,
+      "speed": 1.7,
+      "stopSeconds": 0.06
+    }
   },
   "signature": {
     "pop": "Ollie",
@@ -2593,6 +2606,6 @@
     "shove": -360,
     "spin": 0
   },
-  "provenance": "Tre-specific filmed white-shirt defense: source rear scoop and complete combined board winding, own captured body basis and explicitly authored contact/depth/height repair. Not a relabelled Kickflip. Source pixels/footage remain private and are not licensed or distributed here. Source-led authored downward board gaze during402\u2013432 replaces visibly incorrect upward monocular HeadForward. The source-only Air envelope margin fades tozero before Land; no permanent5.5cm margin remains under the landed board or its outbound carrier. Tre Air retains the higher own captured-body pelvis basis; rear hidden depth is authored behind the rider along the estimated source-camera ray, retaining the source scissor projection. It is not a measured3D rear-foot track or an internal-knee-angle cap. Free Air retains the own captured body/ankle gestures. Only the original board surface beneath each shoe can require local clearance, rather than a remote high nose forcing both legs to generic tuck. Hidden rear depth is an authored source-ray reconstruction. One source-led pelvis-height curve removes monocular board-root height drift during flight; the torso/arm shape and source foot gestures remain. Remote rotating-board floor-envelope changes never translate the rider root. The noisy late-Air body-only X/Z catch snap is replaced with one source-led416\u2013420 actor-root segment; identical translation also reaches freefeet, retaining gesture and avoiding a reversed rootstep. Entry/source408/412 remain untouched.",
+  "provenance": "Tre-specific filmed white-shirt defense: source rear scoop and complete combined board winding, own captured body basis and explicitly authored contact/depth/height repair. Not a relabelled Kickflip. Source pixels/footage remain private and are not licensed or distributed here. Source-led authored downward board gaze during402\u2013432 replaces visibly incorrect upward monocular HeadForward. The source-only Air envelope margin fades tozero before Land; no permanent5.5cm margin remains under the landed board or its outbound carrier. Tre Air retains the higher own captured-body pelvis basis; rear hidden depth is authored behind the rider along the estimated source-camera ray, retaining the source scissor projection. It is not a measured3D rear-foot track or an internal-knee-angle cap. Free Air retains the own captured body/ankle gestures. Only the original board surface beneath each shoe can require local clearance, rather than a remote high nose forcing both legs to generic tuck. Hidden rear depth is an authored source-ray reconstruction. One source-led pelvis-height curve removes monocular board-root height drift during flight; the torso/arm shape and source foot gestures remain. Remote rotating-board floor-envelope changes never translate the rider root. The noisy late-Air body-only X/Z catch snap is replaced with one source-led416\u2013420 actor-root segment; identical translation also reaches freefeet, retaining gesture and avoiding a reversed rootstep. Entry/source408/412 remain untouched. Source420 has an open-legged catch rather than the early generic squat. Late root-height keys retain this visible shape, prepare knee flex before contact, then absorb with a bounded source-side reference-time landing profile. The pre414 trajectory/collected408 and412 gestures remain identical.",
   "sourceSurfaceSha256": "8873121f728af49a9af90c2ee4ba723b7f56259d60913155f578d3a88e976acd"
 }
