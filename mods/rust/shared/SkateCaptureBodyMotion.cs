@@ -35,7 +35,7 @@ namespace Shortcut.RustMod
             out SkateCaptureFrame shown, out string error)
         {
             shown = frame; error = null;
-            if (!initialized || !Finite(seconds) || seconds < 0 || seconds > .100001 || !Valid(frame.Pose) ||
+            if (!initialized || !Finite(seconds) || seconds < 0 || !Valid(frame.Pose) ||
                 !Finite(rig.ThighLength) || !Finite(rig.ShinLength) || !Finite(rig.FootLength) ||
                 rig.ThighLength <= 0 || rig.ShinLength <= 0 || rig.FootLength <= 0)
             { Reset(); error = "Invalid or uninitialized vertical body motion step."; return false; }
@@ -44,8 +44,11 @@ namespace Shortcut.RustMod
             // held target. No future pose, fixed-step substitution or dt clamp.
             double offset = height - target, coupling = velocity + Omega * offset;
             double decay = Math.Exp(-Omega * seconds);
-            double nextHeight = target + (offset + coupling * seconds) * decay;
-            double nextVelocity = (velocity - Omega * coupling * seconds) * decay;
+            // The exact solver remains stable across real render hitches. If
+            // the exponential underflows, use its settled limit before products
+            // with a very large elapsed time can overflow.
+            double nextHeight = decay == 0 ? target : target + (offset + coupling * seconds) * decay;
+            double nextVelocity = decay == 0 ? 0 : (velocity - Omega * coupling * seconds) * decay;
             double leftMin, leftMax, rightMin, rightMax;
             double reach = (rig.ThighLength + rig.ShinLength) * SkateCaptureFootSupport.ReachShare;
             if (!HeightInterval(frame.Pose.LeftHip, frame.Pose.LeftAnkle, target, reach, out leftMin, out leftMax) ||

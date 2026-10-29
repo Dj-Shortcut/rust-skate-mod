@@ -969,7 +969,7 @@ public static class RiderRig
             if (SkateOldschoolRide.Active && SkateOldschoolRide.Kind == SkateOldschoolKind.Caveman &&
                 (SkateOldschoolRide.Phase == SkateOldschoolPhase.Pickup || SkateOldschoolRide.Phase == SkateOldschoolPhase.Carrying)) want = .95f;
             // A right stick held back is the rider gathering for the pop; a trigger held is the crouch of a pump.
-            if (SkateKeys.Charging && mode == RideMode.Ground) want = Math.Max(want, 0.3f + 0.3f * SkateKeys.Charge);
+            if (SkateKeys.Charging && mode == RideMode.Ground) want = Math.Max(want, 0.4f + 0.4f * SkateKeys.Charge);
             if (mode == RideMode.Ground && SkateRide.PumpHeld > 0f) want = Math.Max(want, 0.25f + 0.45f * SkateRide.PumpHeld / SkateRide.PumpCharge);
             var since = now - SkateRide.LandAt;
             if (mode == RideMode.Ground && since < 0.35f) want += (1f - since / 0.35f) * SkateRide.Clamp(SkateRide.LandImpact / 8f, 0.2f, 1f) * 0.45f;

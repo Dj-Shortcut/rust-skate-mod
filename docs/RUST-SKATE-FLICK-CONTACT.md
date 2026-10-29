@@ -1,8 +1,9 @@
 # Authored normal flip foot component
 
-`SkateCaptureFlick` is an unintegrated presentation component for normal Kickflip
-and Heelflip. Its contact sequence still needs visual review before a runtime
-hook or approval. It does not change the live board trajectory or scorer. Switch,
+`SkateCaptureFlick` is connected to the normal capture route for the initial
+ordinary Kickflip and Heelflip. The current finish pass validates the complete
+Kickflip beside its source; registration alone does not approve either trick.
+The component does not change the live board trajectory or scorer. Switch,
 nollie, fakie, combined and late flips need explicit separate gating.
 
 After input, a diagonal Kickflip setup or straighter Heelflip setup slides toward
