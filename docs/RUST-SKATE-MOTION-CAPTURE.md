@@ -466,6 +466,14 @@ authored prior and use the same `SkateCaptureFootSupport.TryCatchPreparation` an
 `TryLandingAbsorption` implementations as normal riding. Source packs and their
 approval remain separate.
 
+The normal Heelflip source has an authored balance-arm prior during free Air:
+raised free hands settle beside and slightly in front of the shoulders, with
+measured arm lengths and a bent-elbow solve. Real entry time and the remaining
+source approach to Catch provide short C2 boundaries. Attached hands, other
+source families, the torso, head, feet and source contact masks are unchanged.
+This is reconstructed presentation, not newly measured source motion; it still
+requires a moving mesh review in both stances.
+
 The ordinary capture body enters with a C2 blend over 0.10 seconds. Its landing
 carrier transition uses the same C2 curve over the 0.15-second impact window,
 preserving fitted feet and the existing source-owned BS pop-foot entry. This
