@@ -694,3 +694,13 @@ copy of a reconstruction error.
 What each trick has to look like (start position, pop, flick, tuck, catch,
 landing) is in [the trick anatomy reference](RUST-SKATE-TRICK-ANATOMY.md). Read
 the trick's section before authoring or repairing it.
+
+### Switch Heelflip recovery head alignment
+
+The original Switch Heelflip uses the same supported recovery head alignment
+as the other four initial variants. Its head/neck axis follows the already
+computed recovery gaze instead of retaining the source axis while the gaze
+returns to ordinary riding. This is an authored presentation correction during
+physical ground recovery; the source clock, airborne motion, feet, board and
+capture approval gate are unchanged. Viewer review and Shadow playtesting
+remain separate checks.
