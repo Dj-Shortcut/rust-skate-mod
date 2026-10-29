@@ -65,7 +65,8 @@ def foot(spec,sf,side):
   return a*(1-w)+b*w,orientation(ar,br,w)
  o,r,h=board(spec,sf);support=np.array(spec['hybrid']['support']['board']);top=float((support@r.T)[:,1].max())
  x,z=vector(spec['frontAirKeys']if side=='Left'else spec['rearAirKeys'],sf)
- target=np.array([x,o[1]+top-spec['hybrid']['popContact']['soleLocalY']+.018,z]);flat=foot_basis(80 if side=='Left'else 85)
+ extra=scalar(spec['frontAirLiftKeys'],sf)if side=='Left'else 0.
+ target=np.array([x,o[1]+top-spec['hybrid']['popContact']['soleLocalY']+.018+extra,z]);flat=foot_basis(80 if side=='Left'else 85)
  start,fr=heel_contact(spec,release)if side=='Left'else attached(spec,release,side)
  start=start+UP*(h-reference_height(spec,release));w=smooth((sf-release)/(3 if side=='Left'else 2.25))
  ankle=start*(1-w)+target*w;fr=orientation(fr,flat,w)
@@ -73,6 +74,21 @@ def foot(spec,sf,side):
  ground,gr=deck_shoe(spec,o,r,-.04,.24 if side=='Left'else-.24,80 if side=='Left'else 85,.003)
  caught=smooth((sf-(spec['catchFrame']-2.5))/2.5)
  return ankle*(1-caught)+ground*caught,orientation(fr,gr,caught)
+
+def compact_body_height(spec,sf,origin):
+ target=origin[1]+scalar(spec['compactBodyHeightKeys'],sf)
+ a,b=spec['landingBodyWindow']
+ if not a<sf<b:return target
+ pop,land=spec['popFrame'],spec['landFrame'];span=land-pop
+ keys=spec['compactBodyHeightKeys'];ts=[k[0]for k in keys];values=[[k[1]]for k in keys]
+ def endpoint(frame):
+  f=float(np.clip((frame-pop)/span,0,1));lift=spec['visualLift']*math.sin(math.pi*f)**2
+  height=.092+lift+scalar(keys,frame)+reference_height(spec,frame)
+  derivative=float(curve(ts,values,frame,derivative=True)[0])
+  if pop<frame<land:derivative+=(spec['visualLift']*math.pi*math.sin(2*math.pi*f)+.5*spec['gravity']*spec['referenceFlight']**2*(1-2*f))/span
+  return height,derivative*(b-a)
+ first,va=endpoint(a);last,vb=endpoint(b);u=(sf-a)/(b-a);delta=last-first
+ return first+va*u+(10*delta-6*va-4*vb)*u**3+(-15*delta+8*va+7*vb)*u**4+(6*delta-3*va-3*vb)*u**5
 
 def source_upper(controls,sf):
  rows=controls['frames'];ts=[r['frame']for r in rows]
@@ -88,9 +104,12 @@ def sample(controls,spec,sf):
   horizontal=(hip[0]-ankle[0])**2+(hip[2]-ankle[2])**2
   if horizontal>=distance2 or horizontal>=(.87*.995)**2:raise ValueError('Heel authored horizontal leg reach exceeds fixed chain at '+str(sf))
   heights.append(ankle[1]+math.sqrt(distance2-horizontal));maximum.append(ankle[1]+math.sqrt((.87*.995)**2-horizontal))
- pelvis[1]=min(sum(heights)*.5,min(maximum));j={};j['Pelvis']=pelvis
+ pelvis[1]=min(sum(heights)*.5,min(maximum))
+ a,b,c,e=spec['compactBodyWindow'];weight=smooth((sf-a)/(b-a))*(1-smooth((sf-c)/(e-c)))
+ target=compact_body_height(spec,sf,o)
+ pelvis[1]=min(pelvis[1]*(1-weight)+target*weight,min(maximum));j={};j['Pelvis']=pelvis
  for side,ankle,fr,offset in [('Left',la,lf,.09),('Right',ra,rf,-.09)]:
-  hip=pelvis+np.array([0,0,offset]);pole=unit(np.array([1.,0.,.08 if side=='Left'else-.08]));j[side+'Hip']=hip;j[side+'Knee']=limb(hip,ankle,.44,.43,pole);j[side+'Ankle']=ankle;j[side+'Toe']=ankle+fr[:,2]*math.sqrt(.14**2-.07**2)-fr[:,1]*.07
+  hip=pelvis+np.array([0,0,offset]);pole=unit(vector(spec['kneePlaneKeys'][side],sf));j[side+'Hip']=hip;j[side+'Knee']=limb(hip,ankle,.44,.43,pole);j[side+'Ankle']=ankle;j[side+'Toe']=ankle+fr[:,2]*math.sqrt(.14**2-.07**2)-fr[:,1]*.07
  # This source's own torso/arm directions, with explicit non-spinning heading.
  old_up=unit(d['ChestUp']);old_forward=unit(np.array([1.,0.,0.])-old_up*old_up[0]);old_across=unit(np.cross(old_up,old_forward))
  lean=math.radians(scalar(spec['torsoLeanKeys'],sf));up=unit(np.array([0.,math.cos(lean),math.sin(lean)]));forward=unit(np.array([1.,0.,0.])-up*up[0]);across=unit(np.cross(up,forward));upper_turn=np.column_stack([forward,up,across])@np.column_stack([old_forward,old_up,old_across]).T
@@ -117,6 +136,6 @@ def main():
  fps=s['sourceFps'];first=s['firstSourceFrame'];end=s['lastSourceFrame'];duration=(end-first)/fps
  times=np.linspace(first,end,round(duration*60)+1);times=np.unique(np.r_[times,[s[k]for k in['popFrame','tailStrikeFrame','frontSoleReleaseFrame','rearSoleReleaseFrame','heelFlickFrame','airFrame','catchFrame','landFrame','recoveryFrame']],s['rearSoleReleaseFrame']+2])
  frames=[sample(c,s,float(sf))for sf in times];events=[dict(t=(sf-first)/fps,phase=phase,contacts=contact)for sf,phase,contact in[(first,'load',['LeftFoot','RightFoot']),(s['popFrame'],'pop',['LeftFoot','RightFoot']),(s['frontSoleReleaseFrame'],'pop',['RightFoot']),(s['rearSoleReleaseFrame'],'air',[]),(s['rearSoleReleaseFrame']+2,'air',[]),(s['catchFrame'],'catch',['LeftFoot','RightFoot']),(s['landFrame'],'land',['LeftFoot','RightFoot']),(s['recoveryFrame'],'recovery',['LeftFoot','RightFoot'])]]
- meta=dict(s['metadata'],label='Heelflip — source-specific heel contact and coupled flight [UNREVIEWED]',id='heelflip-source-keyed-v1',movementKind='heelflip',reviewed=False,authored=True,canonicalStance='regular',sourceFilmedStance=c['sourceFilmedStance'],sourceFps=fps,firstSourceFrame=first,lastSourceFrame=end,sourceBodySha256=s['sourceBodySha256'],sourcePoseSha256=c['sourcePoseSha256'],provenance='This Heelflip source captured torso/arm directions, with authored fixed-chain lower body, noseward torso/gaze reconstruction, non-spinning heading, actual tail support and heel-led toe-side exit; coupled measured-board envelope and gradual recovery. Not measured3D mocap.',contactLimit='Heel guide is authored; no calibrated surface-contact confidence. Existing source actor gaps333/355/356 retained as authored uncertainty.',armException='Visible source lifts arms above head350–354; retained instead of applying a Kickflip arm cap.',armRecoveryPrior=s['armRecoveryPrior'])
+ meta=dict(s['metadata'],label='Heelflip — source-specific heel contact and coupled flight [UNREVIEWED]',id='heelflip-source-keyed-v1',movementKind='heelflip',reviewed=False,authored=True,canonicalStance='regular',sourceFilmedStance=c['sourceFilmedStance'],sourceFps=fps,firstSourceFrame=first,lastSourceFrame=end,sourceBodySha256=s['sourceBodySha256'],sourcePoseSha256=c['sourcePoseSha256'],provenance='This Heelflip source captured torso/arm directions, with authored fixed-chain lower body, noseward torso/gaze reconstruction, non-spinning heading, actual tail support and heel-led toe-side exit; coupled measured-board envelope and gradual recovery. Not measured3D mocap.',contactLimit='Heel guide is authored; no calibrated surface-contact confidence. Existing source actor gaps333/355/356 retained as authored uncertainty.',armException='Visible source lifts arms above head350–354; retained instead of applying a Kickflip arm cap.',armRecoveryPrior=s['armRecoveryPrior'],compactBodyPrior=s['compactBodyPrior'])
  clip=dict(format='skate-capture-hybrid/1',metadata=meta,stance='regular',fps=60,duration=duration,events=contact_events(events,duration),frames=frames);a.output.mkdir(parents=True,exist_ok=True);(a.output/'heelflip-source-keyed-v1.json').write_text(json.dumps(clip,indent=2)+'\n');pack=encode_pack([clip]);(a.output/'skate_captures.skmc').write_bytes(pack);print('HEEL_READY',len(frames),len(pack),hashlib.sha256(pack).hexdigest())
 if __name__=='__main__':main()

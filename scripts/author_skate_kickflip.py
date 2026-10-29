@@ -17,8 +17,8 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_KEYS = ROOT / 'assets/authored/animation/kickflip-keyed/keys.json'
 
 
-def curve(times, values, t):
-    """Componentwise monotone cubic Hermite: no overshooting a keyed channel."""
+def curve(times, values, t, derivative=False):
+    """Monotone cubic Hermite, optionally differentiated in source-time units."""
     x = np.asarray(times, dtype=float)
     y = np.asarray(values, dtype=float)
     i = max(0, min(len(x) - 2, int(np.searchsorted(x, t, side='right')) - 1))
@@ -31,6 +31,9 @@ def curve(times, values, t):
         w1, w2 = 2 * h[n] + h[n - 1], h[n] + 2 * h[n - 1]
         tangent[n, same] = (w1 + w2) / (w1 / sec[n - 1, same] + w2 / sec[n, same])
     u = float(np.clip((t - x[i]) / h[i], 0, 1))
+    if derivative:
+        return ((6*u*u-6*u)*y[i]/h[i] + (3*u*u-4*u+1)*tangent[i]
+                + (-6*u*u+6*u)*y[i+1]/h[i] + (3*u*u-2*u)*tangent[i+1])
     return ((2*u**3 - 3*u*u + 1)*y[i] + (u**3 - 2*u*u + u)*h[i]*tangent[i]
             + (-2*u**3 + 3*u*u)*y[i+1] + (u**3 - u*u)*h[i]*tangent[i+1])
 
