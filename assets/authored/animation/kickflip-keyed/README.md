@@ -52,9 +52,13 @@ Upper-shoe contact is not represented as sole support. Sole markers end before
 the ankle roll. Source-frame uncertainty and every local constraint are recorded
 in the generated metadata.
 
-The short rear-foot relocation retains the captured hip-to-ankle distance while
-moving the foot beside the board; it does not add a fixed upward offset. One
-free-Air target curve lifts that foot outside the rising tail before returning
+The pop uses the current curved deck frame for both soles. The front sole
+slides to the nose through260, rolls onto an upper/outside shoe feature at the
+heel-side nose corner261, then releases outward262. The rear sole follows the
+moving tail while leaving sideways; a frozen board pose at259 no longer
+controls its release. Compact sole/deck shape controls reuse the original
+project geometry, including the nose kick and concavity. One
+free-Air target curve lifts the rear foot outside the rising tail before returning
 both feet to the compact source-led tuck. The Catch foot pin completes at273;
 the hip impact envelope starts there and reaches its minimum after landing,
 rather than shortening the legs before Catch. These are local reconstructions,

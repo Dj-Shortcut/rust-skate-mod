@@ -12,14 +12,15 @@
     "provenance": "Captured body retained; local flick, sole/upper-contact semantics, late foot clearance and soft landing are explicitly authored.",
     "uncertainties": "Reference filmed stance is uncertain; canonical Regular and its anatomical Goofy mirror are authoring mappings. Flick contact anatomy, hidden depth and Catch273 within blurred272\u2013274 are authored.",
     "authoredContactSemantics": "Authored semantic markers, not measured confidence: rear-sole support ends at tail-pop259; front-sole support ends at260 before the ankle-roll. Upper-shoe nose-rim contact at261 is authored instep contact;262 is free carrier-space release, never sole support.",
-    "authoredKeyRepair": "Captured body is the basis. A labelled short upper-body reconstruction259\u2013278 repairs visible arm, torso and head misses; short front upper-shoe/rear-foot contact repairs, free-Air targets, early board pitch/lag and smooth landing height are authored. Source knee planes are retained. No claim that all upper-body gesture is unchanged.",
+    "authoredKeyRepair": "Captured body is the basis. Labelled upper reconstruction259\u2013278 is retained. A single authored pop/slide/instep/release trajectory uses the live curved board frame and original shoe outline before the retained free-Air tuck. Source knee planes, board path, hip/upper envelope, event markers and landing are unchanged by this contact repair.",
     "bodyProvenance": "Captured skeletal basis from captured-body.json. Labelled short upper-body reconstruction, authored board and local foot/contact constraints; not fully captured or fully hand-authored body motion.",
     "rearSolePopCompliance": "Attached rear sole matches the authored board through259, then C2 releases over one source frame into the same captured rear path/clearance. Old captured board pitch/arc is not treated as sole support for the new board.",
     "authoredFreeAirDepth": "Source266/267 images show a compact free-Air tuck. One C2 reconstructed-depth path pair is blended only262.5\u2013272. The rear foot stays outside the rising tail before lowering to the compact source267 target. Captured pelvis/hips and the authored board, flick and Catch markers remain unchanged by this foot channel. Upper-body reconstruction is separately labelled. Absolute target curves replace rather than add to the late clearance channel; hidden depth remains unreviewed.",
-    "authoredRearClearance": "Short rear X/Z relocation retains captured hip-to-ankle distance; vertical target is solved from that distance instead of adding a fixed upward offset. Captured bend plane retained.",
+    "authoredRearClearance": "Rear sole tracks the moving curved tail through the pop, then moves outside the deck before carrier-space pickup. The fixed source259 board-pose release and captured rear-distance offset no longer own the early release.",
     "authoredCatchRecovery": "Completed Catch pins feet over source272\u2013273. Hip recovery starts at273 and reaches its authored landing envelope at277, retaining captured Catch extension before the impact bend.",
     "authoredEarlyBoardClearance": "Keys261/262 reduce the relative board lag to-.09m. Paired pitch and X/Z origin preserve the previous nose-rim position at both keys; this changes the tail path rather than adding a second flight arc.",
-    "authoredUpperReconstruction": "Short source-led upper-body reconstruction259\u2013278 repairs visible captured misses: raised arms261, forward torso40deg and board-directed gaze267, asymmetric arms273. Canonical reconstruction depth is authored, not measured. The captured pelvis/hips, lower body, feet, board and contacts remain unchanged; upper limbs retain fixed lengths. Captured motion resumes outside the C2 window."
+    "authoredUpperReconstruction": "Short source-led upper-body reconstruction259\u2013278 repairs visible captured misses: raised arms261, forward torso40deg and board-directed gaze267, asymmetric arms273. Canonical reconstruction depth is authored, not measured. The captured pelvis/hips, lower body, feet, board and contacts remain unchanged; upper limbs retain fixed lengths. Captured motion resumes outside the C2 window.",
+    "authoredPopFlickPath": "One coupled pop-to-flick path: both soles fit the current curved deck while attached; the rear foot leaves sideways in the live tail frame before entering a free carrier path. Front sole slide ends260, upper/outside shoe contacts the true heel-side nose corner261, then releases outward262 into the retained tuck. Foot roles and contact markers are unchanged. Shape controls reuse original project deck/shoe dimensions; hidden contact depth remains authored and unreviewed."
   },
   "sourceRootMotion": {
     "origin": "Physical support anchor local(0,0,0)",
@@ -34,16 +35,16 @@
   },
   "flickPatch": {
     "shoeLocal": [
-      -0.040465750591869465,
-      -0.05407619476318374,
-      0.12613568849940346
+      -0.0301,
+      -0.0644,
+      0.1552
     ],
     "deckLocal": [
-      -0.07519391494290231,
-      0.02048405182815259,
-      0.33206511706438546
+      -0.0805,
+      0.0325,
+      0.36
     ],
-    "provenance": "Original frozen companion upper/outside-forefoot support feature and real nose rim. Authored contact, not measured source pixels."
+    "provenance": "Original project shoe upper/outside forefoot feature near the toe-side seam, paired with the actual heel-side nose corner. Explicit authored edge contact, not a measured source point; no sole support is asserted."
   },
   "keys": [
     {
@@ -184,7 +185,7 @@
           ]
         }
       },
-      "uncertainty": "Explicit authored source260 last sole-slide/body key; boardKey=false preserves the original coupled board channel exactly. Rear foot clears the board to the toe side after tail-pop.",
+      "uncertainty": "Last sole-slide/body key; hybrid popContact fits the front sole to the live curved deck. The rear foot leaves sideways in that same moving tail frame; neither event mask nor board curve changes.",
       "boardKey": false
     },
     {
@@ -201,7 +202,7 @@
             0
           ],
           "angles": [
-            75,
+            40,
             40,
             -25
           ]
@@ -220,7 +221,7 @@
           ]
         }
       },
-      "uncertainty": "Authored black upper/outside forefoot on real nose rim, toes downward; rear leg outside the steep board path. Not a sole-support claim. Early board lag reduced for the supported short-charge flight; pitch and carrier-local X/Z origin are paired to preserve the existing nose-rim point exactly at this key.",
+      "uncertainty": "Authored upper/outside forefoot feature on the actual heel-side nose corner, with toes clearing the curved nose. Rear foot is outside the tail sweep; no sole support is asserted.",
       "boardOffsetX": 0.0,
       "boardOffsetZ": -0.038979067936874695
     },
@@ -233,12 +234,12 @@
         "Left": {
           "space": "carrier",
           "position": [
-            -0.21754052345383856,
-            0.37033679743361725,
-            0.22842310086657305
+            -0.27679263191836,
+            0.452524564505643,
+            0.20870675311161074
           ],
           "angles": [
-            75,
+            40,
             40,
             -25
           ]
@@ -257,7 +258,7 @@
           ]
         }
       },
-      "uncertainty": "Explicit authored post-edge release: literal upright-carrier foot point outside the nose, not attached to the rolling board. Rear ankle remains toe-side outside the board. Early board lag reduced for the supported short-charge flight; pitch and carrier-local X/Z origin are paired to preserve the existing nose-rim point exactly at this key.",
+      "uncertainty": "Explicit carrier-space release outward from the source261 upper contact. Foot role remains front/nose; it returns into the existing free-Air tuck rather than tracking the rolling board.",
       "boardOffsetX": -0.014117970084073478,
       "boardOffsetZ": -0.04871113887549716
     },
@@ -830,6 +831,70 @@
           0.6924363754565307
         ]
       }
-    ]
+    ],
+    "popContact": {
+      "deckHalfWidth": 0.102,
+      "capBase": 0.288,
+      "capLength": 0.112,
+      "kickStart": 0.245,
+      "kickSpan": 0.155,
+      "kickRise": 0.05,
+      "concave": 0.008,
+      "soleLocalY": -0.0948,
+      "soleRows": [
+        [
+          -0.073,
+          0.031
+        ],
+        [
+          -0.04,
+          0.045
+        ],
+        [
+          0.04,
+          0.046
+        ],
+        [
+          0.121,
+          0.043
+        ],
+        [
+          0.164,
+          0.027
+        ]
+      ],
+      "soleGap": 0.005,
+      "instepAngles": [
+        40,
+        40,
+        -25
+      ],
+      "rollClearance": 0.025,
+      "rearFreeKeys": [
+        [
+          261,
+          0.24,
+          0.13,
+          -0.3
+        ],
+        [
+          262,
+          0.24,
+          0.2,
+          -0.31
+        ],
+        [
+          264.5,
+          0.18,
+          0.435,
+          -0.3
+        ]
+      ],
+      "frontFree262": [
+        -0.27679263191836,
+        0.452524564505643,
+        0.20870675311161074
+      ]
+    }
   }
 }

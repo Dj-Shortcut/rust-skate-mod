@@ -32,6 +32,39 @@ def basis(forward,up):
     return np.column_stack((unit(np.cross(up,forward)),up,forward))
 
 
+def deck_shoe(spec,origin,rotation,x,z,yaw,gap):
+    """Fit the authored flat sole to the actual curved deck, in its live frame."""
+    shape=spec['hybrid']['popContact'];half=shape['deckHalfWidth'];start=shape['kickStart'];span=shape['kickSpan']
+    height=lambda px,pz:shape['kickRise']*(max(0.,abs(pz)-start)/span)**2+shape['concave']*(px/half)**2
+    kick=max(0.,abs(z)-start);normal=unit(np.array([-2*shape['concave']*x/(half*half),1.,-2*shape['kickRise']*kick/(span*span)*np.sign(z)]))
+    radians=math.radians(yaw);foot=basis(np.array([math.sin(radians),0.,math.cos(radians)]),normal)
+    sole=[np.array([side*width,shape['soleLocalY'],along])for along,width in shape['soleRows']for side in(-1,1)]
+    points=[foot@p+np.array([x,0.,z])for p in sole]
+    # Sample the convex sole boundary where it crosses the board outline too;
+    # overhanging toes cannot be mistaken for support on an infinite plane.
+    outline=[]
+    for a in np.linspace(0,math.pi,19):outline.append(np.array([half*math.cos(a),shape['capBase']+shape['capLength']*math.sin(a)]))
+    outline.append(np.array([-half,0.]))
+    for a in np.linspace(math.pi,2*math.pi,19):outline.append(np.array([half*math.cos(a),-shape['capBase']+shape['capLength']*math.sin(a)]))
+    outline.append(np.array([half,0.]))
+    polygon=[points[i][[0,2]]for i in range(0,len(points),2)]+[points[i][[0,2]]for i in range(len(points)-1,0,-2)]
+    area=sum(p[0]*polygon[(i+1)%len(polygon)][1]-p[1]*polygon[(i+1)%len(polygon)][0]for i,p in enumerate(polygon))
+    if area<0:polygon.reverse()
+    cross=lambda a,b:float(a[0]*b[1]-a[1]*b[0])
+    for a,b in zip(outline,outline[1:]+outline[:1]):
+        if not polygon:break
+        clipped=[]
+        for p,q in zip(polygon,polygon[1:]+polygon[:1]):
+            dp=cross(b-a,p-a);dq=cross(b-a,q-a)
+            if dp>=-1e-10:clipped.append(p)
+            if (dp>=0)!=(dq>=0):clipped.append(p+(q-p)*dp/(dp-dq))
+        polygon=clipped
+    if polygon:
+        level=max(height(p[0],p[1])-(shape['soleLocalY']-normal[0]*(p[0]-x)-normal[2]*(p[1]-z))/normal[1]for p in polygon)+gap
+    else:level=-shape['soleLocalY']+gap
+    return origin+rotation@np.array([x,level,z]),rotation@foot
+
+
 def body_at(controls,t):
     rows=np.asarray(controls['rows'],dtype=float);i=max(0,min(len(rows)-2,int(np.searchsorted(rows[:,0],t,side='right'))-1))
     u=float(np.clip((t-rows[i,0])/(rows[i+1,0]-rows[i,0]),0,1));row=rows[i]*(1-u)+rows[i+1]*u;p=1
@@ -121,17 +154,28 @@ def sample(controls,spec,keys,t):
         if side=='Right':
             # An attached tail-pop sole must agree with the NEW board, rather
             # than retaining the old capture's unrelated pitch/vertical arc.
-            flat_rear=np.array([0.,.106,-.24])
             if frame<=259:
-                ankle=origin+br@flat_rear;foot=br@foot_basis(88)
-            elif frame<260:
-                pop=next(k for k in keys if k['sourceFrame']==259)
-                pop_r=qmatrix(euler_quat(pop['boardAngles']))
-                release_ankle=pop['boardOrigin']+pop_r@flat_rear
-                release_r=pop_r@foot_basis(88)
-                released=smooth(frame-259)
-                ankle=release_ankle*(1-released)+ankle*released
-                foot=qmatrix(slerp(matrix_quat(release_r),matrix_quat(foot),released))
+                ankle,foot=deck_shoe(spec,origin,br,0.,-.24,88,h['popContact']['soleGap'])
+            elif frame<264.5:
+                slide=smooth(frame-259)
+                attached,attached_r=deck_shoe(spec,origin,br,.24*slide,-.24-.03*slide,88,h['popContact']['soleGap']+.02*slide)
+                rows=h['popContact']['rearFreeKeys'];free=curve([r[0]for r in rows],[r[1:]for r in rows],frame)
+                released=smooth(frame-260)
+                ankle=attached*(1-released)+free*released
+                foot=qmatrix(slerp(matrix_quat(attached_r),matrix_quat(basis(ff,UP)),released))
+        elif frame<=262:
+            slide=smooth(frame-259)
+            attached,attached_r=deck_shoe(spec,origin,br,-.055+.01*slide,.22+.055*slide,45+11*slide,h['popContact']['soleGap'])
+            upper_r=foot_basis(*h['popContact']['instepAngles']);upper=origin+br@np.array(spec['flickPatch']['deckLocal'])-upper_r@np.array(spec['flickPatch']['shoeLocal'])
+            if frame<=260:ankle,foot=attached,attached_r
+            elif frame<=261:
+                roll=smooth(frame-260)
+                ankle=attached*(1-roll)+upper*roll+br[:,1]*h['popContact']['rollClearance']*(64*(frame-260)**3*(261-frame)**3)
+                foot=qmatrix(slerp(matrix_quat(attached_r),matrix_quat(upper_r),roll))
+            else:
+                released=smooth(frame-261)
+                ankle=upper*(1-released)+np.array(h['popContact']['frontFree262'])*released
+                foot=upper_r
         # One coherent free-Air path: absolute tuck target replaces the late
         # clearance contribution as its weight rises; no second additive lift.
         tuck=window(frame,h['freeAirWindow'])
