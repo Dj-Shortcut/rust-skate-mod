@@ -98,7 +98,10 @@ namespace Shortcut.RustMod
                 // complete original mesh supplies the lowest point, not a box.
                 double floor = SkateVector.Dot(groundOrigin, up) + groundDeck.Origin.Y + Minimum(groundDeck.Forward, groundDeck.Up, new SkateVector(0, 1, 0));
                 double support = Minimum(forward, boardUp, up);
-                var origin = board.Origin + up * ((floor - support - SkateVector.Dot(board.Origin, up)) * press);
+                double required = floor - support - SkateVector.Dot(board.Origin, up);
+                // Easing may approach the floor from above, but must apply the
+                // full required lift once the newly pitched hull reaches it.
+                var origin = board.Origin + up * Math.Max(required, required * press);
                 board = new SkateBoardPose(origin, forward, boardUp);
             }
             var la = input.Pose.LeftAnkle; var lt = input.Pose.LeftToe; var ra = input.Pose.RightAnkle; var rt = input.Pose.RightToe;
