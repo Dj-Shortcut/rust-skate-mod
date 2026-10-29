@@ -67,3 +67,9 @@ exact Heel with an observed ground origin. Kick and Tre frame parity is retained
 Catch knee planes return toward the attached shoes rather than holding the free
 leg's outward swing. A source363–371 world-height curve uses both analytic
 endpoint derivatives so the physical landing does not create a body-speed snap.
+
+During free Air, only the front leg keeps the noseward knee plane. The rear
+knee follows the toe direction and its foot collects toward the middle between
+the trucks, slightly below the front pickup. This source-led asymmetry avoids
+a symmetric frog squat or a lateral rear kick. The body-height curve, entry,
+attached Catch/landing, heel guide and board keys are unchanged.
