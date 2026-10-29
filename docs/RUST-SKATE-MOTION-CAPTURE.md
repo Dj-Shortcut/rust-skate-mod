@@ -466,14 +466,6 @@ authored prior and use the same `SkateCaptureFootSupport.TryCatchPreparation` an
 `TryLandingAbsorption` implementations as normal riding. Source packs and their
 approval remain separate.
 
-The normal Heelflip source has an authored balance-arm prior during free Air:
-raised free hands settle beside and slightly in front of the shoulders, with
-measured arm lengths and a bent-elbow solve. Real entry time and the remaining
-source approach to Catch provide short C2 boundaries. Attached hands, other
-source families, the torso, head, feet and source contact masks are unchanged.
-This is reconstructed presentation, not newly measured source motion; it still
-requires a moving mesh review in both stances.
-
 Normal Kickflip has an explicitly authored paired free-foot presentation prior.
 At the existing live flick-edge release it may lift both feet even while the
 source still labels the rear foot attached; the original source contact bits
