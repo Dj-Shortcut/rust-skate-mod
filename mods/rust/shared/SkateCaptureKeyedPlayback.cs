@@ -2,12 +2,18 @@ using System;
 
 namespace Shortcut.RustMod
 {
-    // Opt-in for one carrier-local body AND authored-board clip. The caller
+    // Exact opt-ins for carrier-local body AND authored-board clips. The caller
     // retains pack/owner approval, action ownership, physics and scoring.
     public sealed class SkateCaptureKeyedPlayback
     {
         public const string RequiredClipId = "kickflip-source-keyed-v1";
-        public const string Provenance = "Source-keyed normal Kickflip with a captured-body basis, authored board/contact repairs and actual clip event ratios, uniformly warped to the physical flight; reconstructed motion, not measured 3D capture.";
+        public const string HeelflipClipId = "heelflip-source-keyed-v1";
+        public const string TreFlipClipId = "360-flip-source-keyed-v1";
+        private static readonly SkateCaptureTrickSignature TreFlipSignature =
+            new SkateCaptureTrickSignature(SkatePopKind.Ollie, false, false, 360, -360, 0, 0);
+        private static readonly SkateCaptureTrickSignature HeelflipSignature =
+            new SkateCaptureTrickSignature(SkatePopKind.Ollie, false, false, -360, 0, 0, 0);
+        public const string Provenance = "Source-keyed flatground flip family with a captured-body basis, authored board/contact repairs and actual clip event ratios, uniformly warped to the physical flight; reconstructed motion, not measured 3D capture.";
         public static readonly SkateCaptureTrickSignature RequiredSignature =
             new SkateCaptureTrickSignature(SkatePopKind.Ollie, false, false, 360, 0, 0, 0);
         private static readonly SkateBoardPose SourceCarrier = new SkateBoardPose(
@@ -22,6 +28,7 @@ namespace Shortcut.RustMod
         private SkateVector entryRoot, entryVelocity, entryTarget, entryTargetVelocity;
         private SkateRiderPose? entryUpper;
         private double entryUpperSeconds;
+        private double pressStart = 1.0 / 16, pressEnd = 3.0 / 16;
         private SkateVector? groundOrigin;
 
         private SkateCaptureKeyedPlayback(SkateCaptureClip clip, double pop, double caught, double land)
@@ -29,22 +36,45 @@ namespace Shortcut.RustMod
 
         public static bool Accepts(SkateCaptureClip clip, SkateCaptureTrickSignature signature)
         {
-            return clip != null && clip.Id == RequiredClipId && clip.MovementKind == "kickflip" &&
-                RequiredSignature.Same(signature);
+            return clip != null && (clip.Id == RequiredClipId && clip.MovementKind == "kickflip" && RequiredSignature.Same(signature) ||
+                clip.Id == HeelflipClipId && clip.MovementKind == "heelflip" && HeelflipSignature.Same(signature) ||
+                clip.Id == TreFlipClipId && clip.MovementKind == "360-flip" && TreFlipSignature.Same(signature));
         }
 
         public static bool TryCreate(SkateCaptureClip clip, out SkateCaptureKeyedPlayback playback, out string error)
         {
             playback = null; error = null;
-            if (!Accepts(clip, RequiredSignature) || !clip.Ready)
-            { error = "The exact bounded source-keyed Kickflip clip is required."; return false; }
+            if (clip == null || !clip.Ready || !Accepts(clip, clip.Id == HeelflipClipId ? HeelflipSignature : clip.Id == TreFlipClipId ? TreFlipSignature : RequiredSignature))
+            { error = "An exact bounded source-keyed flip clip is required."; return false; }
             // Reuse the existing strict event/contact contract. Building its
             // optional inverse clocks does not make those clocks authoritative.
             SkateCapturePlayback events;
             if (!SkateCapturePlayback.TryCreate(clip, out events, out error)) return false;
             playback = new SkateCaptureKeyedPlayback(clip, events.SourceTime(SkateCapturePhase.Pop, 0),
                 events.SourceTime(SkateCapturePhase.Catch, 0), events.SourceTime(SkateCapturePhase.Land, 0));
+            if (clip.Id != RequiredClipId && !playback.TryFamilyPressWindow(out error))
+            { playback = null; return false; }
             return true;
+        }
+
+        private bool TryFamilyPressWindow(out string error)
+        {
+            error = null; bool released = false;
+            for (int n = 0; n < Clip.EventCount; n++)
+            {
+                var e = Clip.GetEvent(n);
+                if (e.Time <= SourcePop) continue;
+                if (!released && (e.Contacts & SkateCaptureContacts.RightFoot) == 0)
+                { pressStart = (e.Time - SourcePop) / (SourceLand - SourcePop); released = true; }
+                else if (released && e.Phase == SkateCapturePhase.Air && e.Contacts == SkateCaptureContacts.None)
+                {
+                    pressEnd = (e.Time - SourcePop) / (SourceLand - SourcePop);
+                    if (pressStart >= 0 && pressEnd > pressStart && pressEnd < SourceCatchFraction) return true;
+                    break;
+                }
+            }
+            error = "Source-keyed family needs an explicit rear-sole release and later free-Air press endpoint.";
+            return false;
         }
 
         public bool Finished(double secondsSinceLand, double frozenFlightSeconds)
@@ -141,15 +171,19 @@ namespace Shortcut.RustMod
                 // The authored press cancels the reference carrier only here.
                 // Replace that rise with the actual carrier; never add a second jump.
                 double fraction = (seconds - SourcePop) / (SourceLand - SourcePop);
-                double press = PressRelease(fraction, 1.0 / 16, 3.0 / 16);
+                double press = PressRelease(fraction, pressStart, pressEnd);
                 if (press > 0)
                 {
                     double referenceFlight = SkateFlatgroundPop.ReferenceFlightSeconds;
                     double referenceHeight = .5 * SkateFlatgroundPop.Gravity * referenceFlight * referenceFlight * fraction * (1 - fraction);
                     double actualRise = SkateVector.Dot(uprightCarrier.Origin - groundOrigin.Value, uprightCarrier.Up);
                     boardShift = uprightCarrier.Up * ((referenceHeight - actualRise) * press);
-                    double front = PressRelease(fraction, 2.0 / 16, 3.0 / 16);
-                    double rear = PressRelease(fraction, 1.0 / 16, 2.5 / 16);
+                    // Family metadata describes the whole authored press, including
+                    // an upper-shoe contact that is not a sole-contact bit.
+                    // Keep its relative foot/board placement during compensation.
+                    bool familyPress = Clip.Id != RequiredClipId;
+                    double front = familyPress ? press : PressRelease(fraction, 2.0 / 16, 3.0 / 16);
+                    double rear = familyPress ? press : PressRelease(fraction, 1.0 / 16, 2.5 / 16);
                     bool goofy = stance == SkateStance.Goofy;
                     var left = boardShift * (goofy ? rear : front);
                     var right = boardShift * (goofy ? front : rear);
