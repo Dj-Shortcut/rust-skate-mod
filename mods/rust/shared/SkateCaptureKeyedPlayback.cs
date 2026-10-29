@@ -9,6 +9,9 @@ namespace Shortcut.RustMod
         public const string RequiredClipId = "kickflip-source-keyed-v1";
         public const string HeelflipClipId = "heelflip-source-keyed-v1";
         public const string TreFlipClipId = "360-flip-source-keyed-v1";
+        public const string HardflipClipId = "hardflip-source-keyed-v1";
+        private static readonly SkateCaptureTrickSignature HardflipSignature =
+            new SkateCaptureTrickSignature(SkatePopKind.Ollie, false, false, 360, 180, 0, 0);
         private static readonly SkateCaptureTrickSignature TreFlipSignature =
             new SkateCaptureTrickSignature(SkatePopKind.Ollie, false, false, 360, -360, 0, 0);
         private static readonly SkateCaptureTrickSignature HeelflipSignature =
@@ -38,13 +41,14 @@ namespace Shortcut.RustMod
         {
             return clip != null && (clip.Id == RequiredClipId && clip.MovementKind == "kickflip" && RequiredSignature.Same(signature) ||
                 clip.Id == HeelflipClipId && clip.MovementKind == "heelflip" && HeelflipSignature.Same(signature) ||
-                clip.Id == TreFlipClipId && clip.MovementKind == "360-flip" && TreFlipSignature.Same(signature));
+                clip.Id == TreFlipClipId && clip.MovementKind == "360-flip" && TreFlipSignature.Same(signature) ||
+                clip.Id == HardflipClipId && clip.MovementKind == "hardflip" && HardflipSignature.Same(signature));
         }
 
         public static bool TryCreate(SkateCaptureClip clip, out SkateCaptureKeyedPlayback playback, out string error)
         {
             playback = null; error = null;
-            if (clip == null || !clip.Ready || !Accepts(clip, clip.Id == HeelflipClipId ? HeelflipSignature : clip.Id == TreFlipClipId ? TreFlipSignature : RequiredSignature))
+            if (clip == null || !clip.Ready || !Accepts(clip, clip.Id == HeelflipClipId ? HeelflipSignature : clip.Id == TreFlipClipId ? TreFlipSignature : clip.Id == HardflipClipId ? HardflipSignature : RequiredSignature))
             { error = "An exact bounded source-keyed flip clip is required."; return false; }
             // Reuse the existing strict event/contact contract. Building its
             // optional inverse clocks does not make those clocks authoritative.
@@ -94,7 +98,8 @@ namespace Shortcut.RustMod
             // Source264 is the compact coupled Air after the early pressure rise.
             // The independent upper entry and exact foot/board paths stay short.
             double rootFraction = Clip.Id == RequiredClipId ? .3125 :
-                Clip.Id == HeelflipClipId && groundCarrierOrigin.HasValue ? 1.0 / 3.0 : .125;
+                Clip.Id == HeelflipClipId && groundCarrierOrigin.HasValue ? 1.0 / 3.0 :
+                Clip.Id == HardflipClipId && groundCarrierOrigin.HasValue ? 7.0 / 19.0 : .125;
             double span = (SourceLand - SourcePop) * rootFraction;
             double targetTime = SourcePop + span, step = Math.Min(.005, span * .1);
             SkateCaptureFrame target, before, after;
@@ -106,7 +111,7 @@ namespace Shortcut.RustMod
             // The observed flatground launch span supplies its actual takeoff
             // speed. Subtract the carrier derivative in local space so adding
             // that carrier preserves the held body's world velocity at release.
-            if ((Clip.Id == RequiredClipId || Clip.Id == HeelflipClipId) && groundCarrierOrigin.HasValue)
+            if ((Clip.Id == RequiredClipId || Clip.Id == HeelflipClipId || Clip.Id == HardflipClipId) && groundCarrierOrigin.HasValue)
                 entryVelocity -= new SkateVector(0, SkateFlatgroundPop.Gravity * frozenFlightSeconds * .5, 0);
             entryUpper = localBody; entryUpperSeconds = frozenFlightSeconds * .125;
             groundOrigin = groundCarrierOrigin;
