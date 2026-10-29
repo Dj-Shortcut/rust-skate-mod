@@ -69,7 +69,8 @@ def sample(controls,spec,keys,t):
     delta=UP*((sy-joints['Pelvis'][1])*land_weight)
     for name in joints:joints[name]=joints[name]+delta
     i=max(0,min(len(keys)-2,int(np.searchsorted(times,t,side='right'))-1));u=float(np.clip((t-times[i])/(times[i+1]-times[i]),0,1))
-    late=window(frame,h['lateClearanceWindow'])*h['lateClearance'];ground=smooth((frame-271)/2)
+    late=window(frame,h['lateClearanceWindow'])*h['lateClearance']
+    ground=smooth((frame-h['groundPinStart'])/(h['groundPinFull']-h['groundPinStart']))
     for side in ('Left','Right'):
         up=soles[side];ff=unit(original[side+'Toe']-original[side+'Ankle']+up*.07);foot=basis(ff,up)
         ankle=original[side+'Ankle']+delta+UP*late
@@ -77,6 +78,13 @@ def sample(controls,spec,keys,t):
             weight=window(frame,h['frontWindow']);target=curve(times,[k['feet'][side]['ankle']for k in keys],t);target_r=qmatrix(slerp(keys[i]['feet'][side]['rotation'],keys[i+1]['feet'][side]['rotation'],u))
         else:
             weight=window(frame,h['rearWindow']);target=original[side+'Ankle']+np.array(h['rearAnkleOffset']);target_r=basis(ff,UP)
+            # Relocate the released rear foot beside the board without adding
+            # an arbitrary vertical tuck. Retain the captured leg's extension.
+            source_hip=original[side+'Hip'];distance=np.linalg.norm(original[side+'Ankle']-source_hip)
+            horizontal=(target[0]-source_hip[0])**2+(target[2]-source_hip[2])**2
+            if horizontal>=distance*distance:
+                raise ValueError('Rear-foot clearance exceeds captured leg reach')
+            target[1]=source_hip[1]-math.sqrt(distance*distance-horizontal)
         ankle=ankle*(1-weight)+target*weight;foot=qmatrix(slerp(matrix_quat(foot),matrix_quat(target_r),weight))
         if side=='Right':
             # An attached tail-pop sole must agree with the NEW board, rather
@@ -92,6 +100,13 @@ def sample(controls,spec,keys,t):
                 released=smooth(frame-259)
                 ankle=release_ankle*(1-released)+ankle*released
                 foot=qmatrix(slerp(matrix_quat(release_r),matrix_quat(foot),released))
+        # One coherent free-Air path: absolute tuck target replaces the late
+        # clearance contribution as its weight rises; no second additive lift.
+        tuck=window(frame,h['freeAirWindow'])
+        if tuck:
+            air_keys=h['freeAirTargetKeys'][side]
+            air_target=curve([k[0]for k in air_keys],[k[1:]for k in air_keys],frame)
+            ankle=ankle*(1-tuck)+air_target*tuck
         # Only the completed Catch pins the feet. Earlier late-Air lift remains free.
         flat=np.array([0.,.106,.24 if side=='Left'else-.24]);ground_ankle=origin+br@flat
         gf=ff-UP*np.dot(ff,UP);ground_r=br@basis(gf,UP)

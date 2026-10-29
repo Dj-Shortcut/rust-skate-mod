@@ -28,6 +28,10 @@ public static class SkateCapturedTricks
     private static SkateCaptureFootSupport footSupport;
     private static SkateCaptureKeyedPlayback keyed;
     private static double keyedFlightSeconds, keyedAirAt;
+    private static Transform keyedBaselinePlayer;
+    private static bool keyedBaselineGoofy;
+    private static double keyedBaselineAt = -1;
+    private static SkateVector keyedBaselineRoot, keyedBaselineVelocity;
     public static bool UsesCoupledKeys { get { return HasFrame && keyed != null; } }
     public static double KeyedSourceSeconds { get; private set; }
     private static SkateCaptureFlick flick;
@@ -59,7 +63,7 @@ public static class SkateCapturedTricks
     public static string Status { get; private set; } = "Captured riding not loaded";
     public static void ClearFrame() { displayed = default(SkateBoardPose); flickApplied = false; }
     public static void Reset()
-    { active = null; footSupport = null; ResetFlick(); token = refusedToken = -1; airSeen = landed = flipExtended = false; caughtAt = preparedAt = -1; catchPreparationWeight = 0; previousAirSourceTime = catchSourceLead = previousAirProgress = 0; previous = landingFrom = default(SkateCaptureFrame); ClearPlantedFeet(); ClearFrame(); }
+    { active = null; footSupport = null; ResetFlick(); keyedBaselinePlayer = null; keyedBaselineAt = -1; token = refusedToken = -1; airSeen = landed = flipExtended = false; caughtAt = preparedAt = -1; catchPreparationWeight = 0; previousAirSourceTime = catchSourceLead = previousAirProgress = 0; previous = landingFrom = default(SkateCaptureFrame); ClearPlantedFeet(); ClearFrame(); }
     public static void Preload()
     {
         if (loaded) return;
@@ -379,6 +383,20 @@ public static class SkateCapturedTricks
         // Loading is done once by BeginRide, never by this per-frame path.
         if (!loaded || player == null) return false;
         bool airborne = SkateRide.Mode == RideMode.Air, queued = SkateRide.PresentationQueued;
+        var entryUp = SkateRide.ViewNormal;
+        var entryHeading = SkateBoard.OnFace(entryUp, SkateRide.Dir(SkateRide.NoseYaw));
+        var entryCarrier = new SkateBoardPose(V(SkateBoard.Contact(player) - Vector3.up * SkateBoard.Pop), V(entryHeading), V(entryUp));
+        var rootOffset = baseline.Pelvis - entryCarrier.Origin;
+        var baselineRoot = new SkateVector(SkateVector.Dot(rootOffset, entryCarrier.Right),
+            SkateVector.Dot(rootOffset, entryCarrier.Up), SkateVector.Dot(rootOffset, entryCarrier.Forward));
+        if (!airborne && active == null)
+        {
+            double baselineNow = Time.realtimeSinceStartup, dt = baselineNow - keyedBaselineAt;
+            keyedBaselineVelocity = keyedBaselinePlayer == player && keyedBaselineGoofy == SkateRide.Goofy && dt > 0 && dt <= .1
+                ? (baselineRoot - keyedBaselineRoot) * (1 / dt) : default(SkateVector);
+            keyedBaselineRoot = baselineRoot; keyedBaselineAt = baselineNow;
+            keyedBaselinePlayer = player; keyedBaselineGoofy = SkateRide.Goofy;
+        }
         if (queued && !airborne) { active = null; ClearPlantedFeet(); return false; } // The flick is not known during most of the live load.
         int nextToken = SkateRide.Pops + (queued && !airborne ? 1 : 0);
         if (!Eligible())
@@ -415,7 +433,15 @@ public static class SkateCapturedTricks
                 keyedFlightSeconds = SkateRide.FlatgroundFlightSeconds;
                 if (keyedFlightSeconds <= 0 || double.IsNaN(keyedFlightSeconds) || double.IsInfinity(keyedFlightSeconds))
                 { Refuse(nextToken, "Source-keyed Kickflip needs an observed flatground launch span"); return false; }
-                keyedAirAt = Time.realtimeSinceStartup - SkateRide.AirTime;
+                // AirStep may already have advanced AirTime on the launch tick.
+                keyedAirAt = SkateRide.ModeAt;
+                double entryDelta = keyedAirAt - keyedBaselineAt;
+                bool observedEntry = keyedBaselinePlayer == player && keyedBaselineGoofy == SkateRide.Goofy &&
+                    entryDelta >= 0 && entryDelta <= .12;
+                if (!keyed.BeginEntry(rig, activeStance,
+                    observedEntry ? keyedBaselineRoot + keyedBaselineVelocity * entryDelta : baselineRoot,
+                    observedEntry ? keyedBaselineVelocity : default(SkateVector), keyedFlightSeconds, out supportError))
+                { Refuse(nextToken, supportError); return false; }
             }
             flickOwner = !sourceKeyed && SkateRide.FlipFlickKnown && !SkateRide.TailFirst && !SkateRide.DeckReversed &&
                 SkateFlickPitch.InitialRoute(requested) &&

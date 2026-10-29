@@ -47,6 +47,20 @@ Upper-shoe contact is not represented as sole support. Sole markers end before
 the ankle roll. Source-frame uncertainty and every local constraint are recorded
 in the generated metadata.
 
+The short rear-foot relocation retains the captured hip-to-ankle distance while
+moving the foot beside the board; it does not add a fixed upward offset. One
+free-Air target curve lifts that foot outside the rising tail before returning
+both feet to the compact source-led tuck. The Catch foot pin completes at273;
+the hip impact envelope starts there and reaches its minimum after landing,
+rather than shortening the legs before Catch. These are local reconstructions,
+not measured hidden depth.
+
+At board keys261/262 a paired pitch and carrier-local X/Z translation reduces
+the early relative lag while retaining the previously keyed nose-rim point.
+This raises the tail clear of the floor during shorter supported launches;
+it does not add a second physical jump arc. The nose and upper-shoe contact,
+the entire motion and the game transition still need visual review.
+
 ```sh
 python scripts/author_skate_kickflip_hybrid.py --output /absolute/private/output
 ```

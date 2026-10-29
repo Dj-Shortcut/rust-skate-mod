@@ -17,6 +17,9 @@ namespace Shortcut.RustMod
         public double SourceCatch { get; private set; }
         public double SourceLand { get; private set; }
         public double SourceCatchFraction { get { return (SourceCatch - SourcePop) / (SourceLand - SourcePop); } }
+        private bool entry;
+        private double entrySeconds;
+        private SkateVector entryRoot, entryVelocity, entryTarget, entryTargetVelocity;
 
         private SkateCaptureKeyedPlayback(SkateCaptureClip clip, double pop, double caught, double land)
         { Clip = clip; SourcePop = pop; SourceCatch = caught; SourceLand = land; }
@@ -45,6 +48,25 @@ namespace Shortcut.RustMod
         {
             return ValidFlight(frozenFlightSeconds) && Finite(secondsSinceLand) && secondsSinceLand >= 0 &&
                 secondsSinceLand / frozenFlightSeconds >= (Clip.Duration - SourceLand) / (SourceLand - SourcePop);
+        }
+
+        public bool BeginEntry(SkateRiderRig rig, SkateStance stance, SkateVector localRoot,
+            SkateVector localVelocity, double frozenFlightSeconds, out string error)
+        {
+            entry = false; error = null;
+            if (!ValidFlight(frozenFlightSeconds) || !Finite(localRoot.LengthSquared) || !Finite(localVelocity.LengthSquared))
+            { error = "Invalid source-keyed entry baseline."; return false; }
+            double span = (SourceLand - SourcePop) * .3125;
+            double targetTime = SourcePop + span, step = Math.Min(.005, span * .1);
+            SkateCaptureFrame target, before, after;
+            if (!SkateCaptureSampler.TrySample(Clip, targetTime, rig, stance, out target, out error) ||
+                !SkateCaptureSampler.TrySample(Clip, targetTime - step, rig, stance, out before, out error) ||
+                !SkateCaptureSampler.TrySample(Clip, targetTime + step, rig, stance, out after, out error)) return false;
+            entrySeconds = frozenFlightSeconds * .3125;
+            entryRoot = localRoot; entryVelocity = localVelocity; entryTarget = target.Pose.Pelvis;
+            entryTargetVelocity = (after.Pose.Pelvis - before.Pose.Pelvis) *
+                ((SourceLand - SourcePop) / (2 * step * frozenFlightSeconds));
+            entry = true; return true;
         }
 
         public bool TrySourceTime(double elapsedSeconds, double frozenFlightSeconds, bool actuallyLanded,
@@ -86,6 +108,26 @@ namespace Shortcut.RustMod
             // current board centre or add another procedural pitch/pop envelope.
             if (!SkateRider.TryTransformPose(source.Pose, SourceCarrier, uprightCarrier, out pose))
             { error = "The source-keyed carrier transform is unavailable."; return false; }
+            var entryShift = default(SkateVector);
+            if (entry && !actuallyLanded && elapsedSeconds < entrySeconds)
+            {
+                double u = elapsedSeconds / entrySeconds, u2 = u * u, u3 = u2 * u;
+                var distance = entryTarget - entryRoot;
+                var a = entryVelocity * entrySeconds; var b = entryTargetVelocity * entrySeconds;
+                var root = entryRoot + a * u + (distance * 10 - a * 6 - b * 4) * u3 +
+                    (distance * -15 + a * 8 + b * 7) * (u3 * u) +
+                    (distance * 6 - a * 3 - b * 3) * (u3 * u2);
+                var shift = uprightCarrier.Point(root) - pose.Pelvis; entryShift = shift;
+                var translated = new SkateRiderPose(pose.Pelvis + shift, pose.LeftHip + shift, pose.RightHip + shift,
+                    pose.LeftKnee + shift, pose.RightKnee + shift, pose.LeftAnkle + shift, pose.RightAnkle + shift,
+                    pose.LeftToe + shift, pose.RightToe + shift, pose.Chest + shift, pose.Neck + shift, pose.Head + shift,
+                    pose.LeftShoulder + shift, pose.RightShoulder + shift, pose.LeftElbow + shift, pose.RightElbow + shift,
+                    pose.LeftHand + shift, pose.RightHand + shift, pose.PelvisForward, pose.PelvisUp,
+                    pose.ChestForward, pose.ChestUp, pose.HeadForward);
+                // Feet and board stay on their source paths across the root-owner boundary.
+                if (!SkateCaptureFootSupport.TrySetFeet(rig, translated, pose.LeftAnkle, pose.LeftToe,
+                    pose.RightAnkle, pose.RightToe, false, out pose, out error)) return false;
+            }
             var board = new SkateBoardPose(uprightCarrier.Point(source.Board.Origin),
                 uprightCarrier.Rotate(source.Board.Forward), uprightCarrier.Rotate(source.Board.Up));
             if (!SkateBoardPath.Valid(board))
@@ -93,7 +135,7 @@ namespace Shortcut.RustMod
             var rotation = Multiply(FrameRotation(uprightCarrier), source.Rotation);
             shown = new SkateCaptureFrame(pose, board, rotation,
                 uprightCarrier.Rotate(source.LeftSoleUp), uprightCarrier.Rotate(source.RightSoleUp),
-                source.HasEvent, source.Observation, uprightCarrier.Rotate(source.PelvisCorrection),
+                source.HasEvent, source.Observation, uprightCarrier.Rotate(source.PelvisCorrection) + entryShift,
                 uprightCarrier.Rotate(source.LeftHandCorrection), uprightCarrier.Rotate(source.RightHandCorrection), uprightCarrier.Up);
             return true;
         }

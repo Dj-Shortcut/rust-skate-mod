@@ -14,7 +14,11 @@
     "authoredContactSemantics": "Authored semantic markers, not measured confidence: rear-sole support ends at tail-pop259; front-sole support ends at260 before the ankle-roll. Upper-shoe nose-rim contact at261 is authored instep contact;262 is free carrier-space release, never sole support.",
     "authoredKeyRepair": "Captured torso/arms/head and source knee planes are the body basis. Short authored front upper-shoe/rear-foot contact repairs and late clearance are baked; early board pitch/lag and smooth landing height are authored. No claim that the previous all-body keys or board curve are unchanged.",
     "bodyProvenance": "Captured skeletal basis from captured-body.json; authored board and short local foot/contact constraints only.",
-    "rearSolePopCompliance": "Attached rear sole matches the authored board through259, then C2 releases over one source frame into the same captured rear path/clearance. Old captured board pitch/arc is not treated as sole support for the new board."
+    "rearSolePopCompliance": "Attached rear sole matches the authored board through259, then C2 releases over one source frame into the same captured rear path/clearance. Old captured board pitch/arc is not treated as sole support for the new board.",
+    "authoredFreeAirDepth": "Source266/267 images show a compact free-Air tuck. One C2 reconstructed-depth path pair is blended only262.5\u2013272. The rear foot is higher while the tail rotates past it, then lowers to the compact source267 target. Captured torso/arms/head/hips, flick and Catch markers remain unchanged. Absolute target curves replace rather than add to the late clearance channel; hidden-depth reconstruction remains unreviewed.",
+    "authoredRearClearance": "Short rear X/Z relocation retains captured hip-to-ankle distance; vertical target is solved from that distance instead of adding a fixed upward offset. Captured bend plane retained.",
+    "authoredCatchRecovery": "Completed Catch pins feet over source272\u2013273. Hip recovery starts at273 and reaches its authored landing envelope at277, retaining captured Catch extension before the impact bend.",
+    "authoredEarlyBoardClearance": "Keys261/262 reduce the relative board lag to-.09m. Paired pitch and X/Z origin preserve the previous nose-rim position at both keys; this changes the tail path rather than adding a second flight arc."
   },
   "sourceRootMotion": {
     "origin": "Physical support anchor local(0,0,0)",
@@ -184,9 +188,9 @@
     },
     {
       "sourceFrame": 261,
-      "boardPitch": 30,
+      "boardPitch": 23.818560999340143,
       "boardRoll": 0,
-      "boardLift": -0.14,
+      "boardLift": -0.09,
       "feet": {
         "Left": {
           "space": "upper-patch",
@@ -215,13 +219,15 @@
           ]
         }
       },
-      "uncertainty": "Authored black upper/outside forefoot on real nose rim, toes downward; rear leg outside the steep board path. Not a sole-support claim."
+      "uncertainty": "Authored black upper/outside forefoot on real nose rim, toes downward; rear leg outside the steep board path. Not a sole-support claim. Early board lag reduced for the supported short-charge flight; pitch and carrier-local X/Z origin are paired to preserve the existing nose-rim point exactly at this key.",
+      "boardOffsetX": 0.0,
+      "boardOffsetZ": -0.038979067936874695
     },
     {
       "sourceFrame": 262,
-      "boardPitch": 35,
+      "boardPitch": 27.971080239524596,
       "boardRoll": 25,
-      "boardLift": -0.14,
+      "boardLift": -0.09,
       "feet": {
         "Left": {
           "space": "carrier",
@@ -250,7 +256,9 @@
           ]
         }
       },
-      "uncertainty": "Explicit authored post-edge release: literal upright-carrier foot point outside the nose, not attached to the rolling board. Rear ankle remains toe-side outside the board."
+      "uncertainty": "Explicit authored post-edge release: literal upright-carrier foot point outside the nose, not attached to the rolling board. Rear ankle remains toe-side outside the board. Early board lag reduced for the supported short-charge flight; pitch and carrier-local X/Z origin are paired to preserve the existing nose-rim point exactly at this key.",
+      "boardOffsetX": -0.014117970084073478,
+      "boardOffsetZ": -0.04871113887549716
     },
     {
       "sourceFrame": 264,
@@ -566,7 +574,7 @@
     ],
     "rearAnkleOffset": [
       0.18,
-      0.1,
+      0,
       -0.06
     ],
     "lateClearanceWindow": [
@@ -576,15 +584,19 @@
       273
     ],
     "lateClearance": 0.06,
-    "softLandingStart": 271,
-    "softLandingFull": 275,
+    "softLandingStart": 273,
+    "softLandingFull": 277,
     "softHipKeys": [
       [
         273,
-        0.84
+        0.9755
       ],
       [
         275,
+        0.78
+      ],
+      [
+        277,
         0.76
       ],
       [
@@ -600,6 +612,50 @@
         0.925
       ]
     ],
-    "sourceBodySha256": "b5224ee43c8e371fdfcfe498cbae2402c447aa97702cc05e3c63b1fc7032e387"
+    "sourceBodySha256": "b5224ee43c8e371fdfcfe498cbae2402c447aa97702cc05e3c63b1fc7032e387",
+    "freeAirWindow": [
+      262.5,
+      264.5,
+      269,
+      272
+    ],
+    "groundPinStart": 272,
+    "groundPinFull": 273,
+    "freeAirTargetKeys": {
+      "Left": [
+        [
+          264.5,
+          -0.055,
+          0.41,
+          0.3
+        ],
+        [
+          269,
+          -0.055,
+          0.41,
+          0.3
+        ]
+      ],
+      "Right": [
+        [
+          264.5,
+          0.18,
+          0.435,
+          -0.3
+        ],
+        [
+          266,
+          0.055,
+          0.37,
+          -0.3
+        ],
+        [
+          269,
+          0.055,
+          0.37,
+          -0.3
+        ]
+      ]
+    }
   }
 }

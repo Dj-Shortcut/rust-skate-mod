@@ -68,7 +68,8 @@ def authored_keys(spec):
     for k in board_keys:
         pitch = qmatrix(euler_quat([-k['boardPitch'], 0, 0]))
         pivot = np.array([0., 0., -.245])
-        board_origins.append(pivot + pitch @ (np.array([0., .092, 0.])-pivot) + UP*k['boardLift'])
+        board_origins.append(pivot + pitch @ (np.array([0., .092, 0.])-pivot)
+                             + UP*k['boardLift'] + np.array([k.get('boardOffsetX', 0.), 0., k.get('boardOffsetZ', 0.)]))
     upper = np.array(spec['flickPatch']['shoeLocal'])
     rim = np.array(spec['flickPatch']['deckLocal'])
     for key in spec['keys']:
