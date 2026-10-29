@@ -83,7 +83,7 @@ def sample(c,s,sf):
     if air:
         # Tre-specific scissor: the small front flick returns first; the scooping
         # rear leg stays compact above it. Neither trajectory is a Kickflip relabel.
-        collect=air*(1-caught);targets={'Left':np.array([-.04,height,.26]),'Right':np.array([-.02,height+.10,-.26])}
+        collect=air*(1-caught);targets={'Left':np.array([-.04,height,.26]),'Right':np.array([s['authored']['rearAirXZ'][0],height,s['authored']['rearAirXZ'][1]])}
         for side in feet:
             ankles[side]=ankles[side]*(1-collect)+targets[side]*collect;flat=basis(np.array(s['entryFeet'][side]['forward']),UP);feet[side]=qmatrix(slerp(matrix_quat(feet[side]),matrix_quat(flat),collect))
         keys=s['authored']['airPelvisKeys'];target=curve([k[0]for k in keys],[[k[1]]for k in keys],sf)[0];delta=UP*((target-j['Pelvis'][1])*air)

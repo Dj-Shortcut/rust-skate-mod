@@ -2533,19 +2533,19 @@
     "airPelvisKeys": [
       [
         406,
-        0.82
+        0.9
       ],
       [
         410,
-        0.79
+        0.88
       ],
       [
         414,
-        0.79
+        0.88
       ],
       [
         418,
-        0.8
+        0.86
       ],
       [
         420,
@@ -2574,7 +2574,11 @@
     ],
     "catchStart": 419,
     "minimumAirSoleClearance": 0.01,
-    "referenceAirFloorMargin": 0.055
+    "referenceAirFloorMargin": 0.055,
+    "rearAirXZ": [
+      -0.32,
+      -0.367
+    ]
   },
   "signature": {
     "pop": "Ollie",
@@ -2584,5 +2588,5 @@
     "shove": -360,
     "spin": 0
   },
-  "provenance": "Tre-specific filmed white-shirt defense: source rear scoop and complete combined board winding, own captured body basis and explicitly authored contact/depth/height repair. Not a relabelled Kickflip. Source pixels/footage remain private and are not licensed or distributed here. Source-led authored downward board gaze during402\u2013432 replaces visibly incorrect upward monocular HeadForward. The source-only Air envelope margin fades tozero before Land; no permanent5.5cm margin remains under the landed board or its outbound carrier."
+  "provenance": "Tre-specific filmed white-shirt defense: source rear scoop and complete combined board winding, own captured body basis and explicitly authored contact/depth/height repair. Not a relabelled Kickflip. Source pixels/footage remain private and are not licensed or distributed here. Source-led authored downward board gaze during402\u2013432 replaces visibly incorrect upward monocular HeadForward. The source-only Air envelope margin fades tozero before Land; no permanent5.5cm margin remains under the landed board or its outbound carrier. Tre Air retains the higher own captured-body pelvis basis; rear hidden depth is authored behind the rider along the estimated source-camera ray, retaining the source scissor projection. It is not a measured3D rear-foot track or an internal-knee-angle cap."
 }

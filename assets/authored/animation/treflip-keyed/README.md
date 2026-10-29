@@ -42,7 +42,12 @@ The same full reference flightT=.6/g8 is used only to cancel the source press
 against the physical carrier. A bounded source-side floor clearance during
 the combined turn accounts for the real board envelope. Catch is already
 bent and impact absorption flows into a stable body-facing recovery plane.
-Foot roles and strict fixed limb lengths remain intact. The hidden head look
+Foot roles and strict fixed limb lengths remain intact. The rear Air leg uses
+an explicit authored depth behind the rider along the estimated source-camera
+ray, while the front leg remains more open. This is an occluded depth
+reconstruction, not a measured3D track or an angle cap. Native shared charge
+owns Load before trick selection; the source Load controls remain reference
+material rather than a prediction of the future input. The hidden head look
 is authored toward the board; the raw upward gaze was visibly wrong. The
 Air-only clearance margin returns tozero before Land, so the board actually
 rests on the floor and its outbound carrier does not drop in one frame. Source camera estimates are inherited
