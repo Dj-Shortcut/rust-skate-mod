@@ -40,6 +40,9 @@ public static class SkatePad
     private static float heldX, heldY;
     private static double heldSeconds;
     private static bool heldAir;
+    // Presentation may reserve a free pose until this hold or its queued extra
+    // reaches physics. Reading this never consumes or creates a rotation.
+    public static bool HeldFlipExtensionPending { get { return heldFlip != 0 && heldAir && heldExtras < 2 || heldFlips != 0; } }
     // A body varial the left stick asked for, in degrees, until the ride takes it.
     public static float BodyVarialDegrees;
     public static int BodyVarials;
