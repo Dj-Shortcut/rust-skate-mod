@@ -16,7 +16,9 @@ and the native model's anatomical mapping are still unverified.
 `assets/authored/animation/heelflip-keyed/` contains this take's retargeted arm
 observations and explicit authored controls. Monocular torso depth reverses
 implausibly around355–357, so a labelled noseward fold stabilizes that depth;
-relative source arm swing is retained. Non-spinning heading, gaze, fixed-chain
+relative source arm swing is retained through flight. The occluded landing arm
+returns smoothly toward this same take's visible low-arm375 recovery pose across
+360–369 instead of retaining the detector's shoulder-height artifact. Non-spinning heading, gaze, fixed-chain
 legs, heel contact, board rotation, support clearance and recovery are authored.
 Source gaps333/355/356 remain uncertainties. The arms actually rise above the
 head in the reference350–354; the generic Kickflip hand cap is not a reason to

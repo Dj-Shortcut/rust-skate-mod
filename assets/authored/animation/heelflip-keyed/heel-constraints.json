@@ -2128,5 +2128,9 @@
       12
     ]
   ],
-  "torsoPrior": "Source-led noseward torso fold; original monocular ChestUp reverses into an unsupported backward bend355\u2013357. Arms retain their measured directions relative to the original local torso basis. Depth and heading are authored, not3D measured."
+  "torsoPrior": "Source-led noseward torso fold; original monocular ChestUp reverses into an unsupported backward bend355\u2013357. Arms retain their measured directions relative to the original local torso basis. Depth and heading are authored, not3D measured.",
+  "armRecoveryStartFrame": 360,
+  "armRecoveryEndFrame": 369,
+  "armRecoveryReferenceFrame": 375,
+  "armRecoveryPrior": "Source-led arm return: the far arm is occluded around Land and the monocular retarget holds it near shoulder height. C2 return toward this own take's visible375 low-arm pose across360\u2013369; no hand anchor or extra ownership."
 }
