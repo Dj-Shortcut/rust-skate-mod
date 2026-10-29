@@ -35,6 +35,24 @@ remain fixed through that handoff. Neutral charging hinges toward the rider's
 own facing direction in either stance; it does not require knowing the later
 trick family or twist every charge along the board's nose axis.
 
+Ordinary grounded charging now prepares the actual measured shoes before the
+trick is selected: the rear footprint centres on the tail at -0.32 m and the
+front footprint near the middle at +0.06 m. A known nose charge reverses those
+ends. These are footprint centres, not guessed ankle positions. The early C2
+setup reaches a deep, fixed-foot stance near a 75-degree internal knee angle,
+with calm bent arms, and holds before release. The normal bone writer preserves
+this coherent pose instead of adding ordinary Shape, foot refitting or HeadLift
+again. Existing action/manual/grab/push exclusions and measured reach refusals
+remain active.
+
+The authored pressure stroke uses the real board's support envelope and a
+0.6-second, gravity-8 reference carrier. It starts from the charged shoe frames,
+strikes the tail, then releases into the flick and tuck. The runtime compensates
+only the difference between reference rise and actual carrier rise during this
+short stroke, including the attached-foot weights. Player motion is still added
+once; the animation does not provide a second ballistic arc. Foot and arm
+placements reconstructed from occluded reference views are labelled authored.
+
 Source authoring, pack validation, comparison on the rig, native installation
 and Shadow approval are separate gates. The rejected v2 checkpoint is retained
 in PR #611; this source path alone does not approve the new animation.

@@ -187,6 +187,46 @@ namespace Shortcut.RustMod
             placed = new SkateBoardPose(origin, foot.Forward, foot.Up); return true;
         }
 
+        // Charge setup has its own measured-footprint domain. This does not
+        // widen the separate +/- .25m landing-placement contract above.
+        internal bool TryChargePlacement(SkateBoardPose deck, SkateBoardPose foot, double centreZ,
+            out SkateBoardPose placed, out string error)
+        {
+            placed = default(SkateBoardPose); error = null;
+            if (!SkateBoardPath.Valid(deck) || !deck.Initialized || !SkateBoardPath.Valid(foot) || !foot.Initialized ||
+                !SkateDeckContactMath.Finite(centreZ) || centreZ < surface.MinimumZ || centreZ > surface.MaximumZ)
+            { error = "Invalid measured charge placement frame."; return false; }
+            double minX = double.PositiveInfinity, minZ = minX, maxX = double.NegativeInfinity, maxZ = maxX;
+            for (int n = 0; n < profile.VertexCount; n++)
+            {
+                var p = foot.Rotate(profile.Vertex(n));
+                double x = SkateVector.Dot(p, deck.Right), z = SkateVector.Dot(p, deck.Forward);
+                minX = Math.Min(minX, x); maxX = Math.Max(maxX, x);
+                minZ = Math.Min(minZ, z); maxZ = Math.Max(maxZ, z);
+            }
+            double half = (maxZ - minZ) * .5, lo = surface.MinimumZ + half, hi = surface.MaximumZ - half;
+            if (lo > hi) { error = "Measured shoe is longer than the charge support outline."; return false; }
+            centreZ = Math.Max(lo, Math.Min(hi, centreZ));
+            double centreX = (surface.MinimumX + surface.MaximumX) * .5;
+            bool supported = false;
+            for (int n = 0; n < surface.TriangleCount; n++)
+            {
+                var t = surface.Triangle(n);
+                double a = (t.B.X - t.A.X) * (centreZ - t.A.Z) - (t.B.Z - t.A.Z) * (centreX - t.A.X);
+                double b = (t.C.X - t.B.X) * (centreZ - t.B.Z) - (t.C.Z - t.B.Z) * (centreX - t.B.X);
+                double c = (t.A.X - t.C.X) * (centreZ - t.C.Z) - (t.A.Z - t.C.Z) * (centreX - t.C.X);
+                if ((a >= -1e-10 && b >= -1e-10 && c >= -1e-10) || (a <= 1e-10 && b <= 1e-10 && c <= 1e-10))
+                { supported = true; break; }
+            }
+            if (!supported) { error = "Charge footprint centre leaves the actual deck outline."; return false; }
+            double height = SkateVector.Dot(foot.Origin - deck.Origin, deck.Up);
+            var origin = deck.Origin + deck.Right * (centreX - (minX + maxX) * .5) +
+                deck.Forward * (centreZ - (minZ + maxZ) * .5) + deck.Up * height;
+            if ((origin - foot.Origin).Length > .35)
+            { error = "Charge placement exceeds its bounded setup travel."; return false; }
+            placed = new SkateBoardPose(origin, foot.Forward, foot.Up); return true;
+        }
+
         public bool TryOffset(SkateBoardPose deck, SkateBoardPose foot, double maximumOffset, out double offset, out string error)
         {
             SkateDeckContactWitness witness;

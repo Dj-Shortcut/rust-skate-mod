@@ -29,8 +29,10 @@ control data, not a new detector result or an all-body hand animation.
 - Old clip time is new clip time+1.0677333333s (`32 / (30000/1001)`). New source254
   is t0. Pop259, explicitly authored Catch273 within blurred272–274 and Land275
   remain the event clock; no old inverse normal-route clock is imported.
-- Runtime adds its actual physical upright carrier once. Neither the old6/16
-  flight nor a new ballistic arc is baked into the body or authored board.
+- Runtime adds its actual physical upright carrier once. A short authored
+  ground-press window subtracts its T=.6/g8 reference rise from board-local Y;
+  runtime compensates the reference/actual rise difference during that window.
+  This keeps tail pressure on the ground without adding a second jump arc.
 - Body capture continues past278 through the available real source296.
   Any viewer source cursor must distinguish this from the historical held
   all-body-key recovery.
@@ -43,21 +45,22 @@ a short rear-foot clearance, late free-foot clearance and the smooth landing
 hip-height envelope are authored. A short, explicitly labelled upper-body
 reconstruction259–278 repairs visible captured misses: arm height261,
 forward torso/head direction267 and asymmetric arms273. It rotates the upper
-group around the unchanged pelvis and reconstructs the fixed-length arm/head
+group around its current pelvis and reconstructs the fixed-length arm/head
 segments. Hidden depth and these poses are authored source-led estimates.
 Outside its C2 window the captured upper motion is retained exactly. Changed
-foot targets use measured fixed-length chains. During free Air a short C2
-blend aims the knees toward the actual toes/body front when displaced ankles
-make the uncertain captured plane unreliable; outside that interval the
-captured plane is retained. There is no knee-angle cap or legacy runtime stack.
+foot targets use measured fixed-length chains. During258–278 a C2
+blend keeps the knees in a continuous stance/body-facing bend plane, with a
+small toe contribution. The flicking shoe does not turn the whole thigh;
+outside that interval the captured plane is retained. There is no knee-angle cap or legacy runtime stack.
 Upper-shoe contact is not represented as sole support. Sole markers end before
 the ankle roll. Source-frame uncertainty and every local constraint are recorded
 in the generated metadata.
 
-The pop uses the current curved deck frame for both soles. The front sole
-slides to the nose through260, rolls onto an upper/outside shoe feature at the
-heel-side nose corner261, then releases outward262. The rear sole rises along
-the moving tail normal and enters a vertical pickup above the rear board half;
+The pop uses the current curved deck frame for both soles. Pop259 starts from the measured flat native Load frames: front footprint+.06,
+rear footprint−.32. The front sole starts at the middle and
+slides to the nose over259–260, rolls onto an upper/outside shoe feature at the
+heel-side nose corner261, then releases outward262. The rear sole stays on the moving tail through the reference strike260.
+Only afterwards does it rise along the tail normal into a vertical pickup;
 it does not kick sideways to evade the board. Compact sole/deck shape controls reuse the original
 project geometry, including the nose kick and concavity. One
 free-Air target curve lifts the rear foot above the rotating tail before returning
@@ -66,21 +69,50 @@ the hip impact envelope starts there and reaches its minimum after landing,
 rather than shortening the legs before Catch. These are local reconstructions,
 not measured hidden depth.
 
+A separate restrained arm arc258–278 replaces the rapid two-hands-up,
+forward, back sequence. Bent elbows carry the near hand up to roughly shoulder
+height at261, then down through the tuck/Catch. The far arm stays in a calm
+lateral balance pose. Torso/head source-led keys are unchanged by this repair.
+After the tail strike the rear pickup moves vertically into its compact path;
+it does not revisit the old pitched-tail ankle target or add a backwards kick.
+
 The far arm around273 is occluded and blurred in the reference. Its restrained
 balance reconstruction keeps the wrist below the head crown; the data does not
 claim an observed overhead gesture.
 
-At board keys261/262 a paired pitch and carrier-local X/Z translation reduces
-the early relative lag while retaining the previously keyed nose-rim point.
-This raises the tail clear of the floor during shorter supported launches;
-it does not add a second physical jump arc. The nose and upper-shoe contact,
-the entire motion and the game transition still need visual review.
+The reference-ground press is authored over258–262. Compact support hulls of
+the original project board mesh (184 whole-board,72 tail,104 wheel points)
+replace private geometry dependencies. The baker uses only NumPy to solve a
+44.1617196858° strike with0.005m wheel clearance, and computes support height
+as `-min((support @ rotation.T).y)`. Reference flight isT=.6/g8 with
+`f=clamp((sourceFrame-259)/16,0,1)` and `H=.5*g*T*T*f*(1-f)`. Board-local Y
+blends to support height + post-strike lift −H; there is no extra world arc.
+The authored board window is `[258,259,260.25,262]`; pitch remains0° at259,
+then rises smoothly to the retained44° strike. It holds actual reference-ground
+pressure from259.75 through260.25, with two explicit extra samples, before
+post-strike lift begins. This17ms hold survives60Hz playback instead of relying
+on one instantaneous source pose. The native reference-compensation window
+and physics remain unchanged. The early authored X/Z
+lag also joins from the same native flat-board origin. Exact259–262 samples
+and two additional hold endpoints are retained in an85-frame pack so the Pop endpoint is not only an
+interpolated approximation. Runtime adds
+`(H-actualRise)*boardWeight`, with the adjoining front-foot weight
+held through261/faded to262 and rear-foot weight held through260/faded to261.5.
+
+Authored pressure moves the captured hip/upper group toward near-straight rear
+leg extension at260, then restores its existing captured/contact basis by264.5.
+Thigh/shin lengths remain0.44/0.43m; there is no reach clamp or marker relaxation.
+The later compact tuck, upper gesture, Catch, landing and recovery remain the
+previous basis. Pop/contact event markers retain their existing semantic clock;
+they are not assertions of measured tail impact. The nose and upper-shoe
+contact, whole motion, live charge entry and game transition still need visual
+review. These source-led controls and hidden depth remain unreviewed.
 
 ```sh
 python scripts/author_skate_kickflip_hybrid.py --output /absolute/private/output
 ```
 
-Python+NumPy and the existing bounded SKMCAP01 writer bake83 samples with
+Python+NumPy and the existing bounded SKMCAP01 writer bake85 samples with
 Reviewed=false. A valid pack is not a finished animation: compare with the best
 previous captured viewer and source, then assess contact, anatomy, shocks and
 native gameplay separately.

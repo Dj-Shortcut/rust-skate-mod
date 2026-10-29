@@ -22,6 +22,7 @@ namespace Shortcut.RustMod
         private SkateVector entryRoot, entryVelocity, entryTarget, entryTargetVelocity;
         private SkateRiderPose? entryUpper;
         private double entryUpperSeconds;
+        private SkateVector? groundOrigin;
 
         private SkateCaptureKeyedPlayback(SkateCaptureClip clip, double pop, double caught, double land)
         { Clip = clip; SourcePop = pop; SourceCatch = caught; SourceLand = land; }
@@ -53,20 +54,23 @@ namespace Shortcut.RustMod
         }
 
         public bool BeginEntry(SkateRiderRig rig, SkateStance stance, SkateVector localRoot,
-            SkateVector localVelocity, double frozenFlightSeconds, out string error, SkateRiderPose? localBody = null)
+            SkateVector localVelocity, double frozenFlightSeconds, out string error, SkateRiderPose? localBody = null,
+            SkateVector? groundCarrierOrigin = null)
         {
-            entry = false; entryUpper = null; error = null;
-            if (!ValidFlight(frozenFlightSeconds) || !Finite(localRoot.LengthSquared) || !Finite(localVelocity.LengthSquared))
+            entry = false; entryUpper = null; groundOrigin = null; error = null;
+            if (!ValidFlight(frozenFlightSeconds) || !Finite(localRoot.LengthSquared) || !Finite(localVelocity.LengthSquared) ||
+                groundCarrierOrigin.HasValue && !Finite(groundCarrierOrigin.Value.LengthSquared))
             { error = "Invalid source-keyed entry baseline."; return false; }
-            double span = (SourceLand - SourcePop) * .3125;
+            double span = (SourceLand - SourcePop) * .125;
             double targetTime = SourcePop + span, step = Math.Min(.005, span * .1);
             SkateCaptureFrame target, before, after;
             if (!SkateCaptureSampler.TrySample(Clip, targetTime, rig, stance, out target, out error) ||
                 !SkateCaptureSampler.TrySample(Clip, targetTime - step, rig, stance, out before, out error) ||
                 !SkateCaptureSampler.TrySample(Clip, targetTime + step, rig, stance, out after, out error)) return false;
-            entrySeconds = frozenFlightSeconds * .3125;
+            entrySeconds = frozenFlightSeconds * .125;
             entryRoot = localRoot; entryVelocity = localVelocity; entryTarget = target.Pose.Pelvis;
-            entryUpper = localBody; entryUpperSeconds = frozenFlightSeconds * (2.0 / 15.0);
+            entryUpper = localBody; entryUpperSeconds = entrySeconds;
+            groundOrigin = groundCarrierOrigin;
             entryTargetVelocity = (after.Pose.Pelvis - before.Pose.Pelvis) *
                 ((SourceLand - SourcePop) / (2 * step * frozenFlightSeconds));
             entry = true; return true;
@@ -131,7 +135,28 @@ namespace Shortcut.RustMod
                 if (!SkateCaptureFootSupport.TrySetFeet(rig, translated, pose.LeftAnkle, pose.LeftToe,
                     pose.RightAnkle, pose.RightToe, false, out pose, out error)) return false;
             }
-            var board = new SkateBoardPose(uprightCarrier.Point(source.Board.Origin),
+            var boardShift = default(SkateVector);
+            if (groundOrigin.HasValue && !actuallyLanded)
+            {
+                // The authored press cancels the reference carrier only here.
+                // Replace that rise with the actual carrier; never add a second jump.
+                double fraction = (seconds - SourcePop) / (SourceLand - SourcePop);
+                double press = PressRelease(fraction, 1.0 / 16, 3.0 / 16);
+                if (press > 0)
+                {
+                    double referenceFlight = SkateFlatgroundPop.ReferenceFlightSeconds;
+                    double referenceHeight = .5 * SkateFlatgroundPop.Gravity * referenceFlight * referenceFlight * fraction * (1 - fraction);
+                    double actualRise = SkateVector.Dot(uprightCarrier.Origin - groundOrigin.Value, uprightCarrier.Up);
+                    boardShift = uprightCarrier.Up * ((referenceHeight - actualRise) * press);
+                    double front = PressRelease(fraction, 2.0 / 16, 3.0 / 16);
+                    double rear = PressRelease(fraction, 1.0 / 16, 2.5 / 16);
+                    bool goofy = stance == SkateStance.Goofy;
+                    var left = boardShift * (goofy ? rear : front);
+                    var right = boardShift * (goofy ? front : rear);
+                    if (!SkateCaptureFootSupport.TryShiftFeet(rig, pose, left, right, false, out pose, out error)) return false;
+                }
+            }
+            var board = new SkateBoardPose(uprightCarrier.Point(source.Board.Origin) + boardShift,
                 uprightCarrier.Rotate(source.Board.Forward), uprightCarrier.Rotate(source.Board.Up));
             if (!SkateBoardPath.Valid(board))
             { error = "The coupled source-keyed board frame is invalid."; return false; }
@@ -172,6 +197,11 @@ namespace Shortcut.RustMod
 
         private static bool ValidFlight(double value) { return Finite(value) && value > 0 && value <= 10; }
         private static bool Finite(double value) { return !double.IsNaN(value) && !double.IsInfinity(value); }
+        private static double PressRelease(double fraction, double full, double end)
+        {
+            double u = Math.Max(0, Math.Min(1, (fraction - full) / (end - full)));
+            return 1 - u * u * u * (10 + u * (-15 + 6 * u));
+        }
         private static SkateCaptureRotation Multiply(SkateCaptureRotation a, SkateCaptureRotation b)
         {
             return new SkateCaptureRotation(a.W * b.X + a.X * b.W + a.Y * b.Z - a.Z * b.Y,

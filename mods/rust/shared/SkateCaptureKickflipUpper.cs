@@ -62,6 +62,66 @@ namespace Shortcut.RustMod
             return true;
         }
 
+        // Ordinary charging only: no flip/family prediction, and no ankle-as-
+        // footprint approximation. Caller excludes action/held-hand owners.
+        public static bool TryChargeSetup(SkateRiderRig rig, SkateRiderPose pose, SkateBoardPose uprightCarrier,
+            SkateBoardPose actualShapedDeck, double chargeWeight, bool nosePop,
+            SkateDeckFootFitter leftFitter, SkateDeckFootFitter rightFitter,
+            out SkateRiderPose posed, out SkateVector leftUp, out SkateVector rightUp, out string error)
+        {
+            posed = pose; leftUp = rightUp = actualShapedDeck.Up; error = null;
+            if (!ValidRig(rig) || !Valid(pose) || !SkateBoardPath.Valid(uprightCarrier) ||
+                !SkateBoardPath.Valid(actualShapedDeck) || uprightCarrier.Up.Y < .98 || actualShapedDeck.Up.Y < .98 ||
+                !Finite(chargeWeight) || chargeWeight < 0 || chargeWeight > 1 || leftFitter == null || rightFitter == null)
+            { error = "Invalid ordinary measured charge setup."; return false; }
+            if (chargeWeight == 0) return true;
+            double setup = Math.Min(1, chargeWeight / .35), footWeight = Smooth(setup);
+            SkateBoardPose lf, rf, lg, rg;
+            if (!SkateCaptureFootSupport.TryFootFrame(pose.LeftAnkle, pose.LeftToe, leftUp, out lf) ||
+                !SkateCaptureFootSupport.TryFootFrame(pose.RightAnkle, pose.RightToe, rightUp, out rf))
+            { error = "Charge sole frames are degenerate."; return false; }
+            bool leftAtTail = SkateVector.Dot(pose.LeftAnkle - pose.RightAnkle, actualShapedDeck.Forward) < 0;
+            double tail = nosePop ? -.06 : -.32, nose = nosePop ? .32 : .06;
+            if (!leftFitter.TryChargePlacement(actualShapedDeck, lf, leftAtTail ? tail : nose, out lg, out error) ||
+                !rightFitter.TryChargePlacement(actualShapedDeck, rf, leftAtTail ? nose : tail, out rg, out error)) return false;
+            var la = pose.LeftAnkle * (1 - footWeight) + lg.Origin * footWeight;
+            var ra = pose.RightAnkle * (1 - footWeight) + rg.Origin * footWeight;
+            double lo, ro;
+            var lfit = new SkateBoardPose(la, lf.Forward, lf.Up); var rfit = new SkateBoardPose(ra, rf.Forward, rf.Up);
+            if (!leftFitter.TryOffset(actualShapedDeck, lfit, SkateCaptureFootSupport.MaximumOffset - SkateCaptureFootSupport.ContactBand, out lo, out error) ||
+                !rightFitter.TryOffset(actualShapedDeck, rfit, SkateCaptureFootSupport.MaximumOffset - SkateCaptureFootSupport.ContactBand, out ro, out error)) return false;
+            la += leftUp * (lo + SkateCaptureFootSupport.ContactBand); ra += rightUp * (ro + SkateCaptureFootSupport.ContactBand);
+            var lt = pose.LeftToe + (la - pose.LeftAnkle); var rt = pose.RightToe + (ra - pose.RightAnkle);
+            double pelvisHeight;
+            if (!ChargePelvisHeight(rig, pose, la, ra, uprightCarrier.Up, out pelvisHeight))
+            { error = "Deep charge setup exceeds the fixed-foot leg geometry."; return false; }
+            var shift = uprightCarrier.Up * ((pelvisHeight - SkateVector.Dot(pose.Pelvis, uprightCarrier.Up)) * footWeight);
+            SkateRiderPose lowered, fitted, folded;
+            var world = new SkateBoardPose(default(SkateVector), new SkateVector(0, 0, 1), new SkateVector(0, 1, 0));
+            if (!SkateRider.TryTransformPose(pose, world, new SkateBoardPose(shift, world.Forward, world.Up), out lowered) ||
+                !SkateCaptureFootSupport.TrySetFeet(rig, lowered, la, lt, ra, rt, false, out fitted, out error) ||
+                !TryChargeFold(fitted, uprightCarrier, setup, out folded, out error)) return false;
+            // Keep the ordinary rider's bent arm shape, carried coherently by
+            // the lowered torso. Knee-directed wrists inverted the elbow bend.
+            posed = folded;
+            return true;
+        }
+
+        private static bool ChargePelvisHeight(SkateRiderRig rig, SkateRiderPose p, SkateVector la, SkateVector ra,
+            SkateVector up, out double height)
+        {
+            height = 0;
+            double distance2 = rig.ThighLength * rig.ThighLength + rig.ShinLength * rig.ShinLength -
+                2 * rig.ThighLength * rig.ShinLength * Math.Cos(75 * Math.PI / 180);
+            var l = p.LeftHip - la; var r = p.RightHip - ra;
+            double ly = SkateVector.Dot(l, up), ry = SkateVector.Dot(r, up);
+            double lx = l.LengthSquared - ly * ly, rx = r.LengthSquared - ry * ry;
+            if (!Finite(distance2) || !Finite(lx) || !Finite(rx) || distance2 <= lx || distance2 <= rx) return false;
+            double a = SkateVector.Dot(la, up) + Math.Sqrt(distance2 - Math.Max(0, lx)) - SkateVector.Dot(p.LeftHip - p.Pelvis, up);
+            double b = SkateVector.Dot(ra, up) + Math.Sqrt(distance2 - Math.Max(0, rx)) - SkateVector.Dot(p.RightHip - p.Pelvis, up);
+            height = (a + b) * .5; return Finite(height);
+        }
+
         // setupElapsed is real elapsed owner/charge time, never a predicted trick
         // cursor. Negative catch/land ages mean that event has not happened.
         public bool TryApply(SkateRiderRig rig, SkateCaptureFrame frame, SkateBoardPose uprightCarrier,

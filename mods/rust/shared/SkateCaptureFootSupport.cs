@@ -35,6 +35,52 @@ namespace Shortcut.RustMod
         private readonly SkateDeckFootFitter left, right;
         private readonly double[] release = new double[2], caught = new double[2];
         private readonly SkateVector[] releasedLocal = new SkateVector[2], caughtLocal = new SkateVector[2];
+        public const string EntryPlacementProvenance = "Authored early source-contact retarget from observed ordinary charge footprints; not measured video contact.";
+        private bool entryPlacement;
+        private readonly double[] entryCentre = new double[2], entryReleaseDelta = new double[2];
+        private readonly SkateVector[] entryReleaseVector = new SkateVector[2];
+        private SkateBoardPose entryCarrier;
+        public void ClearEntryPlacement() { entryPlacement = false; entryCarrier = default(SkateBoardPose); }
+        public void SetEntryCarrier(SkateBoardPose carrier) { entryCarrier = carrier; }
+        public bool TryBeginEntryPlacement(SkateRiderRig rig, SkateRiderPose localPose,
+            SkateVector leftUp, SkateVector rightUp, out string error)
+        {
+            ClearEntryPlacement(); error = null;
+            var upright = new SkateBoardPose(default(SkateVector), new SkateVector(0, 0, 1), new SkateVector(0, 1, 0));
+            for (int side = 0; side < 2; side++)
+            {
+                SkateBoardPose observed;
+                if (!TryFootFrame(side == 0 ? localPose.LeftAnkle : localPose.RightAnkle,
+                    side == 0 ? localPose.LeftToe : localPose.RightToe, side == 0 ? leftUp : rightUp, out observed))
+                { error = "Observed charge has no measured shoe frame."; return false; }
+                entryCentre[side] = FootCentre(side, observed, upright);
+                if (!Finite(entryCentre[side]) || Math.Abs(entryCentre[side]) > .42)
+                { error = "Observed charge footprint is outside the authored deck span."; return false; }
+                SkateCaptureFrame source; SkateBoardPose foot;
+                if (!SkateCaptureSampler.TrySample(clip, Math.Max(0, release[side] - .0000001), rig, stance, out source, out error) ||
+                    !TryFootFrame(side == 0 ? source.Pose.LeftAnkle : source.Pose.RightAnkle,
+                        side == 0 ? source.Pose.LeftToe : source.Pose.RightToe,
+                        side == 0 ? source.LeftSoleUp : source.RightSoleUp, out foot)) return false;
+                entryReleaseDelta[side] = entryCentre[side] - FootCentre(side, foot, source.Board);
+                if (!Finite(entryReleaseDelta[side]) || Math.Abs(entryReleaseDelta[side]) > .35)
+                { error = "Observed charge retarget exceeds bounded horizontal travel."; return false; }
+                var along = clip.MovementKind == "nollie-backside-180-heelflip"
+                    ? new SkateVector(source.Board.Forward.X, 0, source.Board.Forward.Z) : new SkateVector(0, 0, 1);
+                if (along.LengthSquared < .000001) { error = "Entry release carrier is ambiguous."; return false; }
+                var from = new SkateBoardPose(source.Board.Origin, along * (1 / along.Length), new SkateVector(0, 1, 0));
+                entryReleaseVector[side] = Local(source.Board.Forward * entryReleaseDelta[side], from);
+            }
+            entryPlacement = true; return true;
+        }
+        private double FootCentre(int side, SkateBoardPose foot, SkateBoardPose board)
+        {
+            var profile = (side == 0 ? left : right).Profile;
+            double min = double.PositiveInfinity, max = double.NegativeInfinity;
+            for (int n = 0; n < profile.VertexCount; n++)
+            { double z = SkateVector.Dot(foot.Point(profile.Vertex(n)) - board.Origin, board.Forward); min = Math.Min(min, z); max = Math.Max(max, z); }
+            return (min + max) * .5;
+        }
+
         private readonly SkateBoardPose[] landingPlacement = new SkateBoardPose[2];
         private readonly SkateVector[] landingToe = new SkateVector[2];
         private readonly SkateBoardPose[] freeLanding = new SkateBoardPose[2];
@@ -372,9 +418,16 @@ namespace Shortcut.RustMod
             correction = default(SkateVector); error = null;
             if (attached)
             {
-                double offset;
+                double offset; var shift = default(SkateVector);
+                if (entryPlacement && t < release[side])
+                {
+                    double z = entryCentre[side] - FootCentre(side, foot, board);
+                    if (!Finite(z) || Math.Abs(z) > .35) { error = "Early source contact exceeds observed charge travel."; return false; }
+                    shift = board.Forward * z;
+                    foot = new SkateBoardPose(foot.Origin + shift, foot.Forward, foot.Up);
+                }
                 if (!Fit(side, board, foot, out offset, out error)) return false;
-                correction = board.Up * offset; return true;
+                correction = shift + board.Up * offset; return true;
             }
             // Carry model-specific calibration through the free-foot interval.
             // Abruptly removing it at release would jump an ankle by centimetres.
@@ -384,7 +437,20 @@ namespace Shortcut.RustMod
             double u = (t - release[side]) / (caught[side] - release[side]);
             u = u * u * u * (10 + u * (-15 + 6 * u));
             var local = releasedLocal[side] * (1 - u) + caughtLocal[side] * u;
-            correction = foot.Rotate(local); return true;
+            correction = foot.Rotate(local);
+            if (entryPlacement)
+            {
+                double span = Math.Min(.08, (caught[side] - release[side]) * .5);
+                if (span > 0 && t < release[side] + span)
+                {
+                    if (!entryCarrier.Initialized) { error = "Entry release has no current upright carrier."; return false; }
+                    double fade = 1 - CatchPreparationWeight(t - release[side], span);
+                    double boundary = FreeBoundaryWeight(side, t);
+                    correction += (board.Forward * (entryReleaseDelta[side] * boundary) +
+                        entryCarrier.Rotate(entryReleaseVector[side]) * (1 - boundary)) * fade;
+                }
+            }
+            return true;
         }
 
         private bool Fit(int side, SkateBoardPose board, SkateBoardPose foot, out double offset, out string error)
