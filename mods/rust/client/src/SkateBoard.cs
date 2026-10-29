@@ -243,7 +243,7 @@ public static class SkateBoard
     public const float OllieNoseUp = 26f, OllieNoseDown = 9f;
 
     // The deck's pitch, degrees, the leading end up: a manual's, a grind's and an ollie's together.
-    public static float PitchDegrees { get { return Tip * TipDegrees + GrindPitch + (observedPlane && displayTruckRig ? 0 : AirPitch) *
+    public static float PitchDegrees { get { return Tip * TipDegrees + GrindPitch + (observedPlane && displayTruckRig || SkateCapturedBoardPaths.OwnsNativePop ? 0 : AirPitch) *
         (SkateRide.Mode == RideMode.Air ? (float)RiderRig.Contact.PopPitchSign : 1f); } }
 
     // A heading laid on the face whose up is that normal: the part along the face stays, the part

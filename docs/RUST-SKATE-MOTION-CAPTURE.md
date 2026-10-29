@@ -571,6 +571,28 @@ the shared catch and landing remain unchanged. Review metadata must retain
 `HardflipEarlyTuckProvenance`; this is presentation authoring, not measured motion
 or permission to approve the source pack.
 
+The normal Impossible has its own exact-ID special-action adapter and original
+[reproducible controls](../assets/authored/animation/impossible-keyed/README.md).
+It uses the same explicit review-bit, ID and exact-pack-digest approval. The
+canonical rear foot keeps the hook through Pop and Air while the front foot is
+free; the ordinary free-flip contact contract is not weakened. The data authors
+one complete, nonlinear vertical winding around the real tail/toe surface.
+Captured source directions are a reconstructed gesture basis, not measured 3D
+hook contact or board motion. Hidden depth remains explicitly authored.
+
+The source Pop-to-Land clock follows the actual physical flight; observed Land
+starts recovery. Physics, scoring and the native special-action lifetime remain
+leading. Only an approved, active exact normal Impossible owns displayed pitch
+and pickup. All other signatures and unavailable/rejected captures keep the
+ordinary native presentation; the native circle implementation is unchanged.
+A bounded geometric clearance correction can move the board and attached rear
+foot together for a low jump, but an unreachable leg is refused rather than
+clamped. Catch restores both feet and uses the existing whole-body departure
+blend. Player, stance, input epoch, geometry changes and conflicting actions
+invalidate the adapter. The original source remains unreviewed; normal-route
+exports, source comparisons, native gameplay and Shadow acceptance are separate
+gates. See the asset README for the current limitations.
+
 For the Air-to-Catch clock, the first trusted air sample can already be partway through its rotation. It is
 held until live progress reaches that fraction, rather than moving back into a
 foot-supported pop pose. An unfinished source endpoint is likewise held before
