@@ -66,3 +66,39 @@ The earlier 11 clips are not newly approved by this source correction. Fresh
 combined contact/height exports, owner visual review and the Shadow playtest
 remain separate gates; passing compilation or a carrier-budget prediction does
 not replace them.
+
+## Longitudinal flick release
+
+An ordinary flatground launch with an initial longitudinal flip keeps the
+vertical pop and input immediate, then waits an authored 0.0625 seconds for
+the grip slide and instep/heel edge release before turning longitudinally.
+`SkateFlipFlick.EdgeReleaseSeconds` is the shared phase boundary. It is a
+presentation and gameplay timing choice, not a measured source-contact time.
+
+`SkateRide.FlipFlickKnown` identifies that initial flight;
+`FlipFlickElapsed` is its real elapsed flight time and `FlipFlickActive` means
+the edge release is still pending. The foot presentation can use that same
+clock without predicting a family during the neutral charge. This source
+change supplies the timing contract; it does not itself author the foot slide
+or prove an instep/heel contact.
+
+A physics step crossing the boundary spends only its post-release fraction
+on the real scorer's flip axis. Collision, gravity, shove and body dt remain
+unchanged; requested flip degrees and capture signature remain complete.
+The remaining-time warning accounts for the unspent release interval. Late
+or held extra rotations do not start another interval. Pure shoves, special
+board paths, ramps and action-owned rotations keep their existing clocks.
+Land, bail, mount, a new take-off or an acquired action owner clears the gate.
+
+This is a draft source checkpoint. Compilation and headless scorer/callsite
+checks are separate from the coupled foot/board visual review and Shadow test.
+
+An initial ordinary, uncombined kickflip or heelflip has an authored nose-pitch
+pulse: a C2 rise from zero to 55 degrees at that same edge release, then a C2
+return over 0.08 seconds to the ordinary pitch channel. The ordinary channel
+continues its existing 14 Hz easing independently; the pulse is not eased a
+second time. The existing rear-axle `Tilt` pivot remains authoritative. Switch,
+nollie, tail-leading or reversed-deck starts, shove/spin combinations, wraps,
+ramps and late-only flips are excluded. Held extra rotations do not retrigger an initial pulse. Abort resumes the
+independent ordinary channel; confirmed support and mount resets remain
+authoritative. This board timing is not approval of the coupled shoe contact or the visible trick.

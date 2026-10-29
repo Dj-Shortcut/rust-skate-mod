@@ -142,6 +142,9 @@ public class SkateRig : MonoBehaviour
     private static LateDriver late;
     private static float offAt = -99f, lastFrame;
     private static bool wasOn;
+    private static int flickPitchPop = -1;
+    private static bool flickPitchEligible, flickPitchActive;
+    private static float flickOrdinaryPitch, flickPitchOutput;
     private float holsterSaidAt = -99f; private int restoreSlot = -1;
     private string lastHolster = "";
     private float nextTick, nextLog, lateRetryAt, nextHeldRestoreAt, lastJumpTap = -1f, crouchSince = -1f;
@@ -690,7 +693,7 @@ public class SkateRig : MonoBehaviour
         var climb = SkateRide.Clamp(SkateRide.VSpeed / SkateRide.LaunchPopImpulse, -1f, 1f);
         var airPitch = ollie ? (climb > 0f ? SkateBoard.OllieNoseUp : SkateBoard.OllieNoseDown) * climb : 0f;
         if (SkateRide.BoardPath.Known || SkateOldschoolRide.Active) airPitch = 0f;
-        SkateBoard.AirPitch += (airPitch - SkateBoard.AirPitch) * SkateRide.Clamp(frame * 14f, 0f, 1f);
+        StepAirPitch(airPitch, frame, ollie);
         // In a jump the knees come up: the board rises toward the rider around the top and is back
         // at the legs' full reach when it moves at take-off speed, going up or coming down. The
         // player itself is where the game has it; only the board and the feet are drawn higher.
@@ -727,6 +730,18 @@ public class SkateRig : MonoBehaviour
         catch (Exception e) { if (!watchFailed) { watchFailed = true; Say("watch threw " + e.GetType().Name + ": " + e.Message); } }
     }
     private static bool watchFailed;
+
+    private static void StepAirPitch(float ordinaryTarget, float frame, bool ollie)
+    {
+        // The coupled source-keyed route owns its complete displayed board.
+        // Legacy captures retain ordinary native pop pitch; the unreviewed
+        // 55-degree prototype must not pull their contacts beyond measured reach.
+        var ordinaryFrom = flickPitchActive && SkateBoard.AirPitch == flickPitchOutput
+            ? flickOrdinaryPitch : SkateBoard.AirPitch;
+        flickOrdinaryPitch = ordinaryFrom + (ordinaryTarget - ordinaryFrom) * SkateRide.Clamp(frame * 14f, 0f, 1f);
+        flickPitchPop = -1; flickPitchEligible = flickPitchActive = false;
+        SkateBoard.AirPitch = flickPitchOutput = flickOrdinaryPitch;
+    }
 
     private void OnApplicationFocus(bool focused) { if (!focused) SkatePieces.CancelFocus(); }
 

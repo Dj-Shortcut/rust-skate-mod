@@ -466,6 +466,23 @@ authored prior and use the same `SkateCaptureFootSupport.TryCatchPreparation` an
 `TryLandingAbsorption` implementations as normal riding. Source packs and their
 approval remain separate.
 
+Normal Kickflip has an explicitly authored paired free-foot presentation prior.
+The rear pop foot begins a short C2 pickup 0.02 seconds after Pop; the front foot
+keeps its slide/flick until the live flick-edge release. This may lift a foot
+while the source still labels it attached; original source contact bits remain
+unchanged and are not relabelled as live contact. Both ankles converge over the
+bolt regions at one height. Clearance uses the full reference deck, trucks and
+wheels, clipping their actual triangles against the horizontal bounds of both
+measured shoe footprints. The maximum overlapping height, measured upright shoe
+support and a small gap determine the pair height; a high nose outside the shoes
+does not raise both feet. Face-interior overlap is included, not just vertices.
+This replaces ambiguous monocular free-foot depth, not the rig or physical jump.
+The source Catch owns the existing C2 return. The prior preserves the upper body
+and uses the same measured IK and positive-only return fit; other source families
+do not enter it. Apply it before the front-foot flick owner so that the flick can
+return toward the compact pair. This is authored presentation; a source pass
+alone does not approve its coupled visible result.
+
 The ordinary capture body enters with a C2 blend over 0.10 seconds. Its landing
 carrier transition uses the same C2 curve over the 0.15-second impact window,
 preserving fitted feet and the existing source-owned BS pop-foot entry. This

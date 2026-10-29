@@ -34,6 +34,18 @@ public static class RiderRig
     private static void Swap(ref Transform a, ref Transform b) { var t = a; a = b; b = t; }
     public static SkateRiderRig Rig;
     public static float Thigh, Shin, Foot, UpperArm, Forearm, Crouch = 0.18f;
+    private static int chargePosePop = -1;
+    private static uint chargePoseEpoch;
+    private static float chargePoseAmount;
+    private static double? chargeInitialPelvisOffset;
+    private static bool chargeOwnedGround, chargeSetupGrounded, chargeNosePop, chargeEntryShown;
+    private static Transform chargeOwnerPlayer, chargeEntryPlayer;
+    private static bool chargeOwnerGoofy, chargeEntryGoofy;
+    private static SkateCaptureFrame? chargeEntry;
+    private static SkateBoardPose chargeEntryCarrier;
+    private static int chargeEntryPop = -1;
+    private static uint chargeEntryEpoch;
+    public static double ChargePoseSeed { get { return chargePosePop == SkateRide.Pops && chargePoseEpoch == SkateKeys.InputEpoch ? chargePoseAmount : 0; } }
     public static float Miss;
     public static string MissAt = "", Error = "", MotionError = "";
     private static SkateRiderMotionState motion;
@@ -827,6 +839,9 @@ public static class RiderRig
         footCalibrated = false; calibratedFootVersion = -1; FootSupportError = "";
         reportedFootStatus = reportedFootFit = null;
         grabSince = grabHold = -1f; plantBlend = chestLead = crouchSpeed = 0f; Crouch = 0.18f;
+        chargePosePop = -1; chargePoseEpoch = 0; chargePoseAmount = 0;
+        chargeOwnedGround = chargeSetupGrounded = false;
+        chargeNosePop = chargeEntryShown = false; chargeInitialPelvisOffset = null; chargeOwnerPlayer = null; ClearChargeEntry();
         contact = default(SkateRiderContactState);
         plantStyle = default(SkateHandplantState); plantId = -1; SkateBoard.HeldFrame = default(SkateBoardPose);
         pinLeft = pinRight = pinHips = false;
@@ -964,12 +979,32 @@ public static class RiderRig
                 !SkateRide.GroundGrab.Active && !SkateRide.Handplant && PlantBlend <= .001f &&
                 !SkateRide.FootPlanted && SkateRide.PushPhase <= .001f && !SkateSurfaceRide.DropInMotion.Active;
             if (ordinaryRolling) want = Math.Max(want, .18f);
+            var chargeRoute = OrdinaryFooting(true) && SkateKeys.ControlsActive && !wall && !bodyFlip && PlantBlend <= .001f &&
+                !SkateSurfaceRide.DropInMotion.Active;
+            var ordinaryCharging = mode == RideMode.Ground && SkateKeys.Charging && chargeRoute;
+            chargeSetupGrounded = chargeEntryShown = false;
+            // A fresh charge owns its setup, including after a captured landing.
+            if (ordinaryCharging && (!chargeOwnedGround || chargeOwnerPlayer != SkateRig.LocalT ||
+                chargeOwnerGoofy != SkateRide.Goofy || chargePoseEpoch != SkateKeys.InputEpoch || chargePosePop != SkateRide.Pops + 1))
+            {
+                // The held stick end is known now; PopKind still belongs to the last release.
+                chargeNosePop = SkateKeys.Pad && SkatePad.RightY > 0; chargeInitialPelvisOffset = null;
+                chargeOwnerPlayer = SkateRig.LocalT; chargeOwnerGoofy = SkateRide.Goofy; ClearChargeEntry();
+                SkateCapturedTricks.Reset();
+            }
+            chargeOwnedGround = ordinaryCharging;
+            if (ordinaryCharging)
+            { chargePosePop = SkateRide.Pops + 1; chargePoseEpoch = SkateKeys.InputEpoch; chargePoseAmount = SkateRide.Clamp(SkateKeys.Charge, 0, 1); }
+            else if (!chargeRoute || chargePoseEpoch != SkateKeys.InputEpoch ||
+                !(mode == RideMode.Air && SkateRide.Jumped && chargePosePop == SkateRide.Pops ||
+                mode == RideMode.Ground && (SkateKeys.JumpPressed || SkateRide.PresentationQueued) && chargePosePop == SkateRide.Pops + 1))
+            { chargePosePop = -1; chargePoseEpoch = 0; chargePoseAmount = 0; }
             if (wall) want = .55f;
             else if (SkateSurfaceRide.WallieWeight > 0) want = Math.Max(want, .25f + .55f * SkateSurfaceRide.WallieWeight);
             if (SkateOldschoolRide.Active && SkateOldschoolRide.Kind == SkateOldschoolKind.Caveman &&
                 (SkateOldschoolRide.Phase == SkateOldschoolPhase.Pickup || SkateOldschoolRide.Phase == SkateOldschoolPhase.Carrying)) want = .95f;
             // A right stick held back is the rider gathering for the pop; a trigger held is the crouch of a pump.
-            if (SkateKeys.Charging && mode == RideMode.Ground) want = Math.Max(want, 0.3f + 0.3f * SkateKeys.Charge);
+            if (SkateKeys.Charging && mode == RideMode.Ground) want = Math.Max(want, 0.4f + 0.4f * SkateKeys.Charge);
             if (mode == RideMode.Ground && SkateRide.PumpHeld > 0f) want = Math.Max(want, 0.25f + 0.45f * SkateRide.PumpHeld / SkateRide.PumpCharge);
             var since = now - SkateRide.LandAt;
             if (mode == RideMode.Ground && since < 0.35f) want += (1f - since / 0.35f) * SkateRide.Clamp(SkateRide.LandImpact / 8f, 0.2f, 1f) * 0.45f;
@@ -1201,9 +1236,45 @@ public static class RiderRig
                 pinRight |= (plantedContacts & SkateCaptureContacts.RightFoot) != 0;
             }
             FitProceduralFooting(ref pose, leftSole, rightSole);
+            // Neutral loading has no trick-family foreknowledge. Its observed
+            // charge survives only into this exact pop's short torso handoff.
+            double chargeFold = ordinaryCharging ? chargePoseAmount :
+                mode == RideMode.Air && SkateRide.Jumped && chargeRoute
+                ? ChargePoseSeed * (1 - SkateCaptureFootSupport.CatchPreparationWeight(SkateRide.AirTime, .08)) : 0;
+            if (chargeFold > 0)
+            {
+                SkateRiderPose charged; string chargeError;
+                var chargeCarrier = new SkateBoardPose(new SkateVector(plane.x, plane.y, plane.z),
+                    new SkateVector(fx, fy, fz), new SkateVector(ux, uy, uz));
+                if (ordinaryCharging && SkateFootContacts.Ready)
+                {
+                    SkateVector chargeLeftUp, chargeRightUp;
+                    if (!chargeInitialPelvisOffset.HasValue)
+                        chargeInitialPelvisOffset = SkateVector.Dot(pose.Pelvis - chargeCarrier.Origin, chargeCarrier.Up);
+                    if (SkateCaptureKickflipUpper.TryChargeSetup(Rig, pose, chargeCarrier,
+                        SkateBoard.PoseFor(SkateRig.LocalT), chargeFold, chargeNosePop,
+                        SkateFootContacts.LeftFitter, SkateFootContacts.RightFitter,
+                        out charged, out chargeLeftUp, out chargeRightUp, out chargeError, chargeInitialPelvisOffset))
+                    {
+                        Posed = pose = charged; leftSole = V(chargeLeftUp); rightSole = V(chargeRightUp);
+                        pinHips = pinLeft = pinRight = chargeSetupGrounded = true; FootSupportError = "";
+                        var entryCarrier = ChargeCarrier();
+                        chargeEntry = new SkateCaptureFrame(charged, entryCarrier, default(SkateCaptureRotation),
+                            chargeLeftUp, chargeRightUp, false, default(SkateCaptureEvent), default(SkateVector), default(SkateVector), default(SkateVector));
+                        chargeEntryCarrier = entryCarrier; chargeEntryPlayer = SkateRig.LocalT;
+                        chargeEntryGoofy = SkateRide.Goofy; chargeEntryPop = chargePosePop; chargeEntryEpoch = chargePoseEpoch;
+                    }
+                    else FootSupportError = "Charge setup: " + chargeError;
+                }
+                else if (SkateCaptureKickflipUpper.TryChargeFold(pose, chargeCarrier, chargeFold, out charged, out chargeError))
+                    Posed = pose = charged;
+                else FootSupportError = "Charge torso: " + chargeError;
+            }
+            chargeEntryShown = ApplyChargeEntry(chargeRoute, ordinaryCharging, ref pose, ref leftSole, ref rightSole);
+            if (chargeEntryShown) { Posed = pose; pinHips = pinLeft = pinRight = true; }
             Shown = pose;
-            Ease(pose, plane, toToes, upV, new Vector3((float)fx, (float)fy, (float)fz), now, frameSeconds, pinL, pinR);
-            if (!wall && !bodyFlip && !SkateActions.Owns && !SkateOldschoolRide.Active && !dropping) Shape(upV);
+            Ease(pose, plane, toToes, upV, new Vector3((float)fx, (float)fy, (float)fz), now, frameSeconds, pinL, pinR, chargeSetupGrounded || chargeEntryShown);
+            if (!chargeSetupGrounded && !chargeEntryShown && !wall && !bodyFlip && !SkateActions.Owns && !SkateOldschoolRide.Active && !dropping) Shape(upV);
             // Pitch/grind balance shapes the free arm, never the hand already holding the board.
             if (pinL) { joint[LHandJ] = V(pose.LeftHand); joint[LElbowJ] = V(pose.LeftElbow); }
             if (pinR) { joint[RHandJ] = V(pose.RightHand); joint[RElbowJ] = V(pose.RightElbow); }
@@ -1474,7 +1545,7 @@ public static class RiderRig
             // head lift most of the way back toward where the board's up is.
             var foldAxis = Vector3.Cross(chestUp, up);
             var fold = (float)(Math.Atan2(foldAxis.magnitude, Vector3.Dot(chestUp, up)) * 180.0 / Math.PI);
-            if (!SkateCapturedTricks.HasFrame && !motionLookFrame && !airLookFrame && fold > HeadLiftFrom && foldAxis.sqrMagnitude > 0.0001f)
+            if (!chargeSetupGrounded && !chargeEntryShown && !SkateCapturedTricks.HasFrame && !motionLookFrame && !airLookFrame && fold > HeadLiftFrom && foldAxis.sqrMagnitude > 0.0001f)
             {
                 var lift = SkateRide.Clamp((fold - HeadLiftFrom) * HeadLiftShare, 0f, HeadLiftMost);
                 Neck.rotation = SkateRide.Turn(lift * 0.35f, foldAxis) * Neck.rotation;
@@ -1489,7 +1560,7 @@ public static class RiderRig
         ApplyGrabFingers(LHand, lGrabHand, lGrabFingers, lGrabFrame, legsOnly ? 0 : lGrabWeight);
         ApplyGrabFingers(RHand, rGrabHand, rGrabFingers, rGrabFrame, legsOnly ? 0 : rGrabWeight);
 
-        if (!SkateCapturedTricks.HasFrame && OrdinarySupportedFeet()) FitEasedFooting(leftSole, rightSole);
+        if (!chargeSetupGrounded && !chargeEntryShown && !SkateCapturedTricks.HasFrame && OrdinarySupportedFeet()) FitEasedFooting(leftSole, rightSole);
         Limb(LHip, LKnee, LFoot, joint[LAnkleJ], joint[LKneeJ], Thigh, Shin, "left ankle");
         Limb(RHip, RKnee, RFoot, joint[RAnkleJ], joint[RKneeJ], Thigh, Shin, "right ankle");
         var soleL = SkateBoard.Held ? SkateBoard.HeldUp : leftSole;
@@ -1574,6 +1645,43 @@ public static class RiderRig
         { FootSupportError = "Eased shaped-deck support exceeds measured leg reach"; return; }
         joint[LAnkleJ] = V(la); joint[RAnkleJ] = V(ra); joint[LToeJ] += V(ls); joint[RToeJ] += V(rs);
         joint[LKneeJ] = V(lk); joint[RKneeJ] = V(rk); FootSupportError = "";
+    }
+
+    private static void ClearChargeEntry()
+    { chargeEntry = null; chargeEntryPlayer = null; chargeEntryPop = -1; chargeEntryEpoch = 0; }
+
+    // Same physical upright carrier as capture entry; visual board pitch/roll is not a foot anchor.
+    private static SkateBoardPose ChargeCarrier()
+    {
+        var up = SkateRide.ViewNormal;
+        return new SkateBoardPose(V(SkateBoard.Contact(SkateRig.LocalT) - Vector3.up * SkateBoard.Pop),
+            V(SkateBoard.OnFace(up, SkateRide.Dir(SkateRide.NoseYaw))), V(up));
+    }
+
+    private static bool ApplyChargeEntry(bool route, bool charging, ref SkateRiderPose pose, ref Vector3 left, ref Vector3 right)
+    {
+        if (!chargeEntry.HasValue) return false;
+        var mode = SkateRide.Mode;
+        bool queued = mode == RideMode.Ground && (SkateKeys.JumpPressed || SkateRide.PresentationQueued) && chargeEntryPop == SkateRide.Pops + 1;
+        bool air = mode == RideMode.Air && SkateRide.Jumped && chargeEntryPop == SkateRide.Pops;
+        if (!route || chargeEntryPlayer != SkateRig.LocalT || chargeEntryGoofy != SkateRide.Goofy ||
+            chargeEntryEpoch != SkateKeys.InputEpoch || !(charging || queued || air))
+        { ClearChargeEntry(); return false; }
+        if (charging) return false;
+        double elapsed = air ? Math.Max(0, Time.realtimeSinceStartup - SkateRide.ModeAt) : 0;
+        if (elapsed >= .1) { ClearChargeEntry(); return false; }
+        var carrier = ChargeCarrier();
+        var from = SkateCapturePlayback.Transport(chargeEntry.Value, chargeEntryCarrier, carrier);
+        if (!from.Board.Initialized) { ClearChargeEntry(); return false; }
+        double u = elapsed / .1, weight = u * u * u * (10 + u * (-15 + 6 * u));
+        var target = new SkateCaptureFrame(pose, carrier, default(SkateCaptureRotation), V(left), V(right), false,
+            default(SkateCaptureEvent), default(SkateVector), default(SkateVector), default(SkateVector));
+        SkateCaptureFrame shown; string error;
+        if (weight == 0) shown = from;
+        else if (!SkateCapturePlayback.TryBlend(Rig, from.Pose, from.LeftSoleUp, from.RightSoleUp,
+            target, weight, out shown, out error))
+        { FootSupportError = "Charge entry: " + error; ClearChargeEntry(); return false; }
+        pose = shown.Pose; left = V(shown.LeftSoleUp); right = V(shown.RightSoleUp); return true;
     }
 
     private static bool OrdinaryFooting(bool allowAir)
