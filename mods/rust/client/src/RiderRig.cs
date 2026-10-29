@@ -53,6 +53,21 @@ public static class RiderRig
         public SkateHandMeasurements Measurements;
         public Quaternion OriginalLocal;
     }
+    private struct GrabFingerBone
+    {
+        public Transform Bone;
+        public Vector3 Direction;
+        public Quaternion EntryLocal;
+        public float Length, Curl;
+    }
+    private sealed class GrabFingers
+    {
+        public bool Ready, Saved;
+        public GrabFingerBone[] Bones;
+        public Vector3 ThumbBase;
+        public float Radial, Reach;
+    }
+    private static GrabFingers lGrabFingers, rGrabFingers;
     private static GrabHandBasis lGrabHand, rGrabHand;
     private static SkateBoardPose lGrabFrame, rGrabFrame;
     private static double lGrabWeight, rGrabWeight;
@@ -425,7 +440,9 @@ public static class RiderRig
 
     public static void Unbind()
     {
+        RestoreGrabFingers(lGrabFingers); RestoreGrabFingers(rGrabFingers);
         RestoreGrabHand(LHand, ref lGrabHand); RestoreGrabHand(RHand, ref rGrabHand);
+        lGrabFingers = rGrabFingers = null;
         lGrabHand = rGrabHand = default(GrabHandBasis);
         ResetPresentation();
         try { Show(false, true); } catch (Exception) { }
@@ -565,10 +582,12 @@ public static class RiderRig
         // Which way the soles face, seen from each foot bone, while the player stands.
         lSole = Quaternion.Inverse(LFoot.rotation) * up; rSole = Quaternion.Inverse(RFoot.rotation) * up;
         lGrabHand = MeasureGrabHand(a, LHand); rGrabHand = MeasureGrabHand(a, RHand);
+        lGrabFingers = MeasureGrabFingers(a, LHand, lGrabHand);
+        rGrabFingers = MeasureGrabFingers(a, RHand, rGrabHand);
         Rig = Rig.WithHands(lGrabHand.Measurements, rGrabHand.Measurements);
         Say("grab wrist frames left=" + lGrabHand.Ready + " right=" + rGrabHand.Ready +
             "; measured MCP left=" + lGrabHand.Measurements.Measured + " right=" + rGrabHand.Measurements.Measured +
-            "; unavailable measurements use authored 65 mm reach; fingers retain avatar animation");
+            "; unavailable measurements use authored 65 mm reach");
         failed = false; Bound = true; Error = "";
         Say("bound to " + Root.gameObject.name + " spine bones=" + spine.Length + " thigh=" + Thigh.ToString("F3") + " shin=" + Shin.ToString("F3") + " foot=" + Foot.ToString("F3") + " upperArm=" + UpperArm.ToString("F3")
             + " forearm=" + Forearm.ToString("F3") + " hips=" + hipWidth.ToString("F3") + " hipDrop=" + hipDrop.ToString("F3") + " back=" + back.ToString("F3") + " shoulders=" + Rig.ShoulderWidth.ToString("F3")
@@ -632,6 +651,142 @@ public static class RiderRig
         }
     }
 
+    private static GrabFingers MeasureGrabFingers(Animator animator, Transform hand, GrabHandBasis basis)
+    {
+        var result = new GrabFingers();
+        try
+        {
+            if (!basis.Ready) throw new InvalidOperationException("wrist basis unavailable");
+            var left = hand == animator.GetBoneTransform(HumanBodyBones.LeftHand);
+            if (!left && hand != animator.GetBoneTransform(HumanBodyBones.RightHand))
+                throw new InvalidOperationException("hand mapping ambiguous");
+            var first = left ? HumanBodyBones.LeftIndexProximal : HumanBodyBones.RightIndexProximal;
+            var thumb = left ? HumanBodyBones.LeftThumbProximal : HumanBodyBones.RightThumbProximal;
+            var bones = new GrabFingerBone[15];
+            for (var i = 0; i < bones.Length; i++)
+            {
+                var id = i < 12 ? (HumanBodyBones)((int)first + i) : (HumanBodyBones)((int)thumb + i - 12);
+                var bone = animator.GetBoneTransform(id);
+                if (bone == null) throw new InvalidOperationException("finger mapping incomplete");
+                for (var j = 0; j < i; j++) if (bones[j].Bone == bone)
+                    throw new InvalidOperationException("finger mapping ambiguous");
+                var parent = i % 3 == 0 ? hand : bones[i - 1].Bone;
+                if (bone.parent != parent) throw new InvalidOperationException("finger chain is not direct");
+                bones[i].Bone = bone;
+            }
+            for (var i = 0; i < bones.Length; i++)
+            {
+                var direction = i % 3 < 2 ? bones[i + 1].Bone.position - bones[i].Bone.position
+                    : bones[i].Bone.position - bones[i - 1].Bone.position;
+                var length = direction.magnitude;
+                if (float.IsNaN(length) || float.IsInfinity(length) || length < .004f || length > .12f)
+                    throw new InvalidOperationException("finger segment invalid");
+                bones[i].Direction = Quaternion.Inverse(bones[i].Bone.rotation) * direction.normalized;
+                // Humanoid mapping has no fingertip. The last reach is an authored proportion.
+                bones[i].Length = length * (i % 3 == 2 ? .8f : 1f);
+            }
+            for (var i = 0; i < 12; i += 3)
+            {
+                var l1 = bones[i].Length; var l2 = bones[i + 1].Length; var l3 = bones[i + 2].Length;
+                var dip = 25 * Math.PI / 180;
+                var effective = Math.Sqrt(l2 * l2 + l3 * l3 + 2 * l2 * l3 * Math.Cos(dip));
+                var offset = Math.Atan2(l3 * Math.Sin(dip), l2 + l3 * Math.Cos(dip));
+                var scale = basis.Measurements.McpLength / .065;
+                var angle = 20 * Math.PI / 180;
+                var ny = -Math.Cos(angle); var nz = Math.Sin(angle);
+                var oy = Math.Sin(angle); var oz = Math.Cos(angle);
+                var pad = (i == 3 ? .0085 : i == 9 ? .0067 : .008) * .8 * scale;
+                var edgeY = .065 * scale - oy * .020 * scale - ny * .013 * scale;
+                var edgeZ = -oz * .020 * scale - nz * .013 * scale;
+                var y = edgeY - oy * .018 * scale - ny * (.010 * scale + pad) - .065 * scale;
+                var inside = -(edgeZ - oz * .018 * scale - nz * (.010 * scale + pad));
+                var cosine = (y * y + inside * inside - l1 * l1 - effective * effective) / (2 * l1 * effective);
+                var bend = Math.Acos(Math.Max(-1, Math.Min(1, cosine)));
+                var start = Math.Atan2(inside, y) - Math.Atan2(effective * Math.Sin(bend), l1 + effective * Math.Cos(bend));
+                bones[i].Curl = (float)start;
+                bones[i + 1].Curl = (float)(start + bend - offset);
+                bones[i + 2].Curl = (float)(start + bend - offset + dip);
+            }
+            result.Bones = bones; result.Radial = left ? -1 : 1;
+            result.Reach = (float)basis.Measurements.McpLength;
+            result.ThumbBase = Quaternion.Inverse(hand.rotation) * (bones[12].Bone.position - hand.position);
+            result.Ready = true;
+            Say("grab fingers " + (left ? "human left" : "human right") + ": 15 cached bones; authored closure enabled");
+        }
+        catch (Exception e)
+        {
+            Say("grab fingers " + (hand == LHand ? "shown left" : "shown right") + " unavailable: " + e.Message + "; avatar finger animation retained");
+        }
+        return result;
+    }
+
+    private static void RestoreGrabFingers(GrabFingers fingers)
+    {
+        if (fingers == null || !fingers.Saved) return;
+        var failed = false;
+        for (var i = 0; i < fingers.Bones.Length; i++)
+        {
+            try { if (fingers.Bones[i].Bone != null) fingers.Bones[i].Bone.localRotation = fingers.Bones[i].EntryLocal; }
+            catch (Exception) { failed = true; }
+        }
+        fingers.Saved = false;
+        if (failed)
+        {
+            fingers.Ready = false;
+            Say("grab finger restore unavailable; remaining avatar finger animation retained");
+        }
+    }
+
+    private static void AimGrabFinger(GrabFingerBone bone, Vector3 direction, float weight)
+    {
+        var current = bone.Bone.rotation;
+        var target = Quaternion.FromToRotation(current * bone.Direction, direction) * current;
+        bone.Bone.rotation = Quaternion.Slerp(current, target, weight);
+    }
+
+    private static void ApplyGrabFingers(Transform hand, GrabHandBasis basis, GrabFingers fingers,
+        SkateBoardPose frame, double weight)
+    {
+        if (fingers == null) return;
+        if (!fingers.Ready || !basis.Ready || hand == null || !frame.Initialized || weight <= 0)
+        { RestoreGrabFingers(fingers); return; }
+        try
+        {
+            if (!fingers.Saved)
+            {
+                for (var i = 0; i < fingers.Bones.Length; i++)
+                    fingers.Bones[i].EntryLocal = fingers.Bones[i].Bone.localRotation;
+                fingers.Saved = true;
+            }
+            for (var i = 0; i < fingers.Bones.Length; i++)
+                fingers.Bones[i].Bone.localRotation = fingers.Bones[i].EntryLocal;
+            var w = SkateRide.Clamp((float)weight, 0, 1);
+            var forward = hand.rotation * basis.Finger; var back = hand.rotation * basis.Back;
+            var across = Vector3.Cross(forward, back).normalized;
+            for (var i = 0; i < 12; i++)
+            {
+                var angle = fingers.Bones[i].Curl;
+                AimGrabFinger(fingers.Bones[i], forward * (float)Math.Cos(angle) - back * (float)Math.Sin(angle), w);
+            }
+            var scale = fingers.Reach / .065f; var angle20 = 20 * Math.PI / 180;
+            var normal = forward * -(float)Math.Cos(angle20) + back * (float)Math.Sin(angle20);
+            var outward = forward * (float)Math.Sin(angle20) + back * (float)Math.Cos(angle20);
+            var target = hand.position + forward * fingers.Reach - outward * (.031f * scale)
+                - normal * (.003f * scale) + across * (fingers.Radial * .008f * scale);
+            var root = hand.position + hand.rotation * fingers.ThumbBase;
+            var upper = fingers.Bones[12].Length; var lower = fingers.Bones[13].Length + fingers.Bones[14].Length;
+            var middle = Bend(root, target, upper, lower, across * fingers.Radial + back * .45f);
+            AimGrabFinger(fingers.Bones[12], middle - root, w);
+            AimGrabFinger(fingers.Bones[13], target - middle, w);
+            AimGrabFinger(fingers.Bones[14], target - middle, w);
+        }
+        catch (Exception e)
+        {
+            RestoreGrabFingers(fingers); fingers.Ready = false;
+            Say("grab finger posing unavailable: " + e.GetType().Name + "; avatar finger animation retained");
+        }
+    }
+
     private static void Aim(Transform bone, Transform child, Vector3 want)
     {
         var cur = child.position - bone.position;
@@ -662,6 +817,7 @@ public static class RiderRig
 
     private static void ResetPresentation()
     {
+        RestoreGrabFingers(lGrabFingers); RestoreGrabFingers(rGrabFingers);
         RestoreGrabHand(LHand, ref lGrabHand); RestoreGrabHand(RHand, ref rGrabHand);
         lGrabFrame = rGrabFrame = default(SkateBoardPose); lGrabWeight = rGrabWeight = 0;
         travelLookWeight = 0; motionLookFrame = false;
@@ -738,6 +894,7 @@ public static class RiderRig
 
     public static void Frame(Vector3 feet, Vector3 up, bool legsOnly, float frameSeconds)
     {
+        RestoreGrabFingers(lGrabFingers); RestoreGrabFingers(rGrabFingers);
         SkateCapturedTricks.ClearFrame();
         lGrabFrame = rGrabFrame = default(SkateBoardPose); lGrabWeight = rGrabWeight = 0;
         motionLookFrame = false;
@@ -1090,6 +1247,7 @@ public static class RiderRig
         }
         catch (Exception e)
         {
+            RestoreGrabFingers(lGrabFingers); RestoreGrabFingers(rGrabFingers);
             RestoreGrabHand(LHand, ref lGrabHand); RestoreGrabHand(RHand, ref rGrabHand);
             failed = true; Say("pose threw " + e.GetType().Name + ": " + e.Message);
         }
@@ -1325,6 +1483,8 @@ public static class RiderRig
         }
         ApplyGrabHand(LHand, ref lGrabHand, lGrabFrame, legsOnly ? 0 : lGrabWeight);
         ApplyGrabHand(RHand, ref rGrabHand, rGrabFrame, legsOnly ? 0 : rGrabWeight);
+        ApplyGrabFingers(LHand, lGrabHand, lGrabFingers, lGrabFrame, legsOnly ? 0 : lGrabWeight);
+        ApplyGrabFingers(RHand, rGrabHand, rGrabFingers, rGrabFrame, legsOnly ? 0 : rGrabWeight);
 
         if (!SkateCapturedTricks.HasFrame && OrdinarySupportedFeet()) FitEasedFooting(leftSole, rightSole);
         Limb(LHip, LKnee, LFoot, joint[LAnkleJ], joint[LKneeJ], Thigh, Shin, "left ankle");
