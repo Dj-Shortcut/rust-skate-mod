@@ -53,7 +53,8 @@ def sample(c,s,sf):
  if sf>s['pop']:
   # During pressure, both soles begin from the exact native shaped-deck Load.
   on_ground=np.array([0.,support,0.]);rear_press=on_ground+r@(nj['RightAnkle']-UP*.092)
-  rear_hook=np.array([-.045,value(s['rearWorldY'],sf),-.323+(smooth((sf-485)/8))*.103]);hook_weight=smooth((sf-478.25)/1.75)
+  path=s['rearBodyRelativeXZ'];xz=curve([k[0]for k in path],[k[1:]for k in path],sf);collect=smooth((sf-478.25)/2.75)*(1-smooth((sf-487)/3));rest_x=-.045;rest_z=-.323+smooth((sf-485)/8)*.103
+  rear_hook=np.array([rest_x*(1-collect)+xz[0]*collect,value(s['rearWorldY'],sf),rest_z*(1-collect)+xz[1]*collect]);hook_weight=smooth((sf-478.25)/1.75)
   rear=rear_press*(1-hook_weight)+rear_hook*hook_weight
   target_ru=foot_basis(85,0,-value(s['rearToeDown'],sf));ru=blend_frame(r@nb['Right'],target_ru,(sf-478.25)/1.75)
   front=np.array([-.04-.055*smooth((sf-478)/3)*(1-smooth((sf-487)/6)),value(s['frontWorldY'],sf),.04267+.20733*smooth((sf-478)/3)-.03*smooth((sf-487)/6)])
@@ -64,7 +65,10 @@ def sample(c,s,sf):
   deck0=np.array([0.,h(0,-.32),-.32]);feature0=nb['Right'].T@(UP*.092+deck0-nj['RightAnkle'])
   wrap=smooth((sf-479)/3)*(1-smooth((sf-487)/3))
   feature=feature0*(1-wrap)+np.array(s['hookShoeLocal'])*wrap
-  deck=np.array([-.08*wrap,h(-.08*wrap,-.32-.025*wrap),-.32-.025*wrap])
+  dz=-.32-.025*wrap;width=shape['deckHalfWidth']*math.sqrt(max(0,1-((abs(dz)-.288)/.112)**2));dx=-(width+.002)*wrap
+  outward=unit((ru@np.array([0.,-1.,0.]))*(1-wrap)+(ru@np.array(s['hookSurfaceNormalLocal']))*wrap)
+  underside=smooth((float(np.dot(outward,r[:,1]))+.1)/.2)*wrap
+  deck=np.array([dx,h(dx,dz)-s['deckThickness']*underside,dz])
   hooked=rear+ru@feature-r@deck
   # Pressure ends at the existing .005m-tail-contact plateau; thereafter the
   # board follows the rear feature throughout its full vertical winding.
@@ -101,7 +105,7 @@ def main():
  times=np.unique(np.r_[np.linspace(first,s['end'],85),[477,477.75,478.25,480,481,482,483,484,485,486,487,488,489,490,493,499]])
  frames=[sample(c,s,float(sf))for sf in times]
  events=[dict(t=(sf-first)/c['sourceFps'],phase=phase.lower(),contacts=contacts)for sf,phase,contacts in [(472,'Load',['LeftFoot','RightFoot']),(477,'Pop',['RightFoot']),(480,'Air',['RightFoot']),(490,'Catch',['LeftFoot','RightFoot']),(493,'Land',['LeftFoot','RightFoot']),(499,'Recovery',['LeftFoot','RightFoot'])]]
- meta=dict(id=s['id'],label='Normal Impossible - rear-foot vertical wrap',movementKind='impossible',reviewed=False,sourceUrl=c['sourceUrl'],sourceAuthor=c['sourceAuthor'],canonicalStance='regular',authored=True,capturedBody=True,sourceFps=c['sourceFps'],firstSourceFrame=first,lastSourceFrame=s['end'],sourcePoseSha256=c['sourcePoseSha256'],provenance=s['provenance'],rearHookContract='Canonical right/rear foot owns the tail through Pop and Air; front is free. Rear hook is not a flat sole-support event. Goofy mirrors anatomically.',sourceRootMotion='Source estimated world root and board discarded. Absolute board/foot reference subtracts T=.6/g8 once; native upright carrier adds actual physical root once.')
+ meta=dict(id=s['id'],label='Normal Impossible - rear-foot vertical wrap',movementKind='impossible',reviewed=False,sourceUrl=c['sourceUrl'],sourceAuthor=c['sourceAuthor'],canonicalStance='regular',authored=True,capturedBody=True,sourceFps=c['sourceFps'],firstSourceFrame=first,lastSourceFrame=s['end'],sourcePoseSha256=c['sourcePoseSha256'],provenance=s['provenance'],rearPathProvenance=s['rearPathProvenance'],hookSurfaceProvenance=s['hookSurfaceProvenance'],rearHookContract='Canonical right/rear foot owns the tail through Pop and Air; front is free. Rear hook is not a flat sole-support event. Goofy mirrors anatomically.',sourceRootMotion='Source estimated world root and board discarded. Absolute board/foot reference subtracts T=.6/g8 once; native upright carrier adds actual physical root once.')
  clip=dict(format='skate-authored-impossible/1',metadata=meta,stance='regular',fps=(len(frames)-1)/duration,duration=duration,events=contact_events(events,duration),frames=frames)
  packed=encode_pack([clip]);a.output.mkdir(parents=True,exist_ok=True);(a.output/(s['id']+'.json')).write_text(json.dumps(clip,indent=2)+'\n');temp=a.output/'.skate_captures.skmc.tmp';temp.write_bytes(packed);temp.replace(a.output/'skate_captures.skmc');print('IMPOSSIBLE_SOURCE_READY',len(frames),len(packed),hashlib.sha256(packed).hexdigest(),'reviewed=false')
 if __name__=='__main__':main()

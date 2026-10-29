@@ -408,5 +408,74 @@
     -0.0642,
     0.1629
   ],
-  "hookSurfaceProvenance": "Original frozen companion toe-cap surface, measured in ankle/flat-toe/sole-up coordinates; the previous +.18/-up feature was in empty space about5cm beyond the real shoe. No mesh, weights, rig or material edit."
+  "hookSurfaceProvenance": "Original frozen companion toe-cap surface, measured in ankle/flat-toe/sole-up coordinates; the previous +.18/-up feature was in empty space about5cm beyond the real shoe. No mesh, weights, rig or material edit.",
+  "rearBodyRelativeXZ": [
+    [
+      479,
+      -0.050417363105325345,
+      -0.25374125860920416
+    ],
+    [
+      480,
+      -0.009572236950283107,
+      -0.22211390355163474
+    ],
+    [
+      481,
+      0.047529002554334475,
+      -0.12521686535469334
+    ],
+    [
+      482,
+      0.02227490896386567,
+      -0.017935337726330602
+    ],
+    [
+      483,
+      0.017818998863659292,
+      0.06684960066260126
+    ],
+    [
+      484,
+      0.0327982754515888,
+      0.1270486185136156
+    ],
+    [
+      485,
+      0.043044052057195796,
+      0.15410288410932071
+    ],
+    [
+      486,
+      0.04981029491793392,
+      0.16896583165644719
+    ],
+    [
+      487,
+      0.05790380162548605,
+      0.1581264904376768
+    ],
+    [
+      488,
+      0.06806306417013597,
+      0.10674871702347788
+    ],
+    [
+      489,
+      0.05550823779979631,
+      -0.0428645162540261
+    ],
+    [
+      490,
+      0.06238601116313861,
+      -0.1437466972602809
+    ]
+  ],
+  "hookSurfaceNormalLocal": [
+    0,
+    0.194,
+    0.981
+  ],
+  "deckThickness": 0.012,
+  "rearPathProvenance": "Source-led body-relative rear X/Z controls collect the rear foot forward under the knees during481\u2013487, blended from the true native tail setup and back to the supported catch. The previous fixed rear Z at\u2212.32 throughAir made the deck pass through the shin. Depth remains reconstructed."
 }

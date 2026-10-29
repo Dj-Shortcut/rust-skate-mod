@@ -29,7 +29,11 @@ The canonical Regular source starts from the actual common charged stance:
 rear/right footprint at tail−.32m, front/left footprint near+.06m. Goofy uses
 the reader's anatomical mirror. Rear ownership remains present through Pop
 and Air; the front foot is entirely free. At Catch both feet return to the
-grip. The hook follows the original frozen shoe's real toe-cap surface near
+grip. During the wrap, the rear ankle follows source-led body-relative X/Z controls
+forward under the collected knees; it does not remain frozen behind the hips
+at the starting tail position. Its true outside deck edge contact selects the
+matching bevel side as the board inverts, keeping the leg out of the deck.
+The hook follows the original frozen shoe's real toe-cap surface near
 `[0,-.0642,.1629]` in ankle/flat-toe/sole-up coordinates. Its earlier guessed
 feature lay outside the visible shoe and was rejected. Mesh, bind pose,
 materials and weights are unchanged.
