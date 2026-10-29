@@ -404,14 +404,16 @@ public static class SkateCapturedTricks
             frame = new SkateCaptureFrame(planted, frame.Board, frame.Rotation, lu, ru, frame.HasEvent, frame.Observation,
                 frame.PelvisCorrection + planted.Pelvis - frame.Pose.Pelvis, frame.LeftHandCorrection, frame.RightHandCorrection, frame.RiderUp);
         }
-        if (landed && now - landedAt < .1 && landingFrom.Board.Initialized)
+        if (landed && now - landedAt < SkateCaptureFootSupport.LandingImpactSeconds && landingFrom.Board.Initialized)
         {
             var start = SkateCapturePlayback.Transport(landingFrom, landingCarrier, carrier);
+            double impactWeight = SkateCaptureFootSupport.CatchPreparationWeight(now - landedAt,
+                SkateCaptureFootSupport.LandingImpactSeconds);
             if (!start.Board.Initialized || !SkateCapturePlayback.TryBlend(rig, start.Pose, start.LeftSoleUp, start.RightSoleUp,
-                frame, Math.Max(0, (now - landedAt) / .1), out frame, out error, true))
+                frame, impactWeight, out frame, out error, true))
             { Refuse(nextToken, error ?? "landing transition carrier unavailable"); return false; }
         }
-        double weight = Math.Max(0, Math.Min(1, (now - beganAt) / .1));
+        double weight = SkateCaptureFootSupport.CatchPreparationWeight(now - beganAt, .1);
         if (landed) weight = Math.Min(weight, active.RecoveryWeight(value));
         if (weight <= 0) return false; // The first live pop frame keeps the exact procedural pose.
         // Keep the pop-foot target through release until entry is complete;
