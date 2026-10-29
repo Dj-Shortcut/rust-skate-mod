@@ -65,7 +65,9 @@ flatground flight, an exact-Hardflip-only runtime bound can translate the whole
 coupled pose and board together above the cached takeoff plane. Its maximum
 correction is reported; over 12 cm refuses the capture instead of changing any
 physics, landing, foot/reach guard or other family. This is labelled authored
-presentation, not a new collision solver or a terrain query.
+presentation, not a new collision solver or a terrain query. Missing or stale
+observed ground-entry data refuses this Hardflip route; it does not silently
+continue without its required floor bound.
 
 The observed ground-entry root joins the source body at the actual tail strike
 (frame 142), before the rear sole leaves. Joining the much higher Air148 root

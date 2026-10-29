@@ -101,6 +101,8 @@ namespace Shortcut.RustMod
             if (!ValidFlight(frozenFlightSeconds) || !Finite(localRoot.LengthSquared) || !Finite(localVelocity.LengthSquared) ||
                 groundCarrierOrigin.HasValue && !Finite(groundCarrierOrigin.Value.LengthSquared))
             { error = "Invalid source-keyed entry baseline."; return false; }
+            if (Clip.Id == HardflipClipId && !groundCarrierOrigin.HasValue)
+            { error = "Hardflip needs an observed flatground takeoff plane."; return false; }
             // Family joins: compact Air for Kick264/Heel354/Tre408; Hard142
             // keeps the still-supported rear leg low before its later Air148.
             // The independent upper entry and exact foot/board paths stay short.
@@ -174,7 +176,9 @@ namespace Shortcut.RustMod
             result = frame; error = null; GroundClearanceCorrection = 0;
             // Only this exact flatground family, with its observed takeoff plane.
             // The caller already requires the frozen flatground flight span.
-            if (Clip.Id != HardflipClipId || actuallyLanded || !groundOrigin.HasValue) return true;
+            if (Clip.Id != HardflipClipId || actuallyLanded) return true;
+            if (!groundOrigin.HasValue)
+            { error = "Hardflip has no observed flatground takeoff plane."; return false; }
             if (!TryHardflipSupport(out error)) return false;
             double lowest = double.PositiveInfinity;
             var localUp = new SkateVector(SkateVector.Dot(frame.Board.Right, up),
