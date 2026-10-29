@@ -52,8 +52,8 @@ foot targets use measured fixed-length chains. During258–278 a C2
 blend keeps the knees in a continuous stance/body-facing bend plane, with a
 small toe contribution. The flicking shoe does not turn the whole thigh;
 outside that interval the captured plane is retained. There is no knee-angle cap or legacy runtime stack.
-Upper-shoe contact is not represented as sole support. Sole markers end before
-the ankle roll. Source-frame uncertainty and every local constraint are recorded
+Upper-shoe contact is not represented as sole support. The conservative contact-intent markers remain unchanged; they do not assert
+that the whole sole stays flat during the late slide/roll. Source-frame uncertainty and every local constraint are recorded
 in the generated metadata.
 
 The pop uses the current curved deck frame for both soles. Pop259 starts from the measured flat native Load frames: front footprint+.06,
@@ -75,6 +75,26 @@ height at261, then down through the tuck/Catch. The far arm stays in a calm
 lateral balance pose. Torso/head source-led keys are unchanged by this repair.
 After the tail strike the rear pickup moves vertically into its compact path;
 it does not revisit the old pitched-tail ankle target or add a backwards kick.
+
+One source-led coupled envelope after261 replaces incompatible independent
+Air-foot and captured-hip outputs. The free feet collect close above the real
+board support envelope while it keeps its full winding. The hips collect into
+the same tuck, Catch is already bent, then absorption continues into recovery.
+Fixed chain lengths determine the knees; the stable body-facing bend plane
+continues through rollaway instead of returning to ambiguous nearly straight
+captured poles. Captured gestures remain the basis, and captured-body.json is
+unchanged. This is an explicit authored reconstruction, not measured monocular
+depth or a runtime correction stack.
+
+The instep contact uses the original dark outer upper panel between shoe rows
++.04 and+.121. The former+.155 toe-side feature is only about5.6mm from the frozen white
+band. Matching that black point alone did not ensure the whole upper side
+led contact or keep nearby white faces clear. The patch is projected onto the real dark outer-side mesh near
+[-.04220,-.04040,+.08993]. The real upper-side surface normal is aligned opposite the analytic curved
+nose/grip normal; the anatomical toe direction is projected tangentially.
+The roll starts during the late grip-slide after259.25, and after261 the
+contact foot orientation is held during release. The nose
+rim, mesh, weights and materials are unchanged.
 
 The far arm around273 is occluded and blurred in the reference. Its restrained
 balance reconstruction keeps the wrist below the head crown; the data does not

@@ -40,7 +40,9 @@ trick is selected: the rear footprint centres on the tail at -0.32 m and the
 front footprint near the middle at +0.06 m. A known nose charge reverses those
 ends. These are footprint centres, not guessed ankle positions. The early C2
 setup reaches a deep, fixed-foot stance near a 75-degree internal knee angle,
-with calm bent arms, and holds before release. The normal bone writer preserves
+with the ordinary bent arm shape, and holds before release. Foot preparation
+settles first; the body finishes its crouch over about 0.2 seconds of the normal
+0.3-second charge. The normal bone writer preserves
 this coherent pose instead of adding ordinary Shape, foot refitting or HeadLift
 again. Existing action/manual/grab/push exclusions and measured reach refusals
 remain active.
@@ -52,6 +54,14 @@ only the difference between reference rise and actual carrier rise during this
 short stroke, including the attached-foot weights. Player motion is still added
 once; the animation does not provide a second ballistic arc. Foot and arm
 placements reconstructed from occluded reference views are labelled authored.
+
+The outside-instep contact aligns the actual shoe surface normal with the
+opposing curved nose surface, starting the ankle roll during the grip slide.
+One authored local envelope couples Air feet and hip height around the unchanged
+rotating board, then joins a bent Catch and impact absorption. Recovery keeps
+stable body-facing knee planes while the measured feet remain planted. Natural
+clip completion uses the existing 0.15-second body departure into ordinary riding,
+with the floor-versus-deck carrier offset preserved.
 
 Source authoring, pack validation, comparison on the rig, native installation
 and Shadow approval are separate gates. The rejected v2 checkpoint is retained

@@ -76,6 +76,7 @@ namespace Shortcut.RustMod
             { error = "Invalid ordinary measured charge setup."; return false; }
             if (chargeWeight == 0) return true;
             double setup = Math.Min(1, chargeWeight / .35), footWeight = Smooth(setup);
+            double bodySetup = Math.Min(1, chargeWeight / .7), bodyWeight = Smooth(bodySetup);
             SkateBoardPose lf, rf, lg, rg;
             if (!SkateCaptureFootSupport.TryFootFrame(pose.LeftAnkle, pose.LeftToe, leftUp, out lf) ||
                 !SkateCaptureFootSupport.TryFootFrame(pose.RightAnkle, pose.RightToe, rightUp, out rf))
@@ -95,12 +96,12 @@ namespace Shortcut.RustMod
             double pelvisHeight;
             if (!ChargePelvisHeight(rig, pose, la, ra, uprightCarrier.Up, out pelvisHeight))
             { error = "Deep charge setup exceeds the fixed-foot leg geometry."; return false; }
-            var shift = uprightCarrier.Up * ((pelvisHeight - SkateVector.Dot(pose.Pelvis, uprightCarrier.Up)) * footWeight);
+            var shift = uprightCarrier.Up * ((pelvisHeight - SkateVector.Dot(pose.Pelvis, uprightCarrier.Up)) * bodyWeight);
             SkateRiderPose lowered, fitted, folded;
             var world = new SkateBoardPose(default(SkateVector), new SkateVector(0, 0, 1), new SkateVector(0, 1, 0));
             if (!SkateRider.TryTransformPose(pose, world, new SkateBoardPose(shift, world.Forward, world.Up), out lowered) ||
                 !SkateCaptureFootSupport.TrySetFeet(rig, lowered, la, lt, ra, rt, false, out fitted, out error) ||
-                !TryChargeFold(fitted, uprightCarrier, setup, out folded, out error)) return false;
+                !TryChargeFold(fitted, uprightCarrier, bodySetup, out folded, out error)) return false;
             // Keep the ordinary rider's bent arm shape, carried coherently by
             // the lowered torso. Knee-directed wrists inverted the elbow bend.
             posed = folded;

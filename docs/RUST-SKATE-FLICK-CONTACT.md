@@ -1,10 +1,18 @@
-# Authored normal flip foot component
+# Retained experimental flip-foot component
 
-`SkateCaptureFlick` is connected to the normal capture route for the initial
-ordinary Kickflip and Heelflip. The current finish pass validates the complete
-Kickflip beside its source; registration alone does not approve either trick.
-The component does not change the live board trajectory or scorer. Switch,
-nollie, fakie, combined and late flips need explicit separate gating.
+The normal legacy capture route no longer enables the experimental 55-degree
+board/flick/body adapter. It uses ordinary native pop pitch and its existing
+capture/foot-support path. The exact source-keyed Kickflip owns its complete
+body and board keys and returns before those experimental layers.
+
+This restores measured-reach playback for the existing Heelflip source; it does
+not visually approve that animation. The bounded component and its API below
+remain available as experimental code, rather than active normal-route motion.
+Input, flick-onset timing, physics, scoring, source masks and approval checks are
+unchanged. No family-specific exception or reach tolerance was added.
+
+The following choreography describes the retained prototype, not a currently
+enabled or visually accepted game animation.
 
 After input, a diagonal Kickflip setup or straighter Heelflip setup slides toward
 the real nose. Kick's authored ankle motion combines moderate inversion, toes-up

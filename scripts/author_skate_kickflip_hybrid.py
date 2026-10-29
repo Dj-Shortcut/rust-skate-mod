@@ -175,11 +175,11 @@ def capture_sample(controls,spec,keys,t):
         elif frame<=262:
             slide=smooth(frame-259)
             attached,attached_r=deck_shoe(spec,origin,br,-.055+.01*slide,.22+.055*slide,45+11*slide,h['popContact']['soleGap'])
-            upper_r=foot_basis(*h['popContact']['instepAngles']);upper=origin+br@np.array(spec['flickPatch']['deckLocal'])-upper_r@np.array(spec['flickPatch']['shoeLocal'])
-            if frame<=260:ankle,foot=attached,attached_r
+            upper_r=instep_frame(spec,br,frame);upper=origin+br@np.array(spec['flickPatch']['deckLocal'])-upper_r@np.array(spec['flickPatch']['shoeLocal'])
+            if frame<=h['popContact']['instepRollStart']:ankle,foot=attached,attached_r
             elif frame<=261:
-                roll=smooth(frame-260)
-                ankle=attached*(1-roll)+upper*roll+br[:,1]*h['popContact']['rollClearance']*(64*(frame-260)**3*(261-frame)**3)
+                progress=float(np.clip((frame-h['popContact']['instepRollStart'])/(261-h['popContact']['instepRollStart']),0,1));roll=smooth(progress)
+                ankle=attached*(1-roll)+upper*roll+br[:,1]*h['popContact']['rollClearance']*(64*progress**3*(1-progress)**3)
                 foot=qmatrix(slerp(matrix_quat(attached_r),matrix_quat(upper_r),roll))
             else:
                 released=smooth(frame-261)
@@ -228,6 +228,22 @@ def strike_pitch(press):
     return (lo+hi)/2
 
 
+def instep_frame(spec,board_rotation,frame):
+    """Match the real black-side normal to the opposite curved-grip normal."""
+    shape=spec['hybrid']['popContact'];x,_,z=spec['flickPatch']['deckLocal']
+    kick=max(0.,abs(z)-shape['kickStart'])
+    normal=unit(np.array([-2*shape['concave']*x/shape['deckHalfWidth']**2,1.,-2*shape['kickRise']*kick/shape['kickSpan']**2*np.sign(z)]))
+    contact=board_rotation if frame<=261 else qmatrix(shape['instepContactBoardQuaternion'])
+    outward=-contact@normal
+    toe=np.array(spec['hybrid']['referenceGroundPress']['loadEntryFeet']['Left']['forward'])
+    tangent=unit(toe-outward*np.dot(toe,outward))
+    local_normal=unit(np.array(shape['instepSurfaceNormalLocal']))
+    local_toe=unit(np.array([0.,0.,1.])-local_normal*local_normal[2])
+    local=np.column_stack((local_normal,local_toe,unit(np.cross(local_normal,local_toe))))
+    world=np.column_stack((outward,tangent,unit(np.cross(outward,tangent))))
+    return world@local.T
+
+
 def press_foot(spec,press,side,origin,rotation,progress,target_x,target_z,target_yaw):
     """Join the measured native flat frame to a live-deck sole slide."""
     entry=press['loadEntryFeet'][side];ankle=np.array(entry['ankle'])-np.array([0.,spec['sourceRootMotion']['groundDeckTopY'],0.])
@@ -258,10 +274,10 @@ def sample(controls,spec,keys,t):
         pickup_keys=s['hybrid']['referenceGroundPress']['rearPickupKeys'];free=curve([k[0]for k in pickup_keys],[k[1:]for k in pickup_keys],sf);rear=rear*(1-released)+free*released;rr=qmatrix(slerp(matrix_quat(rr),matrix_quat(basis(unit(np.array(base['joints']['RightToe'])-np.array(base['joints']['RightAnkle'])+np.array(base['soleUp']['Right'])*.07),UP)),released))
         front=np.array(base['joints']['LeftAnkle']);fr=basis(unit(np.array(base['joints']['LeftToe'])-front+np.array(base['soleUp']['Left'])*.07),np.array(base['soleUp']['Left']))
         if sf<=262:
-            slide=smooth(sf-259);attached,ar=press_foot(s,press,'Left',origin,r,slide,-.045,.275,56);ur=foot_basis(*s['hybrid']['popContact']['instepAngles']);upper=origin+r@np.array(s['flickPatch']['deckLocal'])-ur@np.array(s['flickPatch']['shoeLocal'])
-            if sf<=260:front,fr=attached,ar
+            slide=smooth(sf-259);attached,ar=press_foot(s,press,'Left',origin,r,slide,-.045,.275,56);ur=instep_frame(s,r,sf);upper=origin+r@np.array(s['flickPatch']['deckLocal'])-ur@np.array(s['flickPatch']['shoeLocal'])
+            if sf<=s['hybrid']['popContact']['instepRollStart']:front,fr=attached,ar
             elif sf<=261:
-                u=smooth(sf-260);front=attached*(1-u)+upper*u+r[:,1]*.025*(64*(sf-260)**3*(261-sf)**3);fr=qmatrix(slerp(matrix_quat(ar),matrix_quat(ur),u))
+                progress=float(np.clip((sf-s['hybrid']['popContact']['instepRollStart'])/(261-s['hybrid']['popContact']['instepRollStart']),0,1));u=smooth(progress);front=attached*(1-u)+upper*u+r[:,1]*.025*(64*progress**3*(1-progress)**3);fr=qmatrix(slerp(matrix_quat(ar),matrix_quat(ur),u))
             else:
                 u=smooth(sf-261);front=upper*(1-u)+np.array(s['hybrid']['popContact']['frontFree262'])*u;fr=ur
         weight=window(sf,press['bodyWindow']);offset=joints['RightHip']-joints['Pelvis'];reach=curve([k[0]for k in press['rearReachKeys']],[[k[1]]for k in press['rearReachKeys']],sf)[0]*(.44+.43);targetHip=rear+np.array([-.04,math.sqrt(reach*reach-.04**2-.06**2),.06]);pelvis=targetHip-offset;delta=(pelvis-joints['Pelvis'])*weight
@@ -270,7 +286,41 @@ def sample(controls,spec,keys,t):
             hip=joints[side+'Hip'];forward=unit(foot[:,2]*.15+balance_forward(s['hybrid'],sf)*.85);pole=forward-UP*np.dot(forward,UP);joints[side+'Knee']=limb(hip,ankle,.44,.43,unit(pole));joints[side+'Ankle']=ankle;soles[side]=foot[:,1];joints[side+'Toe']=ankle+foot[:,2]*math.sqrt(.14**2-.07**2)-foot[:,1]*.07
         row['joints']={k:v.tolist()for k,v in joints.items()};row['soleUp']={k:v.tolist()for k,v in soles.items()}
     row['referencePress']=dict(referenceHeight=height,boardWeight=w,bodyWeight=window(sf,press['bodyWindow']),frontAttached=1-smooth(sf-261),rearAttached=1-smooth((sf-260)/1.5))
+    return coupled_air_catch(row,spec,sf)
+
+def coupled_air_catch(row,spec,frame):
+    """Replace incompatible independent hip/feet outputs with one source envelope."""
+    h=spec['hybrid'];control=h['coupledAirCatch'];start=control['startsAfter']
+    if frame<=start:return row
+    joints={k:np.array(v)for k,v in row['joints'].items()};soles={k:np.array(v)for k,v in row['soleUp'].items()}
+    body_weight=smooth((frame-start)/(control['fullBodyFrame']-start))
+    keys=control['pelvisKeys'];height=curve([k[0]for k in keys],[[k[1]]for k in keys],frame)[0]
+    shift=UP*((height-joints['Pelvis'][1])*body_weight)
+    for name in joints:joints[name]+=shift
+    # Feet remain in upright carrier space while the real board flips underneath.
+    # Its own support envelope bounds clearance; the board itself never moves.
+    board=np.array(row['board']['origin']);rotation=qmatrix(row['board']['quaternion'])
+    support=np.array(h['referenceGroundPress']['support']['board'])
+    ceiling=float((support@rotation.T)[:,1].max())
+    air_weight=smooth((frame-start)/(control['fullFeetFrame']-start))
+    a,b=control['feetReturnToCatch'];air_weight*=1-smooth((frame-a)/(b-a))
+    ankle_y=board[1]+ceiling-h['popContact']['soleLocalY']+control['soleBoardGap']
+    for side,key in(('Left','frontFoot'),('Right','rearFoot')):
+        original=np.array(row['joints'][side+'Ankle']);up=np.array(row['soleUp'][side])
+        forward=unit(np.array(row['joints'][side+'Toe'])-original+up*.07)
+        foot=basis(forward,up)
+        x,z=control[key];target=np.array([board[0]+x,ankle_y,board[2]+z])
+        ankle=original*(1-air_weight)+target*air_weight
+        entry=h['referenceGroundPress']['loadEntryFeet'][side]
+        target_foot=basis(np.array(entry['forward']),UP)
+        foot=qmatrix(slerp(matrix_quat(foot),matrix_quat(target_foot),air_weight))
+        hip=joints[side+'Hip'];pole=unit(balance_forward(h,frame)*.85+foot[:,2]*.15)
+        joints[side+'Knee']=limb(hip,ankle,.44,.43,pole)
+        joints[side+'Ankle']=ankle;soles[side]=foot[:,1]
+        joints[side+'Toe']=ankle+foot[:,2]*math.sqrt(.14**2-.07**2)-foot[:,1]*.07
+    row['joints']={k:v.tolist()for k,v in joints.items()};row['soleUp']={k:v.tolist()for k,v in soles.items()}
     return row
+
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--body',type=Path,default=ASSET/'captured-body.json');p.add_argument('--constraints',type=Path,default=ASSET/'hybrid-constraints.json');p.add_argument('--output',type=Path,required=True);a=p.parse_args()

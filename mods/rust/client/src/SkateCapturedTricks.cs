@@ -217,10 +217,14 @@ public static class SkateCapturedTricks
             bool pushLeft = SkateRide.PushLead ? !trailingLeft : trailingLeft;
             if (pushLeft) plantedLeft = default(SkateBoardPose); else plantedRight = default(SkateBoardPose);
         }
-        // An interrupted recovery must not jump the pinned pelvis directly to
+        // An ended or interrupted recovery must not jump the pinned pelvis directly to
         // the procedural target. Only the body departs; a released push foot
         // already belongs to the current procedural push trajectory.
-        if (active != null && !Eligible() && departedAt < 0 && previous.Board.Initialized)
+        bool keyedFinished = active != null && keyed != null && landed &&
+            keyed.Finished(Time.realtimeSinceStartup - landedAt, keyedFlightSeconds);
+        // This runs before TryFrame clears a naturally completed keyed clip.
+        // Reuse the interrupted-recovery handoff, so no naked ordinary frame escapes.
+        if (active != null && (!Eligible() || keyedFinished) && departedAt < 0 && previous.Board.Initialized)
         { departedAt = Time.realtimeSinceStartup; departedFrom = previous; departedCarrier = previousCarrier; }
         string error;
         var board = SkateBoard.PoseFor(player);
@@ -244,7 +248,12 @@ public static class SkateCapturedTricks
             if (u >= 1) departedAt = -1;
             else
             {
-                var carrier = new SkateBoardPose(board.Origin, V(SkateBoard.OnFace(SkateRide.ViewNormal, SkateRide.Dir(SkateRide.NoseYaw))), V(SkateRide.ViewNormal));
+                // Keyed poses use a floor carrier; legacy poses use deck-top.
+                // Preserve that measured offset instead of lifting keyed bodies by DeckTop.
+                var up = V(SkateRide.ViewNormal);
+                double carrierOffset = SkateVector.Dot(departedCarrier.Origin - departedFrom.Board.Origin, departedCarrier.Up);
+                var carrier = new SkateBoardPose(board.Origin + up * carrierOffset,
+                    V(SkateBoard.OnFace(SkateRide.ViewNormal, SkateRide.Dir(SkateRide.NoseYaw))), up);
                 var from = SkateCapturePlayback.Transport(departedFrom, departedCarrier, carrier);
                 SkateRiderPose body;
                 if (!from.Board.Initialized || !SkateCaptureFootSupport.TrySetFeet(rig, from.Pose, pose.LeftAnkle, pose.LeftToe,
@@ -471,9 +480,10 @@ public static class SkateCapturedTricks
                     observedEntry ? keyedBaselinePose : null, observedEntry ? keyedGroundOrigin : null))
                 { Refuse(nextToken, supportError); return false; }
             }
-            flickOwner = !sourceKeyed && SkateRide.FlipFlickKnown && !SkateRide.TailFirst && !SkateRide.DeckReversed &&
-                SkateFlickPitch.InitialRoute(requested) &&
-                (active.SourceMovementKind == "kickflip" || active.SourceMovementKind == "heelflip");
+            // The legacy normal route retains ordinary native board/foot coupling.
+            // Retire the unreviewed 55-degree flick/body prototype; the exact
+            // source-keyed route already owns its complete board and pose above.
+            flickOwner = false;
             if (flickOwner && !PrepareFlick(out supportError)) { Refuse(nextToken, supportError); return false; }
             kickBodyOwner = flickOwner && active.SourceMovementKind == "kickflip";
             if (kickBodyOwner)

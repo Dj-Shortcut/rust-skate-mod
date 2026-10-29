@@ -733,25 +733,14 @@ public class SkateRig : MonoBehaviour
 
     private static void StepAirPitch(float ordinaryTarget, float frame, bool ollie)
     {
-        var samePop = flickPitchPop == SkateRide.Pops;
-        // Keep pulse output out of the ordinary filter on abort too. An explicit
-        // PrepareSupport/BeginRide reset remains authoritative.
+        // The coupled source-keyed route owns its complete displayed board.
+        // Legacy captures retain ordinary native pop pitch; the unreviewed
+        // 55-degree prototype must not pull their contacts beyond measured reach.
         var ordinaryFrom = flickPitchActive && SkateBoard.AirPitch == flickPitchOutput
             ? flickOrdinaryPitch : SkateBoard.AirPitch;
         flickOrdinaryPitch = ordinaryFrom + (ordinaryTarget - ordinaryFrom) * SkateRide.Clamp(frame * 14f, 0f, 1f);
-        if (!SkateRide.FlipFlickKnown) { flickPitchPop = -1; flickPitchEligible = false; }
-        else if (!samePop)
-        {
-            flickPitchPop = SkateRide.Pops;
-            flickPitchEligible = !SkateRide.TailFirst && !SkateRide.DeckReversed &&
-                Shortcut.RustMod.SkateFlickPitch.InitialRoute(SkateRide.PresentationSignature);
-        }
-        double pitch = flickOrdinaryPitch;
-        flickPitchActive = ollie && SkateRide.FlipFlickKnown && flickPitchEligible &&
-            !SkateActions.Owns && !SkateActions.Finger.Initialized && !SkateSurfaceRide.BodyFlip.Known &&
-            Shortcut.RustMod.SkateFlickPitch.UncombinedRoute(SkateRide.PresentationSignature) &&
-            Shortcut.RustMod.SkateFlickPitch.TrySample(SkateRide.FlipFlickElapsed, flickOrdinaryPitch, out pitch);
-        SkateBoard.AirPitch = flickPitchOutput = (float)pitch;
+        flickPitchPop = -1; flickPitchEligible = flickPitchActive = false;
+        SkateBoard.AirPitch = flickPitchOutput = flickOrdinaryPitch;
     }
 
     private void OnApplicationFocus(bool focused) { if (!focused) SkatePieces.CancelFocus(); }

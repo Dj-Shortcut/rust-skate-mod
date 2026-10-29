@@ -11,7 +11,7 @@
     "rights": "Original project reconstruction/retarget control data. Reference footage and pixels are not included or relicensed; no footage license is asserted.",
     "provenance": "Captured body retained; local flick, sole/upper-contact semantics, late foot clearance and soft landing are explicitly authored.",
     "uncertainties": "Reference filmed stance is uncertain; canonical Regular and its anatomical Goofy mirror are authoring mappings. Flick contact anatomy, hidden depth and Catch273 within blurred272\u2013274 are authored.",
-    "authoredContactSemantics": "Authored semantic markers, not measured confidence: rear-sole support ends at tail-pop259; front-sole support ends at260 before the ankle-roll. Upper-shoe nose-rim contact at261 is authored instep contact;262 is free carrier-space release, never sole support.",
+    "authoredContactSemantics": "Conservative authored contact-intent markers, not measured confidence or a claim that the whole sole stays flat. The front ankle starts rolling during the late259.25\u2013261 grip-slide while masks remain unchanged; dark outer-instep contact leads at261, then262 is free carrier-space release.",
     "authoredKeyRepair": "Captured body remains the basis with labelled upper reconstruction259\u2013278. Authored reference-ground tail pressure and hip extension258\u2013264.5 replace the earlier floating pop; front live-deck slide/instep/release and later compact tuck/Catch/recovery are retained. No marker or strict-reader guard is relaxed.",
     "bodyProvenance": "Captured skeletal basis from captured-body.json. Labelled short upper-body reconstruction, authored board and local foot/contact constraints; not fully captured or fully hand-authored body motion.",
     "rearSolePopCompliance": "Rear sole follows the live tail through physical reference-strike260; pickup starts afterwards and C2 releases through261.5. Semantic contact/event markers remain unchanged and are not evidence of measured contact.",
@@ -20,12 +20,14 @@
     "authoredCatchRecovery": "Completed Catch pins feet over source272\u2013273. Hip recovery starts at273 and reaches its authored landing envelope at277, retaining captured Catch extension before the impact bend.",
     "authoredEarlyBoardClearance": "Own board convex support points define the early ground countertranslation and tail strike. Original paired nose-retaining board keys remain the base outside the pressure window. The actual runtime carrier is added once with bounded reference-height compensation.",
     "authoredUpperReconstruction": "Short source-led torso/head reconstruction259\u2013278 retains the earlier forward torso40deg and board-directed gaze267. A separate restrained bent-elbow balance arc258\u2013278 replaces the former raised-hands oscillation. Far-arm depth is occluded/blurred and explicitly authored; no observed overhead gesture is asserted. Captured gesture basis resumes outside its windows; limbs retain fixed lengths.",
-    "authoredPopFlickPath": "One coupled pop-to-flick path: front sole follows the current curved deck through260, upper/outside shoe contacts the heel-side nose corner261, then releases outward262. Rear foot rises over the tail rather than kicking sideways, and enters the existing compact source267 tuck. Foot roles and contact markers are unchanged. Shape controls reuse original project deck/shoe dimensions; hidden depth remains authored and unreviewed.",
+    "authoredPopFlickPath": "One coupled pop-to-flick path: native middle-foot259 slides toward nose260 while the ankle starts rolling after259.25; actual dark outer-instep surface/normal leads the curved heel-side nose contact261, then releases outward262 into the compact board-close tuck. Foot roles, event clock and contact masks are unchanged; hidden depth remains authored/unreviewed.",
     "authoredKneeAim": "During258\u2013278 displaced ankles retain a continuous stance/body-facing knee bend plane, with a small toe contribution. The flicking foot does not steer the whole thigh; fixed thigh/shin lengths still determine flexion without angle caps.",
     "authoredGroundPress": "Source258\u2013262 uses own board support hulls to solve actual tail strike while retaining wheel clearance. Reference carrier T=.6/g8 is subtracted during pressure, not added as another jump. Authored near-straight rear-leg pressure260 translates the captured hip/upper group within258\u2013264.5; the existing captured/upper gesture basis returns by264.5. Hidden depth and timing remain authored and unreviewed.",
     "authoredArmBalance": "One C2 restrained balance arc258\u2013278, with bent elbows: the near hand peaks around shoulder height261 and descends through Air/Catch; the occluded far arm remains a calm lateral balance reconstruction. It replaces the former two-hands-above-head/forward/back sequence. Hidden depth is authored, not observed 3D.",
     "authoredLoadPopJoin": "Pop259 begins on the actual flat native Load footframes: measured front footprint+.06/rear\u2212.32, not the old+.22 front ankle. The front slides from middle259 to nose260, then instep261; reference board pitch starts0deg259 and reaches the retained44deg strike260. Physical toe render point is native flat toe minus soleUp*.07 exactly once. Source control does not predict a trick during ordinary charge.",
-    "authoredTailStrikeHold": "Visible reference-ground tail pressure holds the exact44.1617deg strike from259.75 through260.25. Both endpoints are explicit additional pack samples; post-strike lift starts after260.25. This prevents60Hz playback missing an instantaneous source strike. Native physics, reference compensation, semantic markers and strict geometry thresholds remain unchanged."
+    "authoredTailStrikeHold": "Visible reference-ground tail pressure holds the exact44.1617deg strike from259.75 through260.25. Both endpoints are explicit additional pack samples; post-strike lift starts after260.25. This prevents60Hz playback missing an instantaneous source strike. Native physics, reference compensation, semantic markers and strict geometry thresholds remain unchanged.",
+    "authoredCoupledAirCatch": "After261 one C2 source-led envelope replaces the independent high captured hips/free-foot clearances. The body collects over close free feet while the board keeps its full existing rotation; Catch is already bent, then absorption/recovery continue smoothly. Own board support geometry defines clearance. Recovery retains a stable body-facing knee plane instead of ill-conditioned near-straight captured poles. No runtime physics correction, measured3D claim or marker relaxation.",
+    "authoredInstepMaterialContact": "The projected black outer-instep feature and its actual mesh surface normal define contact against the analytic curved nose normal. Toe heading stays tangential to that surface. The roll begins during the late grip-slide after flat259, and the contact orientation is held after261 while releasing. No absolute angle increase, rig/mesh change, physics alteration or contact-threshold relaxation."
   },
   "sourceRootMotion": {
     "origin": "Physical support anchor local(0,0,0)",
@@ -36,20 +38,20 @@
     "extraction": "Subtract exactly upright translation [sourceBoard.origin.x,sourceBoard.origin.y-.092,sourceBoard.origin.z] from all joints. Directions unchanged. No inverse rolling-board rotation; no physical flight arc retained.",
     "runtime": "Add the actual physical upright carrier once to body and board. During authored press, apply (referenceHeight-actualRise)*boardWeight; adjoining feet use their independent release weights. No extra jump arc or second DeckTop.",
     "board": "Independent authored board path with a short reference-ground countertranslation258\u2013262 from own board support hulls; outside the press window retain the prior source-led board winding.",
-    "bodyAfterSource278": "Captured controls continue through real source296; no invented body frames or held-pose source cursor."
+    "bodyAfterSource278": "Captured gesture controls continue through source296, with explicitly authored coupled hip/feet recovery and stable body-facing knee planes. No additional measured footage or source frames are asserted."
   },
   "flickPatch": {
     "shoeLocal": [
-      -0.0301,
-      -0.0644,
-      0.1552
+      -0.04219660068,
+      -0.04039648743,
+      0.08992672899
     ],
     "deckLocal": [
       -0.0805,
       0.0325,
       0.36
     ],
-    "provenance": "Original project shoe upper/outside forefoot feature near the toe-side seam, paired with the actual heel-side nose corner. Explicit authored edge contact, not a measured source point; no sole support is asserted."
+    "provenance": "Projected once onto the original frozen dark outer-instep side mesh, outward normal approximately[-.97935,+.19878,+.03674]; the white band lies about3cm lower locally. Same nose-rim point. Original authored geometry only, not measured source depth."
   },
   "keys": [
     {
@@ -769,11 +771,6 @@
         ]
       ],
       "soleGap": 0.005,
-      "instepAngles": [
-        40,
-        40,
-        -25
-      ],
       "rollClearance": 0.025,
       "rearFreeKeys": [
         [
@@ -796,16 +793,28 @@
         ]
       ],
       "frontFree262": [
-        -0.27679263191836,
-        0.452524564505643,
-        0.20870675311161074
-      ]
+        -0.12,
+        0.43,
+        0.28
+      ],
+      "instepContactBoardQuaternion": [
+        -0.2821982806974629,
+        0.0,
+        0.0,
+        0.9593561019618294
+      ],
+      "instepSurfaceNormalLocal": [
+        -0.97935,
+        0.19878,
+        0.03674
+      ],
+      "instepRollStart": 259.25
     },
     "kneeAimWindow": [
       258,
       260,
-      273,
-      278
+      296,
+      297
     ],
     "referenceGroundPress": {
       "boardWindow": [
@@ -1472,11 +1481,80 @@
         0.1
       ],
       [
-        278,
+        296,
         1.0,
         0.0,
         0.18
       ]
-    ]
+    ],
+    "coupledAirCatch": {
+      "startsAfter": 261,
+      "fullBodyFrame": 263.5,
+      "fullFeetFrame": 264.5,
+      "feetReturnToCatch": [
+        271,
+        273
+      ],
+      "pelvisKeys": [
+        [
+          261,
+          0.976
+        ],
+        [
+          262.5,
+          0.9
+        ],
+        [
+          264.5,
+          0.8
+        ],
+        [
+          269,
+          0.75
+        ],
+        [
+          271,
+          0.77
+        ],
+        [
+          273,
+          0.81
+        ],
+        [
+          275,
+          0.75
+        ],
+        [
+          277,
+          0.7
+        ],
+        [
+          279,
+          0.73
+        ],
+        [
+          282,
+          0.8
+        ],
+        [
+          290,
+          0.925
+        ],
+        [
+          296,
+          0.925
+        ]
+      ],
+      "frontFoot": [
+        -0.055,
+        0.3
+      ],
+      "rearFoot": [
+        0.055,
+        -0.3
+      ],
+      "soleBoardGap": 0.005,
+      "provenance": "One authored replacement envelope couples pelvis height, free feet and the unchanged real board envelope. Captured joint directions remain the base; no second physical arc or exporter-only relocation."
+    }
   }
 }
