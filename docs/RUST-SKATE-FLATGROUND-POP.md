@@ -1,54 +1,62 @@
 # Flatground pop profile
 
-An ordinary level-ground ollie or nollie now uses a lower carrier arc. The old
-6 m/s launch with gravity 16 reached 1.125 m before the board's additional visual
-knee lift (up to 0.22 m). Lowering only the preview would leave the game unchanged.
+Ordinary level-ground ollies and nollies use a lower physical arc and a smaller
+generic board lift. The previous 6 m/s carrier with gravity 16 reached 1.125 m
+before adding up to 0.22 m of visual knee lift.
 
-| Launch class | Full pop | Gravity | Return to equal height |
-| --- | ---: | ---: | ---: |
-| Ordinary level-ground pop | 1.35 m/s | 3.6 m/s² | 0.75 s |
-| Existing transition/action launch | 6 m/s reference | 16 m/s² | Existing trajectory |
+| Parameter | Ordinary flatground pop | Existing transition/action launch |
+| --- | ---: | ---: |
+| Full physical pop | 2.4 m/s | 6 m/s reference |
+| Gravity | 8 m/s² | 16 m/s² |
+| Equal-height flight | 0.6 s | Existing trajectory |
+| Generic visual board lift | Up to 0.08 m | Up to 0.22 m |
+| Flip/shove rate | 900°/s | 720°/s |
+| Body-spin rate | 450°/s | 360°/s |
+| Rear Impossible wrap | 0.4 s | 0.5 s |
 
-`SkateFlatgroundPop` supplies the shared flatground constants. The live grounded
-input path selects that class only for an ollie/nollie on a nearly horizontal
-surface, with no appreciable inherited vertical motion, ramp, held grab or
-separate action owner. An Impossible requested through that ordinary pop path
-uses the same carrier; its existing rear-foot wrap and rotation duration remain
-owned by `SkateBoardPath`.
+`SkateFlatgroundPop` supplies the profile to the live grounded input path and
+presentation fixtures. The selected launch class is frozen for its flight. Only
+an ordinary ollie/nollie on nearly horizontal ground, without appreciable
+inherited vertical motion or a separate action request, selects it. Ramp, edge,
+grind-exit, planted/oldschool, explicit ollie-style and grab-held launches retain
+the existing profile. An Impossible requested through the ordinary flatground
+pop path uses its existing geometry with the shorter wrap clock.
 
-The launch freezes its gravity and presentation reference speed. The air step,
-landing forecast and air-frame presentation use that same gravity. Board pitch,
-visual knee lift and the front-foot slide normalize vertical velocity against
-the selected reference speed. Flip, shove and body rotation rates are unchanged:
-a full flip still has 0.5 s, followed by about 0.25 s before an equal-height landing.
-Charge scales the impulse as before; an undercharged pop can still be too short
-for a requested rotation.
+Air integration, the landing forecast, air-frame presentation and a late body
+flip's collision forecast share the flight gravity. Board pitch, generic lift
+and foot slide normalize against its launch reference speed. Reducing the
+flatground visual lift avoids adding the old 0.22 m again on top of the selected
+physical arc; it does not scale the mesh or rewrite a captured source pose.
 
-Ramps, transition departures, grind exits, action launches and a grab held before
-takeoff retain the existing profile. A grab started later inherits the flight
-already in progress; it does not change gravity halfway through an arc. A late
-body flip uses that same gravity in its collision-sweep forecast. Acquiring a wall
-action hands control back to the wall action's existing gravity. The lower
-flatground gravity is an authored game profile, not a measurement of real gravity.
-It remains in force through that flight, including a fall to lower ground.
+Rotation uses an explicit 1.25 rate factor, not a larger physics step. Remaining
+rotation checks, flip/shove/body increments, spin completion, native wrap
+progress and scoring share that factor. `SkateTricks.TryStep` keeps its existing
+API/default rate; its bounded overload accepts the explicit flight rate and
+checks native path progression against it. An independent finger-flip action
+still supplies its own actual angular delta, which is counted once.
+
+A grab started later inherits the current flight, including its smaller generic
+lift; the separate grab-rise contribution is unchanged. A new wall action
+returns control to the wall profile. The profile also remains in force when a
+flatground pop falls to lower ground. Charge scales the impulse as before; a
+weak or genuinely late request can still run out of air.
 
 ## Verification and remaining gates
 
-- Complete client source compiles against the cached reference set.
-- A temporary headless probe exercises the actual live launch and landing-forecast
-  method bodies, actual shared launch/landing rules and the air-step gravity and
-  clearance equations at 32 and 60 Hz. Full-charge ollie/nollie flights last about
-  0.75 s and complete the existing flip before landing. Nine excluded launch
-  cases retain the previous vertical velocity and gravity. This does not execute
-  Unity or the current game's native movement code.
-- An independent read of the four wheel meshes in each of the 22 frozen review
-  GLBs predicts about 49–59 cm maximum wheel ground-clearance at 32 Hz and 48–58 cm
-  at 60 Hz with this profile, including the existing visual lift, board orientation
-  and first-step compensation. These are carrier-budget predictions from unchanged
-  old poses, not measurements of newly exported animations.
-- The inspection page's “wheel max” means the maximum over time of the *lowest*
-  wheel bounding-box point. An individual upper wheel can be higher during a flip;
-  the vertical rear-foot Impossible wrap needs its own wheel-height report.
-- Re-exported full figures, contact sheets, the inspection-page measurements and
-  the Shadow playtest remain separate visual/native gates. The 11 earlier clips
-  are not newly approved by this source correction.
+The complete client source compiles against the cached reference set. Temporary
+headless probes exercise the actual live launch/forecast bodies, actual shared
+scorer, native path sampling and shared landing rules with real 32/60 Hz steps.
+They verify completed flip/shove/spin/wrap motion before the clearance landing,
+unchanged excluded launch classes, default scorer parity and rejection of invalid
+rate inputs. Host stubs do not prove Unity or current-game execution.
+
+The required visual check is fresh full-figure playback at 1× beside the source,
+with a fixed-height camera and visible ground. Re-exported clips must be checked
+with the unchanged inspection page: “wheel max” is the maximum over time of the
+lowest wheel bounding-box point, targeted at 40–60 cm. Individual upper wheels
+and the rear-foot Impossible geometry require their own interpretation.
+
+The earlier 11 clips are not newly approved by this source correction. Fresh
+combined contact/height exports, owner visual review and the Shadow playtest
+remain separate gates; passing compilation or a carrier-budget prediction does
+not replace them.

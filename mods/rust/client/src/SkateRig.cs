@@ -698,7 +698,7 @@ public class SkateRig : MonoBehaviour
         if (SkateRide.On && SkateRide.Mode == RideMode.Air && SkateRide.Jumped && !SkateRide.Frozen && !SkateOldschoolRide.Active && !SkateSurfaceRide.DisplayWall)
         {
             var v = SkateRide.VSpeed / SkateRide.LaunchPopImpulse;
-            rise = SkateBoard.PopMost * SkateRide.Clamp(1f - v * v, 0f, 1f);
+            rise = SkateRide.AirPopLift * SkateRide.Clamp(1f - v * v, 0f, 1f);
         }
         rise += .10f * SkateRide.TransitionAirTuck;
         // A grab pulls the board up further, to the rider's hands, as the body folds into it.
