@@ -115,7 +115,7 @@ def sample(controls,spec,frame):
     rows=controls['frames'];times=[a['frame']for a in rows]
     rel={k:curve(times,[a['relative'][k]for a in rows],frame)for k in rows[0]['relative']}
     dirs={k:unit(curve(times,[a['dirs'][k]for a in rows],frame))for k in DIRS}
-    pelvis=np.array([-.04,body_height(spec,frame,o),0.])
+    px,pz=vector(spec['pelvisXZKeys'],frame);pelvis=np.array([px,body_height(spec,frame,o),pz])
     # Preserve strict measured reach, never change feet to hide an overlong leg.
     maximum=[]
     for ankle,z in [(la,.09),(ra,-.09)]:
@@ -128,8 +128,7 @@ def sample(controls,spec,frame):
         j[side+'Knee']=limb(hip,ankle,.44,.43,unit(vector(spec['kneePlaneKeys'][side],frame)))
         j[side+'Ankle']=ankle;j[side+'Toe']=ankle+fr[:,2]*math.sqrt(.14**2-.07**2)-fr[:,1]*.07
     old_up=unit(dirs['ChestUp']);old_forward=unit(np.array([1.,0.,0.])-old_up*old_up[0]);old_across=unit(np.cross(old_up,old_forward))
-    angle=math.radians(scalar(spec['torsoLeanKeys'],frame));up=np.array([0.,math.cos(angle),math.sin(angle)])
-    forward=np.array([1.,0.,0.]);across=unit(np.cross(up,forward))
+    up=unit(vector(spec['torsoUpKeys'],frame));forward=unit(np.array([1.,0.,0.])-up*up[0]);across=unit(np.cross(up,forward))
     upper=np.column_stack([forward,up,across])@np.column_stack([old_forward,old_up,old_across]).T
     j['Chest']=pelvis+up*(.52/1.12);j['Neck']=pelvis+up*.52
     gaze=unit(upper@dirs['HeadForward']);head_up=unit(UP-gaze*np.dot(UP,gaze));j['Head']=j['Neck']+head_up*.12
@@ -137,7 +136,7 @@ def sample(controls,spec,frame):
         shoulder=pelvis+up*.44+across*(sign*.18)
         j[side+'Shoulder']=shoulder;j[side+'Elbow']=shoulder+unit(upper@(rel[side+'Elbow']-rel[side+'Shoulder']))*.29
         j[side+'Hand']=j[side+'Elbow']+unit(upper@(rel[side+'Hand']-rel[side+'Elbow']))*.27
-    directions=dict(PelvisForward=forward,PelvisUp=UP,ChestForward=forward,ChestUp=up,HeadForward=gaze)
+    directions=dict(PelvisForward=np.array([1.,0.,0.]),PelvisUp=UP,ChestForward=forward,ChestUp=up,HeadForward=gaze)
     for key in j:j[key]=j[key]-UP*h
     contacts=3 if frame<spec['frontSoleReleaseFrame'] else 2 if frame<spec['rearSoleReleaseFrame'] else 0
     phase='load' if frame<spec['popFrame'] else 'pop' if frame<spec['airFrame'] else 'air'

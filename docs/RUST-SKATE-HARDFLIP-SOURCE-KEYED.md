@@ -49,3 +49,11 @@ python scripts/author_skate_hardflip_hybrid.py --output context/artifacts/hardfl
 The resulting pack is `Reviewed=false`. A separate private test-only clone
 can exercise the ordinary route; it grants no installation approval. Viewer
 review and the later Shadow/native test are separate gates.
+
+The near-vertical passage is a real distinction in this take: the front shoe
+rises substantially above the rear shoe while the front knee folds. The free
+Air leg proportions, heel-side front-foot pickup, toe-side rear-foot pickup,
+body balance and knee planes come from this Hardflip retarget. Scalar checks
+written for a horizontal board can therefore miss their default hip/sole-gap
+or equal-foot-height limits. Those results stay visible for family/source
+review; no checker threshold or physics has been relaxed.
