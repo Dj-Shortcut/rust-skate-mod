@@ -2,12 +2,12 @@ using System;
 
 namespace Shortcut.RustMod
 {
-    // Opt-in for one authored, carrier-local body AND board clip. The caller
+    // Opt-in for one carrier-local body AND authored-board clip. The caller
     // retains pack/owner approval, action ownership, physics and scoring.
     public sealed class SkateCaptureKeyedPlayback
     {
         public const string RequiredClipId = "kickflip-source-keyed-v1";
-        public const string Provenance = "Authored source-keyed normal Kickflip; coupled body/board poses and actual clip event ratios, uniformly warped to the physical flight; not measured 3D capture.";
+        public const string Provenance = "Source-keyed normal Kickflip with a captured-body basis, authored board/contact repairs and actual clip event ratios, uniformly warped to the physical flight; reconstructed motion, not measured 3D capture.";
         public static readonly SkateCaptureTrickSignature RequiredSignature =
             new SkateCaptureTrickSignature(SkatePopKind.Ollie, false, false, 360, 0, 0, 0);
         private static readonly SkateBoardPose SourceCarrier = new SkateBoardPose(
