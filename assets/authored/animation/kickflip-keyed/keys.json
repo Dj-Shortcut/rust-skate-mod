@@ -10,7 +10,8 @@
     "sourceAuthor": "Original authored keys; The Berrics visual reference",
     "rights": "Original authored motion/control data. Source footage/pixels are not included or relicensed.",
     "provenance": "Coupled body and board keyed from25 actual reference frames; not monocular detector output or prior correction stack.",
-    "uncertainties": "Reference filmed stance is uncertain; canonical Regular and its anatomical Goofy mirror are authoring mappings. Flick contact anatomy, hidden depth and Catch273 within blurred272\u2013274 are authored."
+    "uncertainties": "Reference filmed stance is uncertain; canonical Regular and its anatomical Goofy mirror are authoring mappings. Flick contact anatomy, hidden depth and Catch273 within blurred272\u2013274 are authored.",
+    "authoredContactSemantics": "Sole support ends at source261, the start of the authored ankle-roll toward upper-shoe nose-rim contact. Instep contact at262 is authored upper-shoe contact, never a measured sole-support bit."
   },
   "sourceRootMotion": {
     "origin": "Physical support anchor local(0,0,0)",
@@ -935,10 +936,8 @@
     },
     {
       "t": 0.23356666666666667,
-      "phase": "pop",
-      "contacts": [
-        "LeftFoot"
-      ]
+      "phase": "air",
+      "contacts": []
     },
     {
       "t": 0.26693333333333336,
