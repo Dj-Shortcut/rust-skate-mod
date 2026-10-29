@@ -316,6 +316,7 @@ namespace Shortcut.RustMod
             SkateCaptureFrame source;
             double sourceTime = includePopSequence && phase == SkateCapturePhase.Air ? FlightSourceTime(value) : SourceTime(phase, value);
             if (!SkateCaptureSampler.TrySample(Clip, sourceTime, rig, stance, out source, out error)) return false;
+            if (footSupport != null && !footSupport.TryPlaceCatch(rig, sourceTime, source, out source, out error)) return false;
             // The pack is canonical board space. Keep real pelvic facing/anticipation; hips are NOT a camera carrier.
             // Only the explicit body-spin descriptor removes source world heading. It has no shove,
             // so board forward isolates that heading even while its local longitudinal flip turns.
