@@ -12,7 +12,15 @@ public static partial class SkateHeld
     private static ulong skin;
     private static int amount;
     private static MethodInfo activeItem;
-    private static bool looked;
+    private static Type activeItemType;
+    public static string ItemReadState { get; private set; } = "not checked";
+
+    private static bool ItemReadResult(bool result, string state)
+    {
+        if (ItemReadState != state)
+        { ItemReadState = state; Out.Say("PIECES inventory reader: " + state); }
+        return result;
+    }
 
     public static void Report(object player)
     {
@@ -77,13 +85,18 @@ public static partial class SkateHeld
     public static bool Read(object player)
     {
         Shortname = ""; Name = ""; Marker = 0; Slot = -1; skin = ulong.MaxValue; amount = 0;
-        if (player == null) return false;
+        if (player == null) return ItemReadResult(false, "no local player");
         try
         {
-            if (!looked) { looked = true; activeItem = player.GetType().GetMethod("GetActiveItem", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null); }
-            if (activeItem == null) return false;
+            var type = player.GetType();
+            if (activeItemType != type)
+            {
+                activeItemType = type; activeItem = null;
+                activeItem = type.GetMethod("GetActiveItem", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, Type.EmptyTypes, null);
+            }
+            if (activeItem == null) return ItemReadResult(false, "GetActiveItem unavailable; inventory preview unverified");
             var it = activeItem.Invoke(player, null);
-            if (it == null) return false;
+            if (it == null) return ItemReadResult(false, "no held item");
             var info = Get(it, "info");
             Shortname = (info == null ? null : Get(info, "shortname") as string) ?? "";
             Name = Get(it, "name") as string ?? "";
@@ -96,9 +109,9 @@ public static partial class SkateHeld
             var itemAmount = Get(it, "amount");
             skin = itemSkin is ulong ? (ulong)itemSkin : ulong.MaxValue;
             amount = itemAmount is int ? (int)itemAmount : 0;
-            return true;
+            return ItemReadResult(true, "active item read");
         }
-        catch (Exception) { return false; }
+        catch (Exception) { return ItemReadResult(false, "native item read failed; inventory preview unverified"); }
     }
 
     // The park items (Codex's catalogue): building plans marked 0x534B5001..0C in this order.
