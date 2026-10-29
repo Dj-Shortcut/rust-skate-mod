@@ -414,9 +414,12 @@ public static class SkateCapturedTricks
         double weight = Math.Max(0, Math.Min(1, (now - beganAt) / .1));
         if (landed) weight = Math.Min(weight, active.RecoveryWeight(value));
         if (weight <= 0) return false; // The first live pop frame keeps the exact procedural pose.
-        // Pop contact still uses the measured support refit below. Pinning its
-        // target here would bypass the entry weight, then jump back on release.
-        if (!SkateCapturePlayback.TryBlend(rig, baseline, baselineLeftUp, baselineRightUp, frame, weight, out frame, out error, landed))
+        // Keep the pop-foot target through release until entry is complete;
+        // dropping its owner on the release frame would jump back to a free baseline.
+        var entryFoot = !landed && weight < 1 && active.SourceMovementKind == "bs-pop-shove-it"
+            ? (activeStance == SkateStance.Goofy ? SkateCaptureContacts.LeftFoot : SkateCaptureContacts.RightFoot)
+            : SkateCaptureContacts.None;
+        if (!SkateCapturePlayback.TryBlend(rig, baseline, baselineLeftUp, baselineRightUp, frame, weight, out frame, out error, landed, entryFoot))
         { Refuse(nextToken, error); return false; }
         if (!footSupport.TryConform(rig, frame, out frame, out error, !landed && (weight < 1 || phase == SkateCapturePhase.Catch)))
         { Refuse(nextToken, error ?? "the blended foot frame cannot follow the shaped deck"); return false; }

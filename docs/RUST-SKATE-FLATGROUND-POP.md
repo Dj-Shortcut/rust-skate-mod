@@ -43,6 +43,12 @@ weak or genuinely late request can still run out of air.
 
 ## Verification and remaining gates
 
+During a captured BS Pop Shove-it's existing 0.1-second entry, its popping
+foot follows the source target while the body and other foot keep blending.
+That ownership continues through the source release until full entry weight,
+avoiding a switch back to a procedural foot that is already lifted. Source
+contact masks, model-calibration bounds and catch guards remain unchanged.
+
 The complete client source compiles against the cached reference set. Temporary
 headless probes exercise the actual live launch/forecast bodies, actual shared
 scorer, native path sampling and shared landing rules with real 32/60 Hz steps.
