@@ -33,7 +33,25 @@ basis from its middle/index/little proximal bones, including mirrored mapping.
 It applies the frame through the existing grab contact weight, rebuilds from the
 saved entry local rotation each frame, and restores it on release, another pose
 owner, reset or unbind. Missing/degenerate finger bones disable the orientation refinement and retain
-animated hands; riding does not fail. Finger articulation is unchanged.
+animated hands; riding does not fail.
+
+For these same five profiles, the native writer now optionally articulates the
+selected avatar's existing fingers. Bind caches all four three-bone finger chains
+and the three native thumb bones, measures segment directions and lengths, and
+requires unique, direct humanoid chains. Missing or ambiguous mappings keep the
+avatar's finger animation and emit one binding diagnostic per affected hand.
+The prototype's authored closure is adapted to those measured directions in the
+same wrist basis. The thumb opposes the fingers. Humanoid mapping has no fingertip;
+its final segment reach is an explicitly authored proportion, not a measured tip.
+No hand mesh, bone, skin weight, body joint or gameplay state is added or changed.
+
+Finger entry, hold and release consume the existing selected-hand contact weight
+after the wrist writer. Each frame rebuilds from saved local rotations, without
+accumulating rotation, allocations or bone searches. Release, another action owner,
+reset, dismount and unbind restore the saved finger rotations. Actual humanoid
+hand identity supplies the thumb side after the existing mirrored limb mapping;
+the free hand remains avatar-driven. A finger-write failure disables only that
+optional hand refinement and retains riding.
 
 `SkateRiderRig.WithHands` adds optional measured wrist-to-middle-proximal lengths
 and index-to-little knuckle spans without changing existing constructors. The
@@ -80,8 +98,8 @@ a65mm authored wrist-to-MCP measurement. Fingers close/relax through the existin
 grab weight. This is authored anatomy, not tracked fingers from the recording.
 
 The native source now uses the same grip-anchor construction with measured avatar
-MCP reach. The prototype finger articulation remains private; native fingers
-preserve avatar animation. Full hand/contact quality, grab-specific silhouette and
+MCP reach. The private anatomy mesh remains a reference, while the optional native
+finger writer uses existing avatar bones only. Full hand/contact quality, grab-specific silhouette and
 Shadow gameplay remain open. The v3 review identified upward-looking return heads
 after release because the default gaze followed the nose while the rider rolled fakie. The new return
 helper corrects that direction without moving other joints or the board. Knee
@@ -101,3 +119,19 @@ checks preserve every non-head joint exactly while looking down the return ramp.
 The private v3 clips include the new post-solve head output and preserve the
 reference body and actual13-part runtime board. Offline evidence does not execute
 Unity native bindings or establish full trick acceptance.
+
+
+Native finger-source validation: all69 client sources compile as C#7.3 against
+the356 verified cached references. A private synthetic humanoid bone fixture runs
+the actual extracted binder and writer for both anatomical hands, including entry,
+hold, nonaccumulation, fade, release, another owner, reset and optional missing or
+ambiguous chains. The warmed writer performs no measured managed allocations or
+Animator bone lookups in that fixture. The real `RiderRig.Apply` callsite applies
+fingers immediately after its existing selected-hand wrist writer. No permanent
+scenario, new mesh, recording or preview asset is shipped.
+
+The Xbox source windows and existing halfpipe approach/air/return comparisons
+remain the visual references; they are not flat-ground grab demonstrations and
+are not proof that Rust exposes these native finger bones. Actual avatar mapping,
+visible finger closure, thumb/deck contact and Animator coexistence require the
+Shadow test. This source is not an in-game or full-hand approval.
