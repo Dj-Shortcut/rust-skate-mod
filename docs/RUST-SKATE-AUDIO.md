@@ -51,10 +51,18 @@ a default-layer hit alone does not imply wood. Speed affects gain and pitch,
 and loop gains crossfade. This remains a coarse substrate mapping, not native
 per-triangle material recognition.
 
-Playback is still local **2D audio** (`spatialBlend = 0`), with no observer
-replication, positional multiplayer sound or server audio change. It respects
-the existing listener/mute state. Event timing, transitions and mix balance still
-need in-game listening.
+Playback uses local **3D sources** (`spatialBlend = 1`), with linear attenuation
+from 1 to 25 metres. Seven loop channels follow the current board position.
+One-shots use eight cached voices and retain their event positions as the rider
+moves away: board contacts originate at the board, push at the foot, and body
+impact near the rider. An idle voice is reused first; a full pool replaces its
+oldest tail. Source creation stays in off-board preparation, with one source per
+preparation unit. Native source settings are read back before readiness is logged.
+
+Doppler is disabled because the existing speed/airborne logic already controls
+pitch. The listener/mute state is unchanged. These are local emitters; observer
+replication, positional multiplayer events and server audio are separate work.
+Native attenuation, event timing and mix balance still need in-game listening.
 
 ## Loading, failure and lifecycle
 
@@ -105,13 +113,59 @@ They are not relicensed as CC0. Keep provenance and applicable usage terms with
 the private pack, as described in the sound brief. The historical procedural API
 and its separately authored assets retain their own existing licences.
 
-Offline reader/playback fixtures and a genuine cached-reference C# compile cover
-their stated source scope. Historical procedural-audio tests remain API coverage;
-they do not validate these sounds. All 18 selected private WAVs now pass format,
-peak/clipping, DC, onset/tail and repeated loop-join checks. The actual client
-reader decoded the full pack with float samples matching the PCM bytes. Absolute
-LUFS targets and the requested drop/landing level difference remain unmet; no
-compressor or limiter was used to conceal those limits. Current-build startup and
-native loading of all eighteen clips are evidenced for 0.18.62. Actual event playback,
-public-tool staging, teardown, performance, repeated-loop artifacts, output mix and
-heard quality remain open. Boarding failed before a ride could establish those results.
+The owner authorized shortening the four late onsets and dynamics processing.
+The current private preparation retains the original provider WAVs, all seven
+validated loops and every one-shot's complete tail duration. Ollie, Scrape, Slam
+and Bail lose only their measured quiet preroll, retaining five milliseconds
+before the prior measured onset. Disclosed lookahead peak compression and a final
+50 ms end fade provide safe PCM output; there is no voice or watermark processing.
+
+The private completion candidate dated 29 October 2026 passes all 18 format,
+peak/clipping, DC, onset/tail, repeated loop-join and absolute-LUFS targets within
+the original 0.5 LU tolerance. Landing is −12 LUFS, Drop −9 and Slam −13 after a
+bounded additional gain/lookahead-limiter stage. Their onset prefixes and last
+50 ms remain PCM-identical. Ollie received only −1.084 dB uniform attenuation;
+no duration, tail, target or tolerance was changed. These four replacement WAVs
+and their provider provenance remain private; the other fourteen are unchanged.
+Drop is 3 LU above Landing, Slam 1 LU below it and the unchanged Push is 10.396 LU
+below the corrected Ollie. Processing and a technical pass do not establish
+natural-sounding dynamics or an in-game mix.
+
+### Reproduce the selected-pack loudness gate
+
+[`measure_skate_sound_loudness.py`](../scripts/measure_skate_sound_loudness.py)
+is a read-only validator for the eighteen fixed `_01.wav` game filenames. It
+reuses the existing catalog's targets, reports missing/invalid/short/silent
+inputs and fails on target misses; it never normalizes, pads, trims or writes
+WAVs. A `demo.wav` in the folder is ignored and cannot replace a required game
+sound. Dependencies are NumPy, SciPy and pyloudnorm (validated with 0.2.0).
+
+```sh
+python scripts/measure_skate_sound_loudness.py /path/to/skate_sounds --ffmpeg ffmpeg > loudness-report.json
+```
+
+The corrected meter analyzes only complete 400 ms windows with 100 ms hops.
+Pinned pyloudnorm 0.2.0 rounds its block count and may include a truncated final
+window while still dividing by 400 ms. The original 0.580-second Ollie therefore
+read −12.397 LUFS in the raw meter but approximately −10.916 in complete-block
+analysis and −10.90 in FFmpeg. The validator limits the **analysis view** to the
+last complete window end; every audio sample remains in the file. It retains
+raw pyloudnorm values as diagnostics, including any raw-meter disagreement.
+Inputs shorter than a complete window are rejected rather than silently padded.
+
+With `--ffmpeg`, independent input LUFS, true peak and agreement within 0.1 LU
+are required gates; failure or a missing executable fails the run. On the private
+completion candidate all eighteen targets pass both meters, with maximum
+agreement error 0.041 LU, and all independent true peaks stay below −1 dBFS.
+Without that argument, the report explicitly says `INDEPENDENT_NOT_RUN`; a local
+LUFS pass does not claim independent validation. This command checks loudness,
+format and sample peaks, not onset, DC, tails or loop seams; the candidate's
+separate private preparation/reader checks cover those technical gates.
+
+The actual client reader decoded the final pack with float samples matching the
+PCM bytes. Private source fixtures cover moving loop origins, independent impact
+tails, bounded voice reuse and lifecycle/failure handling. A cached-reference
+compile covers the complete current client source. These checks do not prove
+native spatial playback or subjective audio quality. Historical native startup
+and WAV loading at version 0.18.62 do not validate these changes. Installation,
+current-game event playback, public-tool staging and heard balance remain open.

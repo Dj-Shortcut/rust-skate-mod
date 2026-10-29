@@ -580,3 +580,8 @@ Check source/rig comparisons, contact changes, complete board rotations and
 export fidelity per clip. A passing parser or compatibility compile does not
 establish natural motion, the native Rust skin, normal-pop integration or
 in-game acceptance. These remain separate verification gates.
+
+Where the source cannot be trusted, follow the owner's
+[visible-result rule](AUTONOMY.md#visible-result-over-source-fidelity-owner-28-october-2026):
+a labelled authored correction that looks right beats an unlabelled faithful
+copy of a reconstruction error.
