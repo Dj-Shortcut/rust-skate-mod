@@ -27,9 +27,10 @@ public static class SkateCapturedTricks
     private static SkateCapturePlayback active;
     private static SkateCaptureFootSupport footSupport;
     private static SkateCaptureFlick flick;
+    private static SkateDeckFootFitter flickLeft, flickRight;
     private static int flickVersion = -1;
     private static string flickError;
-    private static bool flickOwner;
+    private static bool flickOwner, flickApplied;
     private static int footVersion;
     private static SkateCaptureTrickSignature signature;
     private static SkateStance activeStance;
@@ -44,11 +45,11 @@ public static class SkateCapturedTricks
     private static SkateCaptureFrame groundedImpact;
     private static SkateBoardPose departedCarrier;
     public static bool HasFrame { get { return displayed.Initialized; } }
-    public static SkateCaptureFlickContact FlickContact { get { return HasFrame && flickOwner && flick != null
+    public static SkateCaptureFlickContact FlickContact { get { return HasFrame && flickApplied && flickOwner && flick != null
         ? flick.Contact : default(SkateCaptureFlickContact); } }
     public static SkateBoardPose DisplayFrame { get { return displayed; } }
     public static string Status { get; private set; } = "Captured riding not loaded";
-    public static void ClearFrame() { displayed = default(SkateBoardPose); }
+    public static void ClearFrame() { displayed = default(SkateBoardPose); flickApplied = false; }
     public static void Reset()
     { active = null; footSupport = null; ResetFlick(); token = refusedToken = -1; airSeen = landed = flipExtended = false; caughtAt = preparedAt = -1; catchPreparationWeight = 0; previousAirSourceTime = catchSourceLead = previousAirProgress = 0; previous = landingFrom = default(SkateCaptureFrame); ClearPlantedFeet(); ClearFrame(); }
     public static void Preload()
@@ -117,9 +118,11 @@ public static class SkateCapturedTricks
 
     private static bool PrepareFlick(out string error)
     {
-        if (flickVersion == SkateFootContacts.Version) { error = flickError; return flick != null; }
-        flickVersion = SkateFootContacts.Version; flick = null;
         var left = SkateFootContacts.LeftFitter; var right = SkateFootContacts.RightFitter;
+        if (flickVersion == SkateFootContacts.Version && ReferenceEquals(flickLeft, left) && ReferenceEquals(flickRight, right))
+        { error = flickError; return flick != null; }
+        flickVersion = SkateFootContacts.Version; flick = null;
+        flickLeft = left; flickRight = right;
         flickError = "authored flick requires both measured shoe profiles";
         if (left != null && right != null)
         {
@@ -138,8 +141,10 @@ public static class SkateCapturedTricks
         if (elapsed <= SkateFlipFlick.EdgeReleaseSeconds)
             return new SkateBoardPose(board.Origin, board.Forward, unrolledUp);
         var axis = SkateBoardPath.Cross(carrier.Forward, carrier.Up);
-        var forward = SkateBoardPath.Turn(carrier.Forward, axis, SkateFlickPitch.NoseDegrees);
-        var up = SkateBoardPath.Turn(carrier.Up, axis, SkateFlickPitch.NoseDegrees);
+        // Replace only the current pitch pulse; retain the unflipped lean/bank.
+        double delta = SkateFlickPitch.NoseDegrees - SkateBoard.AirPitch;
+        var forward = SkateBoardPath.Turn(board.Forward, axis, delta);
+        var up = SkateBoardPath.Turn(unrolledUp, axis, delta);
         var origin = board.Origin + (forward - board.Forward) * SkateBoard.Axle +
             (up - unrolledUp) * RiderRig.DeckTop;
         return new SkateBoardPose(origin, forward, up);
@@ -574,6 +579,7 @@ public static class SkateCapturedTricks
                 FlickReleaseDeck(board, carrier, elapsed), elapsed, SkateFlipFlick.EdgeReleaseSeconds,
                 activeStance, active.SourceMovementKind == "heelflip", out frame, out error))
             { Refuse(nextToken, error ?? "authored shoe flick unavailable"); return false; }
+            flickApplied = true;
         }
         if (!landed && phase == SkateCapturePhase.Air && active.SourceMovementKind == "heelflip")
         {
