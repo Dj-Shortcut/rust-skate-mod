@@ -120,14 +120,47 @@ and Bail lose only their measured quiet preroll, retaining five milliseconds
 before the prior measured onset. Disclosed lookahead peak compression and a final
 50 ms end fade provide safe PCM output; there is no voice or watermark processing.
 
-All 18 final WAVs pass format, peak/clipping, DC, onset/tail and repeated loop-join
-checks. Eight of the eleven previous absolute-LUFS misses now meet the original
-0.5 LU tolerance. Three remain: Landing −13.59 LUFS (target −12), Drop −10.59
-(target −9), and Slam −14.59 (target −13). Those misses remain explicit; the meter
-and criteria were not changed. Drop is 3 LU above the actual Landing, Slam 1 LU
-below it, and Push 10 LU below the actual Ollie. Further flattening of the short
-Landing transient was not used to claim an absolute-loudness pass. This does not
-fully complete the sound-quality brief.
+The private completion candidate dated 29 October 2026 passes all 18 format,
+peak/clipping, DC, onset/tail, repeated loop-join and absolute-LUFS targets within
+the original 0.5 LU tolerance. Landing is −12 LUFS, Drop −9 and Slam −13 after a
+bounded additional gain/lookahead-limiter stage. Their onset prefixes and last
+50 ms remain PCM-identical. Ollie received only −1.084 dB uniform attenuation;
+no duration, tail, target or tolerance was changed. These four replacement WAVs
+and their provider provenance remain private; the other fourteen are unchanged.
+Drop is 3 LU above Landing, Slam 1 LU below it and the unchanged Push is 10.396 LU
+below the corrected Ollie. Processing and a technical pass do not establish
+natural-sounding dynamics or an in-game mix.
+
+### Reproduce the selected-pack loudness gate
+
+[`measure_skate_sound_loudness.py`](../scripts/measure_skate_sound_loudness.py)
+is a read-only validator for the eighteen fixed `_01.wav` game filenames. It
+reuses the existing catalog's targets, reports missing/invalid/short/silent
+inputs and fails on target misses; it never normalizes, pads, trims or writes
+WAVs. A `demo.wav` in the folder is ignored and cannot replace a required game
+sound. Dependencies are NumPy, SciPy and pyloudnorm (validated with 0.2.0).
+
+```sh
+python scripts/measure_skate_sound_loudness.py /path/to/skate_sounds --ffmpeg ffmpeg > loudness-report.json
+```
+
+The corrected meter analyzes only complete 400 ms windows with 100 ms hops.
+Pinned pyloudnorm 0.2.0 rounds its block count and may include a truncated final
+window while still dividing by 400 ms. The original 0.580-second Ollie therefore
+read −12.397 LUFS in the raw meter but approximately −10.916 in complete-block
+analysis and −10.90 in FFmpeg. The validator limits the **analysis view** to the
+last complete window end; every audio sample remains in the file. It retains
+raw pyloudnorm values as diagnostics, including any raw-meter disagreement.
+Inputs shorter than a complete window are rejected rather than silently padded.
+
+With `--ffmpeg`, independent input LUFS, true peak and agreement within 0.1 LU
+are required gates; failure or a missing executable fails the run. On the private
+completion candidate all eighteen targets pass both meters, with maximum
+agreement error 0.041 LU, and all independent true peaks stay below −1 dBFS.
+Without that argument, the report explicitly says `INDEPENDENT_NOT_RUN`; a local
+LUFS pass does not claim independent validation. This command checks loudness,
+format and sample peaks, not onset, DC, tails or loop seams; the candidate's
+separate private preparation/reader checks cover those technical gates.
 
 The actual client reader decoded the final pack with float samples matching the
 PCM bytes. Private source fixtures cover moving loop origins, independent impact

@@ -77,11 +77,13 @@ dat is scriptbron, nog niet op Windows/PowerShell uitgevoerd. De 18 gekozen best
 zijn privé voorbereid als 44,1 kHz mono PCM16. De vier te late aanzetten zijn
 ingekort; de volledige uitklanken blijven behouden. Formaat, veilige pieken, DC,
 onsets, eindfades, loopnaden en decode met de werkelijke clientlezer zijn gecontroleerd.
-Acht van de elf eerdere LUFS-afwijkingen vallen nu binnen de oorspronkelijke
-0,5 LU-tolerantie. Landing (−13,59), Drop (−10,59) en Slam (−14,59 LUFS) blijven
-circa 1,59 LU onder hun absolute doel. Drop zit wel 3 LU boven de werkelijke
-Landing, Slam 1 LU eronder en Push 10 LU onder de werkelijke Ollie. Die resterende
-afwijkingen worden niet als opgelost gemeld.
+De private kandidaat van 29 oktober haalt alle achttien oorspronkelijke LUFS-doelen
+binnen 0,5 LU, ook onafhankelijk gemeten met FFmpeg. Landing is −12, Drop −9 en
+Slam −13 LUFS na begrensde aanvullende dynamiekbewerking; Ollie kreeg uitsluitend
+uniforme demping na een aangetoonde fout met onvolledige meetblokken. De veertien
+andere WAVs bleven ongewijzigd. De [audiodocumentatie](RUST-SKATE-AUDIO.md#reproduce-the-selected-pack-loudness-gate)
+beschrijft de reproduceerbare meettool, raw-meterdiagnose en de afzonderlijke
+luister- en speltestgates. Dit is een technische kandidaat, geen in-gamegoedkeuring.
 
 De bron gebruikt nu lokale 3D-geluidsbronnen: loops volgen het board en eenmalige
 impacts blijven op hun gebeurtenisplek staan. Dat is geen geluidssynchronisatie
