@@ -6,8 +6,8 @@ compact `captured-body.json` reconstruction controls and
 binary. The original `keys.json` and pure-key generator remain as historical
 comparison inputs, not the current body-motion basis.
 
-The body controls retain the existing retargeted skeleton: torso, hips, arms,
-head and source knee bend planes. They derive from the original canonical pose
+The body controls retain the existing retargeted skeleton as the basis: torso,
+hips, arms, head and source knee bend planes. They derive from the original canonical pose
 JSON SHA256 `e7dd177099095caf3855fd0adc0e2c0701fc36fad9db2b2a0ebf181709883c82`
 and pack SHA256 `05a6fbcf4fdcfe6a339600123a14078ea589c58079b81a84894b676b25860bc3`.
 There are43 selected actor frames254–296 and170 dense retarget controls,
@@ -40,7 +40,12 @@ control data, not a new detector result or an all-body hand animation.
 Board winding/pitch and the event timing are explicit source-led estimates.
 Early pitch/relative board lag, front upper/outer-forefoot slide/edge/release,
 a short rear-foot clearance, late free-foot clearance and the smooth landing
-hip-height envelope are authored. The body gesture remains captured. Changed
+hip-height envelope are authored. A short, explicitly labelled upper-body
+reconstruction259–278 repairs visible captured misses: arm height261,
+forward torso/head direction267 and asymmetric arms273. It rotates the upper
+group around the unchanged pelvis and reconstructs the fixed-length arm/head
+segments. Hidden depth and these poses are authored source-led estimates.
+Outside its C2 window the captured upper motion is retained exactly. Changed
 foot targets use measured fixed-length chains and the transported captured knee
 plane; there is no generic knee-angle cap or legacy runtime correction stack.
 Upper-shoe contact is not represented as sole support. Sole markers end before

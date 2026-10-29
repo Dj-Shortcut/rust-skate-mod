@@ -58,6 +58,38 @@ def body_at(controls,t):
     return joints,dirs,soles
 
 
+def upper_reconstruction(joints,dirs,frame,h):
+    """Short labelled upper-body reconstruction; lower-body contacts stay fixed."""
+    weight=window(frame,h['upperWindow'])
+    if not weight:return
+    rows=h['upperKeys'];times=[r['frame']for r in rows]
+    vector=lambda name:unit(curve(times,[r[name]for r in rows],frame))
+    old_up=unit(joints['Neck']-joints['Pelvis']);target_up=vector('torsoUp')
+    new_up=unit(old_up*(1-weight)+target_up*weight)
+    axis=np.cross(old_up,new_up);s=float(np.linalg.norm(axis));c=float(np.clip(np.dot(old_up,new_up),-1,1))
+    rotation=np.eye(3)
+    if s>1e-9:
+        axis/=s;x,y,z=axis;cross=np.array([[0,-z,y],[z,0,-x],[-y,x,0]])
+        rotation=np.eye(3)+cross*s+(cross@cross)*(1-c)
+    anchor=joints['Pelvis']
+    for name in ('Chest','Neck','Head','LeftShoulder','RightShoulder','LeftElbow','RightElbow','LeftHand','RightHand'):
+        joints[name]=anchor+rotation@(joints[name]-anchor)
+    dirs['ChestUp']=new_up
+    dirs['ChestForward']=unit(rotation@dirs['ChestForward'])
+    for side in ('Left','Right'):
+        shoulder=joints[side+'Shoulder'];elbow=joints[side+'Elbow'];hand=joints[side+'Hand']
+        upper=unit(unit(elbow-shoulder)*(1-weight)+vector(side+'Upper')*weight)
+        fore=unit(unit(hand-elbow)*(1-weight)+vector(side+'Fore')*weight)
+        joints[side+'Elbow']=shoulder+upper*.29
+        joints[side+'Hand']=joints[side+'Elbow']+fore*.27
+    old_head=basis(rotation@dirs['HeadForward'],unit(joints['Head']-joints['Neck']))
+    gaze=vector('headForward')
+    target_head=basis(gaze,unit(UP-gaze*np.dot(UP,gaze)))
+    head=qmatrix(slerp(matrix_quat(old_head),matrix_quat(target_head),weight))
+    joints['Head']=joints['Neck']+head[:,1]*.12
+    dirs['HeadForward']=head[:,2]
+
+
 def sample(controls,spec,keys,t):
     joints,dirs,soles=body_at(controls,t);frame=254+t*spec['sourceFps'];h=spec['hybrid'];times=[k['t']for k in keys]
     board_keys=[k for k in keys if k['control'].get('boardKey',True)];bt=[k['t']for k in board_keys]
@@ -119,6 +151,7 @@ def sample(controls,spec,keys,t):
         elif dot<0:raise ValueError('Ambiguous opposite captured knee plane')
         joints[side+'Knee']=limb(hip,ankle,.44,.43,unit(bend));joints[side+'Ankle']=ankle;soles[side]=foot[:,1]
         joints[side+'Toe']=ankle+foot[:,2]*math.sqrt(.14*.14-.07*.07)-foot[:,1]*.07
+    upper_reconstruction(joints,dirs,frame,h)
     event=next(e for e in reversed(spec['events'])if e['t']<=t+1e-9)
     return dict(t=t,sourceFrame=min(frame,296),sourceCacheTime=min(frame,296)/spec['sourceFps'],sourceVideoTime=136+min(frame,296)/spec['sourceFps'],capturedBody=True,authoredLocalContacts=True,
         joints={k:joints[k].tolist()for k in JOINTS},dirs={k:dirs[k].tolist()for k in DIRS},soleUp={k:soles[k].tolist()for k in soles},board=dict(origin=origin.tolist(),quaternion=rotation.tolist()),phase=event['phase'],contacts=sum({'LeftFoot':1,'RightFoot':2}.get(x,0)for x in event['contacts']),authoredBoardEuler=angles.tolist())
@@ -128,7 +161,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--body',type=Path,default=ASSET/'captured-body.json');p.add_argument('--constraints',type=Path,default=ASSET/'hybrid-constraints.json');p.add_argument('--output',type=Path,required=True);a=p.parse_args()
     raw=a.body.read_bytes();controls=json.loads(raw);spec=json.loads(a.constraints.read_text());assert hashlib.sha256(raw).hexdigest()==spec['hybrid']['sourceBodySha256']
     keys=authored_keys(spec);frames=[sample(controls,spec,keys,float(t))for t in np.linspace(0,spec['duration'],spec['sampleCount'])]
-    meta=dict(spec['metadata'],id='kickflip-source-keyed-v1',movementKind='kickflip',reviewed=False,authored=True,capturedBody=True,canonicalStance='regular',sourceFilmedStance='uncertain; retargeted canonical mapping',sourceFps=spec['sourceFps'],firstSourceFrame=254,lastSourceFrame=296,capturedBodyControlSha256=hashlib.sha256(raw).hexdigest(),capturedBodySourcePoseSha256=controls['sourcePoseSha256'],sourceRootMotion=dict(spec['sourceRootMotion'],extraction=controls['normalization']),provenance='Captured retarget skeleton retained; authored source-board keys, short local foot/contact repairs and smooth landing height. No legacy runtime correction stack; not fully authored body motion.')
+    meta=dict(spec['metadata'],id='kickflip-source-keyed-v1',movementKind='kickflip',reviewed=False,authored=True,capturedBody=True,canonicalStance='regular',sourceFilmedStance='uncertain; retargeted canonical mapping',sourceFps=spec['sourceFps'],firstSourceFrame=254,lastSourceFrame=296,capturedBodyControlSha256=hashlib.sha256(raw).hexdigest(),capturedBodySourcePoseSha256=controls['sourcePoseSha256'],sourceRootMotion=dict(spec['sourceRootMotion'],extraction=controls['normalization']),provenance='Captured retarget skeleton is the basis; short labelled source-led upper reconstruction, authored board/foot contacts and smooth landing height. No legacy runtime correction stack; neither fully captured nor fully hand-authored body motion.')
     clip=dict(format='skate-capture-hybrid/1',metadata=meta,stance='regular',fps=(spec['sampleCount']-1)/spec['duration'],duration=spec['duration'],events=contact_events(spec['events'],spec['duration']),frames=frames)
     packed=encode_pack([clip]);a.output.mkdir(exist_ok=True,parents=True);(a.output/'kickflip-source-keyed-v1.json').write_text(json.dumps(clip,indent=2)+'\n');(a.output/'skate_captures.skmc').write_bytes(packed);print('HYBRID_CAPTURE_BODY_READY',len(frames),len(packed),hashlib.sha256(packed).hexdigest(),flush=True)
 
