@@ -452,8 +452,8 @@ monocular depth. Once Catch has actually returned both feet to the board, it
 prepares at least 35 degrees of knee flex (145-degree internal angle) over
 0.04 seconds. Free feet,
 source return, board rotation and physical contact timing are unchanged. The last
-shown preparation continues at the actual landing; compression then reaches a
-at least 52.5 degrees of flex over 0.065 seconds and releases over 0.30 seconds.
+shown preparation continues at the actual landing; compression then reaches
+at least 52.5 degrees of flex over 0.15 seconds and releases over 0.30 seconds.
 Without a completed catch, landing starts unprepared. The angular floor avoids
 compressing the already prepared impact pose a second time. A deeper source is
 not straightened.
@@ -465,6 +465,14 @@ contact event or a physics/scoring change. Review replays must identify the
 authored prior and use the same `SkateCaptureFootSupport.TryCatchPreparation` and
 `TryLandingAbsorption` implementations as normal riding. Source packs and their
 approval remain separate.
+
+The ordinary capture body enters with a C2 blend over 0.10 seconds. Its landing
+carrier transition uses the same C2 curve over the 0.15-second impact window,
+preserving fitted feet and the existing source-owned BS pop-foot entry. This
+removes the linear crossfade's abrupt endpoint velocities; physical takeoff,
+collision, source contact times and scoring remain unchanged. Pop/impact must
+still be judged in the integrated viewer with the real launch profile and foot
+work; an eased curve alone is not a complete-animation approval.
 
 All captured flips share a physical Catch rise limit. The previous displayed
 pelvis is transported to the current riding carrier; source stand-up cannot add
