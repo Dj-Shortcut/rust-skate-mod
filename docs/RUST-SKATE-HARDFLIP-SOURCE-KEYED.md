@@ -14,7 +14,7 @@ same direction. The selector does not opt other family IDs into this route.
 | --- | --- |
 | 132–137 | Low approach |
 | 138 | Visible release/body-rise onset; physics/input is immediate |
-| 140.6–141.5 | Front sole rolls to a short instep exit before the steep nose |
+| 140.6–141.0 | Front sole rolls to a short instep exit before the steep nose |
 | 142 | Rear-tail support |
 | 143–144 | Rear sole releases; free Air |
 | 144–148 | Steep frontside shove/kickflip and asymmetric pickup |
@@ -74,3 +74,10 @@ The observed ground-entry root joins the source body at the actual tail strike
 earlier had anticipated the tuck while that rear foot still supported the
 board; the unchanged reach guard correctly rejected it. Upper entry remains
 short and the later asymmetric Air follows this take.
+
+The low release at 142 connects directly to the collected front pickup at
+145. Early body and free-front-foot heights have their own source-led world
+curves; they do not inherit the changing height of the steeper board. The
+existing asymmetric rear chain and Catch/landing endpoints remain intact.
+The visible early torso fold is reconstructed from this take; camera depth
+and the original detector gaps remain uncertain.

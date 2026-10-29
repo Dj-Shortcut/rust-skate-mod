@@ -94,7 +94,12 @@ def foot(spec, frame, side):
         w=smooth((frame-spec['frontSoleReleaseFrame'])/(release-spec['frontSoleReleaseFrame']))
         return a*(1-w)+b*w,blend_frame(ar,br,w)
     o,r,h=board(spec,frame);local=vector(spec['frontAirKeys'] if side=='Left' else spec['rearAirKeys'],frame)
-    target=o+local;flat=foot_basis(80 if side=='Left' else 85,0,scalar(spec['frontAirDorsiKeys'] if side=='Left' else spec['rearAirDorsiKeys'],frame))
+    target=o+local
+    if side=='Left' and frame<155:
+        # Free foot follows this take, not the independently pitching board.
+        restore=smooth((frame-150)/5)
+        target[1]=scalar(spec['frontFreeWorldYKeys'],frame)*(1-restore)+target[1]*restore
+    flat=foot_basis(80 if side=='Left' else 85,0,scalar(spec['frontAirDorsiKeys'] if side=='Left' else spec['rearAirDorsiKeys'],frame))
     start,sr=instep(spec,release) if side=='Left' else attached(spec,release,side)
     start+=UP*(h-reference_height(spec,release))
     w=smooth((frame-release)/(1.0 if side=='Left' else 2.4));ankle=start*(1-w)+target*w;fr=blend_frame(sr,flat,w)
@@ -102,7 +107,7 @@ def foot(spec, frame, side):
     return ankle*(1-caught)+landing*caught,blend_frame(fr,lr,caught)
 
 
-def body_height(spec, frame, origin):
+def original_body_height(spec, frame, origin):
     a,b=spec['landingBodyWindow'];keys=spec['pelvisHeightKeys']
     if not a<frame<b:return origin[1]+scalar(keys,frame)
     def endpoint(f):
@@ -113,6 +118,22 @@ def body_height(spec, frame, origin):
         return height,slope*(b-a)
     first,va=endpoint(a);last,vb=endpoint(b);u=(frame-a)/(b-a);delta=last-first
     return first+va*u+(10*delta-6*va-4*vb)*u**3+(-15*delta+8*va+7*vb)*u**4+(6*delta-3*va-3*vb)*u**5
+
+
+def body_height(spec, frame, origin):
+    # Early body root is independent of the board's rapidly changing floor
+    # envelope. Join the already reviewed Catch/landing height and its velocity.
+    if frame>=158:return original_body_height(spec,frame,origin)
+    keys=spec['pelvisWorldYKeys']
+    if frame<=154:return scalar(keys,frame)
+    a,b=154.,158.;start=scalar(keys,a)
+    va=float(curve([k[0]for k in keys],[[k[1]]for k in keys],a,derivative=True)[0])*(b-a)
+    end=original_body_height(spec,b,board(spec,b)[0])
+    u=(b-spec['popFrame'])/(spec['landFrame']-spec['popFrame'])
+    slope=float(curve([k[0]for k in spec['pelvisHeightKeys']],[[k[1]]for k in spec['pelvisHeightKeys']],b,derivative=True)[0])
+    slope+=(.5*spec['gravity']*spec['referenceFlight']**2*(1-2*u)+spec['visualLift']*math.pi*math.sin(2*math.pi*u))/(spec['landFrame']-spec['popFrame'])
+    vb=slope*(b-a);u=(frame-a)/(b-a);delta=end-start
+    return start+va*u+(10*delta-6*va-4*vb)*u**3+(-15*delta+8*va+7*vb)*u**4+(6*delta-3*va-3*vb)*u**5
 
 
 def sample(controls,spec,frame):

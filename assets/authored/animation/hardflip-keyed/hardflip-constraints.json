@@ -7,7 +7,7 @@
   "tailStrikeFrame": 142,
   "frontSoleReleaseFrame": 140.6,
   "rearSoleReleaseFrame": 143,
-  "instepReleaseFrame": 141.5,
+  "instepReleaseFrame": 141.0,
   "airFrame": 144,
   "catchFrame": 158,
   "landFrame": 160,
@@ -2080,7 +2080,7 @@
   ],
   "frontAirKeys": [
     [
-      141.5,
+      141.0,
       -0.0652895,
       0.1290997,
       0.093338
@@ -2375,13 +2375,13 @@
     "sourceUrl": "https://www.youtube.com/watch?v=_oRoo1x1uzM&t=192.4044",
     "sourceAuthor": "The Berrics",
     "rights": "Original authored reconstruction and source-derived retarget controls. Reference footage stays private; no footage redistribution or relicensing grant asserted.",
-    "uncertainties": "Own black-shirt/red-shoe Hardflip retarget directions; actor140/141/152 was explicitly reconstructed in the earlier retarget. Hidden hands near144, camera depth and knee planes remain uncertain, not measured3D. The initial long nose-follow was rejected after mesh inspection; front upper contact ends before the strongly pitched free board, matching the already released front foot in source142. Free-Air feet, toe-side balance and knee planes now follow this take\u2019s retained retarget rather than a generic compact pose. Its vertical Hardflip has a genuinely higher front foot and rear chain; horizontal-deck hip/sole caps are not treated as calibrated truth.",
+    "uncertainties": "Own black-shirt/red-shoe Hardflip retarget directions; actor140/141/152 was explicitly reconstructed in the earlier retarget. Hidden hands near144, camera depth and knee planes remain uncertain, not measured3D. The initial long nose-follow was rejected after mesh inspection; front upper contact ends before the strongly pitched free board, matching the already released front foot in source142. Free-Air feet, toe-side balance and knee planes now follow this take\u2019s retained retarget rather than a generic compact pose. Its vertical Hardflip has a genuinely higher front foot and rear chain; horizontal-deck hip/sole caps are not treated as calibrated truth. Early front-foot and body world heights are explicitly source-led reconstruction: the old board-relative monocular controls coupled the torso and free shoe to a rapidly rising vertical deck. The visible142 low shoes and145 collected front foot govern the replacement; its exact camera depth remains uncertain.",
     "execution": "Back-foot frontside scoop plus front instep kickflip; roll+360/canonical yaw\u2212180. Source board3D and hidden upper-shoe contact are reconstructed. Original source confidence is unchanged.",
-    "phaseResearch": "Visible release/body-rise onset138, actual wood strike142, upper-shoe exit141.5, rear release143, strong pickup144\u2013148, grip returned150\u2013152, Catch158 and Land160; source oldPop141 fell inside the rising-body phase. The action onset is distinct from wood strike; native input/physics remains immediate."
+    "phaseResearch": "Visible release/body-rise onset138, wood strike142, low upper-shoe exit141, rear release143, direct asymmetric pickup144\u2013148, grip returned150\u2013152, Catch158 and Land160. The early world-space root/front-foot reconstruction removes the false high\u2192low\u2192high nose-follow; Catch and landing endpoints are preserved."
   },
   "frontAirDorsiKeys": [
     [
-      141.5,
+      141.0,
       -20
     ],
     [
@@ -2517,39 +2517,39 @@
     ],
     [
       138,
-      0.1395260483059068,
-      0.8794377994159222,
-      0.45510618409621517
+      0.25,
+      0.75,
+      0.61
     ],
     [
       142,
-      0.19582462358987415,
-      0.959385907784716,
-      -0.20305515689088197
+      0.2,
+      0.73,
+      0.653
     ],
     [
       144,
-      0.16668464007160572,
-      0.9678572920515621,
-      0.18833080732269045
+      0.22,
+      0.71,
+      0.67
     ],
     [
       146,
-      0.21687569257127434,
-      0.9655113638064308,
-      0.14405811442739447
+      0.23,
+      0.7,
+      0.676
     ],
     [
       148,
-      0.31516462516960164,
-      0.8935492287429654,
-      0.3197515204882637
+      0.25,
+      0.72,
+      0.65
     ],
     [
       150,
-      0.35578421173511726,
-      0.8411620294628974,
-      0.4072640849251023
+      0.3,
+      0.73,
+      0.61
     ],
     [
       152,
@@ -2598,6 +2598,82 @@
       0.24213477447339668,
       0.9298252494128642,
       0.2771204729806557
+    ]
+  ],
+  "frontFreeWorldYKeys": [
+    [
+      141,
+      0.16
+    ],
+    [
+      142,
+      0.21
+    ],
+    [
+      144,
+      0.7
+    ],
+    [
+      145,
+      0.94
+    ],
+    [
+      148,
+      1.04
+    ],
+    [
+      150,
+      0.91
+    ],
+    [
+      154,
+      0.6
+    ],
+    [
+      155,
+      0.56
+    ]
+  ],
+  "pelvisWorldYKeys": [
+    [
+      132,
+      0.722
+    ],
+    [
+      138,
+      0.7
+    ],
+    [
+      142,
+      0.94
+    ],
+    [
+      143,
+      0.96
+    ],
+    [
+      144,
+      1.04
+    ],
+    [
+      146,
+      1.25
+    ],
+    [
+      148,
+      1.4
+    ],
+    [
+      150,
+      1.36
+    ],
+    [
+      154,
+      1.2
+    ],
+    [
+      158,
+      1.074
     ]
   ]
 }
