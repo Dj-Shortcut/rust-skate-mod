@@ -9,7 +9,7 @@ namespace Shortcut.RustMod
         // 40 rad/s settles about 95% of a held target in 0.12 s.
         // A slower 28 rad/s candidate exceeded fixed-foot reach at recorded Land.
         public const double Omega = 40;
-        public const string Provenance = "Authored causal critically damped vertical body presentation; current foot targets and source torso directions retained.";
+        public const string Provenance = "Authored causal critically damped vertical body presentation constrained by unchanged fixed-foot reach; source torso directions retained.";
         private bool initialized;
         private SkateVector up;
         private double height, velocity;
@@ -46,6 +46,20 @@ namespace Shortcut.RustMod
             double decay = Math.Exp(-Omega * seconds);
             double nextHeight = target + (offset + coupling * seconds) * decay;
             double nextVelocity = (velocity - Omega * coupling * seconds) * decay;
+            double leftMin, leftMax, rightMin, rightMax;
+            double reach = (rig.ThighLength + rig.ShinLength) * SkateCaptureFootSupport.ReachShare;
+            if (!HeightInterval(frame.Pose.LeftHip, frame.Pose.LeftAnkle, target, reach, out leftMin, out leftMax) ||
+                !HeightInterval(frame.Pose.RightHip, frame.Pose.RightAnkle, target, reach, out rightMin, out rightMax) ||
+                Math.Max(leftMin, rightMin) > Math.Min(leftMax, rightMax))
+            { Reset(); error = "Vertical body motion has no fixed-foot reach interval."; return false; }
+            double appliedHeight = Math.Max(Math.Max(leftMin, rightMin), Math.Min(Math.Min(leftMax, rightMax), nextHeight));
+            if (appliedHeight != nextHeight)
+            {
+                // A hard current-foot constraint replaces the discarded filter
+                // prediction, including its accumulated velocity. Do not feed
+                // that unreachable lag back into next frame's knee solve.
+                nextHeight = appliedHeight; nextVelocity = 0;
+            }
             var shift = up * (nextHeight - target);
             if (!Finite(nextHeight) || !Finite(nextVelocity) || !Finite(shift))
             { Reset(); error = "Invalid vertical body motion state."; return false; }
@@ -60,6 +74,18 @@ namespace Shortcut.RustMod
                 frame.HasEvent, frame.Observation, frame.PelvisCorrection + shift,
                 frame.LeftHandCorrection, frame.RightHandCorrection, frame.RiderUp);
             height = nextHeight; velocity = nextVelocity; return true;
+        }
+
+        private bool HeightInterval(SkateVector hip, SkateVector ankle, double target, double reach,
+            out double minimum, out double maximum)
+        {
+            minimum = maximum = 0;
+            var delta = hip - ankle; double vertical = SkateVector.Dot(delta, up);
+            double lateralSquared = (delta - up * vertical).LengthSquared, radiusSquared = reach * reach;
+            if (!Finite(lateralSquared) || !Finite(radiusSquared) || lateralSquared > radiusSquared) return false;
+            double half = Math.Sqrt(Math.Max(0, radiusSquared - lateralSquared));
+            minimum = target - vertical - half; maximum = target - vertical + half;
+            return Finite(minimum) && Finite(maximum);
         }
 
         private static SkateRiderPose Translate(SkateRiderPose p, SkateVector d)
