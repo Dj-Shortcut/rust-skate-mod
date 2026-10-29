@@ -510,6 +510,25 @@ public static class SkateCapturedTricks
                     frame.HasEvent, frame.Observation, frame.PelvisCorrection, frame.LeftHandCorrection, frame.RightHandCorrection, frame.RiderUp);
             }
         }
+        if (!landed && phase == SkateCapturePhase.Air && flickOwner && SkateRide.FlipFlickKnown &&
+            SkateFlickPitch.UncombinedRoute(signature))
+        {
+            double elapsed = SkateRide.FlipFlickElapsed;
+            if (active.SourceMovementKind == "kickflip" &&
+                !footSupport.TryKickflipTuck(rig, frame, active.FlightSourceTime(value), elapsed, carrier, out frame, out error))
+            { Refuse(nextToken, error ?? "authored paired Kickflip tuck unavailable"); return false; }
+            if (!flick.TryPose(rig, frame, baseline, baselineLeftUp, baselineRightUp, carrier,
+                FlickReleaseDeck(board, carrier, elapsed), elapsed, SkateFlipFlick.EdgeReleaseSeconds,
+                activeStance, active.SourceMovementKind == "heelflip", out frame, out error))
+            { Refuse(nextToken, error ?? "authored shoe flick unavailable"); return false; }
+            flickApplied = true;
+        }
+        if (kickBodyOwner)
+        {
+            if (!kickBodyMotion.TryStep(rig, frame, now - kickBodyAt, out frame, out error))
+            { Refuse(nextToken, "authored Kickflip body motion: " + (error ?? "unavailable")); return false; }
+            kickBodyAt = now;
+        }
         if (!landed && phase == SkateCapturePhase.Catch &&
             (frame.Observation.Contacts & (SkateCaptureContacts.LeftFoot | SkateCaptureContacts.RightFoot)) ==
             (SkateCaptureContacts.LeftFoot | SkateCaptureContacts.RightFoot))
@@ -581,19 +600,6 @@ public static class SkateCapturedTricks
             frame = new SkateCaptureFrame(supported, frame.Board, frame.Rotation, frame.LeftSoleUp, frame.RightSoleUp,
                 frame.HasEvent, frame.Observation, frame.PelvisCorrection, frame.LeftHandCorrection, frame.RightHandCorrection, frame.RiderUp);
         }
-        if (!landed && phase == SkateCapturePhase.Air && flickOwner && SkateRide.FlipFlickKnown &&
-            SkateFlickPitch.UncombinedRoute(signature))
-        {
-            double elapsed = SkateRide.FlipFlickElapsed;
-            if (active.SourceMovementKind == "kickflip" &&
-                !footSupport.TryKickflipTuck(rig, frame, active.FlightSourceTime(value), elapsed, carrier, out frame, out error))
-            { Refuse(nextToken, error ?? "authored paired Kickflip tuck unavailable"); return false; }
-            if (!flick.TryPose(rig, frame, baseline, baselineLeftUp, baselineRightUp, carrier,
-                FlickReleaseDeck(board, carrier, elapsed), elapsed, SkateFlipFlick.EdgeReleaseSeconds,
-                activeStance, active.SourceMovementKind == "heelflip", out frame, out error))
-            { Refuse(nextToken, error ?? "authored shoe flick unavailable"); return false; }
-            flickApplied = true;
-        }
         if (!landed && phase == SkateCapturePhase.Air && active.SourceMovementKind == "heelflip")
         {
             double sourceTime = active.FlightSourceTime(value);
@@ -601,12 +607,6 @@ public static class SkateCapturedTricks
                 now - beganAt,
                 active.SourceTime(SkateCapturePhase.Catch, 0) - sourceTime, out frame, out error))
             { Refuse(nextToken, error ?? "authored Heelflip balance unavailable"); return false; }
-        }
-        if (kickBodyOwner)
-        {
-            if (!kickBodyMotion.TryStep(rig, frame, now - kickBodyAt, out frame, out error))
-            { Refuse(nextToken, error ?? "authored Kickflip body motion unavailable"); return false; }
-            kickBodyAt = now;
         }
         if (phase == SkateCapturePhase.Air) { previousAirSourceTime = active.FlightSourceTime(value); previousAirProgress = value; }
         previous = frame; previousCarrier = carrier; previousAt = now;
