@@ -53,7 +53,7 @@ def board_at(s,sf):
     if sf<=pop:y=.092
     elif sf<=b:y=floor-H
     else:
-        release=smooth((sf-b)/(s['pressEnd']-b));margin=s['authored']['referenceAirFloorMargin']*release;base=.092+.04*(1-smooth((sf-408)/10));y=max(base,floor-H+margin);y=(floor-H)*(1-release)+y*release if sf<s['pressEnd']else y
+        release=smooth((sf-b)/(s['pressEnd']-b));margin=s['authored']['referenceAirFloorMargin']*release*(1-smooth((sf-418)/(s['land']-418)));base=.092+.04*(1-smooth((sf-408)/10));y=max(base,floor-H+margin)
     return np.array([0.,y,0.]),q,R,H
 
 def deck_shoe(s,origin,R,x,z,yaw):
@@ -94,6 +94,11 @@ def sample(c,s,sf):
     if caught:
         for side,z,yaw in(('Left',.24,65),('Right',-.24,85)):
             target,target_r=deck_shoe(s,o,R,-.04,z,yaw);ankles[side]=ankles[side]*(1-caught)+target*caught;feet[side]=qmatrix(slerp(matrix_quat(feet[side]),matrix_quat(target_r),caught))
+    # The hidden face is reconstructed toward the board; the monocular
+    # HeadForward tilts upward and does not describe the filmed downward look.
+    look=smooth((sf-402)/4)*(1-smooth((sf-424)/8))
+    if look:
+        az=unit(d['HeadForward']*np.array([1.,0.,1.]));gaze=unit(az-UP*.70);headup=unit(UP-gaze*np.dot(UP,gaze));headup=unit(unit(j['Head']-j['Neck'])*(1-look)+headup*look);j['Head']=j['Neck']+headup*.12;d['HeadForward']=unit(d['HeadForward']*(1-look)+gaze*look)
     for side in feet:
         hip=j[side+'Hip'];a=ankles[side];F=feet[side];pole=unit(np.array([1.,0.,.1])*.85+F[:,2]*.15);j[side+'Knee']=limb(hip,a,.44,.43,pole);j[side+'Ankle']=a;sole[side]=F[:,1];j[side+'Toe']=a+F[:,2]*math.sqrt(.14**2-.07**2)-F[:,1]*.07
     phase='Load';contacts=3

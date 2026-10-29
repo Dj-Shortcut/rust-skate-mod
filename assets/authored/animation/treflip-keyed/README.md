@@ -18,7 +18,7 @@ placement are explicitly authored estimates.
 
 The native exact signature is Ollie, normal stance/travel, Flip+360,
 Shove−360, Spin0. The authored visual shove uses the existing source's
-opposite coordinate sign. All rotations are preserved in the dense combined
+opposite coordinate sign. The free-turn winding is preserved in the dense combined
 quaternion path; the physical scorer remains authoritative.
 
 ## Shared physical conventions
@@ -42,7 +42,11 @@ The same full reference flightT=.6/g8 is used only to cancel the source press
 against the physical carrier. A bounded source-side floor clearance during
 the combined turn accounts for the real board envelope. Catch is already
 bent and impact absorption flows into a stable body-facing recovery plane.
-Foot roles and strict fixed limb lengths remain intact.
+Foot roles and strict fixed limb lengths remain intact. The hidden head look
+is authored toward the board; the raw upward gaze was visibly wrong. The
+Air-only clearance margin returns tozero before Land, so the board actually
+rests on the floor and its outbound carrier does not drop in one frame. Source camera estimates are inherited
+from this Tre clip, not the unrelated Kickflip reference.
 
 ```sh
 python scripts/author_skate_treflip.py --output /absolute/private/output
