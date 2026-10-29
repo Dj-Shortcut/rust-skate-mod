@@ -135,3 +135,7 @@ remain the visual references; they are not flat-ground grab demonstrations and
 are not proof that Rust exposes these native finger bones. Actual avatar mapping,
 visible finger closure, thumb/deck contact and Animator coexistence require the
 Shadow test. This source is not an in-game or full-hand approval.
+
+## Review corrections before source integration
+
+A return gaze now blends from the already solved neck-to-head axis, preserving the full-contact grab correction as return weight starts. The native neck/head writer uses that independent axis for gaze yaw whenever grab/return or ordinary-air look owns the frame. Reference-grab eligibility for a body flip validates the solved wrist against the same measured hand target used to reconstruct the deck-edge contact, including the curved nose; it no longer tests the offset wrist against the flat deck plane. Other grabs retain their existing geometric contact check. A missing, wrong-hand or unreached reference target cannot claim a held grab. These are source/log corrections; visible native hand contact and body-flip execution still require Shadow.
