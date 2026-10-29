@@ -12,7 +12,7 @@ namespace Shortcut.RustMod
         // to shorten an otherwise exact board contact. Also avoids a singular
         // perfectly straight knee in the independent skin evaluator.
         public const double ReachShare = .998;
-        public const double LandingImpactSeconds = .065, LandingReleaseSeconds = .30;
+        public const double LandingImpactSeconds = .15, LandingReleaseSeconds = .30;
         public const double LandingPriorInternalDegrees = 127.5, LandingMaximumDropShare = .14 / .87;
         public const double CatchPreparationSeconds = .04, CatchPriorInternalDegrees = 145;
         public const double SupportedCatchPreparationSeconds = .12;
