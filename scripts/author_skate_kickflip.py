@@ -59,13 +59,22 @@ def foot_basis(yaw, inversion=0., dorsiflexion=0.):
 
 def authored_keys(spec):
     result = []
+    # A body-only breakdown key must not reshape an already-authored board curve.
+    board_keys = [k for k in spec['keys'] if k.get('boardKey', True)]
+    board_times = [k['t'] if k['sourceFrame'] is None else (k['sourceFrame']-spec['firstSourceFrame'])/spec['sourceFps'] for k in board_keys]
+    board_angles = [[-k['boardPitch'], 0., k['boardRoll']] for k in board_keys]
+    board_origins = []
+    for k in board_keys:
+        pitch = qmatrix(euler_quat([-k['boardPitch'], 0, 0]))
+        pivot = np.array([0., 0., -.245])
+        board_origins.append(pivot + pitch @ (np.array([0., .092, 0.])-pivot) + UP*k['boardLift'])
     upper = np.array(spec['flickPatch']['shoeLocal'])
     rim = np.array(spec['flickPatch']['deckLocal'])
     for key in spec['keys']:
-        pitch = qmatrix(euler_quat([-key['boardPitch'], 0, 0]))
-        board_q = euler_quat([-key['boardPitch'], 0, key['boardRoll']])
-        pivot = np.array([0., 0., -.245])
-        origin = pivot + pitch @ (np.array([0., .092, 0.]) - pivot) + UP*key['boardLift']
+        t = key['t'] if key['sourceFrame'] is None else (key['sourceFrame']-spec['firstSourceFrame'])/spec['sourceFps']
+        angles = curve(board_times, board_angles, t)
+        board_q = euler_quat(angles)
+        origin = curve(board_times, board_origins, t)
         feet = {}
         for side in ('Left', 'Right'):
             f = key['feet'][side]
@@ -79,7 +88,7 @@ def authored_keys(spec):
                 ankle = np.array(f['position'], dtype=float)
             feet[side] = dict(ankle=ankle, rotation=matrix_quat(basis))
         result.append(dict(sourceFrame=key['sourceFrame'], t=key['t'] if key['sourceFrame'] is None else (key['sourceFrame']-spec['firstSourceFrame'])/spec['sourceFps'],
-                           control=key, boardOrigin=origin, boardAngles=np.array([-key['boardPitch'],0.,key['boardRoll']]), feet=feet))
+                           control=key, boardOrigin=origin, boardAngles=angles, feet=feet))
     # The final soft rollaway pose is explicitly held; it is not extra measured footage.
     hold = dict(result[-1]); hold['t'] = spec['duration']; hold['sourceFrame'] = None
     result.append(hold)
@@ -88,9 +97,11 @@ def authored_keys(spec):
 
 def sample(spec, keys, t):
     times = [k['t'] for k in keys]
-    value = lambda name: curve(times, [k['control'][name] for k in keys], t)
+    body_keys = [k for k in keys if k['control'].get('bodyKey', True)]
+    body_times = [k['t'] for k in body_keys]
+    value = lambda name: curve(body_times, [k['control'][name] for k in body_keys], t)
     pelvis = value('pelvis')
-    lean = float(curve(times, [[k['control']['leanDegrees']] for k in keys], t)[0])
+    lean = float(curve(body_times, [[k['control']['leanDegrees']] for k in body_keys], t)[0])
     lean_direction = unit(np.array([.65,0.,.75]))
     torso = UP*math.cos(math.radians(lean)) + lean_direction*math.sin(math.radians(lean))
     hip_axis = np.array([0.,0.,-1.])
@@ -116,13 +127,15 @@ def sample(spec, keys, t):
         soles[side] = foot[:,1]
         j[side+'Toe'] = ankle + foot[:,2]*math.sqrt(.14*.14-.07*.07) - foot[:,1]*.07
         shoulder = pelvis + torso*.44 + shoulder_axis*(.18 if n else -.18)
-        upper = unit(curve(times, [k['control']['arms'][side][0] for k in keys], t))
-        fore = unit(curve(times, [k['control']['arms'][side][1] for k in keys], t))
+        upper = unit(curve(body_times, [k['control']['arms'][side][0] for k in body_keys], t))
+        fore = unit(curve(body_times, [k['control']['arms'][side][1] for k in body_keys], t))
         j[side+'Shoulder'] = shoulder
         j[side+'Elbow'] = shoulder + upper*.29
         j[side+'Hand'] = j[side+'Elbow'] + fore*.27
-    angles = curve(times,[k['boardAngles'] for k in keys],t)
-    origin = curve(times,[k['boardOrigin'] for k in keys],t)
+    board_keys = [k for k in keys if k['control'].get('boardKey', True)]
+    board_times = [k['t'] for k in board_keys]
+    angles = curve(board_times,[k['boardAngles'] for k in board_keys],t)
+    origin = curve(board_times,[k['boardOrigin'] for k in board_keys],t)
     q = euler_quat(angles)
     dirs = dict(zip(DIRS,(unit(np.cross(hip_axis,pelvis_up)),pelvis_up,
                          unit(np.cross(shoulder_axis,torso)),torso,gaze)))
