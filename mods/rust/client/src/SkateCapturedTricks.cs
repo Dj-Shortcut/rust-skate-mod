@@ -575,6 +575,9 @@ public static class SkateCapturedTricks
             SkateFlickPitch.UncombinedRoute(signature))
         {
             double elapsed = SkateRide.FlipFlickElapsed;
+            if (active.SourceMovementKind == "kickflip" &&
+                !footSupport.TryKickflipTuck(rig, frame, active.FlightSourceTime(value), elapsed, carrier, out frame, out error))
+            { Refuse(nextToken, error ?? "authored paired Kickflip tuck unavailable"); return false; }
             if (!flick.TryPose(rig, frame, baseline, baselineLeftUp, baselineRightUp, carrier,
                 FlickReleaseDeck(board, carrier, elapsed), elapsed, SkateFlipFlick.EdgeReleaseSeconds,
                 activeStance, active.SourceMovementKind == "heelflip", out frame, out error))
