@@ -64,7 +64,7 @@ public static class SkateBoard
         catch (Exception e) { Say("shared mesh unavailable (" + e.GetType().Name + ": " + e.Message + "); using primitives"); return FromPrimitives(); }
     }
 
-    private static Vector3 RawContact(Transform playerT) { return playerT.position + Vector3.up * (ShowLift + Pop); }
+    private static Vector3 RawContact(Transform playerT) { return playerT.position + SkateRide.DisplaySupportOffset + Vector3.up * (ShowLift + Pop); }
     public static Vector3 Contact(Transform playerT)
     {
         if (!contactCached)
