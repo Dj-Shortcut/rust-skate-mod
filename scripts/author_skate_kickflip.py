@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Bake original, image-led coupled rider/board keys into bounded SKMCAP01.
+"""Bake the historical fully-authored key checkpoint into bounded SKMCAP01.
 
-No detector, source pixels, player trajectory or old presentation stack is used.
+For the current captured-body hybrid use author_skate_kickflip_hybrid.py.
+This historical pure-key mode retains the earlier comparison artifact.
 The caller adds the physical support carrier once. Requires NumPy.
 """
 import argparse

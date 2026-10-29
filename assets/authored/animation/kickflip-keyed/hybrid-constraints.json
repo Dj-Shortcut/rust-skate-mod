@@ -1,0 +1,604 @@
+{
+  "format": "original-authored-skate-keys/1",
+  "firstSourceFrame": 254,
+  "sourceFps": 29.97002997002997,
+  "sampleCount": 83,
+  "duration": 1.3666666666666667,
+  "metadata": {
+    "label": "Kickflip \u2014 captured body + local authored contacts [UNREVIEWED]",
+    "sourceUrl": "https://www.youtube.com/watch?v=YcmPDIj2BFo&t=144",
+    "sourceAuthor": "Original retargeted controls; The Berrics visual reference",
+    "rights": "Original project reconstruction/retarget control data. Reference footage and pixels are not included or relicensed; no footage license is asserted.",
+    "provenance": "Captured body retained; local flick, sole/upper-contact semantics, late foot clearance and soft landing are explicitly authored.",
+    "uncertainties": "Reference filmed stance is uncertain; canonical Regular and its anatomical Goofy mirror are authoring mappings. Flick contact anatomy, hidden depth and Catch273 within blurred272\u2013274 are authored.",
+    "authoredContactSemantics": "Authored semantic markers, not measured confidence: rear-sole support ends at tail-pop259; front-sole support ends at260 before the ankle-roll. Upper-shoe nose-rim contact at261 is authored instep contact;262 is free carrier-space release, never sole support.",
+    "authoredKeyRepair": "Captured torso/arms/head and source knee planes are the body basis. Short authored front upper-shoe/rear-foot contact repairs and late clearance are baked; early board pitch/lag and smooth landing height are authored. No claim that the previous all-body keys or board curve are unchanged.",
+    "bodyProvenance": "Captured skeletal basis from captured-body.json; authored board and short local foot/contact constraints only."
+  },
+  "sourceRootMotion": {
+    "origin": "Physical support anchor local(0,0,0)",
+    "axes": "Y-up, +Z nose; canonical Regular, anatomical Goofy mirror",
+    "groundDeckTopY": 0.092,
+    "ballisticArcIncluded": false,
+    "horizontalTravelIncluded": false,
+    "extraction": "Subtract exactly upright translation [sourceBoard.origin.x,sourceBoard.origin.y-.092,sourceBoard.origin.z] from all joints. Directions unchanged. No inverse rolling-board rotation; no physical flight arc retained.",
+    "runtime": "Add actual physical upright carrier once to both body and authored board; do not add a second DeckTop.",
+    "board": "Independent authored carrier-local board pitch/lift, including a short early relative board lag; not the old captured board or its estimated root arc.",
+    "bodyAfterSource278": "Captured controls continue through real source296; no invented body frames or held-pose source cursor."
+  },
+  "flickPatch": {
+    "shoeLocal": [
+      -0.040465750591869465,
+      -0.05407619476318374,
+      0.12613568849940346
+    ],
+    "deckLocal": [
+      -0.07519391494290231,
+      0.02048405182815259,
+      0.33206511706438546
+    ],
+    "provenance": "Original frozen companion upper/outside-forefoot support feature and real nose rim. Authored contact, not measured source pixels."
+  },
+  "keys": [
+    {
+      "sourceFrame": 254,
+      "boardPitch": 0,
+      "boardRoll": 0,
+      "boardLift": 0,
+      "feet": {
+        "Left": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            0.22
+          ],
+          "angles": [
+            45,
+            0,
+            0
+          ]
+        },
+        "Right": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            -0.26
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D."
+    },
+    {
+      "sourceFrame": 257,
+      "boardPitch": 0,
+      "boardRoll": 0,
+      "boardLift": 0,
+      "feet": {
+        "Left": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            0.22
+          ],
+          "angles": [
+            45,
+            0,
+            0
+          ]
+        },
+        "Right": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            -0.26
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D."
+    },
+    {
+      "sourceFrame": 259,
+      "boardPitch": 12,
+      "boardRoll": 0,
+      "boardLift": 0,
+      "feet": {
+        "Left": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            0.22
+          ],
+          "angles": [
+            45,
+            0,
+            0
+          ]
+        },
+        "Right": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            -0.26
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D."
+    },
+    {
+      "sourceFrame": 260,
+      "boardPitch": 31.4213043478261,
+      "boardRoll": 0.0,
+      "boardLift": 0.0,
+      "feet": {
+        "Left": {
+          "space": "deck",
+          "position": [
+            -0.045,
+            0.106,
+            0.275
+          ],
+          "angles": [
+            56,
+            0,
+            0
+          ]
+        },
+        "Right": {
+          "space": "carrier",
+          "position": [
+            0.2,
+            0.13,
+            -0.3
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "uncertainty": "Explicit authored source260 last sole-slide/body key; boardKey=false preserves the original coupled board channel exactly. Rear foot clears the board to the toe side after tail-pop.",
+      "boardKey": false
+    },
+    {
+      "sourceFrame": 261,
+      "boardPitch": 30,
+      "boardRoll": 0,
+      "boardLift": -0.14,
+      "feet": {
+        "Left": {
+          "space": "upper-patch",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "angles": [
+            75,
+            40,
+            -25
+          ]
+        },
+        "Right": {
+          "space": "carrier",
+          "position": [
+            0.2,
+            0.14,
+            -0.32
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "uncertainty": "Authored black upper/outside forefoot on real nose rim, toes downward; rear leg outside the steep board path. Not a sole-support claim."
+    },
+    {
+      "sourceFrame": 262,
+      "boardPitch": 35,
+      "boardRoll": 25,
+      "boardLift": -0.14,
+      "feet": {
+        "Left": {
+          "space": "carrier",
+          "position": [
+            -0.21754052345383856,
+            0.37033679743361725,
+            0.22842310086657305
+          ],
+          "angles": [
+            75,
+            40,
+            -25
+          ]
+        },
+        "Right": {
+          "space": "carrier",
+          "position": [
+            0.2,
+            0.16,
+            -0.33
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "uncertainty": "Explicit authored post-edge release: literal upright-carrier foot point outside the nose, not attached to the rolling board. Rear ankle remains toe-side outside the board."
+    },
+    {
+      "sourceFrame": 264,
+      "boardPitch": 18,
+      "boardRoll": 115,
+      "boardLift": 0.035,
+      "feet": {
+        "Left": {
+          "space": "carrier",
+          "position": [
+            -0.055,
+            0.46,
+            0.34
+          ],
+          "angles": [
+            80,
+            5,
+            8
+          ]
+        },
+        "Right": {
+          "space": "carrier",
+          "position": [
+            0.2,
+            0.41,
+            -0.3
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D."
+    },
+    {
+      "sourceFrame": 267,
+      "boardPitch": 2,
+      "boardRoll": 205,
+      "boardLift": 0.055,
+      "feet": {
+        "Left": {
+          "space": "carrier",
+          "position": [
+            -0.055,
+            0.43,
+            0.3
+          ],
+          "angles": [
+            80,
+            5,
+            8
+          ]
+        },
+        "Right": {
+          "space": "carrier",
+          "position": [
+            -0.055,
+            0.41,
+            -0.3
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D."
+    },
+    {
+      "sourceFrame": 269,
+      "boardPitch": -5,
+      "boardRoll": 285,
+      "boardLift": 0.035,
+      "feet": {
+        "Left": {
+          "space": "carrier",
+          "position": [
+            -0.055,
+            0.43,
+            0.3
+          ],
+          "angles": [
+            80,
+            5,
+            8
+          ]
+        },
+        "Right": {
+          "space": "carrier",
+          "position": [
+            -0.055,
+            0.41,
+            -0.3
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D."
+    },
+    {
+      "sourceFrame": 273,
+      "boardPitch": 0,
+      "boardRoll": 360,
+      "boardLift": 0,
+      "feet": {
+        "Left": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            0.22
+          ],
+          "angles": [
+            45,
+            0,
+            0
+          ]
+        },
+        "Right": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            -0.26
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D."
+    },
+    {
+      "sourceFrame": 275,
+      "boardPitch": 0,
+      "boardRoll": 360,
+      "boardLift": 0,
+      "feet": {
+        "Left": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            0.22
+          ],
+          "angles": [
+            45,
+            0,
+            0
+          ]
+        },
+        "Right": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            -0.26
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D."
+    },
+    {
+      "sourceFrame": 278,
+      "boardPitch": 0,
+      "boardRoll": 360,
+      "boardLift": 0,
+      "feet": {
+        "Left": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            0.22
+          ],
+          "angles": [
+            45,
+            0,
+            0
+          ]
+        },
+        "Right": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            -0.26
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D."
+    },
+    {
+      "sourceFrame": null,
+      "boardPitch": 0,
+      "boardRoll": 360,
+      "boardLift": 0,
+      "feet": {
+        "Left": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            0.22
+          ],
+          "angles": [
+            45,
+            0,
+            0
+          ]
+        },
+        "Right": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            -0.26
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "uncertainty": "AUTHORED beyond source278: gentle0.4s body recovery toward ordinary0.18 soft-knee stance. Same board/bolt foot anchors.",
+      "t": 1.2008,
+      "authoredRecovery": true
+    }
+  ],
+  "events": [
+    {
+      "t": 0,
+      "phase": "load",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "t": 0.16683333333333333,
+      "phase": "pop",
+      "contacts": [
+        "LeftFoot"
+      ]
+    },
+    {
+      "t": 0.20020000000000002,
+      "phase": "air",
+      "contacts": []
+    },
+    {
+      "t": 0.26693333333333336,
+      "phase": "air",
+      "contacts": []
+    },
+    {
+      "t": 0.6339666666666667,
+      "phase": "catch",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "t": 0.7007,
+      "phase": "land",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "t": 0.8008000000000001,
+      "phase": "recovery",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    }
+  ],
+  "hybrid": {
+    "frontWindow": [
+      258,
+      259,
+      262,
+      265
+    ],
+    "rearWindow": [
+      259,
+      260,
+      264,
+      267
+    ],
+    "rearAnkleOffset": [
+      0.18,
+      0.1,
+      -0.06
+    ],
+    "lateClearanceWindow": [
+      268,
+      270,
+      271,
+      273
+    ],
+    "lateClearance": 0.06,
+    "softLandingStart": 271,
+    "softLandingFull": 275,
+    "softHipKeys": [
+      [
+        273,
+        0.84
+      ],
+      [
+        275,
+        0.76
+      ],
+      [
+        278,
+        0.78
+      ],
+      [
+        290,
+        0.925
+      ],
+      [
+        296,
+        0.925
+      ]
+    ],
+    "sourceBodySha256": "b5224ee43c8e371fdfcfe498cbae2402c447aa97702cc05e3c63b1fc7032e387"
+  }
+}
