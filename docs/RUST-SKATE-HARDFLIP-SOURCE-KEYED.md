@@ -16,7 +16,7 @@ same direction. The selector does not opt other family IDs into this route.
 | 138 | Visible release/body-rise onset; physics/input is immediate |
 | 140.6–141.0 | Front sole rolls to a short instep exit before the steep nose |
 | 142 | Rear-tail support |
-| 143–144 | Rear sole releases; free Air |
+| 142.4–144 | Rear sole releases between the supported 142 and free 143; free Air |
 | 144–148 | Steep frontside shove/kickflip and asymmetric pickup |
 | 150–152 | Grip returns before the feet descend for Catch |
 | 158 | Both soles catch the completed board |
@@ -81,3 +81,8 @@ curves; they do not inherit the changing height of the steeper board. The
 existing asymmetric rear chain and Catch/landing endpoints remain intact.
 The visible early torso fold is reconstructed from this take; camera depth
 and the original detector gaps remain uncertain.
+
+The rear separation is authored within the observed 142–143 interval. Holding
+that foot to the spinning tail until 143 had pulled its ankle downward after
+the wood strike, creating another reach-limited body-height kink. Its later
+Air shape, and the existing Catch and landing endpoints, stay unchanged.

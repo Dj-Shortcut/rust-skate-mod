@@ -6,7 +6,7 @@
   "popFrame": 138,
   "tailStrikeFrame": 142,
   "frontSoleReleaseFrame": 140.6,
-  "rearSoleReleaseFrame": 143,
+  "rearSoleReleaseFrame": 142.4,
   "instepReleaseFrame": 141.0,
   "airFrame": 144,
   "catchFrame": 158,
@@ -2375,9 +2375,9 @@
     "sourceUrl": "https://www.youtube.com/watch?v=_oRoo1x1uzM&t=192.4044",
     "sourceAuthor": "The Berrics",
     "rights": "Original authored reconstruction and source-derived retarget controls. Reference footage stays private; no footage redistribution or relicensing grant asserted.",
-    "uncertainties": "Own black-shirt/red-shoe Hardflip retarget directions; actor140/141/152 was explicitly reconstructed in the earlier retarget. Hidden hands near144, camera depth and knee planes remain uncertain, not measured3D. The initial long nose-follow was rejected after mesh inspection; front upper contact ends before the strongly pitched free board, matching the already released front foot in source142. Free-Air feet, toe-side balance and knee planes now follow this take\u2019s retained retarget rather than a generic compact pose. Its vertical Hardflip has a genuinely higher front foot and rear chain; horizontal-deck hip/sole caps are not treated as calibrated truth. Early front-foot and body world heights are explicitly source-led reconstruction: the old board-relative monocular controls coupled the torso and free shoe to a rapidly rising vertical deck. The visible142 low shoes and145 collected front foot govern the replacement; its exact camera depth remains uncertain.",
+    "uncertainties": "Own black-shirt/red-shoe Hardflip retarget directions; actor140/141/152 was explicitly reconstructed in the earlier retarget. Hidden hands near144, camera depth and knee planes remain uncertain, not measured3D. The initial long nose-follow was rejected after mesh inspection; front upper contact ends before the strongly pitched free board, matching the already released front foot in source142. Free-Air feet, toe-side balance and knee planes now follow this take\u2019s retained retarget rather than a generic compact pose. Its vertical Hardflip has a genuinely higher front foot and rear chain; horizontal-deck hip/sole caps are not treated as calibrated truth. Early front-foot and body world heights are explicitly source-led reconstruction: the old board-relative monocular controls coupled the torso and free shoe to a rapidly rising vertical deck. The visible142 low shoes and145 collected front foot govern the replacement; its exact camera depth remains uncertain. Rear separation is authored between the last visibly low/supporting142 and free143; holding that foot to the rotating tail until143 incorrectly pulled its ankle back down after the wood strike.",
     "execution": "Back-foot frontside scoop plus front instep kickflip; roll+360/canonical yaw\u2212180. Source board3D and hidden upper-shoe contact are reconstructed. Original source confidence is unchanged.",
-    "phaseResearch": "Visible release/body-rise onset138, wood strike142, low upper-shoe exit141, rear release143, direct asymmetric pickup144\u2013148, grip returned150\u2013152, Catch158 and Land160. The early world-space root/front-foot reconstruction removes the false high\u2192low\u2192high nose-follow; Catch and landing endpoints are preserved."
+    "phaseResearch": "Visible release/body-rise onset138, wood strike142, low upper-shoe exit141, rear release142.4 (between supported142 and free143), direct asymmetric pickup144\u2013148, grip returned150\u2013152, Catch158 and Land160. The early world-space root/front-foot reconstruction removes the false high\u2192low\u2192high nose-follow; Catch and landing endpoints are preserved."
   },
   "frontAirDorsiKeys": [
     [
