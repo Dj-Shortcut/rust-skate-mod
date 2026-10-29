@@ -700,6 +700,11 @@ public class SkateRig : MonoBehaviour
             var v = SkateRide.VSpeed / SkateRide.OlliePop;
             rise = SkateBoard.PopMost * SkateRide.Clamp(1f - v * v, 0f, 1f);
         }
+        // The native rear-foot wrap supplies its own pickup and contact path.
+        // Do not add the ordinary ollie lift on top of that trajectory.
+        var pathLift = SkateRide.BoardPath;
+        if (pathLift.Known && pathLift.Kind == Shortcut.RustMod.SkateBoardTrickKind.Impossible && pathLift.Direction == 1 &&
+            !pathLift.Nollie && !pathLift.Reversed && !SkateRide.Grabbing) rise = 0f;
         // A grab pulls the board up further, to the rider's hands, as the body folds into it.
         if (SkateRide.On && SkateRide.Mode == RideMode.Air) rise += SkateBoard.GrabRise * SkateBoard.GrabFold;
         SkateBoard.Pop += (rise - SkateBoard.Pop) * SkateRide.Clamp(frame * 18f, 0f, 1f);

@@ -7,12 +7,12 @@ using UnityEngine;
 public static class SkateCapturedBoardPaths
 {
     public const string MovementKind = "impossible";
-    public const string Provenance = "Captured Impossible body and safely supported free-foot motion; native BoardPath owns wrap, pivot, hook foot, catch and landing. Shared authored catch preparation and landing absorption; not measured hook contact.";
+    public const string Provenance = "Captured Impossible body and safely supported free-foot motion; native BoardPath owns wrap, pivot, authored hook-foot pickup, catch and landing. Authored free-front-foot tuck and shared supported knee prior through wrap, catch and landing; not measured hook contact.";
     private static SkateCapturePlayback approved;
     private static bool active, landed;
     private static int token = -1, refused = -1, lands, footVersion;
     private static SkateStance stance;
-    private static double beganAt, caughtAt = -1, landedAt, preparedAt = -1, catchPreparationWeight;
+    private static double beganAt, caughtAt = -1, landedAt, catchPreparationWeight;
     private static SkateCaptureFrame previous, landingFrom;
     private static SkateBoardPose previousCarrier, landingCarrier;
     public static string Status { get; private set; } = "Impossible capture unavailable";
@@ -25,7 +25,7 @@ public static class SkateCapturedBoardPaths
         approved = playback; Reset(); Status = playback == null ? "Impossible capture unavailable" : "Impossible capture approved; native path required";
     }
     public static void Reset()
-    { active = landed = false; token = refused = -1; caughtAt = preparedAt = -1; catchPreparationWeight = 0; previous = landingFrom = default(SkateCaptureFrame); }
+    { active = landed = false; token = refused = -1; caughtAt = -1; catchPreparationWeight = 0; previous = landingFrom = default(SkateCaptureFrame); }
     private static bool Stop(string why)
     {
         if (active) { refused = token; Status = "Impossible capture fallback: " + why; Out.Say("CAPTURE " + Status); }
@@ -81,7 +81,7 @@ public static class SkateCapturedBoardPaths
             if (!SkateFootContacts.Ready) return false;
             active = true; landed = false; token = SkateRide.Pops; lands = SkateRide.Lands;
             stance = SkateRide.Goofy ? SkateStance.Goofy : SkateStance.Regular;
-            footVersion = SkateFootContacts.Version; beganAt = Time.realtimeSinceStartup; caughtAt = preparedAt = -1; catchPreparationWeight = 0;
+            footVersion = SkateFootContacts.Version; beganAt = Time.realtimeSinceStartup; caughtAt = -1; catchPreparationWeight = 0;
             previous = default(SkateCaptureFrame); Status = "Impossible capture active; native hook foot retained";
         }
         if (!SkateFootContacts.Ready || footVersion != SkateFootContacts.Version ||
@@ -107,9 +107,9 @@ public static class SkateCapturedBoardPaths
             V(SkateBoard.OnFace(SkateRide.ViewNormal, SkateRide.Dir(SkateRide.NoseYaw))), V(SkateRide.ViewNormal));
         SkateCaptureFrame sample; string error;
         if (!SkateCaptureSampler.TrySample(approved.Clip, sourceTime, rig, stance, out sample, out error)) return Stop(error);
-        // The authored source board wraps about this same rear-foot pivot.
-        // Remove its orbital origin, not its body pose, before transporting the
-        // body to the physical unwrapped carrier. No source root drives physics.
+        // Remove the source authoring's original .045 m orbital datum,
+        // independently of the native reference-shoe path. Transport only the
+        // body to the physical unwrapped carrier; no source root drives physics.
         var pivot = new SkateVector(0, SkateBoardPath.FootRadius, -SkateBoardPath.Axle);
         var sourceCarrier = new SkateBoardPose(sample.Board.Point(pivot) - pivot, new SkateVector(0, 0, 1), new SkateVector(0, 1, 0));
         if (!SkateBoardPath.Valid(carrier)) return Stop("invalid Impossible carrier");
@@ -178,16 +178,28 @@ public static class SkateCapturedBoardPaths
             frame = new SkateCaptureFrame(fitted, board, frame.Rotation, lu, ru, true, sample.Observation,
                 frame.PelvisCorrection + fitted.Pelvis - frame.Pose.Pelvis, frame.LeftHandCorrection, frame.RightHandCorrection, carrier.Up);
         }
-        if (air && path.Complete &&
-            (sample.Observation.Contacts & (SkateCaptureContacts.LeftFoot | SkateCaptureContacts.RightFoot)) ==
-            (SkateCaptureContacts.LeftFoot | SkateCaptureContacts.RightFoot))
+        if (air && path.Active && (sample.Observation.Contacts & freeBit) == 0)
         {
-            if (preparedAt < 0) preparedAt = now;
-            double requested = SkateCaptureFootSupport.CatchPreparationWeight(now - preparedAt);
+            // Authored free-front-foot tuck. The rear hook remains native and
+            // neither foot inherits the wrapping deck's inverted normal.
+            double tuck = Ease(path.Progress / .12) * Ease((1 - path.Progress) / .16);
+            var lift = carrier.Up * (.26 * tuck * blend);
+            SkateRiderPose tucked;
+            if (!SkateCaptureFootSupport.TryShiftFeet(rig, frame.Pose,
+                frontLeft ? lift : default(SkateVector), frontLeft ? default(SkateVector) : lift,
+                true, out tucked, out error)) return Stop(error);
+            frame = new SkateCaptureFrame(tucked, board, frame.Rotation, lu, ru, true, sample.Observation,
+                frame.PelvisCorrection + tucked.Pelvis - frame.Pose.Pelvis, frame.LeftHandCorrection, frame.RightHandCorrection, carrier.Up);
+        }
+        if (air && (path.Active || path.Complete &&
+            (sample.Observation.Contacts & (SkateCaptureContacts.LeftFoot | SkateCaptureContacts.RightFoot)) ==
+            (SkateCaptureContacts.LeftFoot | SkateCaptureContacts.RightFoot)))
+        {
+            double requested = Ease(path.Progress / .12) * blend;
             SkateRiderPose prepared; SkateVector shift;
             if (!SkateCaptureFootSupport.TryCatchPreparation(rig, frame.Pose, carrier.Up, requested,
-                out prepared, out shift, out error)) return Stop(error);
-            catchPreparationWeight = SkateCaptureFootSupport.ReachedCatchPreparationWeight(rig, prepared, requested);
+                out prepared, out shift, out error, 100, true)) return Stop(error);
+            catchPreparationWeight = SkateCaptureFootSupport.ReachedCatchPreparationWeight(rig, prepared, requested, 100);
             frame = new SkateCaptureFrame(prepared, board, frame.Rotation, lu, ru, true, sample.Observation,
                 frame.PelvisCorrection + shift, frame.LeftHandCorrection, frame.RightHandCorrection, carrier.Up);
         }
@@ -201,7 +213,7 @@ public static class SkateCapturedBoardPaths
         {
             SkateRiderPose absorbed; SkateVector shift;
             if (!SkateCaptureFootSupport.TryLandingAbsorption(rig, frame.Pose, carrier.Up, now - landedAt,
-                out absorbed, out shift, out error, catchPreparationWeight)) return Stop(error);
+                out absorbed, out shift, out error, catchPreparationWeight, 100, 100, true)) return Stop(error);
             frame = new SkateCaptureFrame(absorbed, board, frame.Rotation, lu, ru, true, sample.Observation,
                 frame.PelvisCorrection + shift, frame.LeftHandCorrection, frame.RightHandCorrection, carrier.Up);
         }

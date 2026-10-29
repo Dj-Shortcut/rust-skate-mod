@@ -45,7 +45,8 @@ namespace Shortcut.RustMod
         public double Duration { get { return SkateBoardPath.Duration(Kind); } }
         // Physical front/nose foot is +1, rear/tail foot -1; nollie exchanges the popped end.
         public int Foot { get { return (Kind == SkateBoardTrickKind.FrontFootImpossible || Kind == SkateBoardTrickKind.Underflip ? 1 : -1) * (Nollie ? -1 : 1) * (Reversed ? -1 : 1); } }
-        public SkateVector Pivot { get { return new SkateVector(0, SkateBoardPath.FootRadius, SkateBoardPath.Axle * Foot); } }
+        private bool ReferenceRearWrap { get { return Kind == SkateBoardTrickKind.Impossible && Direction == 1 && !Nollie && !Reversed; } }
+        public SkateVector Pivot { get { return new SkateVector(0, ReferenceRearWrap ? SkateBoardPath.ImpossiblePivotHeight + SkateBoardPath.ImpossibleHookLift(Progress) : SkateBoardPath.FootRadius, SkateBoardPath.Axle * Foot); } }
         public double Contact
         {
             get
@@ -66,6 +67,19 @@ namespace Shortcut.RustMod
         public SkateVector Point(SkateVector value)
         {
             if (!Known) return value;
+            if (ReferenceRearWrap)
+            {
+                // Keep the deck hooked to the native rear-foot path around the
+                // shoe. Contact travels onto the tail during the inverted half
+                // so the finite deck passes beside the shin, not through it.
+                double slide = Math.Pow(Math.Sin(Math.PI * Progress), 4) * .20;
+                double along = Pivot.Z - slide;
+                // As contact travels onto the tail kick, include its real rise;
+                // otherwise the inverted curved tip cuts back into the ankle.
+                double tailRise = Math.Max(0, (Math.Min(.4, Math.Abs(along)) - .245) / .155);
+                var localPivot = new SkateVector(0, SkateBoardPath.ImpossibleWrapRadius(WrapAngle) + .05 * tailRise * tailRise, along);
+                return Pivot + Rotate(value - localPivot);
+            }
             if (Kind != SkateBoardTrickKind.Underflip) return Pivot + Rotate(value - Pivot);
             double u = Progress <= 0.25 ? 0 : (Progress - 0.25) / 0.75;
             double kick = Math.Sin(u * Math.PI);
@@ -78,6 +92,27 @@ namespace Shortcut.RustMod
     public static class SkateBoardPath
     {
         public const double Axle = 0.23, FootRadius = 0.045;
+        // Authored normal rear-foot envelope from the unchanged reference shoe.
+        // Nollie/reversed and other special paths retain their previous curves.
+        private const double ImpossibleSoleDepth = .095, ImpossibleInstepHeight = .064;
+        private const double ImpossibleSideRadius = .07, ImpossibleClearance = .005;
+        internal const double ImpossiblePivotHeight = ImpossibleSoleDepth + ImpossibleClearance;
+        internal static double ImpossibleHookLift(double progress)
+        {
+            // Pick the hook foot up for the descending nose, then return it for
+            // catch. This replaces the ordinary ollie lift for this wrap only.
+            double t = Clamp((progress - .5) * 2);
+            double u = t * t * t * (10 + t * (-15 + 6 * t));
+            return .30 * 4 * u * (1 - u);
+        }
+        internal static double ImpossibleWrapRadius(double degrees)
+        {
+            double angle = degrees * Math.PI / 180, c = Math.Cos(angle), s = Math.Sin(angle);
+            double centre = (ImpossibleInstepHeight - ImpossibleSoleDepth) * .5;
+            double half = (ImpossibleInstepHeight + ImpossibleSoleDepth) * .5;
+            return -centre * c + Math.Sqrt(half * half * c * c + ImpossibleSideRadius * ImpossibleSideRadius * s * s) + ImpossibleClearance;
+        }
+
         public static double Duration(SkateBoardTrickKind kind)
         { return kind == SkateBoardTrickKind.None ? 0 : (kind == SkateBoardTrickKind.Underflip ? 720 : 360) / SkateMotion.FlipRate; }
         public static bool TrySample(SkateBoardTrickKind kind, double progress, int direction, bool nollie,

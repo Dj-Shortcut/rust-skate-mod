@@ -242,8 +242,18 @@ public static class SkateBoard
     public static float AirPitch;
     public const float OllieNoseUp = 26f, OllieNoseDown = 9f;
 
+    private static bool RearWrapOwnsPitch
+    {
+        get
+        {
+            var path = SkateRide.BoardPath;
+            return SkateRide.Mode == RideMode.Air && path.Kind == SkateBoardTrickKind.Impossible && path.Direction == 1 && !path.Nollie && !path.Reversed;
+        }
+    }
+    // The wrap already owns a full vertical rotation around the upright rear foot.
+    // Layering the ordinary ollie pitch tilts that foot's clearance frame again.
     // The deck's pitch, degrees, the leading end up: a manual's, a grind's and an ollie's together.
-    public static float PitchDegrees { get { return Tip * TipDegrees + GrindPitch + (observedPlane && displayTruckRig ? 0 : AirPitch) *
+    public static float PitchDegrees { get { return Tip * TipDegrees + GrindPitch + (observedPlane && displayTruckRig || RearWrapOwnsPitch ? 0 : AirPitch) *
         (SkateRide.Mode == RideMode.Air ? (float)RiderRig.Contact.PopPitchSign : 1f); } }
 
     // A heading laid on the face whose up is that normal: the part along the face stays, the part
