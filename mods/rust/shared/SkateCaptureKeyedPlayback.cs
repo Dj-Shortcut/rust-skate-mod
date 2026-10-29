@@ -101,12 +101,13 @@ namespace Shortcut.RustMod
             if (!ValidFlight(frozenFlightSeconds) || !Finite(localRoot.LengthSquared) || !Finite(localVelocity.LengthSquared) ||
                 groundCarrierOrigin.HasValue && !Finite(groundCarrierOrigin.Value.LengthSquared))
             { error = "Invalid source-keyed entry baseline."; return false; }
-            // Each family joins its own compact Air: Kick264, Heel354 and Tre408.
+            // Family joins: compact Air for Kick264/Heel354/Tre408; Hard142
+            // keeps the still-supported rear leg low before its later Air148.
             // The independent upper entry and exact foot/board paths stay short.
             double rootFraction = Clip.Id == RequiredClipId ? .3125 :
                 Clip.Id == HeelflipClipId && groundCarrierOrigin.HasValue ? 1.0 / 3.0 :
                 Clip.Id == TreFlipClipId && groundCarrierOrigin.HasValue ? 5.0 / 21.0 :
-                Clip.Id == HardflipClipId && groundCarrierOrigin.HasValue ? 5.0 / 11.0 : .125;
+                Clip.Id == HardflipClipId && groundCarrierOrigin.HasValue ? 2.0 / 11.0 : .125;
             double span = (SourceLand - SourcePop) * rootFraction;
             double targetTime = SourcePop + span, step = Math.Min(.005, span * .1);
             SkateCaptureFrame target, before, after;

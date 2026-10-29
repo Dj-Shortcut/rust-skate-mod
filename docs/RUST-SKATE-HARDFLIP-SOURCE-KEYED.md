@@ -23,16 +23,16 @@ same direction. The selector does not opt other family IDs into this route.
 | 160 | Landing |
 | 164–184 | Absorption, gradual recovery and rolling away |
 
-Cache time is frame / (30000/1001); the original video window begins at188s.
+Cache time is frame / (30000/1001); the original video window begins at 188 s.
 The source is [the owner-selected Berrics video](https://www.youtube.com/watch?v=_oRoo1x1uzM&t=192).
 Reference pixels remain private. The public inputs contain source-derived
 retarget directions and separately authored fixed-chain/contact controls.
 
 The source's compact front knee and lower rear chain guide this reconstruction.
-Its foot depth, full board3D orientation, frontside tail pocket and hidden
-instep contact are estimates. Earlier detector gaps140/141/152 are explicitly
-retained as reconstruction uncertainty. Hands briefly leave the image near144.
-None of these controls are labelled calibrated3D motion capture.
+Its foot depth, full board 3D orientation, frontside tail pocket and hidden
+instep contact are estimates. Earlier detector gaps 140/141/152 are explicitly
+retained as reconstruction uncertainty. Hands briefly leave the image near 144.
+None of these controls are labelled calibrated 3D motion capture.
 
 The curved deck, measured sole footprint, fixed bone lengths, strict reach
 checks, deep generic charge and live physical carrier are shared mathematics.
@@ -59,10 +59,16 @@ written for a horizontal board can therefore miss their default hip/sole-gap
 or equal-foot-height limits. Those results stay visible for family/source
 review; no checker threshold or physics has been relaxed.
 
-The steep board has a complete13-part model-floor envelope. Authored pressure
+The steep board has a complete 13-part model-floor envelope. Authored pressure
 release first stays above its full support hull. During an observed ordinary
 flatground flight, an exact-Hardflip-only runtime bound can translate the whole
 coupled pose and board together above the cached takeoff plane. Its maximum
-correction is reported; over12cm refuses the capture instead of changing any
+correction is reported; over 12 cm refuses the capture instead of changing any
 physics, landing, foot/reach guard or other family. This is labelled authored
 presentation, not a new collision solver or a terrain query.
+
+The observed ground-entry root joins the source body at the actual tail strike
+(frame 142), before the rear sole leaves. Joining the much higher Air148 root
+earlier had anticipated the tuck while that rear foot still supported the
+board; the unchanged reach guard correctly rejected it. Upper entry remains
+short and the later asymmetric Air follows this take.
