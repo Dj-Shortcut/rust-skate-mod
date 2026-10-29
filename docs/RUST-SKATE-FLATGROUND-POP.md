@@ -92,3 +92,13 @@ Land, bail, mount, a new take-off or an acquired action owner clears the gate.
 
 This is a draft source checkpoint. Compilation and headless scorer/callsite
 checks are separate from the coupled foot/board visual review and Shadow test.
+
+An initial ordinary, uncombined kickflip or heelflip has an authored nose-pitch
+pulse: a C2 rise from zero to 55 degrees at that same edge release, then a C2
+return over 0.08 seconds to the ordinary pitch channel. The ordinary channel
+continues its existing 14 Hz easing independently; the pulse is not eased a
+second time. The existing rear-axle `Tilt` pivot remains authoritative. Switch,
+nollie, tail-leading or reversed-deck starts, shove/spin combinations, wraps,
+ramps and late-only flips are excluded. Held extra rotations do not retrigger an initial pulse. Abort resumes the
+independent ordinary channel; confirmed support and mount resets remain
+authoritative. This board timing is not approval of the coupled shoe contact or the visible trick.

@@ -76,3 +76,4 @@ mods/rust/shared/SkateCaptureFootSupport.cs
 mods/rust/shared/SkateCaptureBalance.cs
 mods/rust/shared/SkateFlatgroundPop.cs
 mods/rust/shared/SkateFlipFlick.cs
+mods/rust/shared/SkateFlickPitch.cs
