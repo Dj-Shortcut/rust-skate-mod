@@ -182,8 +182,8 @@ namespace Shortcut.RustMod
                     // an upper-shoe contact that is not a sole-contact bit.
                     // Keep its relative foot/board placement during compensation.
                     bool familyPress = Clip.Id != RequiredClipId;
-                    double front = familyPress ? press : PressRelease(fraction, 2.0 / 16, 3.0 / 16);
-                    double rear = familyPress ? press : PressRelease(fraction, 1.0 / 16, 2.5 / 16);
+                    double front = familyPress ? 1 : PressRelease(fraction, 2.0 / 16, 3.0 / 16);
+                    double rear = familyPress ? 1 : PressRelease(fraction, 1.0 / 16, 2.5 / 16);
                     bool goofy = stance == SkateStance.Goofy;
                     var left = boardShift * (goofy ? rear : front);
                     var right = boardShift * (goofy ? front : rear);
