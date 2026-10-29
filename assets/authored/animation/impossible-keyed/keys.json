@@ -1683,6 +1683,10 @@
       1
     ],
     [
+      493,
+      0.15
+    ],
+    [
       496,
       0
     ],
@@ -1694,9 +1698,10 @@
   "catchLeanDegrees": 50,
   "catchGazeDownDegrees": 70,
   "airClearance": 0.025,
-  "upperVisiblePrior": "Authored visible Catch fold/gaze around489\u2013493; the monocular torso stood upright despite visible forward fold. Preserve hips/legs/feet/wrap. Reconstruct only the low/front Left-arm tracking spike486\u2013488 from reliable485/489 directions; the real raised rear balance arm remains. The local pelvis subtracts the reference carrier through489\u2013497 so its combined world height is C2 across physical landing, following the existing Kickflip landing method.",
+  "upperVisiblePrior": "Authored visible Catch fold/gaze around489\u2013493; the monocular torso stood upright despite visible forward fold. Preserve hips/legs/feet/wrap. Reconstruct only the low/front Left-arm tracking spike486\u2013488 from reliable485/489 directions; the real raised rear balance arm remains. The local pelvis subtracts the reference carrier through489\u2013497 so its combined world height is C2 across physical landing, following the existing Kickflip landing method. The already-approved Catch remains fixed; its fold fades earlier to make sourceLand493 about17degrees more upright.",
   "landingCarrierWindow": [
     489,
     497
-  ]
+  ],
+  "hookEdgeFullSourceFrame": 479.5
 }

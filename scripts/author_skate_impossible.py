@@ -98,7 +98,7 @@ def sample(c,s,sf):
   deck0=np.array([0.,h(0,-.32),-.32]);feature0=nb['Right'].T@(UP*.092+deck0-nj['RightAnkle'])
   wrap=smooth((sf-479)/3)*(1-smooth((sf-487)/3))
   feature=feature0*(1-wrap)+np.array(s['hookShoeLocal'])*wrap
-  dz=-.32-.025*wrap;width=shape['deckHalfWidth']*math.sqrt(max(0,1-((abs(dz)-.288)/.112)**2));dx=-(width+.002)*hook_weight
+  dz=-.32-.025*wrap;width=shape['deckHalfWidth']*math.sqrt(max(0,1-((abs(dz)-.288)/.112)**2));edge_weight=smooth((sf-478.25)/(s['hookEdgeFullSourceFrame']-478.25));dx=-(width+.002)*edge_weight
   outward=unit((ru@np.array([0.,-1.,0.]))*(1-wrap)+(ru@np.array(s['hookSurfaceNormalLocal']))*wrap)
   underside=smooth((float(np.dot(outward,r[:,1]))+.1)/.2)*wrap
   deck=np.array([dx,h(dx,dz)-s['deckThickness']*underside,dz])
