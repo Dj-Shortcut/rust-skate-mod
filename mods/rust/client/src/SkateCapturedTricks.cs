@@ -70,6 +70,7 @@ public static class SkateCapturedTricks
     public static void ClearFrame() { displayed = default(SkateBoardPose); flickApplied = false; }
     public static void Reset()
     { SkateCapturedBoardPaths.Reset(); active = null; footSupport = null; ResetFlick(); keyedBaselinePlayer = null; keyedBaselinePose = null; keyedGroundOrigin = null; keyedBaselineAt = -1; keyedBaselineCharging = false; token = refusedToken = -1; airSeen = landed = flipExtended = false; caughtAt = preparedAt = -1; catchPreparationWeight = 0; previousAirSourceTime = catchSourceLead = previousAirProgress = 0; previous = landingFrom = default(SkateCaptureFrame); ClearPlantedFeet(); ClearFrame(); }
+
     public static void Preload()
     {
         if (loaded) return;

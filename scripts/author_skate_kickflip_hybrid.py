@@ -288,6 +288,23 @@ def sample(controls,spec,keys,t):
     row['referencePress']=dict(referenceHeight=height,boardWeight=w,bodyWeight=window(sf,press['bodyWindow']),frontAttached=1-smooth(sf-261),rearAttached=1-smooth((sf-260)/1.5))
     return coupled_air_catch(row,spec,sf)
 
+def landing_hip_height(spec, frame, height):
+    control=spec['hybrid']['coupledAirCatch'];window=control.get('landingCarrierWindow')
+    if window is None:return height
+    start,end=window
+    if not start<=frame<=end:return height
+    press=spec['hybrid']['referenceGroundPress'];pop,land=press['popFrame'],press['landFrame'];flight=press['referenceFlight'];gravity=press['gravity']
+    reference=lambda sf:.5*gravity*flight*flight*max(0.,min(1.,(sf-pop)/(land-pop)))*(1-max(0.,min(1.,(sf-pop)/(land-pop))))
+    keys=control['pelvisKeys'];times=[k[0]for k in keys];values=[[k[1]]for k in keys]
+    first=curve(times,values,start)[0]+reference(start);last=curve(times,values,end)[0]+reference(end)
+    duration=(end-start)/(land-pop)*flight;u=(frame-start)/(end-start);u3=u*u*u
+    delta=last-first;reference_velocity=lambda sf:gravity*flight*(.5-(sf-pop)/(land-pop))if pop<sf<land else 0.
+    a=reference_velocity(start)*duration+curve(times,values,start,derivative=True)[0]*(end-start)
+    b=reference_velocity(end)*duration+curve(times,values,end,derivative=True)[0]*(end-start)
+    world=first+a*u+(10*delta-6*a-4*b)*u3+(-15*delta+8*a+7*b)*u3*u+(6*delta-3*a-3*b)*u3*u*u
+    return world-reference(frame)
+
+
 def coupled_air_catch(row,spec,frame):
     """Replace incompatible independent hip/feet outputs with one source envelope."""
     h=spec['hybrid'];control=h['coupledAirCatch'];start=control['startsAfter']
@@ -295,6 +312,7 @@ def coupled_air_catch(row,spec,frame):
     joints={k:np.array(v)for k,v in row['joints'].items()};soles={k:np.array(v)for k,v in row['soleUp'].items()}
     body_weight=smooth((frame-start)/(control['fullBodyFrame']-start))
     keys=control['pelvisKeys'];height=curve([k[0]for k in keys],[[k[1]]for k in keys],frame)[0]
+    height=landing_hip_height(spec,frame,height)
     shift=UP*((height-joints['Pelvis'][1])*body_weight)
     for name in joints:joints[name]+=shift
     # Feet remain in upright carrier space while the real board flips underneath.
