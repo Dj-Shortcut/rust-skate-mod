@@ -21,6 +21,10 @@ namespace Shortcut.RustMod
         public const string SupportedKneeProvenance = "Authored BS180 supported crouch; 100-degree internal knee target and toe-directed bend planes, not measured capture.";
         public const string CatchRiseProvenance = "Authored capture catch rise limit; fixed current feet, not measured capture.";
         public const string LandingPlacementProvenance = "Authored Switch Heelflip and Nollie 360 Flip catch placement on measured bolt-region footprints; not measured source motion.";
+        public const string KickflipTuckProvenance = "Authored normal Kickflip presentation release at the live flick edge, paired free-foot tuck above the bolt regions and return to source catch; original source contact bits are retained, not asserted live contact.";
+        private static SkateVector[] kickflipBoardEnvelope;
+        private readonly SkateVector[] kickflipCatch = new SkateVector[2], kickflipForward = new SkateVector[2];
+        private double kickflipAnkleHeight;
         private readonly SkateCaptureClip clip;
         private readonly SkateStance stance;
         private readonly SkateDeckFootFitter left, right;
@@ -87,6 +91,32 @@ namespace Shortcut.RustMod
                     !pending.TryPlaceCatch(rig, pending.caught[foot], frame, out frame, out error) ||
                     !pending.Boundary(frame, foot, out pending.caughtLocal[foot], out error))
                 { error = "Foot " + foot + " at source catch: " + error; return false; }
+                if (pending.clip.MovementKind == "kickflip")
+                {
+                    SkateBoardPose caughtFoot;
+                    if (!TryFootFrame(foot == 0 ? frame.Pose.LeftAnkle : frame.Pose.RightAnkle,
+                        foot == 0 ? frame.Pose.LeftToe : frame.Pose.RightToe,
+                        foot == 0 ? frame.LeftSoleUp : frame.RightSoleUp, out caughtFoot))
+                    { error = "Kickflip catch has no measured shoe frame."; return false; }
+                    pending.kickflipCatch[foot] = caughtFoot.Origin + caughtFoot.Rotate(pending.caughtLocal[foot]) - frame.Board.Origin;
+                    pending.kickflipForward[foot] = caughtFoot.Forward;
+                    // Calibrate the measured shoe in the upright return frame,
+                    // not at the source ankle's camera-dependent sole tilt.
+                    var up = new SkateVector(0, 1, 0);
+                    var reference = new SkateBoardPose(frame.Board.Origin, new SkateVector(0, 0, 1), up);
+                    var anchor = pending.kickflipCatch[foot];
+                    var calibration = new SkateBoardPose(reference.Point(new SkateVector(anchor.X, .10, anchor.Z)), caughtFoot.Forward, up);
+                    double amount;
+                    if (!pending.Fit(foot, reference, calibration, out amount, out error)) return false;
+                    pending.kickflipAnkleHeight = Math.Max(pending.kickflipAnkleHeight, .10 + amount);
+                }
+            }
+            if (pending.clip.MovementKind == "kickflip" && kickflipBoardEnvelope == null)
+            {
+                var mesh = SkateBoardMesh.CreateDetailed(); var points = new SkateVector[mesh.Positions.Length / 3];
+                for (int n = 0; n < points.Length; n++)
+                    points[n] = new SkateVector(mesh.Positions[n * 3], mesh.Positions[n * 3 + 1] - .092, mesh.Positions[n * 3 + 2]);
+                kickflipBoardEnvelope = points;
             }
             support = pending; return true;
         }
@@ -168,6 +198,66 @@ namespace Shortcut.RustMod
             if (!TrySetFeet(rig, frame.Pose, la, lt, ra, rt, true, out pose, out error)) return false;
             placed = new SkateCaptureFrame(pose, frame.Board, frame.Rotation, lu, ru, frame.HasEvent, frame.Observation,
                 frame.PelvisCorrection + pose.Pelvis - frame.Pose.Pelvis, frame.LeftHandCorrection, frame.RightHandCorrection, frame.RiderUp);
+            return true;
+        }
+
+        // Run after ordinary capture/conform and before the front-foot flick
+        // owner. That owner can return toward this compact pair without moving
+        // the rear foot back onto a deck which has already started to flip.
+        public bool TryKickflipTuck(SkateRiderRig rig, SkateCaptureFrame frame, double sourceTime,
+            double elapsedSeconds, SkateBoardPose uprightCarrier, out SkateCaptureFrame tucked, out string error)
+        {
+            tucked = frame; error = null;
+            if (clip.MovementKind != "kickflip") return true;
+            if (!Finite(sourceTime) || sourceTime < 0 || sourceTime > clip.Duration ||
+                !Finite(rig.FootLength) || rig.FootLength <= 0 || !Finite(elapsedSeconds) || elapsedSeconds < 0 || !uprightCarrier.Initialized ||
+                !SkateBoardPath.Valid(uprightCarrier) || !frame.Board.Initialized || !SkateBoardPath.Valid(frame.Board))
+            { error = "Invalid authored Kickflip free-flight carrier or clock."; return false; }
+            double untilCatch = Math.Min(caught[0], caught[1]) - sourceTime;
+            if (elapsedSeconds <= SkateFlipFlick.EdgeReleaseSeconds || untilCatch <= 0) return true;
+            double weight = CatchPreparationWeight(elapsedSeconds - SkateFlipFlick.EdgeReleaseSeconds, .05) *
+                CatchPreparationWeight(untilCatch, .10);
+            if (weight <= 0) return true;
+            var up = uprightCarrier.Up; var forward = uprightCarrier.Forward; var right = uprightCarrier.Right;
+            // The reference runtime mesh contains the deck, trucks, bushings
+            // and all four wheels. Its current rigid orientation determines the
+            // clearance; there is no blanket ankle lift or source-height minimum.
+            double top = double.NegativeInfinity;
+            for (int n = 0; n < kickflipBoardEnvelope.Length; n++)
+                top = Math.Max(top, SkateVector.Dot(frame.Board.Rotate(kickflipBoardEnvelope[n]), up));
+            double height = Math.Max(0, top) + kickflipAnkleHeight + .05;
+            var la = frame.Pose.LeftAnkle; var ra = frame.Pose.RightAnkle;
+            var lt = frame.Pose.LeftToe; var rt = frame.Pose.RightToe;
+            var lu = frame.LeftSoleUp; var ru = frame.RightSoleUp;
+            for (int side = 0; side < 2; side++)
+            {
+                var oldAnkle = side == 0 ? la : ra; var oldToe = side == 0 ? lt : rt;
+                var oldUp = side == 0 ? lu : ru;
+                var anchor = kickflipCatch[side];
+                var target = frame.Board.Origin + right * Math.Max(-.055, Math.Min(.055, anchor.X)) +
+                    forward * (anchor.Z >= 0 ? .18 : -.18) + up * height;
+                var ankle = oldAnkle + (target - oldAnkle) * weight;
+                var sole = oldUp * (1 - weight) + up * weight;
+                var direction = (oldToe - oldAnkle) * ((1 - weight) / rig.FootLength) +
+                    uprightCarrier.Rotate(kickflipForward[side]) * weight;
+                SkateBoardPose foot;
+                if (!TryFootFrame(ankle, ankle + direction, sole, out foot))
+                { error = "Authored Kickflip pair has an ambiguous shoe frame."; return false; }
+                // Near the real Catch the deck is upright again. Preserve the
+                // existing positive-only measured fit through that final return;
+                // steep/inverted projections retain their existing refusal.
+                double amount; string ignored;
+                if (Fit(side, frame.Board, foot, out amount, out ignored) && amount > 0)
+                    ankle += frame.Board.Up * amount;
+                var toe = ankle + foot.Forward * rig.FootLength;
+                if (side == 0) { la = ankle; lt = toe; lu = foot.Up; }
+                else { ra = ankle; rt = toe; ru = foot.Up; }
+            }
+            SkateRiderPose pose;
+            if (!TrySetFeet(rig, frame.Pose, la, lt, ra, rt, false, out pose, out error)) return false;
+            tucked = new SkateCaptureFrame(pose, frame.Board, frame.Rotation, lu, ru,
+                frame.HasEvent, frame.Observation, frame.PelvisCorrection,
+                frame.LeftHandCorrection, frame.RightHandCorrection, frame.RiderUp);
             return true;
         }
 
