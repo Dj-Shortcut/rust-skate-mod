@@ -5,7 +5,7 @@ independently authored free-foot paths. Normal playback preserves that shape;
 adding another jump or capping individual knee angles would not repair it.
 This family reconstruction fits the pelvis and both free-ankle heights together
 around the actual striped-shirt reference at source frame 2239. It retains this
-take's wide heel-side gesture, source bend planes. The same free-Air window adds the visibly missing forward
+take's wide heel-side gesture and source bend planes. The free-Air window adds the visibly missing forward
 fold as one coherent upper-body rotation, retaining its relative arm gesture
 and gaze. It does not turn the body to fit the camera.
 
@@ -21,11 +21,18 @@ python scripts/author_skate_switch_heelflip_air.py \
   --output context/artifacts/switch-heelflip-air/output
 ```
 
-The baker preserves the exact clip ID, board, events and all samples outside
-source 2235–2244.75. The observed pop from PR #616 and Catch 2245/Land 2248 stay
-unchanged. Recovery remains source-identical and uses the existing supported
-runtime recovery and PR #615 head alignment; it must still be viewed through the
-complete ordinary route. Fixed chains and interpolated samples pass through
+The lower-body window remains source 2235–2244.75. A separate upper-body window
+keeps the forward fold through Catch 2245, Land 2248 and absorption 2253, then
+fades smoothly back to the source by 2263. Ending this fold before Catch made
+the otherwise bent landing look upright. The arm gesture and gaze turn with
+the upper group; no independent arm, neck or body-yaw curve is added.
+
+The exact clip ID, complete board motion, events, contacts, foot orientations
+and all lower-body/foot data outside the original Air window stay unchanged.
+Samples outside the combined windows remain source-identical. The existing
+supported runtime recovery and PR #615 head alignment remain in charge; the
+whole action still needs inspection through the ordinary route. Fixed chains
+and interpolated samples pass through
 the existing strict writer before prior output is replaced. Output is always
 `Reviewed=false`; a separate private evaluation copy grants no installation or
 Shadow approval. Regular/goofy and normal/low physical flights require their
