@@ -649,7 +649,7 @@ public static class SkateCapturedTricks
                 frame, impactWeight, out frame, out error, true))
             { Refuse(nextToken, error ?? "landing transition carrier unavailable"); return false; }
         }
-        double weight = SkateCaptureFootSupport.CatchPreparationWeight(now - beganAt, .1);
+        double weight = SkateCaptureFootSupport.CatchPreparationWeight(now - beganAt, legacyPop != null ? legacyPop.EntryBlendSeconds : .1);
         if (landed) weight = Math.Min(weight, active.RecoveryWeight(value));
         if (weight <= 0) return false; // The first live pop frame keeps the exact procedural pose.
         // Keep the pop-foot target through release until entry is complete;
@@ -754,8 +754,8 @@ public static class SkateCapturedTricks
                     active.SourceMovementKind == "switch-heelflip" || active.SourceMovementKind == "nollie-heelflip" ||
                     active.SourceMovementKind == "fakie-kickflip" ||
                     active.SourceMovementKind == "nollie-backside-180-heelflip" || active.SourceMovementKind == "nollie-360-flip",
-                    active.Clip.Id == "fakie-kickflip" && active.SourceMovementKind == "fakie-kickflip" &&
-                    SkateCaptureLegacyPop.Accepts(active.Clip, signature)))
+                    (active.Clip.Id == "fakie-kickflip" || active.Clip.Id == "nollie-heelflip") &&
+                    active.Clip.Id == active.SourceMovementKind && SkateCaptureLegacyPop.Accepts(active.Clip, signature)))
                 { Refuse(nextToken, error ?? "supported recovery frame unavailable"); return false; }
                 frame = new SkateCaptureFrame(settled, frame.Board, frame.Rotation, frame.LeftSoleUp, frame.RightSoleUp,
                     frame.HasEvent, frame.Observation, frame.PelvisCorrection, frame.LeftHandCorrection, frame.RightHandCorrection, frame.RiderUp);
