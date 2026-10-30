@@ -52,6 +52,11 @@ def reconstruct(source, controls):
         raise ValueError('Expected ordered start/full/release/end source frames')
     if bounds[0] < 2235 or bounds[-1] >= 2245:
         raise ValueError('Keep the established pop/release and Catch outside this Air window')
+    upper_bounds = controls.get('upperSourceFrames', bounds)
+    if len(upper_bounds) != 4 or not all(a < b for a, b in zip(upper_bounds, upper_bounds[1:])):
+        raise ValueError('Expected ordered upper start/full/release/end source frames')
+    if upper_bounds[0] < bounds[0] or upper_bounds[-1] > metadata['lastSourceFrame']:
+        raise ValueError('Keep the upper continuation inside the bound source after the established Pop')
     result = copy.deepcopy(source)
     rig = metadata['rig']
     changed = []
@@ -59,9 +64,11 @@ def reconstruct(source, controls):
         frame = row['sourceFrame']
         blend = smooth((frame - bounds[0]) / (bounds[1] - bounds[0])) * (
             1 - smooth((frame - bounds[2]) / (bounds[3] - bounds[2])))
-        if blend == 0:
+        upper_blend = smooth((frame - upper_bounds[0]) / (upper_bounds[1] - upper_bounds[0])) * (
+            1 - smooth((frame - upper_bounds[2]) / (upper_bounds[3] - upper_bounds[2])))
+        if blend == 0 and upper_blend == 0:
             continue
-        if before['contacts'] != 0:
+        if blend > 0 and before['contacts'] != 0:
             raise ValueError('The authored Air window cannot move an observed contact')
         joints = {key: np.asarray(point, dtype=float) for key, point in before['joints'].items()}
         origin = np.asarray(before['board']['origin'], dtype=float)
@@ -80,25 +87,26 @@ def reconstruct(source, controls):
         lean = math.radians(controls['torsoForwardLeanDegrees'])
         desired_up = forward * math.sin(lean) + np.array([0., math.cos(lean), 0.])
         old_up = np.asarray(before['dirs']['ChestUp'], dtype=float)
-        rotation = upper_rotation(old_up, old_up * (1 - blend) + desired_up * blend)
+        rotation = upper_rotation(old_up, old_up * (1 - upper_blend) + desired_up * upper_blend)
         for key in ('Chest', 'Neck', 'Head', 'LeftShoulder', 'RightShoulder',
                     'LeftElbow', 'RightElbow', 'LeftHand', 'RightHand'):
             posed[key] = posed['Pelvis'] + rotation @ (posed[key] - posed['Pelvis'])
         for key in ('ChestForward', 'ChestUp', 'HeadForward'):
             row['dirs'][key] = (rotation @ np.asarray(before['dirs'][key])).tolist()
-        for side in ('Left', 'Right'):
-            guide = controls['feet'][side]
-            target = joints[side + 'Ankle'].copy()
-            target[1] = origin[1] + guide['heightAboveBoardM']
-            # The take's wide heel-side gesture remains source-specific. Its
-            # tangential path is retained rather than replaced by Kickflip feet.
-            ankle = joints[side + 'Ankle'] * (1 - blend) + target * blend
-            hip = posed[side + 'Hip']
-            pole = transport_leg_pole(joints[side + 'Hip'], joints[side + 'Knee'],
-                                      joints[side + 'Ankle'], hip, ankle)
-            posed[side + 'Knee'] = limb(hip, ankle, rig['thigh'], rig['shin'], pole)
-            posed[side + 'Ankle'] = ankle
-            posed[side + 'Toe'] = ankle + joints[side + 'Toe'] - joints[side + 'Ankle']
+        if blend > 0:
+            for side in ('Left', 'Right'):
+                guide = controls['feet'][side]
+                target = joints[side + 'Ankle'].copy()
+                target[1] = origin[1] + guide['heightAboveBoardM']
+                # The take's wide heel-side gesture remains source-specific. Its
+                # tangential path is retained rather than replaced by Kickflip feet.
+                ankle = joints[side + 'Ankle'] * (1 - blend) + target * blend
+                hip = posed[side + 'Hip']
+                pole = transport_leg_pole(joints[side + 'Hip'], joints[side + 'Knee'],
+                                          joints[side + 'Ankle'], hip, ankle)
+                posed[side + 'Knee'] = limb(hip, ankle, rig['thigh'], rig['shin'], pole)
+                posed[side + 'Ankle'] = ankle
+                posed[side + 'Toe'] = ankle + joints[side + 'Toe'] - joints[side + 'Ankle']
         row['joints'] = {key: point.tolist() for key, point in posed.items()}
         changed.append(frame)
     if not changed:
@@ -108,7 +116,8 @@ def reconstruct(source, controls):
             ' Source2235–2244.75 now uses the separately declared source-led '
             'pelvis/both-free-ankle Air reconstruction; tangential foot paths '
             'and source bend planes are retained. The upper group receives a '
-            'coherent source-led forward fold; relative arms/gaze are retained. '
+            'coherent source-led forward fold through Catch and absorption on '
+            'its separate upper window; relative arms/gaze are retained. '
             'Hidden depth remains authored.')
     result['metadata']['reviewed'] = False
     result['metadata']['authoredAirReconstruction'] = dict(
@@ -117,6 +126,12 @@ def reconstruct(source, controls):
     assert result['events'] == source['events']
     assert all(after['board'] == before['board'] for before, after in zip(source['frames'], result['frames']))
     assert all(before == after for before, after in zip(source['frames'], result['frames'])
+               if after['sourceFrame'] <= min(bounds[0], upper_bounds[0]) or
+               after['sourceFrame'] >= max(bounds[-1], upper_bounds[-1]))
+    lower = ('Pelvis', 'LeftHip', 'RightHip', 'LeftKnee', 'RightKnee',
+             'LeftAnkle', 'RightAnkle', 'LeftToe', 'RightToe')
+    assert all(all(before['joints'][key] == after['joints'][key] for key in lower)
+               for before, after in zip(source['frames'], result['frames'])
                if after['sourceFrame'] <= bounds[0] or after['sourceFrame'] >= bounds[-1])
     # The existing strict writer also checks interpolated midpoints. Failure
     # occurs before any previous reader-valid output can be replaced.

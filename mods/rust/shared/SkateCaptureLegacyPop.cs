@@ -67,7 +67,9 @@ namespace Shortcut.RustMod
             if (pop < 0 || air <= pop)
             { error = "Initial-five pop needs its own ordered Pop/Air phases."; return false; }
             playback = new SkateCaptureLegacyPop(pose, deck, lu, ru, origin, normal, velocity, top, nose, pop, air, signature.Flip > 0,
-                clip.Id == "fakie-kickflip" || clip.Id == "switch-heelflip", clip.Id == "nollie-heelflip"); return true;
+                clip.Id == "fakie-kickflip" || clip.Id == "switch-heelflip",
+                clip.Id == "nollie-heelflip" || clip.Id == "fakie-kickflip" ||
+                clip.Id == "switch-heelflip" || clip.Id == "nollie-backside-180-heelflip"); return true;
         }
         // A held zero-degree scorer must not freeze the filmed Pop at its
         // first pose. The actual flick gate owns this short source Pop sequence;

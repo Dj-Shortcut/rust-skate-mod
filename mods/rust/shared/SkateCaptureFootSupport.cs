@@ -97,9 +97,6 @@ namespace Shortcut.RustMod
         {
             double span = Math.Min(.08, (caught[side] - release[side]) * .25);
             if (span <= 0 || sourceTime < release[side] || sourceTime > caught[side]) return 0;
-            // The coupled body-spin/flip track keeps its free shoe space in
-            // the full deck frame while the body's upright carrier stays fixed.
-            if (clip.MovementKind == "nollie-backside-180-heelflip") return 1;
             double edge = Math.Min(sourceTime - release[side], caught[side] - sourceTime);
             if (edge >= span) return 0;
             double u = Math.Max(0, edge / span);

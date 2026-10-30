@@ -440,7 +440,7 @@ public static class SkateCapturedTricks
                 ? (baselineRoot - keyedBaselineRoot) * (1 / dt) : default(SkateVector);
             keyedBaselineRoot = baselineRoot; keyedBaselineAt = baselineNow;
             keyedBaselineEpoch = SkateKeys.InputEpoch; keyedBaselinePops = SkateRide.Pops;
-            keyedBaselineCharging = SkateKeys.Charging && Eligible(false, true);
+            keyedBaselineCharging = (SkateKeys.Charging || RiderRig.GroundChargePresented) && Eligible(false, true);
             keyedBaselineLeftUp = LocalDirection(baselineLeftUp, entryCarrier);
             keyedBaselineRightUp = LocalDirection(baselineRightUp, entryCarrier);
             keyedBaselinePlayer = player; keyedBaselineGoofy = SkateRide.Goofy;
