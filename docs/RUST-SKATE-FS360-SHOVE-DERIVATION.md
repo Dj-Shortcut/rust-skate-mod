@@ -34,3 +34,8 @@ old tailward kneeling recovery. Air and Catch, foot targets, board, upper-body
 and measured lengths are preserved. The generic Ground preparation is shared;
 a source Load200 witness must be labelled as a phase reference rather than the
 Pop-aligned source210 cursor.
+
+The recovery also removes the old recipe toe-side hip bias: pelvis and upper
+body move together toward the measured sole-footprint centre with a small
+rig-scaled heelward balance. Both fixed-foot legs are re-solved under the same
+reach guard; there is no extra vertical arc or moved foot contact.

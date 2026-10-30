@@ -165,7 +165,7 @@
       -0.24
     ]
   ],
-  "provenance": "Authored FS360 derivation from the actual cached FS180 Kroetkov body/scoop reference. Own extra yaw, free rear pickup and later full360 catch; reference footage is FS180, not a filmed FS360. Existing own shoe/deck geometry and fixed limb lengths; no BS body copied. Authored rear recovery knee turns toward its anatomical toe direction after Land226; Air/Catch and all foot/board targets retained.",
+  "provenance": "Authored FS360 derivation from the actual cached FS180 Kroetkov body/scoop reference. Own extra yaw, free rear pickup and later full360 catch; reference footage is FS180, not a filmed FS360. Existing own shoe/deck geometry and fixed limb lengths; no BS body copied. Authored rear recovery knee turns toward its anatomical toe direction after Land226; Air/Catch and all foot/board targets retained. Recovery pelvis/upper recenter together over measured sole-footprint centres with a half-hip-width heelward balance, then both fixed-foot legs are solved again; no Y arc is added.",
   "recoveryKneeWindow": [
     226,
     236

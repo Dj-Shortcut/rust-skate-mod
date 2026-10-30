@@ -91,6 +91,23 @@ def sample(source, s, sf):
     joints, dirs, soles = source_body(source, sf)
     original = {k: value.copy() for k, value in joints.items()}
     feet = {side: foot(s, sf, side) for side in ('Left', 'Right')}
+    begin, end = s['recoveryKneeWindow']
+    recovery = smooth((sf-begin)/(end-begin))
+    if recovery > 0:
+        # Balance the recovery over real sole footprints, not ankle points.
+        shoe = s['_geometry']['shoe']
+        rows = shoe['soleRows']
+        outline = np.array([[w, z] for z, w in rows]+[[-w, z] for z, w in reversed(rows)])
+        following = np.roll(outline, -1, axis=0)
+        cross = outline[:, 0]*following[:, 1]-following[:, 0]*outline[:, 1]
+        centroid = ((outline+following)*cross[:, None]).sum(axis=0)/(3*cross.sum())
+        local = np.array([centroid[0], shoe['soleLocalY'], centroid[1]])
+        centres = [ankle+frame@local for ankle, frame in feet.values()]
+        toe = unit(sum((frame[:, 2] for _, frame in feet.values()), np.zeros(3))*[1, 0, 1])
+        target = np.mean(centres, axis=0)-toe*source['metadata']['rig']['hipHalfWidth']
+        shift = (target-joints['Pelvis'])*[recovery, 0, recovery]
+        for key in joints:
+            joints[key] += shift
     lo, hi = -float('inf'), float('inf')
     reach = (.44+.43)*s['maximumReachShare']
     for side, (ankle, _) in feet.items():
@@ -110,8 +127,6 @@ def sample(source, s, sf):
         axis = old_end-old_hip
         pole = original[side+'Knee']-old_hip-axis*np.dot(original[side+'Knee']-old_hip, axis)/np.dot(axis, axis)
         if side == 'Right':
-            begin, end = s['recoveryKneeWindow']
-            recovery = smooth((sf-begin)/(end-begin))
             # The FS recovery witness keeps the rear shin steep, rather than
             # kneeling tailward. Feet, hips and pre-Land chains stay unchanged.
             if recovery > 0:
