@@ -1,0 +1,14 @@
+{
+  "format": "skate-fakie-kickflip-air-reconstruction/1",
+  "movementKind": "fakie-kickflip",
+  "originalPackSha256": "cdf2e1b59e417fa01f698337675b35a3863b0bb8c21071a39760350ba7b7ffdb",
+  "sourceUrl": "https://www.youtube.com/watch?v=PqJZcwTY1QE",
+  "sourceFrames": [2721.0, 2723.0, 2725.0, 2729.5],
+  "pelvisAboveBoardM": 0.70,
+  "feet": {
+    "Left": {"positionRelativeToBoardM": [-0.04, 0.295, 0.25]},
+    "Right": {"positionRelativeToBoardM": [0.04, 0.265, -0.25]}
+  },
+  "provenance": "Authored reconstruction of the striped-shirt Fakie Kickflip attempt, source frame2724: both knees and feet tuck over the turning board. Correct the incompatible old recipe-root and V5 free-foot guides together; preserve the source bend planes, toe/sole orientations and upper-body shape. No new world trajectory, physics, scoring or source-confidence claim.",
+  "uncertainty": "Single-camera depth and metric root are estimated. These compact airborne targets are authored from the visible pose, not measured motion. The complete pop/side-instep sequence through source2721 and Catch/Land from source2730 remain unchanged. Original source data stays unreviewed."
+}
