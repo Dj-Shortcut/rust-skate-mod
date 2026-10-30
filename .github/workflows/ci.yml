@@ -19,6 +19,20 @@ env:
   CARGO_INCREMENTAL: 0
 
 jobs:
+  skate-steam-discovery:
+    name: Steam discovery (Windows PowerShell 5.1 and PowerShell 7)
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Windows PowerShell 5.1 discovery and parser regressions
+        shell: powershell
+        run: ./crates/approved_tests/skate/SkateSteamDiscoveryScenario.ps1
+      - name: PowerShell 7 discovery and parser regressions
+        if: always()
+        shell: pwsh
+        run: ./crates/approved_tests/skate/SkateSteamDiscoveryScenario.ps1
+
   skate-installer:
     name: Skate plugin source installation
     runs-on: ubuntu-latest

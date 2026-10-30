@@ -7,17 +7,22 @@
 param([switch]$Diagnostics)
 $ErrorActionPreference = 'Stop'
 $probe = "$HOME\Downloads\claude-loader-probe"; $L = "$probe\launcher"
-$rust = 'C:\Program Files (x86)\Steam\steamapps\common\Rust'
 function line($m) { Write-Host $m }
 line ''
 line '  RUST SKATE'
 line '  ----------'
 . "$L\diagnostics.ps1"
+# Steam and Rust on this PC: the owner's C: library, or on a friend's PC the Steam library that
+# holds Rust (diagnostics.ps1, Get-SkateRustFolder).
+$steamRust = Get-SkateRustFolder
+$rust = $steamRust.Rust
 $recovered = Save-SkateLogSnapshot $rust $probe 'before-launcher-clean'
 if ($recovered.Count) { line ('  Preserved existing client logs: ' + $recovered.Directory) }
 Show-SkateChecks $rust $probe
+if ($steamRust.Found -and $rust -ne 'C:\Program Files (x86)\Steam\steamapps\common\Rust') { line "  Rust folder: $rust" }
 line ''
 if ($Diagnostics) { line '  Diagnostics finished. Rust was not started.'; return }
+if (-not $steamRust.Found) { line '  Rust is not installed through Steam on this PC (not in Steam''s own library, not in any library Steam lists). Nothing was started.'; return }
 if (Get-Process RustClient -ErrorAction SilentlyContinue) { line '  Rust is already running. Quit Rust first, then start this again.'; return }
 if (-not (Test-Path "$probe\play\ShortcutSkateClient.dll")) { line '  The skate plugin is not installed here. Install it again (zz launcher, or the pack''s "Install Rust Skate").'; return }
 $soundSource = Resolve-SkateSoundSource $probe
@@ -29,7 +34,7 @@ if ($there) {
   line '  Nothing was started and nothing was changed.'
   return
 }
-$pb = ((Get-Content 'C:\Program Files (x86)\Steam\steamapps\appmanifest_252490.acf' | Select-String '"buildid"').Line -split '"')[3]
+$pb = $steamRust.BuildId
 if (-not ((Test-Path "$probe\gen-$pb\out\Assembly-CSharp.dll") -and (Select-String -Path "$probe\gen-$pb\gen.log" -Pattern 'GEN DONE.* errors=0( |$)' -Quiet))) {
   line "  Rust has been updated (build $pb) and the mod has not been prepared for this version yet."
   line '  Nothing was started and nothing was changed. The owner prepares the new version (zz interop, zz launcher); a friend asks him for a new pack.'
@@ -39,7 +44,7 @@ if (-not ((Test-Path "$probe\gen-$pb\out\Assembly-CSharp.dll") -and (Select-Stri
 # registry once it is ready; the shortcut can only be started from then on.
 if (-not (Get-Process steam -ErrorAction SilentlyContinue)) {
   line '  Steam is not running yet; starting it first.'
-  Start-Process 'C:\Program Files (x86)\Steam\steam.exe'
+  Start-Process ($steamRust.Steam + '\steam.exe')
 }
 $w0 = Get-Date; $account = 0
 while ($account -eq 0 -and ((Get-Date) - $w0).TotalSeconds -lt 120) {
