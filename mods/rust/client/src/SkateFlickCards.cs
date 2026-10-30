@@ -23,7 +23,7 @@ public static class SkateFlickCards
 
     public struct Section { public string Title; public Card[] Cards; }
 
-    private const float Rim = 0.82f, Turn = 0.7f;
+    private const float Rim = 0.82f;
 
     public static readonly Section[] Sections = {
         new Section { Title = "POP", Cards = new[] {
@@ -33,17 +33,17 @@ public static class SkateFlickCards
             Flick("Heelflip", Path().Rim(270).To(0f, 0f).Rim(130)),
             Flick("Varial Kickflip", Path().Rim(225).Rim(45)),
             Flick("Varial Heelflip", Path().Rim(315).Rim(135)),
-            Flick("Hardflip", Path().Arc(270, 320, Rim, Rim).To(Cos(320) * Rim, 0.75f)),
-            Flick("Inward Heelflip", Path().Arc(270, 220, Rim, Rim).To(Cos(220) * Rim, 0.75f)),
+            Flick("Hardflip", Path().Arc(270, 320, Rim, Rim).Rim(90)),
+            Flick("Inward Heelflip", Path().Arc(270, 220, Rim, Rim).Rim(90)),
             Flick("360 Flip", Path().Arc(180, 270, Rim, Rim).Rim(45)),
             Flick("Laser Flip", Path().Arc(360, 270, Rim, Rim).Rim(135)),
             Flick("360 Hardflip", Path().Arc(360, 270, Rim, Rim).Rim(45)),
             Flick("360 Inward Heelflip", Path().Arc(180, 270, Rim, Rim).Rim(135)),
         } },
         new Section { Title = "SHOVE-ITS AND IMPOSSIBLES", Cards = new[] {
-            Flick("Pop Shove-it", Path().Arc(270, 360, Turn, Turn)),
-            Flick("FS Pop Shove-it", Path().Arc(270, 180, Turn, Turn)),
-            Flick("360 Shove-it", Path().Arc(270, 450, Turn, Turn)),
+            Flick("Pop Shove-it", Path().Arc(270, 360, Rim, Rim)),
+            Flick("FS Pop Shove-it", Path().Arc(270, 180, Rim, Rim)),
+            Flick("360 Shove-it", Path().Arc(270, 450, Rim, Rim)),
             Flick("Impossible", Path().Rim(270).Rim(90), "LB"),
             Flick("Front Foot Impossible", Path().Rim(270).Rim(90), "RB"),
             Flick("Underflip", Path().Rim(270).Rim(90), "LB + RB"),

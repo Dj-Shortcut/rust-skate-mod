@@ -232,26 +232,27 @@ public static class SkateHud
         catch (Exception e) { texture = false; Out.Say("HUD panels unavailable: " + e.GetType().Name + ": " + e.Message); }
     }
 
-    // A texture, drawn directly or as the background of an empty label.
-    private static void Picture(float x, float y, float width, float height, Texture2D t)
+    // A texture, drawn directly or as the background of an empty label. False when neither can be.
+    private static bool Picture(float x, float y, float width, float height, Texture2D t)
     {
         var r = new Rect(x, y, width, height);
         if (drawTexture)
         {
-            try { GUI.DrawTexture(r, t); return; }
+            try { GUI.DrawTexture(r, t); return true; }
             catch (Exception e) { drawTexture = false; Out.Say("HUD panels: textures cannot be drawn directly here (" + e.GetType().Name + "); labels carry them instead"); }
         }
-        if (!background) return;
+        if (!background) return false;
         GUIStyle s;
         var key = t.GetHashCode();
         if (!fillStyles.TryGetValue(key, out s))
         {
             s = new GUIStyle();
             try { s.normal.background = t; }
-            catch (Exception e) { background = false; Out.Say("HUD panels unavailable: a style takes no background here (" + e.GetType().Name + ")"); return; }
+            catch (Exception e) { background = false; Out.Say("HUD panels unavailable: a style takes no background here (" + e.GetType().Name + ")"); return false; }
             fillStyles[key] = s;
         }
         GUI.Label(r, "", s);
+        return true;
     }
 
     private static Color Fade(Color c, float alpha) { return new Color(c.r, c.g, c.b, c.a * alpha); }
@@ -602,7 +603,7 @@ public static class SkateHud
     // the pictures cannot be made here; the page is then said in words.
     private static bool Cards(float w, float k)
     {
-        if (cardArtFailed || !texture) return false;
+        if (cardArtFailed || !texture || (!drawTexture && !background)) return false;
         var sections = SkateFlickCards.Sections;
         float x0 = 40f * k, y = 96f * k, width = Math.Min(w - 80f * k, 1320f * k);
         float art = 72f * k, cell = 118f * k, gap = 8f * k, title = 26f * k, name = 17f * k, card = art + 14f * k + 2f * name + 18f * k;
@@ -636,7 +637,7 @@ public static class SkateHud
                 }
                 if (t != null)
                 {
-                    try { Picture(cx + (cell - art) * 0.5f, cy + 7f * k, art, art, t); }
+                    try { if (!Picture(cx + (cell - art) * 0.5f, cy + 7f * k, art, art, t)) return false; }
                     catch (Exception e) { cardArtFailed = true; Out.Say("HUD flick cards unavailable, shown as text: " + e.GetType().Name + ": " + e.Message); return false; }
                 }
                 // A long name takes two lines, broken at the space nearest its middle.
