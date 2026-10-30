@@ -62,6 +62,13 @@ namespace Shortcut.RustMod
                                        SkateVector takeoffUp, double sinceRelease, double riseAtRelease, double gravity,
                                        SkateVector landingUp, double gapToContact, double closingSpeed,
                                        out SkateVector up, out SkateRiderAirFrameState next, out string error)
+        { return TryAirFrame(state, dt, takeoffUp, sinceRelease, riseAtRelease, gravity,
+            landingUp, gapToContact, closingSpeed, false, out up, out next, out error); }
+
+        public static bool TryAirFrame(SkateRiderAirFrameState state, double dt,
+                                       SkateVector takeoffUp, double sinceRelease, double riseAtRelease, double gravity,
+                                       SkateVector landingUp, double gapToContact, double closingSpeed, bool preserveDeparture,
+                                       out SkateVector up, out SkateRiderAirFrameState next, out string error)
         {
             up = takeoffUp; next = state; error = null;
             if (!Finite(dt) || dt < MinimumDelta || dt > MaximumDelta ||
@@ -90,7 +97,7 @@ namespace Shortcut.RustMod
                 var target = Unit(landingFrom * (1 - land) + plane * land);
                 up = AirTurn(current, target, dt, turnRate);
             }
-            else if (riseAtRelease <= .000001) up = current;
+            else if (preserveDeparture || riseAtRelease <= .000001) up = current;
             else
             {
                 double apex = Math.Max(AirReleaseMinimum, riseAtRelease / gravity);

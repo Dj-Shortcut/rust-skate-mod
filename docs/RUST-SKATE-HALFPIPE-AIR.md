@@ -1,9 +1,21 @@
 # Coupled rider and board frames in halfpipe airs
 
-In ordinary free air the rider and skateboard turn together from the departure
-normal toward world-up by the estimated apex. Near a sensed landing the same
-assembly turns back toward the observed ramp normal. An actual grind retains its
-own alignment. A steep departure no longer holds the rider sideways in free air.
+A straight vert air keeps the rider and skateboard in their common departure
+basis until a landing is actually observed. Reaching the ballistic apex does not
+supply a new surface or automatically level that assembly. Existing local grab
+tweaks and hand/foot contacts remain relative to this shared base. A sensed
+landing approach then turns both toward the actual return normal.
+
+This policy is latched before TakeOff resets any action owner. It requires an
+actual grounded ramp observation from the same or preceding physics step, at
+most 0.1 s old, with normal Y between 0 and 0.15 (over 81.4 degrees). The actual
+outgoing launch vector must rise, with horizontal speed at most one quarter of
+its vertical speed. Launch passes that uncompensated rise separately; gravity
+compensation for the first air step remains unchanged. A missed lip ray can use
+only that immediately preceding ramp provenance. A new flat support, owner,
+plant or non-air mode cannot inherit this class. Flatground, grind exits, wall
+and independent actions keep their existing policy. Other ordinary free air
+still uses the estimated-apex world-up release; it is not reclassified here.
 
 `SkateRide.ViewNormal` supplies one common base for the board and rider's lower
 body; `RiderViewNormal` reads that same value. Existing ollie pitch, grab tweaks,
