@@ -145,7 +145,7 @@ def sample(source, s, sf):
     origin, rotation = board_at(s, sf)
     return dict(t=(sf - s['firstSourceFrame']) / s['sourceFps'], sourceFrame=sf,
                 sourceCacheTime=sf / s['sourceFps'],
-                sourceVideoTime=s['sourceVideoOffsetSeconds'] + sf / s['sourceFps'],
+                sourceVideoTime=s['sourceCacheOriginalOffsetSeconds'] + sf / s['sourceFps'],
                 joints={k: j[k].tolist() for k in JOINTS}, dirs={k: dirs[k].tolist() for k in DIRS},
                 soleUp={k: soles[k].tolist() for k in soles},
                 board=dict(origin=origin.tolist(), quaternion=matrix_quat(rotation).tolist()))
