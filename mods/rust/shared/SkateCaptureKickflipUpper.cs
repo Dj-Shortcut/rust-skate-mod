@@ -7,6 +7,7 @@ namespace Shortcut.RustMod
     public sealed class SkateCaptureKickflipUpper
     {
         public const double ForwardLeanDegrees = 32, ElbowInternalDegrees = 130;
+        private const double GroundChargeLeanDegrees = 55, GroundChargeKneeDegrees = 55;
         public const double SetupSeconds = .08, ReturnSeconds = .18;
         public const string Provenance = "Authored 32-degree over-nose torso swing; actual Kickflip Catch upper-arm/bend planes relaxed to 130-degree elbows, measured arm IK and source world gaze retained.";
         private bool ready;
@@ -34,6 +35,10 @@ namespace Shortcut.RustMod
         // excludes action/held-hand owners; arms simply follow the rigid swing.
         public static bool TryChargeFold(SkateRiderPose pose, SkateBoardPose uprightCarrier, double chargeWeight,
             out SkateRiderPose folded, out string error)
+        { return TryChargeFold(pose, uprightCarrier, chargeWeight, ForwardLeanDegrees, out folded, out error); }
+
+        private static bool TryChargeFold(SkateRiderPose pose, SkateBoardPose uprightCarrier, double chargeWeight,
+            double leanDegrees, out SkateRiderPose folded, out string error)
         {
             folded = pose; error = null;
             if (!Valid(pose) || !SkateBoardPath.Valid(uprightCarrier) || uprightCarrier.Up.Y < .98 ||
@@ -42,8 +47,8 @@ namespace Shortcut.RustMod
             double weight = Smooth(chargeWeight);
             if (weight <= 0) return true;
             var facing = Unit(pose.ChestForward - uprightCarrier.Up * SkateVector.Dot(pose.ChestForward, uprightCarrier.Up));
-            var targetUp = uprightCarrier.Up * Math.Cos(ForwardLeanDegrees * Math.PI / 180) +
-                facing * Math.Sin(ForwardLeanDegrees * Math.PI / 180);
+            var targetUp = uprightCarrier.Up * Math.Cos(leanDegrees * Math.PI / 180) +
+                facing * Math.Sin(leanDegrees * Math.PI / 180);
             double cosine = SkateVector.Dot(pose.ChestUp, targetUp);
             if (!Normal(facing) || cosine < -.9999)
             { error = "Ordinary charge facing is degenerate."; return false; }
@@ -106,7 +111,7 @@ namespace Shortcut.RustMod
             var world = new SkateBoardPose(default(SkateVector), new SkateVector(0, 0, 1), new SkateVector(0, 1, 0));
             if (!SkateRider.TryTransformPose(pose, world, new SkateBoardPose(shift, world.Forward, world.Up), out lowered) ||
                 !SkateCaptureFootSupport.TrySetFeet(rig, lowered, la, lt, ra, rt, false, out fitted, out error) ||
-                !TryChargeFold(fitted, uprightCarrier, bodySetup, out folded, out error)) return false;
+                !TryChargeFold(fitted, uprightCarrier, bodySetup, GroundChargeLeanDegrees, out folded, out error)) return false;
             // Keep the ordinary rider's bent arm shape, carried coherently by
             // the lowered torso. Knee-directed wrists inverted the elbow bend.
             posed = folded;
@@ -134,7 +139,7 @@ namespace Shortcut.RustMod
         {
             height = 0;
             double distance2 = rig.ThighLength * rig.ThighLength + rig.ShinLength * rig.ShinLength -
-                2 * rig.ThighLength * rig.ShinLength * Math.Cos(75 * Math.PI / 180);
+                2 * rig.ThighLength * rig.ShinLength * Math.Cos(GroundChargeKneeDegrees * Math.PI / 180);
             var l = p.LeftHip - la; var r = p.RightHip - ra;
             double ly = SkateVector.Dot(l, up), ry = SkateVector.Dot(r, up);
             double lx = l.LengthSquared - ly * ly, rx = r.LengthSquared - ry * ry;
