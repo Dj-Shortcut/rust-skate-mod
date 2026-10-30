@@ -71,7 +71,7 @@ public static class SkateBoard
         {
             contactCached = true; TruckPlaneSupported = false;
             SkateVector offset; string error = null;
-            if (wheelContact != null && observedPlane && supportStep == SkateRide.Steps && OrdinaryPlaneEligible() &&
+            if (wheelContact != null && observedPlane && supportStep == SkateRide.Steps && (OrdinaryPlaneEligible() || SlidingPlaneEligible()) &&
                 (playerT.position - SkateRide.Position).sqrMagnitude <= .5625f &&
                 wheelContact.TryOffset(PoseAt(playerT, false, RawContact(playerT)), RiderRig.DeckTop, truckMotion[0], truckMotion[1],
                     V(observedPoint), V(observedNormal), .04, out offset, out error))
@@ -141,6 +141,19 @@ public static class SkateBoard
             Math.Abs(Tip) < .001f && Math.Abs(GrindPitch) < .01f && Math.Abs(GrindRoll) < .01f && Math.Abs(ShowLift) < .000001f;
     }
 
+    // A slide faces the deck across travel. Only its current, observed flat
+    // ground may share the wheel-plane fit; other action owners stay excluded.
+    private static bool SlidingPlaneEligible()
+    {
+        return SkateRide.On && SkateRide.Mode == RideMode.Ground && SkateRide.Grounded && !SkateRide.OnRamp && !SkateRide.Frozen &&
+            !SkateRiggingShowcase.Running && !Scenarios.Active && !Held && !SkateRide.Handplant &&
+            !SkateOldschoolRide.Active && !SkateActions.Owns && !SkateRide.BoardPath.Known &&
+            !SkateSurfaceRide.DisplayWall && !SkateSurfaceRide.BodyFlip.Known && !SkateRide.GroundGrab.Active &&
+            !SkateRide.Manual && !SkateRide.NoseManual && SkateRide.PushPhase <= .001f &&
+            SkateRide.Powerslide > .001f && SkateRide.RevertLeft == 0 && !SkateRide.Rotating &&
+            Math.Abs(Tip) < .001f && Math.Abs(GrindPitch) < .01f && Math.Abs(GrindRoll) < .01f && Math.Abs(ShowLift) < .000001f;
+    }
+
     // Existing frame hook runs before RiderRig.Frame and Follow. State advances
     // here only; all later Contact/PoseFor queries share one fitted translation.
     private static void PrepareTrucks()
@@ -152,7 +165,7 @@ public static class SkateBoard
         float now = Time.realtimeSinceStartup;
         motionSeconds = motionAt < 0 ? 0 : SkateRide.Clamp(now - motionAt, 0, .1f); motionAt = now;
         RaycastHit hit;
-        if (wheelContact != null && OrdinaryPlaneEligible() && SkateRide.TryObservedGround(SkateRide.Position, out hit) &&
+        if (wheelContact != null && (OrdinaryPlaneEligible() || SlidingPlaneEligible()) && SkateRide.TryObservedGround(SkateRide.Position, out hit) &&
             hit.m_Normal.y >= .9995f && Vector3.Dot(hit.m_Normal, SkateRide.ViewNormal) >= .9995f)
         { observedPlane = true; observedPoint = hit.m_Point; observedNormal = hit.m_Normal; supportStep = SkateRide.Steps; }
         if (observedPlane)
@@ -168,11 +181,12 @@ public static class SkateBoard
         float since = now - SkateRide.LandAt;
         double settle = observedPlane && since >= 0 && since < .3f ? 1 - since / .3 : 0;
         double landing = settle * settle * SkateRide.Clamp(SkateRide.LandImpact / 8, 0, 1);
+        var slideBank = observedPlane && SlidingPlaneEligible() ? 1f - SkateRide.Clamp(SkateRide.Powerslide, 0, 1) : 1f;
         var rear = truckMotion[0]; var front = truckMotion[1];
         for (int side = 0; side < 2; side++)
         {
             SkateBoardTruckState next; string error;
-            if (SkateBoardTruckMotion.TryStep(truckMotion[side], SkateRide.Clamp(SkateRide.Lean * displayAhead, -20, 20), steering,
+            if (SkateBoardTruckMotion.TryStep(truckMotion[side], SkateRide.Clamp(SkateRide.Lean * displayAhead * slideBank, -20, 20), steering,
                 observedPlane ? 1 : 0, landing, motionSeconds, out next, out error)) truckMotion[side] = next;
             else { truckMotion[side] = default(SkateBoardTruckState); TruckContactStatus = error; }
         }
@@ -345,7 +359,10 @@ public static class SkateBoard
         var travel = OnFace(n, SkateRide.Dir(SkateRide.Yaw));
         // The lean rolls the board about its direction of travel, right side down in a right turn.
         float lean = displayTruckRig ? (float)((truckMotion[0].Steering + truckMotion[1].Steering) * .5) * displayAhead : SkateRide.Lean;
-        var up = SkateRide.Turn(-lean * (trucked ? 1f - SupportWeight : 1f), travel) * n;
+        // The caster rig banks about the deck's length. Using travel here
+        // would pitch the nose/tail once a grounded slide turns across it.
+        var bankAxis = observedPlane && supportStep == SkateRide.Steps && SlidingPlaneEligible() ? deckNose * displayAhead : travel;
+        var up = SkateRide.Turn(-lean * (trucked ? 1f - SupportWeight : 1f), bankAxis) * n;
         // The board's own nose: the rider's stance, and what the board has turned under his feet.
         var nose = trucked ? deckTurn * deckNose : OnFace(up, SkateRide.Dir(SkateRide.DeckYaw));
         nose = nose - up * Vector3.Dot(nose, up);
