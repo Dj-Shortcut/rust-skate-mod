@@ -1280,6 +1280,8 @@ public static class RiderRig
             }
             chargeEntryShown = ApplyChargeEntry(chargeRoute, ordinaryCharging, ref pose, ref leftSole, ref rightSole);
             if (chargeEntryShown) { Posed = pose; pinHips = pinLeft = pinRight = true; }
+            var kickturnPlayer = SkateRig.LocalT; var kickturnSide = SkateRide.KickturnSide;
+            var kickturnEpoch = SkateKeys.InputEpoch; var kickturnFootVersion = SkateFootContacts.Version;
             var kickturnPosed = ApplyKickturnPose(ref pose, ref leftSole, ref rightSole);
             if (kickturnPosed) { Posed = pose; pinHips = pinLeft = pinRight = true; }
             Shown = pose;
@@ -1310,7 +1312,7 @@ public static class RiderRig
             // Preserve procedural loading. A known approved capture crossfades only after the live pop,
             // using this frame's measured procedural pose as the transition fallback.
             SkateCaptureFrame captured;
-            if (SkateCapturedTricks.TryFrame(Rig, SkateRig.LocalT, pose, new SkateVector(leftSole.x, leftSole.y, leftSole.z), new SkateVector(rightSole.x, rightSole.y, rightSole.z), out captured))
+            if (!kickturnPosed && SkateCapturedTricks.TryFrame(Rig, SkateRig.LocalT, pose, new SkateVector(leftSole.x, leftSole.y, leftSole.z), new SkateVector(rightSole.x, rightSole.y, rightSole.z), out captured))
             {
                 airLookFrame = false;
                 Posed = Shown = captured.Pose; PosedPlane = V(captured.Board.Origin); Error = "";
@@ -1327,6 +1329,7 @@ public static class RiderRig
                 SkateRider.TryGrabHandFrame(input, Shown, false, out rGrabFrame, out rGrabWeight);
             }
             Apply(upV, legsOnly, leftSole, rightSole);
+            if (kickturnPosed) SkateRide.ConfirmKickturnPose(kickturnPlayer, kickturnSide, kickturnEpoch, kickturnFootVersion);
             Applied++;
         }
         catch (Exception e)
@@ -1609,7 +1612,6 @@ public static class RiderRig
                 out prepared, out lu, out ru, out error))
             {
                 pose = prepared; leftUp = V(lu); rightUp = V(ru); FootSupportError = "";
-                SkateRide.ConfirmKickturnPose(SkateRig.LocalT, SkateRide.KickturnSide, SkateKeys.InputEpoch, SkateFootContacts.Version);
                 return true;
             }
         }
