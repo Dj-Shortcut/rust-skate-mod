@@ -32,6 +32,10 @@ namespace Shortcut.RustMod
             // Carry the complete trunk over the actual loaded axle. Choose a
             // height within both fixed leg chains, without moving that axle goal.
             var shift = axle - body.Pelvis; shift -= groundUp * SkateVector.Dot(shift, groundUp);
+            // The ordinary trunk and the free leg still carry weight toward the
+            // other end. Keep the hips slightly beyond the loaded axle, carrying
+            // the complete trunk/head with them rather than aligning hips alone.
+            shift += Unit(Project(deck.Forward, groundUp)) * (side * rig.SpineLength * .15);
             double height = SkateVector.Dot(body.Pelvis, groundUp);
             double reach = (rig.ThighLength + rig.ShinLength) * .95;
             if (!Height(body.LeftHip + shift, targetLeft, groundUp, reach, ref height, body.LeftHip - body.Pelvis) ||
