@@ -204,7 +204,7 @@ namespace Shortcut.RustMod
                 Clip.Id == HardflipClipId && groundCarrierOrigin.HasValue ? 2.0 / 11.0 :
                 Clip.Id == NollieTreFlipClipId && groundCarrierOrigin.HasValue ? 6.0 / 17.0 :
                 Clip.Id == BsPopShoveClipId && groundCarrierOrigin.HasValue ? pressEnd :
-                Clip.Id == Fs360ShoveClipId && groundCarrierOrigin.HasValue ? 5.0 / 15.0 : .125;
+                Clip.Id == Fs360ShoveClipId && groundCarrierOrigin.HasValue ? pressEnd : .125;
             double span = (SourceLand - SourcePop) * rootFraction;
             double targetTime = SourcePop + span, step = Math.Min(.005, span * .1);
             SkateCaptureFrame target, before, after;

@@ -25,3 +25,10 @@ before replacing either target. Its source pack remains Reviewed=false.
 Each stance/profile needs its own mesh and full-motion review. Original pack
 approval and native Shadow validation are separate gates. Source footage stays
 private; the viewer reference must explicitly say shared FS180/authored FS360.
+
+The FS entry root joins at its own final release event, before the Air witness.
+After Land, the rear knee gradually follows its own toe direction to avoid the
+old tailward kneeling recovery. Air and Catch, foot targets, board, upper-body
+and measured lengths are preserved. The generic Ground preparation is shared;
+a source Load200 witness must be labelled as a phase reference rather than the
+Pop-aligned source210 cursor.

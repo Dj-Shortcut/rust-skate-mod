@@ -109,6 +109,13 @@ def sample(source, s, sf):
         hip, old_hip, old_end = joints[side+'Hip'], original[side+'Hip'], original[side+'Ankle']
         axis = old_end-old_hip
         pole = original[side+'Knee']-old_hip-axis*np.dot(original[side+'Knee']-old_hip, axis)/np.dot(axis, axis)
+        if side == 'Right':
+            begin, end = s['recoveryKneeWindow']
+            recovery = smooth((sf-begin)/(end-begin))
+            # The FS recovery witness keeps the rear shin steep, rather than
+            # kneeling tailward. Feet, hips and pre-Land chains stay unchanged.
+            if recovery > 0:
+                pole = unit(pole)*(1-recovery)+unit(frame[:, 2])*recovery
         joints[side+'Knee'] = limb(hip, ankle, .44, .43, pole)
         joints[side+'Ankle'] = ankle
         joints[side+'Toe'] = ankle+frame[:, 2]*math.sqrt(.14**2-.07**2)-frame[:, 1]*.07
