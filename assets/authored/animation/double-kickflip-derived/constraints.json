@@ -15,7 +15,7 @@
   "freeSoleGap": 0.01,
   "freeFeet": {"Left": [-0.055, 0.30], "Right": [0.055, -0.30]},
   "upperFoldWindow": [265, 266, 269.5, 274.2],
-  "additionalTorsoFoldDegrees": 30,
+  "targetTorsoFoldDegrees": 70,
   "maximumNeckTurnDegrees": 30,
   "reference": {
     "url": "https://www.youtube.com/watch?v=_oRoo1x1uzM&t=484",

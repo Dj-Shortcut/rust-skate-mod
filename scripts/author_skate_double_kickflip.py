@@ -50,11 +50,18 @@ def double_upper(row, control, source_frame):
         return
     joints = {k: np.array(v) for k, v in row['joints'].items()}
     old_up = unit(joints['Neck'] - joints['Pelvis'])
-    old_forward = np.array(row['dirs']['ChestForward'])
-    old_forward = unit(old_forward - old_up * np.dot(old_forward, old_up))
-    angle = math.radians(control['additionalTorsoFoldDegrees']) * weight
-    new_up = unit(old_up * math.cos(angle) + old_forward * math.sin(angle))
-    rotation = rotate_between(old_up, new_up)
+    # Extend the existing noseward fold. ChestForward is the rider's toe-facing
+    # axis and can be crosswise to this lean; adding pitch around it changes
+    # the lean's azimuth instead of gathering the torso over the same knees.
+    forward = old_up - UP * np.dot(old_up, UP)
+    if np.linalg.norm(forward) < 1e-8:
+        forward = np.array(row['dirs']['ChestForward'])
+        forward = forward - UP * np.dot(forward, UP)
+    angle = math.radians(control['targetTorsoFoldDegrees'])
+    target_up = unit(unit(forward) * math.sin(angle) + UP * math.cos(angle))
+    rotation = qmatrix(slerp([0., 0., 0., 1.],
+                            matrix_quat(rotate_between(old_up, target_up)), weight))
+    new_up = rotation @ old_up
     anchor = joints['Pelvis']
     for name in UPPER:
         joints[name] = anchor + rotation @ (joints[name] - anchor)
