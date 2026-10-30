@@ -257,6 +257,7 @@ namespace Shortcut.RustMod
                 case "bs-pop-shove-it": rollTurn = 0; yawTurn = 180; break;
                 case "fs-pop-shove-it": rollTurn = 0; yawTurn = -180; break;
                 case "hardflip": rollTurn = 360; yawTurn = -180; break;
+                case "varial-kickflip": rollTurn = 360; yawTurn = 180; break;
                 default: return;
             }
             // This separately authored clip contains its complete two-turn path.
