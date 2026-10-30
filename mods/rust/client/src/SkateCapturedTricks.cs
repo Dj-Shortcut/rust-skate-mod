@@ -35,6 +35,8 @@ public static class SkateCapturedTricks
     private static SkateVector legacyGroundNormal;
     private static int legacyGroundFootVersion;
     private static double keyedFlightSeconds, keyedAirAt;
+    private static double keyedNativeFlip;
+    private static uint keyedOwnerEpoch;
     private static Transform keyedBaselinePlayer;
     private static bool keyedBaselineGoofy;
     private static double keyedBaselineAt = -1;
@@ -120,7 +122,9 @@ public static class SkateCapturedTricks
                 }
                 int kind = SkateCaptureVariants.IndexOf(clip.MovementKind);
                 if (kind < 0) { unsupported++; continue; }
-                if (SkateCaptureVariants.Get(kind).Derived && clip.Id != clip.MovementKind)
+                if (SkateCaptureVariants.Get(kind).Derived && clip.Id != clip.MovementKind &&
+                    !(clip.Id == SkateCaptureKeyedPlayback.DoubleKickflipClipId &&
+                      SkateCaptureKeyedPlayback.Accepts(clip, SkateCaptureKeyedPlayback.DoubleKickflipSignature)))
                 { Status = "Captured riding disabled: derived trick needs its own exact approved id"; return; }
                 if (pending[kind] != null) { Status = "Captured riding disabled: ambiguous approved trick variant"; return; }
                 SkateCapturePlayback playback;
@@ -149,7 +153,7 @@ public static class SkateCapturedTricks
     { plantedLeft = plantedRight = default(SkateBoardPose); departedAt = -1; departedFrom = groundedImpact = default(SkateCaptureFrame); }
 
     private static void ResetFlick()
-    { keyed = null; legacyPop = null; legacyPopAt = LegacySourceSeconds = 0; keyedFlightSeconds = keyedAirAt = KeyedSourceSeconds = 0; flickOwner = kickBodyOwner = false; kickBodyMotion.Reset(); kickUpper.Reset(); if (flick != null) flick.Reset(); }
+    { keyed = null; keyedNativeFlip = 0; keyedOwnerEpoch = 0; legacyPop = null; legacyPopAt = LegacySourceSeconds = 0; keyedFlightSeconds = keyedAirAt = KeyedSourceSeconds = 0; flickOwner = kickBodyOwner = false; kickBodyMotion.Reset(); kickUpper.Reset(); if (flick != null) flick.Reset(); }
 
     private static bool PrepareFlick(out string error)
     {
@@ -368,6 +372,30 @@ public static class SkateCapturedTricks
         active = clips[index]; signature = requested; footSupport = support;
         return true;
     }
+    private static bool TryContinueKeyed(SkateRiderRig rig, Transform player, SkateCaptureTrickSignature requested,
+        out string error)
+    {
+        error = "held capture has no matching budgeted same-pop continuation";
+        int turns; double executed, remaining;
+        if (landed || keyed == null || keyed.Clip.Id != SkateCaptureKeyedPlayback.RequiredClipId ||
+            !requested.Same(SkateCaptureKeyedPlayback.DoubleKickflipSignature) ||
+            keyedBaselinePlayer != player || player != SkateRig.LocalT || keyedBaselineGoofy != SkateRide.Goofy ||
+            !keyedBaselinePose.HasValue || keyedBaselinePops + 1 != token || keyedOwnerEpoch != keyedBaselineEpoch ||
+            !SkateRide.TryHeldFlipContinuation(token, keyedOwnerEpoch, out turns, out executed, out remaining) ||
+            turns != 2 || Math.Abs(executed + remaining - 720) > .01) return false;
+        int index = SkateCaptureVariants.IndexOf(requested.MovementKind);
+        if (index < 0 || clips[index] == null || clips[index].Clip.Id != SkateCaptureKeyedPlayback.DoubleKickflipClipId)
+        { error = "held Double capture needs its own exact approved pack entry"; return false; }
+        SkateCaptureFootSupport support;
+        if (!PrepareSupport(index, rig, activeStance, out support, out error)) return false;
+        SkateCaptureKeyedPlayback continued;
+        if (!keyed.TryContinue(clips[index].Clip, turns, Time.realtimeSinceStartup - keyedAirAt, keyedFlightSeconds,
+            executed, previous.Board, previousCarrier, activeStance, out continued, out error)) return false;
+        // Keep token, AirAt, entry, physical flight and the source clock intact.
+        active = clips[index]; signature = requested; footSupport = support; keyed = continued; keyedNativeFlip = executed;
+        return true;
+    }
+
     private static bool TryKeyedFrame(SkateRiderRig rig, Transform player, bool airborne, int nextToken, out SkateCaptureFrame frame)
     {
         frame = default(SkateCaptureFrame);
@@ -388,8 +416,18 @@ public static class SkateCapturedTricks
         var carrier = new SkateBoardPose(V(origin), V(heading), V(up));
         string error; double sourceTime;
         double elapsed = Math.Max(0, now - keyedAirAt);
+        bool multiple = keyed.Clip.Id == SkateCaptureKeyedPlayback.DoubleKickflipClipId;
+        if (multiple && airborne)
+        {
+            int turns; double executed, remaining;
+            if (!SkateRide.TryHeldFlipContinuation(token, keyedOwnerEpoch, out turns, out executed, out remaining) ||
+                turns != 2 || Math.Abs(executed + remaining - 720) > .01)
+            { Refuse(nextToken, "held Double capture lost its actual native owner or winding"); return false; }
+            keyedNativeFlip = executed;
+        }
         if (!keyed.TrySourceTime(elapsed, keyedFlightSeconds, landed, sinceLand, out sourceTime, out error) ||
-            !keyed.TrySample(rig, activeStance, elapsed, keyedFlightSeconds, landed, sinceLand, carrier, out frame, out error) ||
+            !keyed.TrySample(rig, activeStance, elapsed, keyedFlightSeconds, landed, sinceLand, carrier, out frame, out error,
+                multiple ? (double?)keyedNativeFlip : null) ||
             !footSupport.TryConform(rig, frame, out frame, out error))
         { Refuse(nextToken, error ?? "Source-keyed pose exceeds measured support"); return false; }
         if (landed)
@@ -469,6 +507,8 @@ public static class SkateCapturedTricks
         {
             if (!airborne && !queued || airborne && (!SkateRide.Jumped || SkateRide.AirTime > .1f)) return false;
             var requested = SkateRide.PresentationSignature; string kind = requested.MovementKind;
+            if (requested.Same(SkateCaptureKeyedPlayback.DoubleKickflipSignature))
+            { Refuse(nextToken, "held Double capture must continue an already shown single pop"); return false; }
             int index = SkateCaptureVariants.IndexOf(kind);
             if (index < 0 || clips[index] == null) { if (airborne) refusedToken = nextToken; return false; }
             active = clips[index]; signature = requested; activeStance = SkateRide.Goofy ? SkateStance.Goofy : SkateStance.Regular; token = nextToken; lands = SkateRide.Lands; airSeen = landed = flipExtended = false; beganAt = Time.realtimeSinceStartup; caughtAt = -1; previousAirSourceTime = catchSourceLead = previousAirProgress = 0; previous = default(SkateCaptureFrame);
@@ -510,6 +550,7 @@ public static class SkateCapturedTricks
                 { Refuse(nextToken, "Source-keyed Kickflip needs an observed flatground launch span"); return false; }
                 // AirStep may already have advanced AirTime on the launch tick.
                 keyedAirAt = SkateRide.ModeAt;
+                keyedOwnerEpoch = keyedBaselineEpoch;
                 double entryDelta = keyedAirAt - keyedBaselineAt;
                 bool observedEntry = keyedBaselinePlayer == player && keyedBaselineGoofy == SkateRide.Goofy &&
                     entryDelta >= 0 && entryDelta <= .12;
@@ -544,7 +585,9 @@ public static class SkateCapturedTricks
         if ((airborne || queued) && !signature.Same(SkateRide.PresentationSignature))
         {
             string extensionError = "the live trick variant changed";
-            if (keyed != null || !airborne || !TryExtendFlip(rig, SkateRide.PresentationSignature, out extensionError))
+            if (!airborne || (keyed != null
+                ? !TryContinueKeyed(rig, player, SkateRide.PresentationSignature, out extensionError)
+                : !TryExtendFlip(rig, SkateRide.PresentationSignature, out extensionError)))
             { Refuse(nextToken, airborne ? extensionError : "the live trick variant changed"); return false; }
         }
         // This exact authored clip owns body AND board through one clock. Do

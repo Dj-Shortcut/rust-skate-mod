@@ -49,6 +49,7 @@ public static class SkateRide
     public static float FlatgroundFlightSeconds { get { return flatgroundFlight ? flatgroundFlightSeconds : 0f; } }
     private static bool initialFlipFlick;
     private static int heldFlipDirection, heldFlipTurns;
+    private static int budgetedHeldFlipTurns;
     private static float heldFlipRate;
     private static uint heldFlipEpoch;
     private static float flightGravity = AirGravity;
@@ -62,6 +63,20 @@ public static class SkateRide
             (heldFlipTurns > 1 || !spinning && Math.Abs(SpinDeg) < .001 && Math.Abs(ShoveDeg) < .001 && Math.Abs(BodyDeg) < .001 &&
             Math.Abs(shoveLeft) < .001 && Math.Abs(pendShove) < .001 && Math.Abs(bodyLeft) < .001 &&
             SkateKeys.Spin == 0 && SkateKeys.LateFlip == 0 && SkateKeys.LateShove == 0 && SkateKeys.BodyVarial == 0); }
+    }
+    // Presentation observes accepted input/budget; it never supplies a rotation target.
+    public static bool TryHeldFlipContinuation(int activePop, uint activeEpoch,
+        out int turns, out double executedFlip, out double remainingFlip)
+    {
+        turns = 0; executedFlip = remainingFlip = 0;
+        if (Mode != RideMode.Air || !Jumped || !flatgroundFlight || !initialFlipFlick ||
+            activePop != Pops || activeEpoch != heldFlipEpoch || activeEpoch != SkateKeys.InputEpoch ||
+            budgetedHeldFlipTurns < 2 || budgetedHeldFlipTurns > 3 || heldFlipRate <= 0 ||
+            float.IsNaN(heldFlipRate) || float.IsInfinity(heldFlipRate) || heldFlipRate > SkateTricks.MaximumFlipRateScale ||
+            SkateActions.Owns || SkateActions.Finger.Initialized || SkateOldschoolRide.Active ||
+            SkateSurfaceRide.Active || SkateSurfaceRide.BodyFlip.Known || BoardPath.Known || Grabbing || Handplant || FootPlanted ||
+            double.IsNaN(FlipDeg) || double.IsInfinity(FlipDeg) || float.IsNaN(flipLeft) || float.IsInfinity(flipLeft)) return false;
+        turns = budgetedHeldFlipTurns; executedFlip = FlipDeg; remainingFlip = flipLeft; return true;
     }
     public static float AirPopLift { get { return Mode == RideMode.Air && flatgroundFlight ? (float)SkateFlatgroundPop.VisualLift : SkateBoard.PopMost; } }
     public static bool FlipFlickKnown { get { return Mode == RideMode.Air && initialFlipFlick; } }
@@ -1592,7 +1607,7 @@ public static class SkateRide
     }
 
     private static void ResetHeldFlipProfile()
-    { heldFlipDirection = heldFlipTurns = 0; heldFlipRate = 0; heldFlipEpoch = 0; }
+    { heldFlipDirection = heldFlipTurns = budgetedHeldFlipTurns = 0; heldFlipRate = 0; heldFlipEpoch = 0; }
 
     private static void ConfirmHeldFlip(int requested, float seconds)
     {
@@ -1608,6 +1623,7 @@ public static class SkateRide
             // Round the finite rate upward; never round the angle or force the deadline.
             var rate = (float)Math.Min(SkateTricks.MaximumFlipRateScale, (Math.Floor(required * 100000) + 1) / 100000);
             heldFlipRate = Math.Max(heldFlipRate, rate);
+            budgetedHeldFlipTurns = heldFlipTurns;
         }
     }
 
