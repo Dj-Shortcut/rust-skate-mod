@@ -132,7 +132,10 @@ def board_at(s, sf):
     yaw, pitch = scalar(s['yawKeys'], sf), scalar(s['pitchKeys'], sf)
     # A backside360 scoop in canonical coordinates; Up never turns underneath
     # the board. There is deliberately no longitudinal roll component.
-    r = qmatrix(euler_quat([0, yaw, 0])) @ qmatrix(euler_quat([-pitch, 0, 0]))
+    # The filmed deck keeps its carrier-plane tilt while the board sweeps
+    # through the shove. Rotating that tilt with the nose reverses the visible
+    # Air slope after half a turn. This is authored camera-limited geometry.
+    r = qmatrix(euler_quat([-pitch, 0, 0])) @ qmatrix(euler_quat([0, yaw, 0]))
     h = reference_height(s, sf)
     press = 1 - smooth((sf - p['rearRelease']) / (p['pressEnd'] - p['rearRelease']))
     floor = -float((np.asarray(s['support']['board']) @ r.T)[:, 1].min())

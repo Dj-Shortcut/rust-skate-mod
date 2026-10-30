@@ -9,7 +9,7 @@ legacy prototype remain preserved privately.
 | --- | --- |
 | New keyed ID | `bs-360-shove-it-source-keyed-v1` |
 | Native signature | Ollie, normal, tail not leading; Flip 0 / Shove −360 / Spin 0 / Body 0 |
-| Canonical board | Pure yaw +360; no longitudinal flip or body180 |
+| Canonical board | Full yaw +360 with authored carrier tilt; no longitudinal flip or body180 |
 | Source window | Cache frames 78–125 from the preserved 45–125 take, 30000/1001 fps |
 | Source phases | Pop 85, rear release 87–88, press fade ends 90, collected Air 93, first catch 100 / both 101, Land 103, Roll 112 |
 
@@ -33,8 +33,10 @@ rear knee bend plane follows the source shoe toe tangent; feet, root and limb
 lengths stay fixed. The original contact-prior root step is replaced only inside
 source 99–103 by a C1 join with the original source-time endpoint positions and exact
 input-curve derivatives (not new detector observations). Body and free-foot guides move together before the
-same fixed-foot IK; this is not a runtime smoothing stack. The source's own slight Air pitch remains
-after the pressure phase. The rear shoe follows the rotating tail until it releases. The front
+same fixed-foot IK; this is not a runtime smoothing stack. The source-led sloped deck plane is reconstructed in the upright carrier before
+the yaw sweep, then returns to flat before Catch. Rotating pitch with the nose
+would put the Air tilt on the wrong end after half a turn. These angles remain
+camera-limited authored estimates. The rear shoe follows the rotating tail until it releases. The front
 lifts clear without a kick/heel flick. Full360 restores the original nose/tail
 order at catch, unlike a half-turn's reversed deck-local foot pins.
 

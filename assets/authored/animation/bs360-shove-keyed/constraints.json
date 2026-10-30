@@ -99,23 +99,23 @@
     ],
     [
       90,
-      16.089910089910095
+      40
     ],
     [
       93,
-      10.33391608391608
+      35
     ],
     [
       96,
-      5.089160839160842
+      20
     ],
     [
       99,
-      1.317432567432564
+      3
     ],
     [
-      101,
-      0.0
+      100,
+      0
     ],
     [
       103,
@@ -2016,7 +2016,7 @@
   "sourceSurfaceSha256": "8873121f728af49a9af90c2ee4ba723b7f56259d60913155f578d3a88e976acd",
   "soleGap": 0.003,
   "freeFootBlendFrames": 1.5,
-  "provenance": "Own Kroetkov white-shirt landed BS360 shove take, normalized from filmed Goofy to canonical sourceLeft-front/sourceRight-rear. Own captured body directions/free-foot basis; original authored board translation removed once. New authored whole-board real-tail pressure and current observed-ground/C1 carrier, full360 yaw with no flip/bodyspin, source-led rotating-tail contact through86, free release87\u201388, one-foot-first catch100/both101 and Land103. No Cole/Kick/Heel/Tre body pose is used. Own rear free pickup around source90\u201396 is source-led authored reconstruction; rear-arm vertical components follow the retained actor image landmarks instead of the old lowered world33 prior. Air board pitch follows the same take after the new pressure phase. Pixel review corrects the blurred source93 rear wrist and rejects raw95; the raised arm is established by87, as in the visible take. Rear landing bend follows its source shoe toe tangent from98\u2013103, preventing the old tail-kneeling plane while endpoints stay fixed.",
+  "provenance": "Own Kroetkov white-shirt landed BS360 shove take, normalized from filmed Goofy to canonical sourceLeft-front/sourceRight-rear. Own captured body directions/free-foot basis; original authored board translation removed once. New authored whole-board real-tail pressure and current observed-ground/C1 carrier, full360 yaw with no flip/bodyspin, source-led rotating-tail contact through86, free release87\u201388, one-foot-first catch100/both101 and Land103. No Cole/Kick/Heel/Tre body pose is used. Own rear free pickup around source90\u201396 is source-led authored reconstruction; rear-arm vertical components follow the retained actor image landmarks instead of the old lowered world33 prior. Air board pitch follows the same take after the new pressure phase. Pixel review corrects the blurred source93 rear wrist and rejects raw95; the raised arm is established by87, as in the visible take. Rear landing bend follows its source shoe toe tangent from98\u2013103, preventing the old tail-kneeling plane while endpoints stay fixed. Whole-motion source review replaces the old early-flat Air estimate with an upright-carrier deck-plane tilt before yaw; no longitudinal flip is added.",
   "uncertainty": "Monocular depth, exact sole yaw/pressure, first contact subframes and metric board pitch remain reconstruction, not calibrated3D mocap. Original81 raw detections and previous packs are preserved. Board yaw follows the previous source-led winding, while the pre-tailstrike15-degree pressure/guessed height is discarded.",
   "libraryEdit": "Source frames78\u2013125 from preserved45\u2013125 take: short observed crouch, real pop/scoop, entire360 Air/Catch/Land and captured rollaway. No missing frames are invented.",
   "sourceCacheOriginalOffsetSeconds": 148,
@@ -2088,5 +2088,9 @@
     "start": 99,
     "end": 103,
     "provenance": "Own original source-time99/103 pelvis positions and exact piecewise-linear endpoint derivatives; the canonical input was previously resampled, so these are not claimed new detector frames. A C1 Hermite join removes the old contact-prior root step; translate body and free-foot guides coherently, then solve the same fixed feet. Board/contacts/physics unchanged."
+  },
+  "boardTiltFrame": {
+    "basis": "upright carrier, applied before the full yaw sweep",
+    "provenance": "Source85\u201396 board silhouette: nose rises at the strike, then the same sloped deck plane sweeps through180 so its opposite end is high around93. Fade before firstCatch100. Camera-limited authored3D reconstruction; pitch values are estimates, not measured3D."
   }
 }
