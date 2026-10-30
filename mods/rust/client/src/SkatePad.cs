@@ -65,6 +65,13 @@ public static class SkatePad
 
     private static void Say(string m) { Out.Say("PAD " + m); }
 
+    // A read-only presentation setup; the caller still owns ground/action gates.
+    public static bool TryGroundPreparation(out bool nosePop, out double charge)
+    {
+        nosePop = false; charge = 0;
+        return Shared && !rightSuspended && SkateFlick.TryGroundPreparation(flick, out nosePop, out charge);
+    }
+
     public static void Poll(float now)
     {
         if (fed) { Held(now); return; }

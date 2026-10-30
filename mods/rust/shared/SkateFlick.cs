@@ -149,6 +149,17 @@ namespace Shortcut.RustMod
         private const double QuarterSweepDegrees = 67.5;
         private const double SettlingDegreesPerSecond = 120;
 
+        // Presentation only: keep the observed setup while its flick is still
+        // being recognized. Reading it neither advances nor completes a pop.
+        public static bool TryGroundPreparation(SkateFlickState state, out bool nosePop, out double charge)
+        {
+            nosePop = false; charge = 0;
+            if (!Valid(state) || state.Phase != Held && state.Phase != Flicking) return false;
+            nosePop = state.Forward;
+            charge = Math.Min(1, state.HeldSeconds / FullCharge);
+            return true;
+        }
+
         public static bool TryStep(SkateFlickState state, SkateFlickInput input, double dt, out SkateFlickResult result, out string error)
         {
             result = new SkateFlickResult(state, SkateFlickEvents.None, 0, 0, false, state.Manual, state.NoseManual);
