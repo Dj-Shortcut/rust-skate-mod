@@ -104,8 +104,12 @@ def derive_row(base_row, control, base_spec, support_points):
     before_roll = support_points @ qmatrix(euler_quat([angles[0], angles[1], 0.])).T
     support_radius = float(np.max(np.linalg.norm(before_roll[:, :2], axis=1)))
     ankle_y = origin[1] + support_radius - base_spec['hybrid']['popContact']['soleLocalY'] + control['freeSoleGap']
-    for side in ('Left', 'Right'):
+    for side in ('Left', 'Right') if free_weight > 0 else ():
         ankle = np.array(row['joints'][side + 'Ankle'])
+        hip = np.array(row['joints'][side + 'Hip'])
+        old_axis = unit(ankle - hip)
+        old_bend = np.array(row['joints'][side + 'Knee']) - hip
+        old_pole = unit(old_bend - old_axis * np.dot(old_bend, old_axis))
         up = np.array(row['soleUp'][side])
         forward = unit(np.array(row['joints'][side + 'Toe']) - ankle + up * .07)
         foot = basis(forward, up)
@@ -115,8 +119,8 @@ def derive_row(base_row, control, base_spec, support_points):
         entry = base_spec['hybrid']['referenceGroundPress']['loadEntryFeet'][side]
         foot = qmatrix(slerp(matrix_quat(foot),
                             matrix_quat(basis(np.array(entry['forward']), UP)), free_weight))
-        hip = np.array(row['joints'][side + 'Hip'])
-        pole = unit(balance_forward(base_spec['hybrid'], sf) * .85 + foot[:, 2] * .15)
+        air_pole = unit(balance_forward(base_spec['hybrid'], sf) * .85 + foot[:, 2] * .15)
+        pole = unit(old_pole * (1 - free_weight) + air_pole * free_weight)
         row['joints'][side + 'Knee'] = limb(hip, ankle, .44, .43, pole).tolist()
         row['joints'][side + 'Ankle'] = ankle.tolist()
         row['joints'][side + 'Toe'] = (ankle + foot[:, 2] * math.sqrt(.14 ** 2 - .07 ** 2)
