@@ -784,7 +784,7 @@ public static class SkateCapturedTricks
         { Refuse(nextToken, error ?? "Kickflip upper body unavailable"); return false; }
         if (legacyPop != null && !landed &&
             !legacyPop.TryApply(rig, frame, entryCarrier, Math.Max(0, now - legacyPopAt),
-                SkateFootContacts.LeftFitter, SkateFootContacts.RightFitter, out frame, out error))
+                SkateFootContacts.LeftFitter, SkateFootContacts.RightFitter, out frame, out error, LegacySourceSeconds))
         { Refuse(nextToken, "Initial-five pop: " + (error ?? "measured press unavailable")); return false; }
         if (phase == SkateCapturePhase.Air) { previousAirSourceTime = active.FlightSourceTime(value); previousAirProgress = value; }
         previous = frame; previousCarrier = carrier; previousAt = now;

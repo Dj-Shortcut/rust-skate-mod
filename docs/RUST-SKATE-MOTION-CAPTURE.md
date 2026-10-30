@@ -732,6 +732,13 @@ source-keyed normal Kickflip, Heelflip, Tre and Impossible routes do not use thi
 helper. A missing or stale observed stance does not create an invented anchor. This
 bounded pop repair does not approve the older airborne body reconstruction or
 landing; those still require their own visible source comparisons.
+
+For the exact original Fakie Kickflip and Switch Heelflip, after the initial
+foot release the root-blend age holds while the observed source cursor holds.
+It resumes at the current elapsed age when the source advances. Actual elapsed
+time still owns board pressure, flick, physical carrier motion and observed
+ground velocity; this adds no world trajectory or pose filter.
+
 ### Rebuild the source-led Fakie Air candidate
 
 `author_skate_fakie_kickflip_air.py` reconstructs the free-Air root and both
@@ -739,8 +746,11 @@ ankles together from the striped-shirt reference around source frame 2724.
 It accepts only the checksum-pinned original unreviewed Fakie JSON. The controls
 are authored estimates of monocular depth. Board/events and the established
 pressure, side-instep release and Catch stay outside the repaired interval.
-The ordinary Fakie ID/signature is retained, so the existing normal trick route
-uses the replacement source without a new selector or runtime correction.
+The ordinary Fakie ID/signature and normal trick selection are retained.
+Its supported recovery also keeps the current, already recovery-weighted source
+gaze instead of prematurely replacing it with ordinary travel-facing gaze.
+The existing recovery blend still returns to ordinary riding. This gaze option
+defaults off and is enabled only for the exact base Fakie ID/kind/signature.
 
 Keep generated JSON and packs in ignored `context/`. Starting with the retained
 **complete first-five composition manifest**, these commands replace only its
