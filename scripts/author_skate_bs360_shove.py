@@ -121,20 +121,39 @@ def source_rear_arm(s, sf, joints):
         joints[side+tip] = joints[side+root]+direction*length
 
 
+def source_balance_plane(s, sf):
+    spec = s['rearArmImageGuide']; anchors = []
+    for row in s['_rawFrames']:
+        if row['frame_index'] in spec['authoredGapFrames']: continue
+        points = row['image_landmarks'][row['target_selection']['selectedCandidateIndex']]
+        if min(points[k].get('visibility', 0) for k in (11,13,15)) < .5: continue
+        pixels = [np.array([points[k]['x']*row['width'], -points[k]['y']*row['height']]) for k in (11,13,15)]
+        for mark in spec['wristPixelOverrides']:
+            if row['frame_index'] == mark['frame']:
+                pixels[2] = np.array([mark['pixel'][0], -mark['pixel'][1]])
+        anchors.append((row['frame_index'], np.r_[pixels[1]-pixels[0], pixels[2]-pixels[1]]))
+    if len(anchors)<2 or not anchors[0][0] <= sf <= anchors[-1][0]:
+        raise ValueError('High balance arm lacks its actual image anchors')
+    image = curve([a[0] for a in anchors], [a[1] for a in anchors], sf)
+    camera = unit(np.asarray(s['airUpperFold']['sourceCameraOffset']))
+    screen_right = unit(np.cross(UP, camera))
+    screen_up = unit(np.cross(camera, screen_right))
+    return tuple(unit(screen_right*image[i]+screen_up*image[i+1]) for i in (0,2))
+
+
+def blend_direction(a, b, weight):
+    a, b = unit(a), unit(b); cosine = float(np.clip(np.dot(a,b), -1, 1))
+    if cosine < -.9999: raise ValueError('Source balance-arm directions oppose ambiguously')
+    if cosine > .9995: return unit(a*(1-weight)+b*weight)
+    angle = math.acos(cosine)
+    return (a*math.sin((1-weight)*angle)+b*math.sin(weight*angle))/math.sin(angle)
+
+
 def source_air_upper(s, sf, joints, dirs):
     spec = s['airUpperFold']
     weight = min(smooth((sf-spec['start'])/(spec['full']-spec['start'])),
                  1-smooth((sf-spec['release'])/(spec['end']-spec['release'])))
     if weight <= 0: return
-    shoulder, elbow = joints['RightShoulder'], joints['RightElbow']
-    humerus = unit(elbow-shoulder)
-    upward = UP-humerus*np.dot(UP, humerus)
-    if np.linalg.norm(upward) < 1e-6:
-        raise ValueError('Source high balance-arm bend is underdetermined')
-    angle = math.radians(180-spec['rearInternalElbowDegrees'])
-    goal_forearm = humerus*math.cos(angle)+unit(upward)*math.sin(angle)
-    previous = unit(joints['RightHand']-elbow)
-    joints['RightHand'] = elbow+unit(previous*(1-weight)+goal_forearm*weight)*s['_rig']['forearm']
     old = unit(joints['Neck']-joints['Pelvis'])
     angle = math.radians(spec['absoluteDegrees'])
     goal = UP*math.cos(angle)+unit(np.asarray(spec['direction']))*math.sin(angle)
@@ -150,6 +169,13 @@ def source_air_upper(s, sf, joints, dirs):
         joints[name] = pivot+rotation@(joints[name]-pivot)
     for name in ('ChestForward','ChestUp','HeadForward'):
         dirs[name] = rotation@dirs[name]
+    # Reconstruct this visible balance arm in the source image plane. Retaining
+    # the old world33 depth had hidden the elbow bend; depth is authored here.
+    upper, fore = source_balance_plane(s, sf)
+    previous_upper = joints['RightElbow']-joints['RightShoulder']
+    previous_fore = joints['RightHand']-joints['RightElbow']
+    joints['RightElbow'] = joints['RightShoulder']+blend_direction(previous_upper, upper, weight)*s['_rig']['upperArm']
+    joints['RightHand'] = joints['RightElbow']+blend_direction(previous_fore, fore, weight)*s['_rig']['forearm']
 
 
 def reference_height(s, sf):

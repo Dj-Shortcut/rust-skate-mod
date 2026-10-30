@@ -2104,7 +2104,12 @@
       0,
       0.990327473050612
     ],
-    "rearInternalElbowDegrees": 100,
-    "provenance": "Source89\u201394 places head/torso over the collected front knee, not over the toes. One authored upper-body fold follows this take own source93 front-knee plane; all upper joints and gaze rotate together around unchanged pelvis. The high rear balance forearm bends upward in its own humerus plane. No independent head counteranimation; hips/legs/feet/board/contact-root stay exact."
+    "provenance": "Source89\u201394 places head/torso over the collected front knee, not over the toes. One authored upper-body fold follows this take own source93 front-knee plane; all upper joints and gaze rotate together around unchanged pelvis. The high rear balance arm follows this take own observed image bend, replacing the unreliable world33 depth plane. No independent head counteranimation; hips/legs/feet/board/contact-root stay exact.",
+    "sourceCameraOffset": [
+      0.907,
+      0.1,
+      -0.421
+    ],
+    "balanceArmDepth": "Own retained shoulder/elbow/wrist image directions in the fixed approximate source image plane, solved at unchanged measured arm lengths. Depth is reconstructed; wrist93 and rejected94\u201396 remain uncertain/authored. No generic elbow-angle target."
   }
 }
