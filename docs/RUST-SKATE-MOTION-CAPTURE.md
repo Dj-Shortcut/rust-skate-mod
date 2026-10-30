@@ -732,3 +732,66 @@ source-keyed normal Kickflip, Heelflip, Tre and Impossible routes do not use thi
 helper. A missing or stale observed stance does not create an invented anchor. This
 bounded pop repair does not approve the older airborne body reconstruction or
 landing; those still require their own visible source comparisons.
+
+For the exact original Fakie Kickflip and Switch Heelflip, after the initial
+foot release the root-blend age holds while the observed source cursor holds.
+It resumes at the current elapsed age when the source advances. Actual elapsed
+time still owns board pressure, flick, physical carrier motion and observed
+ground velocity; this adds no world trajectory or pose filter.
+
+### Rebuild the source-led Fakie Air candidate
+
+`author_skate_fakie_kickflip_air.py` reconstructs the free-Air root and both
+ankles together from the striped-shirt reference around source frame 2724.
+It accepts only the checksum-pinned original unreviewed Fakie JSON. The controls
+are authored estimates of monocular depth. Board/events and the established
+pressure, side-instep release and Catch stay outside the repaired interval.
+The ordinary Fakie ID/signature and normal trick selection are retained.
+Its supported recovery also keeps the current, already recovery-weighted source
+gaze instead of prematurely replacing it with ordinary travel-facing gaze.
+The existing recovery blend still returns to ordinary riding. This gaze option
+defaults off and is enabled only for the exact base Fakie ID/kind/signature.
+
+This does not make the complete Fakie animation source-identical. The grounded
+Load still uses the common 75-degree knee target, 32-degree torso fold and
+ordinary gaze: the filmed Fakie crouch folds farther and looks more directly
+down at the board. Charge is already fully applied; this is not a partial-charge
+fixture error. No future-trick selection or global charge-pose change is added.
+The read-only diagnostic checker still flags front-sole, hip-height, hand-height
+and acceleration limits; the per-profile reports remain beside the bound render
+set, and no threshold was weakened. The visible held-source hop is repaired, but native Shadow play
+and the remaining grounded Load presentation are separate acceptance work.
+
+Keep generated JSON and packs in ignored `context/`. Starting with the retained
+**complete first-five composition manifest**, these commands replace only its
+Fakie source; all other source entries and derived variants remain present:
+
+```sh
+python scripts/author_skate_fakie_kickflip_air.py \
+  --input context/private/source-clips/fakie-kickflip.json \
+  --output context/private/fakie-air
+
+python - context/private/compose.json \
+  context/private/fakie-air/fakie-kickflip.json \
+  context/private/compose-fakie-air.json <<'PY'
+import json, sys
+from pathlib import Path
+old, replacement, target = map(Path, sys.argv[1:])
+manifest = json.loads(old.read_text())
+required = {'switch-heelflip', 'nollie-heelflip', 'fakie-kickflip',
+            'nollie-backside-180-heelflip', 'nollie-360-flip'}
+assert required <= manifest['sources'].keys(), 'Use the complete retained manifest'
+manifest['sources'] = {kind: str((old.parent / path).resolve())
+                       for kind, path in manifest['sources'].items()}
+manifest['sources']['fakie-kickflip'] = str(replacement.resolve())
+target.write_text(json.dumps(manifest, indent=2) + '\n')
+PY
+
+python scripts/capture_pipeline.py compose context/private/compose-fakie-air.json \
+  --include-base --output context/private/first-five-fakie-air-candidate
+```
+
+This composes the declared first-five/derived set, not unrelated game-pack
+families: retain those entries when assembling the complete game pack. Original
+source flags stay unreviewed; derived variants start unreviewed too. A new pack
+hash still needs its separate visual review and exact approval before gameplay.
