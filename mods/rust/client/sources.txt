@@ -30,6 +30,7 @@ mods/rust/client/src/SkateGestures.cs
 mods/rust/client/src/SkateHeld.cs
 mods/rust/client/src/SkateHeldNative.cs
 mods/rust/client/src/SkateInbox.cs
+mods/rust/client/src/SkateFlickCards.cs
 mods/rust/shared/SkateBoardMesh.cs
 mods/rust/shared/SkateBoardTruckMotion.cs
 mods/rust/shared/SkateBoardWheelContact.cs

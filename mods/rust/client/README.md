@@ -323,7 +323,8 @@ The four diagonal positions extend those rows: `RB+LT` selects Frontside/Backsid
 on the upper diagonals and Shifty Crail on the lower ones; `RB+RT` selects Shifty Nose and
 Shifty Seatbelt. With both triggers, the upper diagonals select Stale Frontside/Backside Tuck
 Knee and the lower ones Stale Nosebone/Tailbone. Left/right are mirrored for goofy/fakie.
-Hold `Back` and tap D-pad Left/Right for the basic, extended grab and handplant control pages.
+Hold `Back` and tap D-pad Left/Right for the flick cards (each flick trick as its name and a
+stick arrow), the other controller tricks, and the extended grab and handplant control pages.
 
 These grabs share authored board/hand/foot definitions, including both hands at the nose and
 both feet on the tail for Rocket Air, and explicit foot release for one-foot/no-foot variants.

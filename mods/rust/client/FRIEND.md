@@ -106,8 +106,8 @@ and is not published; nothing of it belongs in this repository.
    again gets you off. `A` pushes, the left stick steers, `B` brakes, the right stick held back and
    flicked forward is an ollie, flicked to a forward diagonal a kickflip or heelflip, `LT`/`RT` held
    in the air a grab. The first seconds on the board show the controls; hold `Back` on the
-   controller while on the board for every controller trick (three pages, D-pad left/right), or
-   `H` on the keyboard for every key (one page on the board, the line on how to get on when on
+   controller while on the board for every controller trick (four pages, D-pad left/right; the
+   first shows each flick trick as its name and a stick arrow), or `H` on the keyboard for every key (one page on the board, the line on how to get on when on
    foot). The whole table is in the [client README](README.md#controls).
 6. Quit Rust the normal way. The window ends with "Done. The Rust folder is back to normal." If it
    does not, or the PC went off while playing, run **Rust Skate - remove mod files** before

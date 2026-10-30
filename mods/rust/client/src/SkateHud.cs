@@ -13,7 +13,8 @@
 //   upper centre  the trick that just landed, coloured by its kind, a bail
 //   bottom left   speed, the last tricks landed with their points (the feed), and the controls
 //                 for the first seconds on the board
-//   top left      every trick while Back is held on the controller (three pages), or every key
+//   top left      every trick while Back is held on the controller (four pages, the first the
+//                 flick cards: name and stick arrow), or every key
 //                 while H is held on the keyboard (one page)
 using System;
 using System.Collections.Generic;
@@ -227,28 +228,30 @@ public static class SkateHud
     private static void Box(float x, float y, float width, float height, Color colour)
     {
         if (!texture || width < 1f || height < 1f || colour.a <= 0.01f) return;
-        try
-        {
-            var t = Fill(colour);
-            var r = new Rect(x, y, width, height);
-            if (drawTexture)
-            {
-                try { GUI.DrawTexture(r, t); return; }
-                catch (Exception e) { drawTexture = false; Out.Say("HUD panels: textures cannot be drawn directly here (" + e.GetType().Name + "); labels carry them instead"); }
-            }
-            if (!background) return;
-            GUIStyle s;
-            var key = t.GetHashCode();
-            if (!fillStyles.TryGetValue(key, out s))
-            {
-                s = new GUIStyle();
-                try { s.normal.background = t; }
-                catch (Exception e) { background = false; Out.Say("HUD panels unavailable: a style takes no background here (" + e.GetType().Name + ")"); return; }
-                fillStyles[key] = s;
-            }
-            GUI.Label(r, "", s);
-        }
+        try { Picture(x, y, width, height, Fill(colour)); }
         catch (Exception e) { texture = false; Out.Say("HUD panels unavailable: " + e.GetType().Name + ": " + e.Message); }
+    }
+
+    // A texture, drawn directly or as the background of an empty label.
+    private static void Picture(float x, float y, float width, float height, Texture2D t)
+    {
+        var r = new Rect(x, y, width, height);
+        if (drawTexture)
+        {
+            try { GUI.DrawTexture(r, t); return; }
+            catch (Exception e) { drawTexture = false; Out.Say("HUD panels: textures cannot be drawn directly here (" + e.GetType().Name + "); labels carry them instead"); }
+        }
+        if (!background) return;
+        GUIStyle s;
+        var key = t.GetHashCode();
+        if (!fillStyles.TryGetValue(key, out s))
+        {
+            s = new GUIStyle();
+            try { s.normal.background = t; }
+            catch (Exception e) { background = false; Out.Say("HUD panels unavailable: a style takes no background here (" + e.GetType().Name + ")"); return; }
+            fillStyles[key] = s;
+        }
+        GUI.Label(r, "", s);
     }
 
     private static Color Fade(Color c, float alpha) { return new Color(c.r, c.g, c.b, c.a * alpha); }
@@ -495,9 +498,8 @@ public static class SkateHud
         "#K, or SPACE twice quickly: get on   hold #F2 for a second: stance regular / goofy, kept for the next start   hold #H: the controls",
     };
 
-    // Every controller trick, while Back is held on the board. Sides are those of a regular rider
-    // going nose first; goofy, or rolling tail first, they are the other way round.
-    private static readonly string[] PadTricks = {
+    // The flick cards in words, for a client that cannot draw their pictures.
+    private static readonly string[] FlickLines = {
         "@RIGHT STICK   BACK + D-PAD left/right for pages   (regular nose first; goofy/fakie: mirrored)",
         "back, flick forward: #Ollie   forward, flick back: #Nollie   back, flick to the forward right / left: #Kickflip / #Heelflip",
         "back, roll a quarter round to the right / left: #Pop Shove-it / #Frontside Pop Shove-it   half round: #360 Shove-it",
@@ -506,11 +508,19 @@ public static class SkateHud
         "from the right / left, roll round to the back, flick to the same front: #360 Hardflip / #360 Inward Heelflip",
         "back, roll 45-60 degrees to the right / left, flick straight forward: #Hardflip / #Inward Heelflip",
         "LB + popped stick gesture: #Impossible   RB: #Front Foot Impossible   LB + RB: #Underflip (no triggers)",
-        "forward setup gives #Nollie Impossible / #Nollie Back Foot Impossible; release used bumpers before a handplant",
         "part way back / forward for a moment: #Manual / #Nose Manual, flick out of it to pop",
+        "right stick flicked to the right / left: #Late Kickflip / #Late Heelflip, again for another flip",
+    };
+
+    // The controller tricks the cards leave out, while Back is held on the board. Sides are those
+    // of a regular rider going nose first; goofy, or rolling tail first, they are the other way round.
+    private static readonly string[] PadTricks = {
+        "@MORE   BACK + D-PAD left/right for pages   (regular nose first; goofy/fakie: mirrored)",
+        "forward setup gives #Nollie Impossible / #Nollie Back Foot Impossible; release used bumpers before a handplant",
+        "flick out of a #Manual or #Nose Manual to pop",
         "@IN THE AIR",
         "keep the same rim direction after a pure pop flip: #Double / #Triple; release, grab or change direction to end the hold",
-        "right stick flicked to the right / left: #Late Kickflip / #Late Heelflip, again for another flip",
+        "a late flip flicked again: another flip",
         "left stick held to a side: #spin, with a shove the same way a #Bigspin   left stick round a full circle: #Body Varial",
         "RT: #Backside   up #Seatbelt   down #Nose   left #Melon   right #Method        LT: #Frontside   up #Tail   down #Crail   right #Stalefish",
         "LT + RT: #Double   up #Nosebone   down #Tailbone        no flip during a grab; let the stick come back to the middle after one",
@@ -566,10 +576,12 @@ public static class SkateHud
         "A held variant fades before another one starts. The captured edge anchors the planted hand."
     };
 
-    // The controller's three pages while Back is held, or the keyboard's one page while H is held.
+    // The controller's four pages while Back is held, the flick cards first, or the keyboard's one
+    // page while H is held.
     private static void Tricks(bool pad, float w, float k)
     {
-        var lines = !pad ? KeyTricks : SkateKeys.HelpPage == 0 ? PadTricks : SkateKeys.HelpPage == 1 ? ExtendedGrabs : PlantTricks;
+        if (pad && SkateKeys.HelpPage == 0 && Cards(w, k)) return;
+        var lines = !pad ? KeyTricks : SkateKeys.HelpPage == 0 ? FlickLines : SkateKeys.HelpPage == 1 ? PadTricks : SkateKeys.HelpPage == 2 ? ExtendedGrabs : PlantTricks;
         float x = 40f * k, y = 96f * k, step = 25f * k, width = Math.Min(w - 80f * k, 1320f * k);
         Box(x - 14f * k, y - 10f * k, width + 28f * k, (lines.Length * 25f + 18f) * k, Fade(Dark, 0.72f));
         for (var i = 0; i < lines.Length; i++, y += step)
@@ -578,6 +590,71 @@ public static class SkateHud
             if (t.StartsWith("@")) { Text(x, y + 4f * k, width, t.Substring(1), (int)(15 * k), Dim, 0, 1f); continue; }
             Text(x, y, width, Marked(t), (int)(16 * k), Ink, 0, 1f);
         }
+    }
+
+    // Each card's picture, made once. A few are made per call, so the first look at the page does
+    // not stall a frame on all of them.
+    private static readonly Dictionary<string, Texture2D> cardArt = new Dictionary<string, Texture2D>();
+    private static bool cardArtFailed;
+    private const int CardPixels = 96, CardsMadePerCall = 4;
+
+    // The flick cards: each trick's name under its stick and arrow, in rows by section. False when
+    // the pictures cannot be made here; the page is then said in words.
+    private static bool Cards(float w, float k)
+    {
+        if (cardArtFailed || !texture) return false;
+        var sections = SkateFlickCards.Sections;
+        float x0 = 40f * k, y = 96f * k, width = Math.Min(w - 80f * k, 1320f * k);
+        float art = 72f * k, cell = 118f * k, gap = 8f * k, title = 26f * k, name = 17f * k, card = art + 14f * k + 2f * name + 18f * k;
+        var across = Math.Max(1, (int)((width + gap) / (cell + gap)));
+        var height = 30f * k;
+        foreach (var section in sections) height += title + (section.Cards.Length + across - 1) / across * (card + gap);
+        Box(x0 - 14f * k, y - 10f * k, Math.Min(width, across * (cell + gap) - gap) + 28f * k, height + 8f * k, Fade(Dark, 0.72f));
+        Text(x0, y + 4f * k, width, "RIGHT STICK   BACK + D-PAD left/right for more   (regular nose first; goofy/fakie: mirrored)", (int)(15 * k), Dim, 0, 1f);
+        y += 30f * k;
+        var made = 0;
+        foreach (var section in sections)
+        {
+            Text(x0, y + 4f * k, width, section.Title, (int)(14 * k), Dim, 0, 1f);
+            y += title;
+            for (var i = 0; i < section.Cards.Length; i++)
+            {
+                var c = section.Cards[i];
+                float cx = x0 + i % across * (cell + gap), cy = y + i / across * (card + gap);
+                Box(cx, cy, cell, card, Fade(Dark, 0.6f));
+                Texture2D t;
+                if (!cardArt.TryGetValue(c.Name, out t) && made < CardsMadePerCall)
+                {
+                    made++;
+                    try
+                    {
+                        t = Out.Keep(new Texture2D(CardPixels, CardPixels, TextureFormat.RGBA32, false));
+                        t.SetPixels32(SkateFlickCards.Pixels(c, CardPixels)); t.Apply();
+                        cardArt[c.Name] = t;
+                    }
+                    catch (Exception e) { cardArtFailed = true; Out.Say("HUD flick cards unavailable, shown as text: " + e.GetType().Name + ": " + e.Message); return false; }
+                }
+                if (t != null)
+                {
+                    try { Picture(cx + (cell - art) * 0.5f, cy + 7f * k, art, art, t); }
+                    catch (Exception e) { cardArtFailed = true; Out.Say("HUD flick cards unavailable, shown as text: " + e.GetType().Name + ": " + e.Message); return false; }
+                }
+                // A long name takes two lines, broken at the space nearest its middle.
+                var top = c.Name; var bottom = "";
+                if (top.Length > 12)
+                {
+                    var split = -1;
+                    for (var j = 0; j < top.Length; j++) if (top[j] == ' ' && (split < 0 || Math.Abs(j - top.Length / 2) < Math.Abs(split - top.Length / 2))) split = j;
+                    if (split > 0) { bottom = top.Substring(split + 1); top = top.Substring(0, split); }
+                }
+                var ny = cy + art + 12f * k;
+                Text(cx, ny, cell, top.ToUpperInvariant(), (int)(15 * k), Ink, 1, 1f);
+                if (bottom != "") Text(cx, ny + name, cell, bottom.ToUpperInvariant(), (int)(15 * k), Ink, 1, 1f);
+                if (c.Buttons != null) Text(cx, ny + 2f * name, cell, c.Buttons, (int)(13 * k), Amber, 1, 1f);
+            }
+            y += (section.Cards.Length + across - 1) / across * (card + gap);
+        }
+        return true;
     }
 
     // "#Kickflip" as the trick's name in amber: up to the next space-separated word that does not
