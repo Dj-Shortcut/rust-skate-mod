@@ -19,6 +19,20 @@ env:
   CARGO_INCREMENTAL: 0
 
 jobs:
+  skate-steam-discovery:
+    name: Steam discovery (${{ matrix.shell }})
+    runs-on: windows-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        shell: [powershell, pwsh]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Steam discovery and script parser regressions
+        shell: ${{ matrix.shell }}
+        run: ./crates/approved_tests/skate/SkateSteamDiscoveryScenario.ps1
+
   skate-installer:
     name: Skate plugin source installation
     runs-on: ubuntu-latest

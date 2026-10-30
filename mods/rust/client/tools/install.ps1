@@ -27,13 +27,13 @@ if (Test-Path -LiteralPath "$from\launcher\diagnostics.ps1" -PathType Leaf) {
   if (Get-Command Get-SkateRustFolder -ErrorAction SilentlyContinue) { $steamRust = Get-SkateRustFolder }
 }
 if ($null -ne $steamRust) { $steam = $steamRust.Steam; $rust = $steamRust.Rust; $acf = $steamRust.Acf }
-if (-not ((Test-Path -LiteralPath $acf) -and (Test-Path -LiteralPath "$rust\RustClient.exe"))) {
+if (($null -ne $steamRust -and -not $steamRust.Found) -or -not ((Test-Path -LiteralPath $acf) -and (Test-Path -LiteralPath "$rust\RustClient.exe"))) {
   if ($null -ne $steamRust) { abort "Rust is not installed through Steam on this PC: no Rust in Steam's own library ($steam) or in any library Steam lists. Install Rust from Steam first." }
   else { abort 'Rust is not installed in Steam''s own library on C: (C:\Program Files (x86)\Steam\steamapps\common\Rust). This pack''s launcher only knows that place; a newer pack also finds other Steam libraries.' }
   return
 }
 if ($null -ne $steamRust -and $rust -ne 'C:\Program Files (x86)\Steam\steamapps\common\Rust') { line "  Rust found in $rust." }
-$pb = ((gc $acf | sls '"buildid"').Line -split '"')[3]
+$pb = if ($null -ne $steamRust) { $steamRust.BuildId } else { ((gc -LiteralPath $acf | sls '"buildid"').Line -split '"')[3] }
 if ($pb -ne $pack['build']) { abort ("This pack was made for Rust build " + $pack['build'] + " and this PC has build $pb. Ask the owner for a pack made for your build."); return }
 if (Get-Process RustClient -ErrorAction SilentlyContinue) { abort 'Rust is running. Quit Rust first, then start this again.'; return }
 if (Test-Path "$probe\loader-in-rust-folder.txt") { abort 'An earlier session left the mod in the Rust folder. Run "Rust Skate - remove mod files" on the desktop first, then start this again.'; return }
@@ -133,7 +133,9 @@ if ($null -eq $sc) {
   line '  In Steam: Games > Add a Non-Steam Game to My Library > Browse, pick'
   line "  $rust\RustClient.exe and add it; keep the name RustClient."
   line '  Then on its page: controller settings > layout > template "Keyboard (WASD) and Mouse".'
-} elseif ($sc -notlike '*\Rust\RustClient.exe*') {
+} elseif ((Get-Command Test-SkateRustShortcut -ErrorAction SilentlyContinue) -and -not (Test-SkateRustShortcut $sc $rust)) {
+  line "  CHECK: the Steam shortcut RustClient points at $sc, not at $rust\RustClient.exe. Fix it in Steam."
+} elseif (-not (Get-Command Test-SkateRustShortcut -ErrorAction SilentlyContinue) -and $sc -notlike '*\Rust\RustClient.exe*') {
   line "  CHECK: the Steam shortcut RustClient points at $sc, not at Rust's RustClient.exe. Fix it in Steam."
 } else {
   line '  The Steam shortcut RustClient is there. Give it the controller layout "Keyboard (WASD) and Mouse" if it has none.'

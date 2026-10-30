@@ -34,7 +34,7 @@ if ($there) {
   line '  Nothing was started and nothing was changed.'
   return
 }
-$pb = ((Get-Content -LiteralPath $steamRust.Acf | Select-String '"buildid"').Line -split '"')[3]
+$pb = $steamRust.BuildId
 if (-not ((Test-Path "$probe\gen-$pb\out\Assembly-CSharp.dll") -and (Select-String -Path "$probe\gen-$pb\gen.log" -Pattern 'GEN DONE.* errors=0( |$)' -Quiet))) {
   line "  Rust has been updated (build $pb) and the mod has not been prepared for this version yet."
   line '  Nothing was started and nothing was changed. The owner prepares the new version (zz interop, zz launcher); a friend asks him for a new pack.'

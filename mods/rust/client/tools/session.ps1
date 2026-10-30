@@ -36,8 +36,8 @@ $dl = "$HOME\Downloads"
 $probe = "$dl\claude-loader-probe"
 $zip = "$dl\BepInEx-Unity.IL2CPP-win-x64-6.0.0-be.788+5b766a3.zip"
 # The shared launcher checks and log recovery (diagnostics.ps1) come first: they also say where Steam
-# and Rust are on this PC. The owner's C: library is the first answer and gives the paths this
-# script always used; on a friend's PC Rust may be in another Steam library.
+# and Rust are on this PC. Steam's registered installation is preferred; its own library
+# is checked before the other libraries Steam lists.
 $diagnostics = if ($PSScriptRoot) { Join-Path $PSScriptRoot 'diagnostics.ps1' } else { "$probe\launcher\diagnostics.ps1" }
 if (-not (Test-Path -LiteralPath $diagnostics) -and (Get-Command zg -ErrorAction SilentlyContinue)) {
   $diagnostics = "$probe\diagnostics.ps1"
@@ -56,7 +56,7 @@ $sounds = ''; $soundSource = $null; $soundsDisabled = "$psounds" -in '0', 'false
 # The interop set must have been generated for the installed Steam build. A set from another build
 # resolves wrappers to the wrong native methods and crashes the client, so there is no fallback:
 # generate first with `zz interop`.
-$pb = ((gc -LiteralPath $steamRust.Acf | sls '"buildid"').Line -split '"')[3]
+$pb = if ($steamRust.ContainsKey('BuildId')) { $steamRust.BuildId } else { ((gc -LiteralPath $steamRust.Acf | sls '"buildid"').Line -split '"')[3] }
 $gen = "$dl\claude-loader-probe\gen-$pb\out"
 if (-not ((Test-Path "$gen\Assembly-CSharp.dll") -and (sls -Path "$dl\claude-loader-probe\gen-$pb\gen.log" -Pattern 'GEN DONE.* errors=0( |$)' -Quiet))) { Write-Host "ABORT: no complete, error-free interop set for installed build $pb; run zz interop first"; return }
 $run = "$probe\run-$ptag-" + (Get-Date -Format 'yyyyMMdd-HHmmssfff') + '-' + [Guid]::NewGuid().ToString('N').Substring(0, 8)
@@ -216,7 +216,9 @@ try {
   if ($psteam) {
     $sc = Find-Shortcut $(if ($pshortcut) { $pshortcut } else { 'RustClient' })
     if (-not $sc) { throw 'no Steam shortcut with that name; start without $psteam instead' }
-    if ($sc.Exe -notlike '*\Rust\RustClient.exe*') { throw ('the Steam shortcut does not point at the Rust client: ' + $sc.Exe) }
+    if (Get-Command Test-SkateRustShortcut -ErrorAction SilentlyContinue) {
+      if (-not (Test-SkateRustShortcut $sc.Exe $rust)) { throw ('the Steam shortcut does not point at the selected Rust client: ' + $sc.Exe) }
+    } elseif ($sc.Exe -notlike '*\Rust\RustClient.exe*') { throw ('the Steam shortcut does not point at the Rust client: ' + $sc.Exe) }
     say ('starting through the Steam shortcut: ' + $sc.Exe)
     Start-Process ('steam://rungameid/' + $sc.GameId)
     $p = $null; $w0 = Get-Date

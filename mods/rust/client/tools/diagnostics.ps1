@@ -77,48 +77,96 @@ function Get-SkateArtworkFiles([string]$Manifest, [string]$Directory = '') {
   return $names
 }
 
-# Where Steam is on this PC. Steam's own folder on C: is the owner's PC and stays the first answer,
-# so that nothing changes there; a friend may have put Steam on another drive. Steam names its
-# folder in the registry (HKCU SteamPath with forward slashes, HKLM InstallPath).
+# Discovery is read-only. Missing drives, stale registry entries and unreadable metadata
+# are skipped without stopping the search. Use literal paths, including for Steam libraries.
+function Test-SkateFile([string]$Path) {
+  try { return [bool](Test-Path -LiteralPath $Path -PathType Leaf -ErrorAction Stop) } catch { return $false }
+}
+
 function Get-SkateSteamFolder {
   $default = 'C:\Program Files (x86)\Steam'
-  if (Test-Path -LiteralPath ($default + '\steam.exe') -PathType Leaf) { return $default }
+  # The current user's Steam takes precedence over a leftover copy on C:.
   foreach ($key in 'HKCU:\Software\Valve\Steam', 'HKLM:\SOFTWARE\WOW6432Node\Valve\Steam', 'HKLM:\SOFTWARE\Valve\Steam') {
     foreach ($name in 'SteamPath', 'InstallPath') {
       $value = try { '' + (Get-ItemProperty -Path $key -ErrorAction Stop).$name } catch { '' }
       $folder = ($value -replace '/', '\').TrimEnd('\')
-      if ($folder -and (Test-Path -LiteralPath ($folder + '\steam.exe') -PathType Leaf)) { return $folder }
+      if ($folder -match '^[A-Za-z]:\\' -and (Test-SkateFile ($folder + '\steam.exe'))) { return $folder }
     }
   }
   return $default
 }
 
-# Where Rust is on this PC: Steam, the Rust folder, Rust's manifest (appmanifest_252490.acf, which
-# carries the build) and whether they were found. Steam lists every library it uses in
-# steamapps\libraryfolders.vdf, its own folder first; Rust is in the one whose steamapps holds the
-# manifest, under common\<installdir>. The owner's C: library is tried first and gives the same
-# paths as before. Paths are joined as text: a library on a drive that is not plugged in would make
-# Join-Path fail in Windows PowerShell. Nothing found gives the owner's paths back, not found.
+# Read the quoted KeyValues subset written by Steam. Preserve object boundaries so
+# nested/commented keys cannot masquerade as AppState fields or library paths.
+function Read-SkateKeyValues([string]$Path) {
+  $text = Get-Content -LiteralPath $Path -Raw -Encoding UTF8 -ErrorAction Stop
+  $root = @{}; $stack = New-Object System.Collections.Stack
+  $node = $root; $key = $null; $offset = 0
+  $pattern = '\G(?:\s+|//[^\r\n]*|"((?:\\[\\"]|[^"\\])*)"|([{}]))'
+  while ($offset -lt $text.Length) {
+    # Match from the current position (\G must not restart at zero).
+    $token = ([regex]$pattern).Match($text, $offset)
+    if (-not $token.Success) { throw 'Invalid Steam metadata.' }
+    $offset += $token.Length
+    if ($token.Groups[1].Success) {
+      $value = $token.Groups[1].Value.Replace('\"', '"').Replace('\\', '\')
+      if ($null -eq $key) { $key = $value }
+      else {
+        if ($node.ContainsKey($key)) { throw 'Duplicate Steam metadata key.' }
+        $node[$key] = $value; $key = $null
+      }
+    } elseif ($token.Groups[2].Value -eq '{') {
+      if ($null -eq $key -or $node.ContainsKey($key)) { throw 'Invalid Steam metadata object.' }
+      $child = @{}; $node[$key] = $child; $stack.Push($node); $node = $child; $key = $null
+    } elseif ($token.Groups[2].Value -eq '}') {
+      if ($null -ne $key -or $stack.Count -eq 0) { throw 'Invalid Steam metadata closing brace.' }
+      $node = $stack.Pop()
+    }
+  }
+  if ($null -ne $key -or $stack.Count) { throw 'Incomplete Steam metadata.' }
+  return $root
+}
+
 function Get-SkateRustFolder {
   $steam = Get-SkateSteamFolder
   $libraries = @($steam)
-  $vdf = $steam + '\steamapps\libraryfolders.vdf'
-  if (Test-Path -LiteralPath $vdf -PathType Leaf) {
-    foreach ($m in [regex]::Matches([IO.File]::ReadAllText($vdf), '"path"\s+"([^"]+)"')) {
-      $library = ($m.Groups[1].Value -replace '\\\\', '\').TrimEnd('\')
-      if ($library -and $libraries -notcontains $library) { $libraries += $library }
+  try {
+    $folders = (Read-SkateKeyValues ($steam + '\steamapps\libraryfolders.vdf'))['libraryfolders']
+    if ($folders -is [System.Collections.IDictionary]) {
+      foreach ($number in @($folders.Keys | Sort-Object)) {
+        if ($number -notmatch '^\d+$') { continue }
+        $entry = $folders[$number]
+        $library = if ($entry -is [System.Collections.IDictionary]) { $entry['path'] } else { $entry }
+        if ($library -isnot [string]) { continue }
+        $library = ($library -replace '/', '\').TrimEnd('\')
+        if ($library -match '^[A-Za-z]:\\' -and $libraries -notcontains $library) { $libraries += $library }
+      }
     }
-  }
+  } catch { } # Steam's own library remains usable even if the library index is unreadable.
   foreach ($library in $libraries) {
     $acf = $library + '\steamapps\appmanifest_252490.acf'
-    $found = try { Test-Path -LiteralPath $acf -PathType Leaf } catch { $false }
-    if (-not $found) { continue }
-    $installDir = 'Rust'
-    foreach ($line in (Get-Content -LiteralPath $acf)) { if ($line -match '^\s*"installdir"\s+"([^"]+)"') { $installDir = $Matches[1]; break } }
-    $rust = $library + '\steamapps\common\' + $installDir
-    if (Test-Path -LiteralPath ($rust + '\RustClient.exe') -PathType Leaf) { return @{ Steam = $steam; Rust = $rust; Acf = $acf; Found = $true } }
+    try {
+      $app = (Read-SkateKeyValues $acf)['AppState']
+      if ($app -isnot [System.Collections.IDictionary] -or $app['appid'] -ne '252490') { continue }
+      $installDir = $app['installdir']; $build = $app['buildid']
+      # One Windows directory component only: no traversal, roots, ADS or wildcards.
+      if ($installDir -isnot [string] -or $installDir -match '[<>:"/\\|?*\x00-\x1f]' -or
+          $installDir -match '[. ]$' -or -not $installDir -or
+          $installDir -match '^(?i:CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\.|$)' -or
+          $build -isnot [string] -or $build -notmatch '^\d+$') { continue }
+      $rust = $library + '\steamapps\common\' + $installDir
+      if (Test-SkateFile ($rust + '\RustClient.exe')) {
+        return @{ Steam = $steam; Rust = $rust; Acf = $acf; BuildId = $build; Found = $true }
+      }
+    } catch { continue }
   }
-  return @{ Steam = $steam; Rust = ($steam + '\steamapps\common\Rust'); Acf = ($steam + '\steamapps\appmanifest_252490.acf'); Found = $false }
+  return @{ Steam = $steam; Rust = ($steam + '\steamapps\common\Rust'); Acf = ($steam + '\steamapps\appmanifest_252490.acf'); BuildId = ''; Found = $false }
+}
+
+# Steam's shortcut must launch the same client that received the staged loader.
+function Test-SkateRustShortcut([string]$Exe, [string]$RustPath) {
+  $target = $Exe.Trim().Trim('"') -replace '/', '\'
+  return $target -ieq ($RustPath.TrimEnd('\') + '\RustClient.exe')
 }
 
 function Save-SkateLogSnapshot([string]$RustPath, [string]$ProbePath, [string]$Reason = 'before-launch') {
