@@ -22,8 +22,20 @@ Grip side, exact anatomical stance and individual fingers are partly occluded.
 The catalogue keeps canonical trick semantics. The numerical targets are authored
 reconstructions from visible evidence, not measured mocap or tracked fingers.
 
-Only these five profiles add a raised free-arm target and a measured wrist approach
-to the selected board edge. Crail reaches toward the rounded nose end.
+Only these five profiles add a reference free-arm target and a measured wrist
+approach to the selected board edge. Crail reaches toward the rounded nose end.
+
+Active FS air uses a source-led body reconstruction: the pelvis sits behind the
+supported feet, both knees gather toward the toes and up, and the torso folds
+over them with a bent, lower free arm. This replaces the former minimum-height
+reach pose that could leave a knee below the deck. The existing complete
+free/held contact blend owns entry and release; the rigid board, sole and wrist
+contact targets and measured bone lengths retain their existing solvers. The
+explicit airborne-contact gate leaves ground grabs and other grab kinds unchanged.
+This is authored geometry informed by the visible Xbox hold, not measured 3D or
+finger tracking. Its existing velocity-look route keeps the head aligned within
+the folded torso's neck range instead of forcing it back toward world-up.
+Native avatar contact and Shadow gameplay remain separate gates.
 Existing contact entry/hold/release weights still own the pose. No input selection,
 physics, scoring, catch or landing guard changes.
 
