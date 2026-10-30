@@ -4,7 +4,7 @@ This family uses the cached striped-shirt take from the owner's [Berrics referen
 
 `author_skate_nollie360_hybrid.py` uses this take's own relative upper-body directions. It excludes the old standing pelvis/mean-ankle prior and the V5 free-foot heights that made the original preview too high and uneven. The reconstructed pelvis and both free ankles share one upright carrier and their own source-led pickup and knee planes. No ordinary Tre, Kickflip or Heelflip movement keys are copied.
 
-The real input-owned Nollie charge places the nose/front footprint on the nose and the rear footprint around the middle. This family then uses a front-foot nose scoop, a rear-foot instep exit, independent complete +360 longitudinal roll and +360 canonical yaw, asymmetric collection, catch, later absorption and soft roll-away. Native signature remains Nollie / flip +360 / shove −360 / no body spin. Physics, scoring, collision timing and the real landing remain authoritative.
+The real input-owned Nollie charge places the nose/front footprint on the nose and the rear footprint around the middle. The visible lead wrist's shoulder-level Air balance is reconstructed where the old standing-root retarget pulled it down; its own horizontal direction, fixed arm lengths and the real high far-arm motion remain. This family then uses a front-foot nose scoop, a rear-foot instep exit, independent complete +360 longitudinal roll and +360 canonical yaw, asymmetric collection, catch, later absorption and soft roll-away. Native signature remains Nollie / flip +360 / shove −360 / no body spin. Physics, scoring, collision timing and the real landing remain authoritative.
 
 | Source frame | Visible phase and reconstruction |
 | --- | --- |

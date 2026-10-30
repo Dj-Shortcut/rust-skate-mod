@@ -88,6 +88,15 @@ def sample(controls,s,f):
  gaze=d['HeadForward'];headup=unit(UP-gaze*np.dot(UP,gaze));j['Head']=j['Neck']+headup*.12
  for side,sign in [('Left',-1),('Right',1)]:
   shoulder=p+up*.44+across*(sign*.18);j[side+'Shoulder']=shoulder;j[side+'Elbow']=shoulder+unit(rel[side+'Elbow']-rel[side+'Shoulder'])*.29;j[side+'Hand']=j[side+'Elbow']+unit(rel[side+'Hand']-rel[side+'Elbow'])*.27
+  if side=='Left':
+   # The visible lead wrist stays around shoulder level during this Air.
+   # Its old standing-root retarget pulled it down; preserve its own depth
+   # and measured reach, rebuilding only this source-led balance height.
+   weight=smooth((f-4590)/2)*(1-smooth((f-4605)/2))
+   offset=j[side+'Hand']-shoulder;reach=np.linalg.norm(offset);height=scalar(s['leadWristHeightKeys'],f)
+   horizontal=unit(np.array([offset[0],0.,offset[2]]));goal=horizontal*math.sqrt(max(0,reach*reach-height*height))+UP*height
+   target=shoulder+offset*(1-weight)+goal*weight
+   j[side+'Elbow']=limb(shoulder,target,.29,.27,unit(rel[side+'Elbow']-rel[side+'Shoulder']));j[side+'Hand']=target
  directions=dict(PelvisForward=heading,PelvisUp=UP,ChestForward=forward,ChestUp=up,HeadForward=gaze)
  contacts=3 if f<s['rearSoleReleaseFrame']else 1 if f<s['frontSoleReleaseFrame']else 0;phase='load'if f<s['popFrame']else'pop'if f<s['airFrame']else'air'
  if f>=s['frontCatchFrame']:contacts|=1;phase='catch'
@@ -103,7 +112,7 @@ def main():
  moments=[s[k]for k in ['popFrame','noseStrikeFrame','frontSoleReleaseFrame','rearSoleReleaseFrame','rearInstepReleaseFrame','airFrame','frontCatchFrame','rearCatchFrame','landFrame','recoveryFrame']]
  times=np.unique(np.r_[np.linspace(first,end,round(duration*60)+1),moments,s['frontSoleReleaseFrame']+s['pressFadeFrames']]);frames=[sample(controls,s,float(f))for f in times]
  events=[dict(t=(f-first)/fps,phase=phase,contacts=contacts)for f,phase,contacts in [(first,'load',['LeftFoot','RightFoot']),(s['popFrame'],'pop',['LeftFoot','RightFoot']),(s['rearSoleReleaseFrame'],'pop',['LeftFoot']),(s['frontSoleReleaseFrame'],'air',[]),(s['frontSoleReleaseFrame']+s['pressFadeFrames'],'air',[]),(s['frontCatchFrame'],'catch',['LeftFoot']),(s['rearCatchFrame'],'catch',['LeftFoot','RightFoot']),(s['landFrame'],'land',['LeftFoot','RightFoot']),(s['recoveryFrame'],'recovery',['LeftFoot','RightFoot'])]]
- meta=dict(s['metadata'],id='nollie-360-flip-source-keyed-v1',label='Nollie360 Flip — striped-rider nose scoop and rear instep [UNREVIEWED]',movementKind='nollie-360-flip',reviewed=False,authored=True,canonicalStance='regular',sourceFps=fps,firstSourceFrame=first,lastSourceFrame=end,sourceBodySha256=s['sourceBodySha256'],sourcePoseSha256=controls['sourcePoseSha256'],provenance='Own Nollie360 upper-body capture directions; source-led nose/front-pop and rear-instep/free-foot/root reconstruction. Complete +360roll/+360yaw. Monocular depth/contact/foot-orientation is authored; not measured 3D capture.')
+ meta=dict(s['metadata'],id='nollie-360-flip-source-keyed-v1',label='Nollie360 Flip — striped-rider nose scoop and rear instep [UNREVIEWED]',movementKind='nollie-360-flip',reviewed=False,authored=True,canonicalStance='regular',sourceFps=fps,firstSourceFrame=first,lastSourceFrame=end,sourceBodySha256=s['sourceBodySha256'],sourcePoseSha256=controls['sourcePoseSha256'],provenance='Own Nollie360 upper-body capture basis with visible lead-arm balance reconstruction; source-led nose/front-pop and rear-instep/free-foot/root reconstruction. Complete +360roll/+360yaw. Monocular depth/contact/foot-orientation is authored; not measured 3D capture.')
  clip=dict(format='skate-capture-hybrid/1',metadata=meta,stance='regular',fps=60,duration=duration,events=contact_events(events,duration),frames=frames)
  a.output.mkdir(parents=True,exist_ok=True);(a.output/'nollie-360-flip-source-keyed-v1.json').write_text(json.dumps(clip,indent=2)+'\n');pack=encode_pack([clip]);(a.output/'skate_captures.skmc').write_bytes(pack);print('NOLLIE360_READY',len(frames),len(pack),hashlib.sha256(pack).hexdigest())
 if __name__=='__main__':main()

@@ -2476,7 +2476,8 @@
       "Nose support/rear flick and asynchronous catch are source-led authored annotations, not inherited old mask measurements.",
       "Uniform source Pop4592 to Land4609 clock; wood strike4594 and source upper-balance directions are retained separately.",
       "Minimum native flight .528 coupled model-hull envelope is presentation-only; physics/scoring unchanged.",
-      "Nose/front Left support and first catch are source-led authored roles; exact sole-touch depth/frame is blurred/occluded. The old Right-only masks are not reused."
+      "Nose/front Left support and first catch are source-led authored roles; exact sole-touch depth/frame is blurred/occluded. The old Right-only masks are not reused.",
+      "Visible lead wrist height during4592\u20134605 is reconstructed from this take; old standing-root arm projection dropped it below the filmed shoulder-level balance. Own horizontal direction, arm reach and far-arm motion retained."
     ],
     "sourceAuthor": "The Berrics \u2014 BATB multi-trick reference; striped-shirt Nollie360 take",
     "sourceRights": "Reference footage remains with its owners and is not distributed by this source repository. Source poses and reconstructed motion remain unreviewed.",
@@ -2489,5 +2490,35 @@
       "basis": "Approximate original camera for the declared goofy reference; fixed for both requested variants, no source mirror. Not a body-pose correction."
     },
     "boardPhaseProvenance": "Own Nollie360 guide retains the existing source-viewed independent roll/shove observations: broad grip4598, edge4600, graphic4601/4602, grip returning4605. Early nose wood strike is rebuilt on the real model hull; this is not measured3D tracking."
-  }
+  },
+  "leadWristHeightKeys": [
+    [
+      4584,
+      0
+    ],
+    [
+      4592,
+      0.06
+    ],
+    [
+      4594,
+      0.08
+    ],
+    [
+      4597,
+      0.08
+    ],
+    [
+      4602,
+      0.05
+    ],
+    [
+      4605,
+      0
+    ],
+    [
+      4625,
+      0
+    ]
+  ]
 }
