@@ -27,6 +27,17 @@ public static class SkateRide
     // and a board barely rolling turns only a little (a stopped board is turned by a kickturn, not a carve).
     public const float SteerIn = 7f, SteerOut = 10f, SteerStill = 0.35f, SteerFull = 2f;
     public static float SteerRate;
+    // Low-speed axle pivots own a real movement step, never the manual score flag.
+    public const float KickturnSpeed = .95f, KickturnRate = 120f, KickturnLimit = 180f, KickturnLiftSeconds = .16f;
+    private static float kickturnLift, kickturnTurned;
+    private static int kickturnSide;
+    private static uint kickturnEpoch;
+    private static bool kickturnRelease, kickturnRearm, kickturnNose;
+    public static int Kickturns;
+    public static bool Kickturning { get { return Mode == RideMode.Ground && kickturnSide != 0; } }
+    public static int KickturnSide { get { return kickturnSide; } }
+    public static float KickturnTip
+    { get { return -kickturnSide * KickturnCurve(kickturnLift); } }
     private static bool strokeBack;
     public const float AirGravity = 16f, OlliePop = 6f, MaxFall = 30f, BailImpact = 12f, BailSeconds = 1.3f, BailDecel = 10f, PushPeriod = 0.8f, SeaLevel = -1.1f, LowestCap = 2f, LagStep = 0.1f, RaiseWait = 3f, CapForget = 30f, ManualPace = 1f, ManualHold = 0.3f, HopGrace = 0.3f;
     // These are frozen when the flight starts, not recomputed from a later ray/held grab.
@@ -357,7 +368,7 @@ public static class SkateRide
         hasLast = false; pastCount = 0; Steps = 0; Resets = 0; Top = 0f; Lean = 0f; SteerRate = 0f; Powerslide = 0f; PowerslideSide = 1f; lastPull = mountAt = Time.realtimeSinceStartup;
         // A cap from a ride a while ago says nothing about this one.
         if (mountAt - putBackAt > CapForget) ForgetServer();
-        VSpeed = 0f; AirTime = 0f; flipLeft = shoveLeft = pendShove = bodyLeft = 0f; pendFlip = 0; SpinDeg = FlipDeg = ShoveDeg = BodyDeg = 0; LateTrick = false; Jumped = TrickAir = Braking = Manual = NoseManual = spinning = DeckReversed = false; PushPhase = 0f; stuck = 0; heldSteps = 0; Held = false;
+        VSpeed = 0f; AirTime = 0f; flipLeft = shoveLeft = pendShove = bodyLeft = 0f; pendFlip = 0; SpinDeg = FlipDeg = ShoveDeg = BodyDeg = 0; LateTrick = false; Jumped = TrickAir = Braking = Manual = NoseManual = spinning = DeckReversed = false; PushPhase = 0f; stuck = 0; heldSteps = 0; Held = false; ResetKickturn();
         Grab = SkateGrabKind.None; GroundGrab = default(SkateGroundGrabState); BoardPath = default(SkateBoardPathSample); wantSpecial = SkateBoardTrickKind.None; wantSpecialDirection = 0; spinSide = 1f; wantKind = SkatePopKind.Ollie; wantFlip = 0; wantShove = 0f; wantScale = 1f;
         PumpHeld = RevertLeft = revertTurned = 0f; landedTrick = false; steppedAt = -99f; StepUps = 0; Pump = default(SkatePumpState); SlopeDegrees = 0f; ContactNormal = Vector3.up; OnRamp = false; GrindKind = SkateGrindKind.None; GrindFrontside = GrindAlong = false; GrindDeck = 0f; grindClassified = airFromValid = false; Stalling = false; Stalls = 0; PlantedUntil = -99f; PushMongo = PushLead = false; handDownAt = -99f; rollingBack = false;
         Trick = new SkateTrickState(false); TrickName = ""; ComboPoints = 0; TrickAt = BankedAt = LandAt = jumpWanted = -99f; OffReason = "";
@@ -386,12 +397,13 @@ public static class SkateRide
         if (Mode == RideMode.Off) return;
         if (SkateOldschoolRide.Active) SkateBoard.ReleaseIndependent(SkateOldschoolRide.Frame, V(SkateOldschoolRide.State.Velocity));
         airViewFrom = Vector3.up; airViewAt = airViewRise = 0f; ResetAirDisplay();
-        Mode = RideMode.Off; SkateActions.Reset(); SkateOldschoolRide.Reset(); SkateSurfaceRide.Reset(); HandplantVariantUsed = SkateHandplantKind.None; GroundGrab = default(SkateGroundGrabState); BoardPath = default(SkateBoardPathSample); wantSpecial = SkateBoardTrickKind.None; wantSpecialDirection = 0; Pump = default(SkatePumpState); PumpHeld = RevertLeft = 0f; Stalling = false; grindClassified = airFromValid = false; OffReason = reason; Grab = SkateGrabKind.None; Manual = NoseManual = false;
+        Mode = RideMode.Off; SkateActions.Reset(); SkateOldschoolRide.Reset(); SkateSurfaceRide.Reset(); HandplantVariantUsed = SkateHandplantKind.None; GroundGrab = default(SkateGroundGrabState); BoardPath = default(SkateBoardPathSample); wantSpecial = SkateBoardTrickKind.None; wantSpecialDirection = 0; Pump = default(SkatePumpState); PumpHeld = RevertLeft = 0f; Stalling = false; grindClassified = airFromValid = false; OffReason = reason; Grab = SkateGrabKind.None; Manual = NoseManual = false; ResetKickturn();
         if (SkateKeys.Scripted) SkateKeys.EndStep(); else SkateKeys.Reset();
     }
 
     private static void Enter(RideMode m)
     {
+        if (m != RideMode.Ground) ResetKickturn();
         // A pump's pass lives on the ground: leaving it (air, grind, bail) forgets the charge, so a
         // crouch let go in the air cannot be paid out on the next ground step.
         if (m != RideMode.Ground && Mode == RideMode.Ground) { Pump = default(SkatePumpState); PumpHeld = 0f; RevertLeft = revertTurned = 0f; }
@@ -816,6 +828,7 @@ public static class SkateRide
 
     private static void GroundStep(float dt)
     {
+        UpdateKickturn(dt);
         if (!SkateSurfaceRide.DisplayWall && SkateOldschoolRide.TryHippie(Position, dt, SkateKeys.HippieTap)) { jumpWanted = -99f; AirStep(Position, dt); return; }
         Vector3 oldschoolVelocity;
         if (SkateOldschoolRide.GroundStep(Position, dt, out oldschoolVelocity))
@@ -861,7 +874,7 @@ public static class SkateRide
         Powerslide += ((wantSlide ? 1f : 0f) - Powerslide) * Clamp(dt * (wantSlide ? PowerslideIn : PowerslideOut), 0f, 1f);
         if (Powerslide < 0.01f && !wantSlide) Powerslide = 0f;
         // A stick steers by how far it is pushed; keys and the mouse turn the board toward where the rider looks.
-        if (RevertLeft != 0f || Powerslide > 0.3f) SteerRate = 0f;
+        if (Kickturning || RevertLeft != 0f || Powerslide > 0.3f) SteerRate = 0f;
         else if (SkateKeys.Analog)
         {
             var rolling = Clamp(SteerStill + (1f - SteerStill) * Math.Abs(Speed) / SteerFull, SteerStill, 1f);
@@ -871,7 +884,7 @@ public static class SkateRide
             Yaw += SteerRate * dt;
         }
         else Yaw += Clamp(Delta(Yaw, SkateKeys.LookYaw + ((SkateKeys.Left ? -1f : 0f) + (SkateKeys.Right ? 1f : 0f)) * 40f), -maxTurn, maxTurn);
-        if (RevertLeft != 0 || !SkateSurfaceRide.DisplayWall && !GroundGrab.Active && now - jumpWanted >= 0.12f) Revert(dt);
+        if (!Kickturning && (RevertLeft != 0 || !SkateSurfaceRide.DisplayWall && !GroundGrab.Active && now - jumpWanted >= 0.12f)) Revert(dt);
         var dir = RevertLeft != 0f ? revertDir * revertSign : Dir(Yaw);
         var tangent = SurfaceTangent(Normal, dir);
         // The shared physics: gravity along the tangent of the ground, the slope signed by the way of
@@ -900,8 +913,8 @@ public static class SkateRide
         // that has begun lasts down to a crawl: ending it at the pace it needs to begin would let a
         // held push in and out every few tenths of a second, each time ending and scoring it.
         var pace = Math.Abs(Speed);
-        Manual = !SkateSurfaceRide.DisplayWall && !GroundGrab.Active && SkateKeys.Manual && !SkateKeys.Brake && pace > (Manual ? ManualHold : ManualPace);
-        NoseManual = !SkateSurfaceRide.DisplayWall && !GroundGrab.Active && !Manual && SkateKeys.NoseManual && !SkateKeys.Brake && pace > (NoseManual ? ManualHold : ManualPace);
+        Manual = !Kickturning && !SkateSurfaceRide.DisplayWall && !GroundGrab.Active && SkateKeys.Manual && !SkateKeys.Brake && pace > (Manual ? ManualHold : ManualPace);
+        NoseManual = !Kickturning && !SkateSurfaceRide.DisplayWall && !GroundGrab.Active && !Manual && SkateKeys.NoseManual && !SkateKeys.Brake && pace > (NoseManual ? ManualHold : ManualPace);
         var h = HorizontalFactor;
         var pushLimit = h > 0.0001f ? MaxPush / h : 0f;
         // Rolling tail first, a push drives the board on the way it rolls (a fakie push), not to a stop.
@@ -949,14 +962,108 @@ public static class SkateRide
         // The velocity runs along the ground's tangent; a gap under the wheels is closed on top of it:
         // down, and on a transition's face toward the face, which is where the gap was read.
         velocity = tangent * Speed;
+        MoveKickturn(dt);
+        if (Kickturning) dir = Dir(Yaw);
         var close = Clamp(Clearance * 8f, 0f, 3f);
         if (OnRamp) velocity -= Normal * close; else velocity.y -= close;
         StepOver(dir, dt);
         // In a slide the rider leans back from the way he goes, into the turn that started it.
-        var leanWant = Powerslide > 0.01f ? -PowerslideSide * 18f * Powerslide : Clamp((Delta(before, Yaw) + revertStep) / dt * 0.12f, -25f, 25f);
+        var leanWant = Kickturning ? 0f : Powerslide > 0.01f ? -PowerslideSide * 18f * Powerslide : Clamp((Delta(before, Yaw) + revertStep) / dt * 0.12f, -25f, 25f);
         revertStep = 0f;
         Lean += (leanWant - Lean) * (1f - (float)Math.Exp(-12f * dt));
         if (!GroundGrab.Active) TrickTick(false, false, 0, 0, 0, 0, dt);
+    }
+
+    private static void ResetKickturn()
+    { kickturnLift = kickturnTurned = 0f; kickturnSide = 0; kickturnRelease = kickturnRearm = false; }
+    private static float KickturnCurve(float f) { return f * f * f * (10f + f * (-15f + 6f * f)); }
+    private static float KickturnPhase(float visible)
+    {
+        if (visible <= 0 || visible >= 1) return Clamp(visible, 0, 1);
+        float lo = 0, hi = 1;
+        // Tip is an already rendered weight. Recover its phase without applying
+        // the lift curve twice at the ordinary-manual ownership handoff.
+        for (int i = 0; i < 24; i++)
+        { var mid = (lo + hi) * .5f; if (KickturnCurve(mid) < visible) lo = mid; else hi = mid; }
+        return (lo + hi) * .5f;
+    }
+    private static bool KickturnEligible()
+    {
+        return On && Mode == RideMode.Ground && Grounded && !OnRamp && !Frozen &&
+            (SkateKeys.Scripted || SkateKeys.ControlsActive) && !SkateRiggingShowcase.Running && !Scenarios.Active &&
+            !SkateBoard.Held && !Handplant && !SkateActions.Owns && !SkateOldschoolRide.Active &&
+            !SkateSurfaceRide.DisplayWall && !SkateSurfaceRide.BodyFlip.Known && !BoardPath.Known && !GroundGrab.Active &&
+            PushPhase <= .001f && Powerslide <= .001f && RevertLeft == 0 && !Rotating &&
+            !SkateKeys.Brake && !SkateKeys.Push && !SkateKeys.Charging && !SkateKeys.Crouch &&
+            now - jumpWanted >= .12f && Math.Abs(Speed) <= KickturnSpeed;
+    }
+    private static float KickturnSteer()
+    { return SkateKeys.Analog ? Clamp(SkateKeys.Steer, -1f, 1f) : (SkateKeys.Left ? -1f : 0f) + (SkateKeys.Right ? 1f : 0f); }
+    private static bool KickturnSupport(int side, out Vector3 axle)
+    {
+        axle = Vector3.zero; RaycastHit plane;
+        if (!TryObservedGround(Position, out plane) || plane.m_Normal.y < .9995f ||
+            Math.Abs(Clearance) > .04f || !SkateBoard.TryKickturnAxle(side, out axle)) return false;
+        var forward = Dir(DeckYaw); var right = Vector3.Cross(Vector3.up, forward);
+        // Both tyres of the loaded axle must have fresh support, not just the body centre.
+        for (int sign = -1; sign <= 1; sign += 2)
+        {
+            RaycastHit wheel; var point = Position + forward * axle.z + right * (.082f * sign);
+            if (!SkateParks.Ray(point + Vector3.up * RayLift, Vector3.down, out wheel, RayLift + .04f, GroundMask) ||
+                wheel.m_Normal.y < .9995f || Math.Abs(Vector3.Dot(wheel.m_Point - plane.m_Point, plane.m_Normal)) > .0005f) return false;
+        }
+        return true;
+    }
+    private static void UpdateKickturn(float dt)
+    {
+        var steer = KickturnSteer();
+        var intent = SkateKeys.Manual != SkateKeys.NoseManual && Math.Abs(steer) > .5f;
+        if (!intent) kickturnRearm = false;
+        if (!KickturnEligible() || kickturnSide != 0 && kickturnEpoch != SkateKeys.InputEpoch)
+        { ResetKickturn(); return; }
+        Vector3 axle;
+        if (kickturnSide == 0)
+        {
+            if (!intent || kickturnRearm) return;
+            var ahead = Vector3.Dot(Dir(NoseYaw), Dir(DeckYaw)) >= 0 ? 1 : -1;
+            var side = (SkateKeys.NoseManual ? 1 : -1) * ahead;
+            var oldAhead = Vector3.Dot(Dir(Yaw), Dir(DeckYaw)) * (Speed < 0 ? -1 : 1) >= 0 ? 1 : -1;
+            if (Math.Abs(SkateBoard.Tip) > .001f && -Math.Sign(SkateBoard.Tip) * oldAhead != side) return;
+            if (!KickturnSupport(side, out axle)) return;
+            kickturnSide = side; kickturnEpoch = SkateKeys.InputEpoch; kickturnNose = SkateKeys.NoseManual;
+            kickturnLift = KickturnPhase(Math.Abs(SkateBoard.Tip));
+            kickturnTurned = 0; kickturnRelease = false; kickturnRearm = true; Kickturns++;
+        }
+        if (!KickturnSupport(kickturnSide, out axle)) { ResetKickturn(); return; }
+        if (!intent || SkateKeys.NoseManual != kickturnNose || kickturnTurned >= KickturnLimit) kickturnRelease = true;
+        kickturnLift = Clamp(kickturnLift + (kickturnRelease ? -1 : 1) * dt / KickturnLiftSeconds, 0, 1);
+        if (kickturnLift <= 0) { kickturnSide = 0; kickturnTurned = 0; }
+    }
+    private static void MoveKickturn(float dt)
+    {
+        if (!Kickturning || kickturnRelease || kickturnLift < 1f) return;
+        Vector3 axle; if (!KickturnSupport(kickturnSide, out axle)) { ResetKickturn(); return; }
+        var step = Math.Min(KickturnLimit - kickturnTurned, KickturnRate * dt * Math.Abs(KickturnSteer())) * Math.Sign(KickturnSteer());
+        var nextYaw = Yaw + step;
+        var next = SurfaceTangent(Normal, Dir(nextYaw));
+        // The centre goes around the loaded axle. This velocity still goes through
+        // WallAhead, the horizontal budget and the Rigidbody's normal collision move.
+        var pivotMove = (Dir(DeckYaw) - Dir(DeckYaw + step)) * (axle.z / dt);
+        var wanted = next * Speed + pivotMove;
+        // Refuse the pivot if its centre arc is obstructed. Do not call the
+        // side-effecting WallAhead twice; the accepted step still uses it below.
+        var pace = wanted.magnitude;
+        if (pace > .0001f)
+        {
+            var direction = wanted / pace; var reach = pace * dt + CapsuleReach + WallSkin;
+            foreach (var height in wallHeights)
+            {
+                RaycastHit wall;
+                if (SkateParks.SphereWall(Position + Vector3.up * height, WallProbe, direction, out wall, reach, GroundMask, RidingWallFace) &&
+                    -Vector3.Dot(wanted, wall.m_Normal) > 0f) { kickturnRelease = true; return; }
+            }
+        }
+        Yaw = nextYaw; Tangent = next; velocity = wanted; kickturnTurned += Math.Abs(step);
     }
 
     // The ground a little ahead, in the way of travel: higher by a lip's worth, the board is lifted

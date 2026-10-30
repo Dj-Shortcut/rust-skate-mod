@@ -678,7 +678,8 @@ public class SkateRig : MonoBehaviour
         // itself is turned by the right stick's flicks and says nothing.
         if (!SkateKeys.Scripted) SkateKeys.LookYaw = SkateKeys.Pad && SkateRide.On ? SkateRide.Yaw + SkateKeys.Steer * 35f : SkateCamera.LookYaw;
         var grinding = SkateRide.On && SkateRide.Mode == RideMode.Grind;
-        SkateBoard.Tip += ((!SkateRide.On || grinding ? 0f : SkateRide.Manual ? 1f : SkateRide.NoseManual ? -1f : 0f) - SkateBoard.Tip) * SkateRide.Clamp(frame * 9f, 0f, 1f);
+        if (SkateRide.Kickturning) SkateBoard.Tip = SkateRide.KickturnTip;
+        else SkateBoard.Tip += ((!SkateRide.On || grinding ? 0f : SkateRide.Manual ? 1f : SkateRide.NoseManual ? -1f : 0f) - SkateBoard.Tip) * SkateRide.Clamp(frame * 9f, 0f, 1f);
         double gp = 0, gr = 0, gc;
         if (grinding) Shortcut.RustMod.SkateRider.GrindDeck(SkateRide.GrindKind, out gp, out gr, out gc);
         SkateBoard.GrindPitch += ((float)gp - SkateBoard.GrindPitch) * SkateRide.Clamp(frame * 12f, 0f, 1f);

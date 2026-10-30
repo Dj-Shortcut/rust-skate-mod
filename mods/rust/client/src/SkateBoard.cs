@@ -65,13 +65,33 @@ public static class SkateBoard
     }
 
     private static Vector3 RawContact(Transform playerT) { return playerT.position + SkateRide.DisplaySupportOffset + Vector3.up * (ShowLift + Pop); }
+    public static bool TryKickturnAxle(int side, out Vector3 axle)
+    {
+        axle = Vector3.zero;
+        if ((side != -1 && side != 1) || wheelContact == null || Held) return false;
+        var state = truckMotion[side < 0 ? 0 : 1];
+        // A loaded axle pivot starts with straight, settled trucks, not an ongoing carve.
+        if (Math.Abs(state.Steering) > .01 || Math.Abs(state.SteeringVelocity) > .1) return false;
+        SkateTruckPose pose; string error;
+        if (!SkateBoardTruckKinematics.TryPose(side, state, out pose, out error)) return false;
+        axle = V(pose.Point(new SkateVector(0, .027, side * SkateBoardTruckKinematics.AxleZ)));
+        return true;
+    }
     public static Vector3 Contact(Transform playerT)
     {
         if (!contactCached)
         {
             contactCached = true; TruckPlaneSupported = false;
             SkateVector offset; string error = null;
-            if (wheelContact != null && observedPlane && supportStep == SkateRide.Steps && (OrdinaryPlaneEligible() || SlidingPlaneEligible() || RevertingPlaneEligible()) &&
+            Vector3 axle; RaycastHit pivotPlane;
+            if (SkateRide.Kickturning && TryKickturnAxle(SkateRide.KickturnSide, out axle) &&
+                SkateRide.TryObservedGround(SkateRide.Position, out pivotPlane) && pivotPlane.m_Normal.y >= .9995f &&
+                Math.Abs(Vector3.Dot(RawContact(playerT) + Vector3.up * axle.y - pivotPlane.m_Point, pivotPlane.m_Normal) - .027f) <= .04f)
+            {
+                contactOffset = pivotPlane.m_Normal * (.027f - Vector3.Dot(RawContact(playerT) + Vector3.up * axle.y - pivotPlane.m_Point, pivotPlane.m_Normal));
+                TruckPlaneSupported = true; TruckContactStatus = "Observed loaded kickturn axle";
+            }
+            else if (wheelContact != null && observedPlane && supportStep == SkateRide.Steps && (OrdinaryPlaneEligible() || SlidingPlaneEligible() || RevertingPlaneEligible()) &&
                 (playerT.position - SkateRide.Position).sqrMagnitude <= .5625f &&
                 wheelContact.TryOffset(PoseAt(playerT, false, RawContact(playerT)), RiderRig.DeckTop, truckMotion[0], truckMotion[1],
                     V(observedPoint), V(observedNormal), .04, out offset, out error))
@@ -187,8 +207,8 @@ public static class SkateBoard
             Pop = AirPitch = 0;
             displayAhead = Vector3.Dot(SkateRide.Dir(SkateRide.Yaw), SkateRide.Dir(SkateRide.DeckYaw)) < 0 ? -1 : 1;
         }
-        else if (SkateRide.Mode != RideMode.Air || Held || SkateOldschoolRide.Active || SkateActions.Owns) displayTruckRig = false;
-        bool steering = SkateRide.Mode == RideMode.Ground && !Held && !SkateOldschoolRide.Active && !SkateActions.Owns;
+        else if (SkateRide.Mode != RideMode.Air || Held || SkateOldschoolRide.Active || SkateActions.Owns) displayTruckRig = SkateRide.Kickturning;
+        bool steering = SkateRide.Mode == RideMode.Ground && !SkateRide.Kickturning && !Held && !SkateOldschoolRide.Active && !SkateActions.Owns;
         float since = now - SkateRide.LandAt;
         double settle = observedPlane && since >= 0 && since < .3f ? 1 - since / .3 : 0;
         double landing = settle * settle * SkateRide.Clamp(SkateRide.LandImpact / 8, 0, 1);
@@ -201,7 +221,7 @@ public static class SkateBoard
         {
             SkateBoardTruckState next; string error;
             if (SkateBoardTruckMotion.TryStep(truckMotion[side], SkateRide.Clamp(SkateRide.Lean * displayAhead * slideBank, -20, 20), steering,
-                observedPlane ? 1 : 0, landing, motionSeconds, out next, out error)) truckMotion[side] = next;
+                observedPlane || SkateRide.Kickturning ? 1 : 0, landing, motionSeconds, out next, out error)) truckMotion[side] = next;
             else { truckMotion[side] = default(SkateBoardTruckState); TruckContactStatus = error; }
         }
         for (int i = 0; i < bushingShapes.Length; i++)
@@ -284,6 +304,14 @@ public static class SkateBoard
 
     public static void Tilt(ref Vector3 at, ref Vector3 up)
     {
+        Vector3 axle;
+        if (SkateRide.Kickturning && TryKickturnAxle(SkateRide.KickturnSide, out axle))
+        {
+            var nose = OnFace(up, SkateRide.Dir(SkateRide.DeckYaw)).normalized;
+            var pivot = at + nose * axle.z + up * (axle.y - RiderRig.DeckTop);
+            var turn = SkateRide.Turn(TipDegrees * SkateRide.KickturnTip, Vector3.Cross(nose, up));
+            at = pivot + turn * (at - pivot); up = turn * up; return;
+        }
         var pitch = PitchDegrees;
         if (Math.Abs(pitch) > 0.01f)
         {
@@ -372,7 +400,7 @@ public static class SkateBoard
         Tilt(ref at, ref n);
         var travel = OnFace(n, SkateRide.Dir(SkateRide.Yaw));
         // The lean rolls the board about its direction of travel, right side down in a right turn.
-        float lean = displayTruckRig ? (float)((truckMotion[0].Steering + truckMotion[1].Steering) * .5) * displayAhead : SkateRide.Lean;
+        float lean = SkateRide.Kickturning ? 0f : displayTruckRig ? (float)((truckMotion[0].Steering + truckMotion[1].Steering) * .5) * displayAhead : SkateRide.Lean;
         // The caster rig banks about the deck's length. Using travel here
         // would pitch the nose/tail once a grounded slide turns across it.
         var bankAxis = observedPlane && supportStep == SkateRide.Steps && (SlidingPlaneEligible() || RevertingPlaneEligible()) ? deckNose * displayAhead : travel;
