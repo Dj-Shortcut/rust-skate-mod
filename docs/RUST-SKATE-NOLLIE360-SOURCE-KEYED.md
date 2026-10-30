@@ -30,3 +30,5 @@ python scripts/author_skate_nollie360_hybrid.py --output /private/output/nollie3
 ```
 
 Reference footage is not included in Git or relicensed. The source controls retain source-video, original pose and raw-detection hashes and distinguish upper-body estimates from authored lower-chain reconstruction.
+
+The unchanged generic `trick_check.py` reports 9/13 for normal flight and 8/13 for low flight. Its remaining diagnostics are the short Load hold, marginal sole/hip heights, the take’s real high balance arm and the low-flight landing rate. The raw reports remain visible beside the viewer; no thresholds are relaxed and these numbers do not claim visual or game approval. The nose strike is checked separately against the real shaped board, rather than treating an empty bounding-box corner as wood.
