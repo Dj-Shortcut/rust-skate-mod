@@ -30,7 +30,10 @@ Low-visibility arm frames 94/96 and the visibly false raw wrist at 95 are
 reconstructed between actual anchors. The blurred wrist at 93 is an explicit
 uncertain image mark. No detector confidence is increased. At landing only the
 rear knee bend plane follows the source shoe toe tangent; feet, root and limb
-lengths stay fixed. The source's own slight Air pitch remains
+lengths stay fixed. The original contact-prior root step is replaced only inside
+source 99–103 by a C1 join with the recorded endpoint positions and actual
+adjacent-frame velocities. Body and free-foot guides move together before the
+same fixed-foot IK; this is not a runtime smoothing stack. The source's own slight Air pitch remains
 after the pressure phase. The rear shoe follows the rotating tail until it releases. The front
 lifts clear without a kick/heel flick. Full360 restores the original nose/tail
 order at catch, unlike a half-turn's reversed deck-local foot pins.

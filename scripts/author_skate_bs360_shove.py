@@ -25,7 +25,27 @@ def scalar(keys, sf):
     return float(curve([v[0] for v in keys], [[v[1]] for v in keys], sf)[0])
 
 
-def source_body(source, sf):
+def source_local_root(source, sf):
+    row = min(source['frames'], key=lambda f: abs(f['sourceFrame']-sf))
+    if abs(row['sourceFrame']-sf) > 1e-6:
+        raise ValueError('The source root join needs its actual recorded endpoint')
+    return np.asarray(row['joints']['Pelvis'])-np.asarray(row['board']['origin'])+UP*.092
+
+
+def source_catch_root(source, sf, spec, ordinary):
+    start, end = spec['start'], spec['end']
+    if not start < sf < end: return ordinary
+    a, b = source_local_root(source, start), source_local_root(source, end)
+    va = a-source_local_root(source, start-1)
+    vb = source_local_root(source, end+1)-b
+    span = end-start; u = (sf-start)/span
+    # Preserve actual positions and both source-frame derivatives. Only the
+    # old contact-prior discontinuity inside this own take is reconstructed.
+    return ((2*u**3-3*u*u+1)*a+(u**3-2*u*u+u)*span*va
+            +(-2*u**3+3*u*u)*b+(u**3-u*u)*span*vb)
+
+
+def source_body(source, sf, spec):
     frames = source['frames']
     times = [r['sourceFrame'] for r in frames]
     i = max(0, min(len(frames) - 2, int(np.searchsorted(times, sf, side='right')) - 1))
@@ -36,6 +56,8 @@ def source_body(source, sf):
     # trajectory. Remove that translation once; the live carrier owns both.
     translation = vector(a['board']['origin'], b['board']['origin']) - UP * .092
     raw = {k: vector(a['joints'][k], b['joints'][k]) - translation for k in JOINTS}
+    root_shift = source_catch_root(source, sf, spec, raw['Pelvis'])-raw['Pelvis']
+    raw = {k: value+root_shift for k, value in raw.items()}
     dirs = {k: unit(vector(a['dirs'][k], b['dirs'][k])) for k in DIRS}
     soles = {k: unit(vector(a['soleUp'][k], b['soleUp'][k])) for k in ('Left', 'Right')}
     rig = source['metadata']['rig']
@@ -157,7 +179,7 @@ def foot(s, sf, side, raw, soles):
 
 
 def sample(source, s, sf):
-    j, dirs, soles = source_body(source, sf)
+    j, dirs, soles = source_body(source, sf, s['catchRootJoin'])
     source_rear_arm(s, sf, j)
     original = {k: v.copy() for k, v in j.items()}
     feet = {side: foot(s, sf, side, original, soles) for side in ('Left', 'Right')}
@@ -249,7 +271,7 @@ def bake(source, controls, raw):
                 sourceVideoOffsetSeconds=s['firstSourceFrame'] / s['sourceFps'],
                 sourceCacheOriginalOffsetSeconds=s['sourceCacheOriginalOffsetSeconds'], referenceGroundPress=s['reference'],
                 combinedWinding=dict(nativeFlip=0, nativeShove=-360, canonicalYaw=360),
-                sourcePhaseLimit=s['sourcePhaseLimit'], sourceRootJoinFrame=p['airJoin'], authoredRearPickup=s['rearPickupKeys'], rearArmImageGuide=s['rearArmImageGuide'], rearLandingKnee=s['rearLandingKnee'],
+                sourcePhaseLimit=s['sourcePhaseLimit'], sourceRootJoinFrame=p['airJoin'], authoredRearPickup=s['rearPickupKeys'], rearArmImageGuide=s['rearArmImageGuide'], rearLandingKnee=s['rearLandingKnee'], catchRootJoin=s['catchRootJoin'],
                 contactLimit='Monocular source-role/contact estimates and authored shaped-deck reconstruction; no measured contact confidence.')
     duration = (s['lastSourceFrame'] - s['firstSourceFrame']) / s['sourceFps']
     clip = dict(format='skate-source-keyed-bs360/1', metadata=meta, stance='regular', fps=s['sourceFps'] * 6, duration=duration,
