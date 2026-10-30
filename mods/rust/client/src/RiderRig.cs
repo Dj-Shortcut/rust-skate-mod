@@ -46,6 +46,10 @@ public static class RiderRig
     private static int chargeEntryPop = -1;
     private static uint chargeEntryEpoch;
     public static double ChargePoseSeed { get { return chargePosePop == SkateRide.Pops && chargePoseEpoch == SkateKeys.InputEpoch ? chargePoseAmount : 0; } }
+    // True only for the measured setup presented by this current ground owner.
+    public static bool GroundChargePresented { get { return chargeOwnedGround && chargeSetupGrounded &&
+        SkateRide.Mode == RideMode.Ground && SkateKeys.ControlsActive && chargeOwnerPlayer == SkateRig.LocalT &&
+        chargeOwnerGoofy == SkateRide.Goofy && chargePoseEpoch == SkateKeys.InputEpoch && chargePosePop == SkateRide.Pops + 1; } }
     public static float Miss;
     public static string MissAt = "", Error = "", MotionError = "";
     private static SkateRiderMotionState motion;
@@ -981,20 +985,23 @@ public static class RiderRig
             if (ordinaryRolling) want = Math.Max(want, .18f);
             var chargeRoute = OrdinaryFooting(true) && SkateKeys.ControlsActive && !wall && !bodyFlip && PlantBlend <= .001f &&
                 !SkateSurfaceRide.DropInMotion.Active;
-            var ordinaryCharging = mode == RideMode.Ground && SkateKeys.Charging && chargeRoute;
+            bool preparationNose = false; double preparationCharge = 0;
+            bool padPreparation = mode == RideMode.Ground && SkateKeys.Pad &&
+                SkatePad.TryGroundPreparation(out preparationNose, out preparationCharge);
+            var ordinaryCharging = mode == RideMode.Ground && chargeRoute && (SkateKeys.Charging || padPreparation);
             chargeSetupGrounded = chargeEntryShown = false;
             // A fresh charge owns its setup, including after a captured landing.
             if (ordinaryCharging && (!chargeOwnedGround || chargeOwnerPlayer != SkateRig.LocalT ||
                 chargeOwnerGoofy != SkateRide.Goofy || chargePoseEpoch != SkateKeys.InputEpoch || chargePosePop != SkateRide.Pops + 1))
             {
                 // The held stick end is known now; PopKind still belongs to the last release.
-                chargeNosePop = SkateKeys.Pad && SkatePad.RightY > 0; chargeInitialPelvisOffset = null;
+                chargeNosePop = padPreparation ? preparationNose : SkateKeys.Pad && SkatePad.RightY > 0; chargeInitialPelvisOffset = null;
                 chargeOwnerPlayer = SkateRig.LocalT; chargeOwnerGoofy = SkateRide.Goofy; ClearChargeEntry();
                 SkateCapturedTricks.Reset();
             }
             chargeOwnedGround = ordinaryCharging;
             if (ordinaryCharging)
-            { chargePosePop = SkateRide.Pops + 1; chargePoseEpoch = SkateKeys.InputEpoch; chargePoseAmount = SkateRide.Clamp(SkateKeys.Charge, 0, 1); }
+            { chargePosePop = SkateRide.Pops + 1; chargePoseEpoch = SkateKeys.InputEpoch; chargePoseAmount = padPreparation ? (float)preparationCharge : SkateRide.Clamp(SkateKeys.Charge, 0, 1); }
             else if (!chargeRoute || chargePoseEpoch != SkateKeys.InputEpoch ||
                 !(mode == RideMode.Air && SkateRide.Jumped && chargePosePop == SkateRide.Pops ||
                 mode == RideMode.Ground && (SkateKeys.JumpPressed || SkateRide.PresentationQueued) && chargePosePop == SkateRide.Pops + 1))
@@ -1004,7 +1011,8 @@ public static class RiderRig
             if (SkateOldschoolRide.Active && SkateOldschoolRide.Kind == SkateOldschoolKind.Caveman &&
                 (SkateOldschoolRide.Phase == SkateOldschoolPhase.Pickup || SkateOldschoolRide.Phase == SkateOldschoolPhase.Carrying)) want = .95f;
             // A right stick held back is the rider gathering for the pop; a trigger held is the crouch of a pump.
-            if (SkateKeys.Charging && mode == RideMode.Ground) want = Math.Max(want, 0.4f + 0.4f * SkateKeys.Charge);
+            if ((SkateKeys.Charging || ordinaryCharging) && mode == RideMode.Ground)
+                want = Math.Max(want, 0.4f + 0.4f * (ordinaryCharging ? chargePoseAmount : SkateKeys.Charge));
             if (mode == RideMode.Ground && SkateRide.PumpHeld > 0f) want = Math.Max(want, 0.25f + 0.45f * SkateRide.PumpHeld / SkateRide.PumpCharge);
             var since = now - SkateRide.LandAt;
             if (mode == RideMode.Ground && since < 0.35f) want += (1f - since / 0.35f) * SkateRide.Clamp(SkateRide.LandImpact / 8f, 0.2f, 1f) * 0.45f;
