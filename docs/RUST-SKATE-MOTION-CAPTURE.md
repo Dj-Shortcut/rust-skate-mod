@@ -752,6 +752,17 @@ gaze instead of prematurely replacing it with ordinary travel-facing gaze.
 The existing recovery blend still returns to ordinary riding. This gaze option
 defaults off and is enabled only for the exact base Fakie ID/kind/signature.
 
+This does not make the complete Fakie animation source-identical. The grounded
+Load still uses the common 75-degree knee target, 32-degree torso fold and
+ordinary gaze: the filmed Fakie crouch folds farther and looks more directly
+down at the board. Charge is already fully applied; this is not a partial-charge
+fixture error. No future-trick selection or global charge-pose change is added.
+The read-only diagnostic checker currently reports 8/13 for both normal stances,
+and 8/13 Regular / 9/13 Goofy for the low jump. Its remaining front-sole,
+hip-height, hand-height and acceleration misses remain explicit; no threshold
+was weakened. The visible held-source hop is repaired, but native Shadow play
+and the remaining grounded Load presentation are separate acceptance work.
+
 Keep generated JSON and packs in ignored `context/`. Starting with the retained
 **complete first-five composition manifest**, these commands replace only its
 Fakie source; all other source entries and derived variants remain present:
