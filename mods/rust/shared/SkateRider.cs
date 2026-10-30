@@ -825,6 +825,11 @@ namespace Shortcut.RustMod
                 var stroke = input.BoardPosition + travel * (LeadPlant - PushPlant);
                 leadAnkle = PushFoot(rest, stroke, travel, pushSide, up, input.PushPhase, input.GroundDrop, cycleDistance, rig.FootLength, out grounded, out heel);
                 leadToe = RidingLeadToe * Math.PI / 180 + (Math.PI / 2 - RidingLeadToe * Math.PI / 180) * grounded;
+                // The standing foot turns along the board as the hips open to the push, the way
+                // the front foot does in the usual push (PushLeadToe). Left at its riding angle,
+                // across the tail under a pelvis turned PushPelvisYaw toward the way of travel, it
+                // stood twisted on the deck (owner, 30 October).
+                backToe = (RidingBackToe + (PushLeadToe - RidingBackToe) * turn) * Math.PI / 180;
                 swing = StrokeSwing(leadAnkle, rest, stroke, travel);
             }
             else if (pushing)
