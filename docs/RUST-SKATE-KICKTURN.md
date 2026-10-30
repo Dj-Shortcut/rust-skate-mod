@@ -3,9 +3,20 @@
 At a standstill or below 0.95 m/s, hold the existing manual or nose-manual input,
 then steer with the normal left-stick input. The controller manual band is a
 partial right-stick deflection, held for 0.2 s; it is not a pop or a new button chord.
-Release the steer/manual input to lower the raised end and return to ordinary
-riding. One request is bounded to 180 degrees. Faster manuals and normal carving
-keep their existing routes.
+Preparation first moves the loaded foot onto the real curved tail, beyond the
+bolts, and transfers the hips and complete trunk over the loaded axle. The nose
+variant mirrors this at the other end. The authored balance allowance places the
+hips slightly beyond the axle while carrying the existing trunk and head together;
+it does not estimate a physical centre of mass. The formed-deck triangles supply the sole
+normal, and the existing measured shoe fitter and fixed-length legs must accept
+the pose. A complete current pose confirmation, bound to player, input owner and
+foot-geometry version, releases the lift; elapsed preparation time alone cannot.
+
+The foot and weight stay over that support throughout lift and pivot. Releasing
+the steer/manual input lowers the raised end before the foot and body return to
+ordinary riding. A partially lifted incoming manual settles before preparation.
+One request is bounded to 180 degrees. Faster manuals and normal carving keep
+their existing routes.
 
 The client uses a separate, authored kinematic pivot state. The player centre
 moves around the loaded physical axle through the ordinary Rigidbody velocity,

@@ -54,6 +54,7 @@ mods/rust/shared/SkateAudio.cs
 mods/rust/shared/SkateFlick.cs
 mods/rust/shared/SkateRidePhysics.cs
 mods/rust/shared/SkateRiderMotion.cs
+mods/rust/shared/SkateKickturnPose.cs
 mods/rust/shared/SkateModel.cs
 mods/rust/shared/SkatePark.cs
 mods/rust/shared/SkateParkBuildItems.cs
