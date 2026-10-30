@@ -15,7 +15,7 @@ The real input-owned Nollie charge places the nose/front footprint on the nose a
 | 4602 | Collected compact Air, own asymmetric feet and toe-facing knee planes |
 | 4607 / 4608.5 | Authored front-first catch, then both soles on returning grip |
 | 4609 | Source landing, mapped only after an actual native landing |
-| 4612–4625 | Absorption and continuous roll-away |
+| 4612–4625 | Absorption, then gradual upper-body return toward ordinary rolling height from4615; fixed feet and original knee planes |
 
 The source's low nose shoe and already free rear shoe make front support plausible; the first lower returning shoe also supports front-first catch. Blur and occlusion do not prove the exact contact depth or subframe. These are authored annotations, not inherited measurements: the older Right-only masks are deliberately not treated as anatomical truth. Hidden depth, rear instep orientation and the preview/native stance mapping remain uncertain. No detection confidence is increased. Source pixels are never mirrored.
 

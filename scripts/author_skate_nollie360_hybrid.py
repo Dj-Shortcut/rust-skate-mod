@@ -76,7 +76,14 @@ def foot(s,f,side):
 def sample(controls,s,f):
  o,r,h,correction=board(s,f);la,lf=foot(s,f,'Left');ra,rf=foot(s,f,'Right');rows=controls['frames'];ts=[x['frame']for x in rows]
  rel={k:curve(ts,[x['relative'][k]for x in rows],f)for k in rows[0]['relative']};d={k:unit(curve(ts,[x['dirs'][k]for x in rows],f))for k in DIRS}
- px,pz=vector(s['pelvisXZKeys'],f);p=np.array([px,scalar(s['pelvisWorldYKeys'],f)+correction,pz]);heading=unit(np.array([d['PelvisForward'][0],0.,d['PelvisForward'][2]]));left=-unit(np.cross(UP,heading));hips=[p+left*.09,p-left*.09]
+ px,pz=vector(s['pelvisXZKeys'],f);p=np.array([px,scalar(s['pelvisWorldYKeys'],f)+correction,pz])
+ # Recover toward this rig's ordinary rolling height after absorption. The
+ # upper chain follows the pelvis; feet and the same knee planes stay fixed.
+ recovery=s['lateRecovery']
+ if f>recovery['startFrame']:
+  weight=smooth((f-recovery['startFrame'])/(recovery['settledFrame']-recovery['startFrame']))
+  p[1]+=(recovery['pelvisHeight']+correction-p[1])*weight
+ heading=unit(np.array([d['PelvisForward'][0],0.,d['PelvisForward'][2]]));left=-unit(np.cross(UP,heading));hips=[p+left*.09,p-left*.09]
  maximum=[]
  for hip,ankle in zip(hips,[la,ra]):
   horizontal=(hip[0]-ankle[0])**2+(hip[2]-ankle[2])**2

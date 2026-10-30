@@ -2479,7 +2479,8 @@
       "Nose/front Left support and first catch are source-led authored roles; exact sole-touch depth/frame is blurred/occluded. The old Right-only masks are not reused.",
       "Visible lead wrist height during4592\u20134605 is reconstructed from this take; old standing-root arm projection dropped it below the filmed shoulder-level balance. Own horizontal direction, arm reach and far-arm motion retained.",
       "Free-body metric pickup rebuilt coherently from4602 whole-shoe/real-deck separation, not claimed as measured3D translation. Board/physics unchanged; no runtime extra arc.",
-      "Source4607 visibly retains the rear knee and shoe above the first front catch. Its own rear free-foot curve and later4608.5 catch are reconstructed; original old both-catch4608 was not treated as exact measured contact."
+      "Source4607 visibly retains the rear knee and shoe above the first front catch. Its own rear free-foot curve and later4608.5 catch are reconstructed; original old both-catch4608 was not treated as exact measured contact.",
+      "Late recovery4615\u20134622 returns the whole upper body to its own ordinary rolling hip height; fixed feet, board and earlier absorption remain unchanged. Source-led authored reconstruction."
     ],
     "sourceAuthor": "The Berrics \u2014 BATB multi-trick reference; striped-shirt Nollie360 take",
     "sourceRights": "Reference footage remains with its owners and is not distributed by this source repository. Source poses and reconstructed motion remain unreviewed.",
@@ -2571,5 +2572,10 @@
       4625,
       0
     ]
-  ]
+  ],
+  "lateRecovery": {
+    "startFrame": 4615,
+    "settledFrame": 4622,
+    "pelvisHeight": 0.925
+  }
 }
