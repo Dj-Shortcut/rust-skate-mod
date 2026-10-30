@@ -16,6 +16,12 @@ if (Get-Command Get-SkateRustFolder -ErrorAction SilentlyContinue) {
   $rust = $steamRust.Rust
 }
 if (Get-Process RustClient -ErrorAction SilentlyContinue) { 'ABORT: RustClient is running; quit Rust first'; return }
+# Validate the recorded library before even discarding a receipt for an empty folder.
+if ((Test-Path -LiteralPath $mark) -and (Get-Command Test-SkateRecoveryFolder -ErrorAction SilentlyContinue)) {
+  if (-not (Test-SkateRecoveryFolder @(Get-Content -LiteralPath $mark) $rust)) {
+    'ABORT: the recovery note belongs to another Rust folder or has no safe folder binding. Nothing was changed; reconnect the original library.'; return
+  }
+}
 $roots = 'BepInEx','dotnet','winhttp.dll','doorstop_config.ini','.doorstop_version','changelog.txt'
 $found = @($roots + (ls $rust -Filter 'preloader_*.log' -ErrorAction SilentlyContinue | % Name) | ? { Test-Path -LiteralPath (Join-Path $rust $_) })
 if (-not $found) { Remove-Item -LiteralPath $mark -ErrorAction SilentlyContinue; 'clean: no loader files in the Rust folder'; return }

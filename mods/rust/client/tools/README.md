@@ -190,6 +190,8 @@ moves to another Unity version needs both changed, and the base libraries for th
    function keeps the `C:` paths. Discovery validates the AppState app id, build id and
    single-component install folder; unreadable metadata and absent drives are skipped.
    Steam shortcuts must target the selected client, including its library and custom folder.
+   Cleanup receipts record the Rust folder; a receipt for another library is preserved and
+   cannot authorize cleanup. Legacy receipts are accepted only for the historical C: folder.
    A failed discovery leaves the cleanup receipt intact. UTF-8 metadata and both old
    and new library index formats are supported. Headless PowerShell regression coverage:
    `crates/approved_tests/skate/SkateSteamDiscoveryScenario.ps1`; Windows CI runs both

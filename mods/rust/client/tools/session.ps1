@@ -144,7 +144,7 @@ if (-not (Test-Path "$stage\winhttp.dll")) {
 $stRoots = ls $stage -Force | % Name
 say ('stage roots: ' + ($stRoots -join ','))
 try {
-  Set-Content -LiteralPath $mark -Value (@('put there ' + (Get-Date -Format 's') + ' by session ' + $run) + ($prints | % { 'file ' + (Get-FileHash -LiteralPath (Join-Path $stage $_) -Algorithm SHA256).Hash + ' ' + $_ }))
+  Set-Content -LiteralPath $mark -Value (@(('put there ' + (Get-Date -Format 's') + ' by session ' + $run), ('rust ' + $rust)) + ($prints | % { 'file ' + (Get-FileHash -LiteralPath (Join-Path $stage $_) -Algorithm SHA256).Hash + ' ' + $_ }))
   foreach ($n in $stRoots) { Copy-Item -LiteralPath (Join-Path $stage $n) -Destination $rust -Recurse }
   $bx = Join-Path $rust 'BepInEx'
   New-Item -ItemType Directory -Force "$bx\interop","$bx\config","$bx\plugins" | Out-Null

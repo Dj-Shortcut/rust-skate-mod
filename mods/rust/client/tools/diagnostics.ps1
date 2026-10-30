@@ -169,6 +169,14 @@ function Test-SkateRustShortcut([string]$Exe, [string]$RustPath) {
   return $target -ieq ($RustPath.TrimEnd('\') + '\RustClient.exe')
 }
 
+# A receipt for one Steam library must never authorize cleanup in another.
+# Historical receipts did not record a folder and were written only for the C: path.
+function Test-SkateRecoveryFolder([string[]]$Receipt, [string]$RustPath) {
+  $folders = @($Receipt | Where-Object { $_.StartsWith('rust ') })
+  if ($folders.Count -eq 0) { return $RustPath -ieq 'C:\Program Files (x86)\Steam\steamapps\common\Rust' }
+  return $folders.Count -eq 1 -and $folders[0].Substring(5) -ieq $RustPath
+}
+
 function Save-SkateLogSnapshot([string]$RustPath, [string]$ProbePath, [string]$Reason = 'before-launch') {
   $sources = @('BepInEx/plugins/skate.log', 'BepInEx/LogOutput.log', 'BepInEx/ErrorLog.log')
   $present = @($sources | Where-Object { Test-Path -LiteralPath (Join-Path $RustPath $_) -PathType Leaf })

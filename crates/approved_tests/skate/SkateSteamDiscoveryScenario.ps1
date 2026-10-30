@@ -4,50 +4,51 @@
 param([string]$Diagnostics = "$PSScriptRoot/../../../mods/rust/client/tools/diagnostics.ps1")
 $ErrorActionPreference = 'Stop'
 . $Diagnostics
-$script:files = @{}; $script:registry = @{}; $script:passed = 0; $script:failed = 0
+$fixtures = @{Files=@{}; Registry=@{}}; $script:passed = 0; $script:failed = 0
 function Test-Path {
-  param($LiteralPath, $PathType, $ErrorAction)
+  param([Alias('Path')]$LiteralPath, $PathType, $ErrorAction)
+  if ($null -eq $LiteralPath) { return $false }
   if ($LiteralPath -like 'X:*') { throw 'Drive unavailable' }
-  return $script:files.ContainsKey($LiteralPath.Replace('\\', '\'))
+  return $fixtures.Files.ContainsKey($LiteralPath.Replace('\\', '\'))
 }
 function Get-ItemProperty {
   param($Path, $ErrorAction)
-  if (-not $script:registry.ContainsKey($Path)) { throw 'Registry key unavailable' }
-  return [pscustomobject]$script:registry[$Path]
+  if (-not $fixtures.Registry.ContainsKey($Path)) { throw 'Registry key unavailable' }
+  return [pscustomobject]$fixtures.Registry[$Path]
 }
 function Get-Content {
   param($LiteralPath, [switch]$Raw, $Encoding, $ErrorAction)
-  if (-not $script:files.ContainsKey($LiteralPath) -or $script:files[$LiteralPath] -eq '!unreadable!') { throw 'File unavailable' }
-  $text = $script:files[$LiteralPath]
+  if (-not $fixtures.Files.ContainsKey($LiteralPath) -or $fixtures.Files[$LiteralPath] -eq '!unreadable!') { throw 'File unavailable' }
+  $text = $fixtures.Files[$LiteralPath]
   if ($Raw) { return $text }
   return $text -split "`n"
 }
 function Assert($Condition, $Message) { if (-not $Condition) { throw $Message } }
 function Scenario($Label, [scriptblock]$Body) {
-  $script:files = @{}; $script:registry = @{}
+  $fixtures.Files = @{}; $fixtures.Registry = @{}
   try { & $Body; $script:passed++; Write-Host "PASS $Label" }
-  catch { $script:failed++; Write-Host "FAIL ${Label}: $_" }
+  catch { $script:failed++; Write-Host "FAIL ${Label}: $_ $($_.ScriptStackTrace)" }
 }
 $default = 'C:\Program Files (x86)\Steam'; $other = 'D:\Steam'; $library = 'E:\SteamLibrary'
 function Add-Rust($Library, $Manifest = '"AppState" { "appid" "252490" "installdir" "Rust" "buildid" "12345" }', $Directory = 'Rust') {
-  $script:files["$Library\steamapps\appmanifest_252490.acf"] = ($Manifest -replace '\s+(?="(?:appid|installdir|buildid|nested)"|})', "`n")
-  $script:files["$Library\steamapps\common\$Directory\RustClient.exe"] = ''
+  $fixtures.Files["$Library\steamapps\appmanifest_252490.acf"] = ($Manifest -replace '\s+(?="(?:appid|installdir|buildid|nested)"|})', "`n")
+  $fixtures.Files["$Library\steamapps\common\$Directory\RustClient.exe"] = ''
 }
-function Add-Library($Text) { $script:files["$default\steamapps\libraryfolders.vdf"] = $Text }
+function Add-Library($Text) { $fixtures.Files["$default\steamapps\libraryfolders.vdf"] = $Text }
 Scenario 'existing C installation keeps identical paths' {
   Add-Rust $default
   $r = Get-SkateRustFolder
   Assert ($r.Found -and $r.Rust -eq "$default\steamapps\common\Rust" -and $r.Acf -eq "$default\steamapps\appmanifest_252490.acf") 'C paths changed'
 }
 Scenario 'HKCU Steam wins over stale C executable' {
-  $script:files["$default\steam.exe"] = ''; $script:files["$other\steam.exe"] = ''
-  $script:registry['HKCU:\Software\Valve\Steam'] = @{SteamPath='D:/Steam/'}
+  $fixtures.Files["$default\steam.exe"] = ''; $fixtures.Files["$other\steam.exe"] = ''
+  $fixtures.Registry['HKCU:\Software\Valve\Steam'] = @{SteamPath='D:/Steam/'}
   Assert ((Get-SkateSteamFolder) -eq $other) 'Ignored current user Steam'
 }
 foreach ($key in 'HKLM:\SOFTWARE\WOW6432Node\Valve\Steam','HKLM:\SOFTWARE\Valve\Steam') {
   Scenario "machine registry fallback $key" {
-    $script:registry['HKCU:\Software\Valve\Steam'] = @{SteamPath='X:/Missing'}
-    $script:registry[$key] = @{InstallPath=$other}; $script:files["$other\steam.exe"] = ''
+    $fixtures.Registry['HKCU:\Software\Valve\Steam'] = @{SteamPath='X:/Missing'}
+    $fixtures.Registry[$key] = @{InstallPath=$other}; $fixtures.Files["$other\steam.exe"] = ''
     Assert ((Get-SkateSteamFolder) -eq $other) 'Machine fallback missed'
   }
 }
@@ -72,7 +73,7 @@ Scenario 'unreadable library index does not hide default Rust' {
 }
 Scenario 'unreadable first manifest does not hide second Rust' {
   Add-Library '"libraryfolders" { "1" { "path" "E:\\SteamLibrary" } }'
-  $script:files["$default\steamapps\appmanifest_252490.acf"] = '!unreadable!'; Add-Rust $library
+  $fixtures.Files["$default\steamapps\appmanifest_252490.acf"] = '!unreadable!'; Add-Rust $library
   Assert ((Get-SkateRustFolder).Found) 'Unreadable manifest aborted search'
 }
 Scenario 'no installed Rust is explicit' { Assert (-not (Get-SkateRustFolder).Found) 'False detection' }
@@ -118,6 +119,26 @@ Scenario 'shortcut suffix and arguments cannot masquerade as selected client' {
   Assert (-not (Test-SkateRustShortcut '"E:\Rust\RustClient.exe.bak"' 'E:\Rust')) 'Suffix accepted'
   Assert (-not (Test-SkateRustShortcut '"E:\Rust\RustClient.exe" --other' 'E:\Rust')) 'Arguments accepted as executable'
 }
+Scenario 'bound cleanup receipt accepts only its original library' {
+  Assert (Test-SkateRecoveryFolder @('rust E:\SteamLibrary\steamapps\common\Rust','file HASH winhttp.dll') 'E:\SteamLibrary\steamapps\common\Rust') 'Matching receipt rejected'
+  Assert (-not (Test-SkateRecoveryFolder @('rust E:\SteamLibrary\steamapps\common\Rust') 'C:\Program Files (x86)\Steam\steamapps\common\Rust')) 'Another library accepted'
+  Assert (-not (Test-SkateRecoveryFolder @('rust E:\Rust','rust E:\Rust') 'E:\Rust')) 'Ambiguous receipt accepted'
+}
+Scenario 'legacy cleanup receipt remains valid only for historical C folder' {
+  Assert (Test-SkateRecoveryFolder @('put there yesterday','file HASH winhttp.dll') "$default\steamapps\common\Rust") 'Historical C cleanup broken'
+  Assert (-not (Test-SkateRecoveryFolder @('put there yesterday') 'E:\Rust')) 'Unbound receipt accepted outside historical path'
+}
+Scenario 'cleanup preserves another-library receipt even if selected folder is empty' {
+  $savedLookup = ${function:Get-SkateRustFolder}
+  function Get-SkateRustFolder { return @{Found=$true; Rust='C:\Program Files (x86)\Steam\steamapps\common\Rust'} }
+  function Get-Process { param($Name, $ErrorAction) }
+  function Remove-Item { throw 'Cleanup tried to delete another-library receipt' }
+  $fixtures.Files["$HOME\Downloads\claude-loader-probe\loader-in-rust-folder.txt"] = 'rust E:\SteamLibrary\steamapps\common\Rust'
+  try {
+    $output = & (Join-Path (Split-Path $Diagnostics) 'clean.ps1')
+    Assert (("$output") -like '*ABORT*another Rust folder*') 'Cleanup did not verify receipt binding first'
+  } finally { Set-Item Function:Get-SkateRustFolder $savedLookup }
+}
 Scenario 'cleanup preserves receipt when library unavailable' {
   $savedLookup = ${function:Get-SkateRustFolder}
   function Get-SkateRustFolder { return @{Found=$false; Rust='X:\Missing'} }
@@ -148,7 +169,7 @@ if ([Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT) {
       [IO.File]::WriteAllText((Join-Path $rustLibrary 'steamapps/common/Rust/RustClient.exe'), '')
       [IO.File]::WriteAllText((Join-Path $steamRoot 'steamapps/libraryfolders.vdf'), ('"libraryfolders" { "1" { "path" "' + $rustLibrary.Replace('\','\\') + '" } }'), (New-Object Text.UTF8Encoding($false)))
       [IO.File]::WriteAllText((Join-Path $rustLibrary 'steamapps/appmanifest_252490.acf'), '"AppState" { "appid" "252490" "installdir" "Rust" "buildid" "12345" }')
-      $script:registry['HKCU:\Software\Valve\Steam'] = @{SteamPath=$steamRoot}
+      $fixtures.Registry['HKCU:\Software\Valve\Steam'] = @{SteamPath=$steamRoot}
       $r = Get-SkateRustFolder
       Assert ($r.Found -and $r.Rust -eq (Join-Path $rustLibrary 'steamapps\common\Rust')) 'Real Windows discovery failed'
       $missingDrive = @('Z','Y','X','W' | Where-Object { -not (Get-PSDrive $_ -ErrorAction SilentlyContinue) }) | Select-Object -First 1
