@@ -97,6 +97,12 @@ def sample(controls,s,f):
    horizontal=unit(np.array([offset[0],0.,offset[2]]));goal=horizontal*math.sqrt(max(0,reach*reach-height*height))+UP*height
    target=shoulder+offset*(1-weight)+goal*weight
    j[side+'Elbow']=limb(shoulder,target,.29,.27,unit(rel[side+'Elbow']-rel[side+'Shoulder']));j[side+'Hand']=target
+ # Correct this take's free-body metric placement as one rigid pickup. The
+ # independently rotating board must not cut through a free sole. Both feet,
+ # hips, torso and arms move together; source knee shapes are unchanged.
+ pickup=s['freeRiderPickup'];a,b,c,e=pickup['window']
+ amount=pickup['height']*smooth((f-a)/(b-a))*(1-smooth((f-c)/(e-c)))
+ for key in j:j[key]+=UP*amount
  directions=dict(PelvisForward=heading,PelvisUp=UP,ChestForward=forward,ChestUp=up,HeadForward=gaze)
  contacts=3 if f<s['rearSoleReleaseFrame']else 1 if f<s['frontSoleReleaseFrame']else 0;phase='load'if f<s['popFrame']else'pop'if f<s['airFrame']else'air'
  if f>=s['frontCatchFrame']:contacts|=1;phase='catch'
@@ -108,6 +114,8 @@ def sample(controls,s,f):
 def main():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument('--body',type=Path,default=ASSET/'captured-body.json');p.add_argument('--constraints',type=Path,default=ASSET/'nollie360-constraints.json');p.add_argument('--output',required=True,type=Path);a=p.parse_args();raw=a.body.read_bytes();controls=json.loads(raw);s=json.loads(a.constraints.read_text())
  if hashlib.sha256(raw).hexdigest()!=s['sourceBodySha256']:raise ValueError('Nollie360 own body hash mismatch')
+ a0,b0,c0,e0=s['freeRiderPickup']['window']
+ if not s['frontSoleReleaseFrame']<a0<b0<=c0<e0<=s['frontCatchFrame'] or not 0<=s['freeRiderPickup']['height']<=.12:raise ValueError('Invalid free-only Nollie rider pickup')
  first,end,fps=s['firstSourceFrame'],s['lastSourceFrame'],s['sourceFps'];duration=(end-first)/fps
  moments=[s[k]for k in ['popFrame','noseStrikeFrame','frontSoleReleaseFrame','rearSoleReleaseFrame','rearInstepReleaseFrame','airFrame','frontCatchFrame','rearCatchFrame','landFrame','recoveryFrame']]
  times=np.unique(np.r_[np.linspace(first,end,round(duration*60)+1),moments,s['frontSoleReleaseFrame']+s['pressFadeFrames']]);frames=[sample(controls,s,float(f))for f in times]

@@ -2477,7 +2477,8 @@
       "Uniform source Pop4592 to Land4609 clock; wood strike4594 and source upper-balance directions are retained separately.",
       "Minimum native flight .528 coupled model-hull envelope is presentation-only; physics/scoring unchanged.",
       "Nose/front Left support and first catch are source-led authored roles; exact sole-touch depth/frame is blurred/occluded. The old Right-only masks are not reused.",
-      "Visible lead wrist height during4592\u20134605 is reconstructed from this take; old standing-root arm projection dropped it below the filmed shoulder-level balance. Own horizontal direction, arm reach and far-arm motion retained."
+      "Visible lead wrist height during4592\u20134605 is reconstructed from this take; old standing-root arm projection dropped it below the filmed shoulder-level balance. Own horizontal direction, arm reach and far-arm motion retained.",
+      "Free-body metric pickup rebuilt coherently from4602 whole-shoe/real-deck separation, not claimed as measured3D translation. Board/physics unchanged; no runtime extra arc."
     ],
     "sourceAuthor": "The Berrics \u2014 BATB multi-trick reference; striped-shirt Nollie360 take",
     "sourceRights": "Reference footage remains with its owners and is not distributed by this source repository. Source poses and reconstructed motion remain unreviewed.",
@@ -2520,5 +2521,15 @@
       4625,
       0
     ]
-  ]
+  ],
+  "freeRiderPickup": {
+    "height": 0.1,
+    "window": [
+      4596,
+      4601,
+      4602,
+      4607
+    ],
+    "provenance": "Own free pelvis and both ankles move together during source collection. The old metric placement cut through the correctly oriented deck; one exact frozen whole-shoe witness at source4602 requires9.97cm for conservative15mm world-up separation. No shape/knee change; source nose contact, instep, Catch and landing positions are preserved."
+  }
 }
