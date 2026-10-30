@@ -698,10 +698,7 @@ namespace Shortcut.RustMod
             // reach pose could put a knee below the deck and leave the chest upright.
             // Ground-grab adapters have no airborne contact state and retain their pose.
             // TryCreate blends this held endpoint with the free endpoint once.
-            bool frontsideAirFold = namedGrab && input.GrabKind == SkateGrabKind.Frontside &&
-                input.Contact.Initialized && input.Contact.Airborne && input.Contact.GrabKind == SkateGrabKind.Frontside &&
-                input.Contact.GrabWeight > 0 && !input.BoardPath.Known &&
-                input.Handplant <= .001 && input.FootPlant <= .001;
+            bool frontsideAirFold = namedGrab && FrontsideAirFold(input);
             var grip = namedGrab ? Grip(input.GrabKind, backIsLeft, input.Stance == SkateStance.Regular) : default(GrabGrip);
             var definition = namedGrab ? SkateGrabCatalog.Get(input.GrabKind) : default(SkateGrabDefinition);
             var deckForward = input.DeckForward.LengthSquared > 0.5 ? input.DeckForward : forward;
@@ -1407,6 +1404,14 @@ namespace Shortcut.RustMod
             return rail + outwards * definition.HandOutset + up * definition.HandRise;
         }
 
+        private static bool FrontsideAirFold(SkateRiderInput input)
+        {
+            return input.Airborne && !input.Bailed && input.GrabKind == SkateGrabKind.Frontside &&
+                input.DeckFrame.Initialized && input.Contact.Initialized && input.Contact.Airborne &&
+                input.Contact.GrabKind == SkateGrabKind.Frontside && input.Contact.GrabWeight > 0 &&
+                !input.BoardPath.Known && input.Handplant <= .001 && input.FootPlant <= .001;
+        }
+
         // Run after contact/secondary solving: those stages rebuild the head from the rolled chest.
         // Keep the measured neck length and bound gaze yaw; never move a grip or foot contact.
         public static bool TryReferenceGrabLook(SkateRiderRig rig, SkateRiderInput input, SkateRiderPose source,
@@ -1438,6 +1443,17 @@ namespace Shortcut.RustMod
             var direction = Unit(lookDirection);
             double down = direction.LengthSquared > .5 ? Math.Max(0, Math.Min(.35, -SkateVector.Dot(direction, up))) : 0;
             var targetUp = Unit(up + ahead * (.10 + .35 * down));
+            if (FrontsideAirFold(input))
+            {
+                // Keep the existing velocity look, but do not lever the neck back
+                // to world-up above this deeply folded, source-led FS torso.
+                var torsoUp = Unit(source.ChestUp);
+                var axis = Cross(torsoUp, targetUp);
+                double turn = Math.Atan2(axis.Length, SkateVector.Dot(torsoUp, targetUp));
+                double neckTurn = 30 * Math.PI / 180;
+                if (turn > neckTurn && axis.LengthSquared > .000000001)
+                    targetUp = RotateAxis(torsoUp, Unit(axis), neckTurn);
+            }
             // A prior grab look may already own an independent head axis.
             // Blend from that result, never restart at the rolled chest.
             var originalUp = Unit(source.Head - source.Neck);
