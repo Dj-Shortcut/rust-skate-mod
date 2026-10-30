@@ -507,7 +507,7 @@ public static class SkateHud
         "hold back-left / back-right, flick across to the opposite front: #Varial Kickflip / #Varial Heelflip",
         "from the left / right, roll round to the back, flick to the opposite front: #360 Flip / #Laser Flip",
         "from the right / left, roll round to the back, flick to the same front: #360 Hardflip / #360 Inward Heelflip",
-        "back, roll 45-60 degrees to the right / left, flick straight forward: #Hardflip / #Inward Heelflip",
+        "back, hook 45-60 degrees to the right / left, flick forward to that side: #Hardflip / #Inward Heelflip",
         "LB + popped stick gesture: #Impossible   RB: #Front Foot Impossible   LB + RB: #Underflip (no triggers)",
         "part way back / forward for a moment: #Manual / #Nose Manual, flick out of it to pop",
     };
