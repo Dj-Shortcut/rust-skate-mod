@@ -49,24 +49,42 @@ def double_upper(row, control, source_frame):
     if not weight:
         return
     joints = {k: np.array(v) for k, v in row['joints'].items()}
+    old_arms = {side: (unit(joints[side + 'Elbow'] - joints[side + 'Shoulder']),
+                       unit(joints[side + 'Hand'] - joints[side + 'Elbow']))
+                for side in ('Left', 'Right')}
     old_up = unit(joints['Neck'] - joints['Pelvis'])
-    # Extend the existing noseward fold. ChestForward is the rider's toe-facing
-    # axis and can be crosswise to this lean; adding pitch around it changes
-    # the lean's azimuth instead of gathering the torso over the same knees.
-    forward = old_up - UP * np.dot(old_up, UP)
-    if np.linalg.norm(forward) < 1e-8:
-        forward = np.array(row['dirs']['ChestForward'])
-        forward = forward - UP * np.dot(forward, UP)
+    # Build an anatomical forward fold, preserving the captured heading.
+    # Extending the monocular spine's lean alone can amplify a side-bend and
+    # lower one shoulder instead of folding the chest over the gathered knees.
+    old_forward = np.array(row['dirs']['ChestForward'])
+    old_forward = unit(old_forward - old_up * np.dot(old_forward, old_up))
+    old_right = unit(np.cross(old_up, old_forward))
+    forward = unit(old_forward - UP * np.dot(old_forward, UP))
     angle = math.radians(control['targetTorsoFoldDegrees'])
-    target_up = unit(unit(forward) * math.sin(angle) + UP * math.cos(angle))
+    target_up = forward * math.sin(angle) + UP * math.cos(angle)
+    target_forward = forward * math.cos(angle) - UP * math.sin(angle)
+    target_right = unit(np.cross(target_up, target_forward))
+    full_rotation = (np.column_stack((target_right, target_up, target_forward)) @
+                     np.column_stack((old_right, old_up, old_forward)).T)
     rotation = qmatrix(slerp([0., 0., 0., 1.],
-                            matrix_quat(rotate_between(old_up, target_up)), weight))
+                            matrix_quat(full_rotation), weight))
     new_up = rotation @ old_up
     anchor = joints['Pelvis']
     for name in UPPER:
         joints[name] = anchor + rotation @ (joints[name] - anchor)
     row['dirs']['ChestUp'] = (rotation @ np.array(row['dirs']['ChestUp'])).tolist()
-    row['dirs']['ChestForward'] = (rotation @ np.array(row['dirs']['ChestForward'])).tolist()
+    row['dirs']['ChestForward'] = (rotation @ old_forward).tolist()
+    # The White Double's hands balance out/down. The ordinary take's arm
+    # gesture is different; rigidly folding it would lift a wrist above the
+    # head. Use this same window, with both original segment lengths fixed.
+    for side, sign in (('Left', -1), ('Right', 1)):
+        directions = []
+        for previous, key in zip(old_arms[side], ('upperDirection', 'foreDirection')):
+            right, up, ahead = control['armBalance'][key]
+            target = unit(target_right * (right * sign) + UP * up + forward * ahead)
+            directions.append(unit(previous * (1 - weight) + target * weight))
+        joints[side + 'Elbow'] = joints[side + 'Shoulder'] + directions[0] * .29
+        joints[side + 'Hand'] = joints[side + 'Elbow'] + directions[1] * .27
     # Reconstruct the visible downward gaze without levering the head back
     # from the more folded torso. The existing neck segment stays fixed-length.
     gaze = unit(np.array(row['board']['origin']) - joints['Head'])
@@ -195,7 +213,7 @@ def main():
                 authoredDouble=control['provenance'], lateFreeReturnStartSourceFrame=control['returnStartSourceFrame'],
                 authoredCatchRecovery='Distinct authored late return/catch; ordinary273 catch is not used. Existing landing/root recovery is retained.',
                 authoredFreeAirDepth='Dedicated board-close free interval accepts every roll phase; no root/board lift or measured Double depth claim.',
-                authoredUpperReconstruction='After265 the shared upper group adds the verified Double mid-Air fold and downward board gaze; early source prefix unchanged.',
+                authoredUpperReconstruction='After265 an anatomical forward fold, source-led out/down balance arms and bounded downward gaze reconstruct the verified Double silhouette in one window; early source prefix unchanged.',
                 sourceClockMeaning='254-based shared ordinary Kick control clock. Double reference frames are qualitative, a different take; no same-take or physical edit-time mapping.')
     clip = dict(base, metadata=meta, frames=frames, events=events)
     packed = encode_pack([clip])  # Validate before replacing either prior output.

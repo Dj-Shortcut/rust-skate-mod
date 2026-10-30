@@ -24,9 +24,12 @@ precedes Catch274.2; the old ordinary273 Catch is removed. The native adapter
 must withhold catch ownership while actual winding is unfinished.
 
 The verified Double has a more folded mid-Air torso. A short authored upper
-rotation after265 extends the existing noseward pelvis-to-neck plane toward a
-70-degree fold, retaining arm-chain lengths and a bounded downward head/neck
-frame. It does not rotate the fold toward the crosswise toe-facing axis.
+rotation after265 reconstructs a 70-degree anatomical forward fold from the
+chest frame, retaining its heading, arm-chain lengths and a bounded downward
+head/neck frame. Extending the old monocular lean alone would amplify side-bend.
+In that same window, the arms use the reference's out/down balance shape with
+the original fixed segment lengths. Carrying the different ordinary-take arm
+gesture rigidly through this fold would incorrectly raise a hand above the head.
 The pelvis/carrier trajectory is unchanged;
 this is not a generic deeper squat. Source depth, the canonical stance mapping
 and these local upper/foot controls are authored reconstruction, not captured

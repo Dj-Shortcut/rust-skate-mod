@@ -17,6 +17,10 @@
   "upperFoldWindow": [265, 266, 269.5, 274.2],
   "targetTorsoFoldDegrees": 70,
   "maximumNeckTurnDegrees": 30,
+  "armBalance": {
+    "upperDirection": [0.98, -0.15, 0.12],
+    "foreDirection": [0.78, -0.60, 0.16]
+  },
   "reference": {
     "url": "https://www.youtube.com/watch?v=_oRoo1x1uzM&t=484",
     "uploader": "The Berrics",
