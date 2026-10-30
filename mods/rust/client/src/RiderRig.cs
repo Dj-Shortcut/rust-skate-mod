@@ -1603,7 +1603,7 @@ public static class RiderRig
         if (!SkateRide.Kickturning || SkateRide.KickturnSetup <= 0) return false;
         Vector3 axle; RaycastHit ground; string error = "Kickturn measured support is unavailable.";
         SkateRiderPose prepared; SkateVector lu, ru;
-        if (SkateRig.LocalT != null && SkateFootContacts.Ready &&
+        if (SkateRig.LocalT != null && SkateFootContacts.Ready && (SkateRig.LocalT.position - SkateRide.Position).sqrMagnitude <= .5625f &&
             SkateRide.TryObservedGround(SkateRide.Position, out ground) && ground.m_Normal.y >= .9995f &&
             SkateBoard.TryKickturnAxle(SkateRide.KickturnSide, out axle))
         {
