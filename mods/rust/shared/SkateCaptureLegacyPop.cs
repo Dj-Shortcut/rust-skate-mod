@@ -86,6 +86,7 @@ namespace Shortcut.RustMod
                 !Finite(input.Pose.Pelvis.LengthSquared) || !SkateBoardPath.Valid(carrier) || !carrier.Initialized || carrier.Up.Y < .98 ||
                 leftFitter == null || rightFitter == null)
             { error = "Invalid observed legacy pop carrier."; return false; }
+            if (elapsed >= RootJoinSeconds) return true;
             var up = groundNormal; double gate = SkateFlipFlick.EdgeReleaseSeconds;
             double rootAge = elapsed;
             if (sourceCoupledRoot && sourceSeconds.HasValue)
