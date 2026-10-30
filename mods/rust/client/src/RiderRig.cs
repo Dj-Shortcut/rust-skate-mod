@@ -1280,8 +1280,10 @@ public static class RiderRig
             }
             chargeEntryShown = ApplyChargeEntry(chargeRoute, ordinaryCharging, ref pose, ref leftSole, ref rightSole);
             if (chargeEntryShown) { Posed = pose; pinHips = pinLeft = pinRight = true; }
+            var kickturnPosed = ApplyKickturnPose(ref pose, ref leftSole, ref rightSole);
+            if (kickturnPosed) { Posed = pose; pinHips = pinLeft = pinRight = true; }
             Shown = pose;
-            Ease(pose, plane, toToes, upV, new Vector3((float)fx, (float)fy, (float)fz), now, frameSeconds, pinL, pinR, chargeSetupGrounded || chargeEntryShown);
+            Ease(pose, plane, toToes, upV, new Vector3((float)fx, (float)fy, (float)fz), now, frameSeconds, pinL, pinR, chargeSetupGrounded || chargeEntryShown || kickturnPosed);
             if (!chargeSetupGrounded && !chargeEntryShown && !wall && !bodyFlip && !SkateActions.Owns && !SkateOldschoolRide.Active && !dropping) Shape(upV);
             // Pitch/grind balance shapes the free arm, never the hand already holding the board.
             if (pinL) { joint[LHandJ] = V(pose.LeftHand); joint[LElbowJ] = V(pose.LeftElbow); }
@@ -1589,6 +1591,29 @@ public static class RiderRig
             Say("feet: " + footStatus + (string.IsNullOrEmpty(FootSupportError) ? "" : " | fit refused: " + FootSupportError));
         }
         HeadPosed = Head.position;
+    }
+
+    private static bool ApplyKickturnPose(ref SkateRiderPose pose, ref Vector3 leftUp, ref Vector3 rightUp)
+    {
+        if (!SkateRide.Kickturning || SkateRide.KickturnSetup <= 0) return false;
+        Vector3 axle; RaycastHit ground; string error = "Kickturn measured support is unavailable.";
+        SkateRiderPose prepared; SkateVector lu, ru;
+        if (SkateRig.LocalT != null && SkateFootContacts.Ready &&
+            SkateRide.TryObservedGround(SkateRide.Position, out ground) && ground.m_Normal.y >= .9995f &&
+            SkateBoard.TryKickturnAxle(SkateRide.KickturnSide, out axle))
+        {
+            var deck = SkateBoard.PoseFor(SkateRig.LocalT);
+            var pivot = deck.Point(new SkateVector(axle.x, axle.y - DeckTop, axle.z));
+            if (SkateKickturnPose.TryApply(Rig, pose, deck, V(ground.m_Normal), pivot, SkateRide.KickturnSide,
+                SkateRide.KickturnSetup, V(leftUp), V(rightUp), SkateFootContacts.LeftFitter, SkateFootContacts.RightFitter,
+                out prepared, out lu, out ru, out error))
+            {
+                pose = prepared; leftUp = V(lu); rightUp = V(ru); FootSupportError = "";
+                SkateRide.ConfirmKickturnPose(SkateRig.LocalT, SkateRide.KickturnSide, SkateKeys.InputEpoch, SkateFootContacts.Version);
+                return true;
+            }
+        }
+        FootSupportError = error; SkateRide.RefuseKickturnPose(); return false;
     }
 
     // Calibration is per visible shoe mesh. Carry that same model adaptation

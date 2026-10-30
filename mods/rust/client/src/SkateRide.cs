@@ -28,14 +28,17 @@ public static class SkateRide
     public const float SteerIn = 7f, SteerOut = 10f, SteerStill = 0.35f, SteerFull = 2f;
     public static float SteerRate;
     // Low-speed axle pivots own a real movement step, never the manual score flag.
-    public const float KickturnSpeed = .95f, KickturnRate = 120f, KickturnLimit = 180f, KickturnLiftSeconds = .16f;
-    private static float kickturnLift, kickturnTurned;
+    public const float KickturnSpeed = .95f, KickturnRate = 120f, KickturnLimit = 180f, KickturnLiftSeconds = .16f, KickturnSetupSeconds = .22f;
+    private static float kickturnLift, kickturnTurned, kickturnSetup, kickturnPoseAt = -99f;
+    private static Transform kickturnPosePlayer;
+    private static int kickturnFootVersion = -1;
     private static int kickturnSide;
     private static uint kickturnEpoch;
     private static bool kickturnRelease, kickturnRearm, kickturnNose;
     public static int Kickturns;
     public static bool Kickturning { get { return Mode == RideMode.Ground && kickturnSide != 0; } }
     public static int KickturnSide { get { return kickturnSide; } }
+    public static float KickturnSetup { get { return KickturnCurve(kickturnSetup); } }
     public static float KickturnTip
     { get { return -kickturnSide * KickturnCurve(kickturnLift); } }
     private static bool strokeBack;
@@ -992,7 +995,23 @@ public static class SkateRide
     }
 
     private static void ResetKickturn()
-    { kickturnLift = kickturnTurned = 0f; kickturnSide = 0; kickturnRelease = kickturnRearm = false; }
+    { kickturnLift = kickturnTurned = kickturnSetup = 0f; kickturnSide = 0; kickturnRelease = kickturnRearm = false; kickturnPoseAt = -99f; kickturnPosePlayer = null; kickturnFootVersion = -1; }
+    // Only the current measured rider/sole solve can release the lift. A timer
+    // reaching its end does not prove that the rear foot and body arrived.
+    public static void ConfirmKickturnPose(Transform player, int side, uint epoch, int footVersion)
+    {
+        if (!Kickturning || kickturnSetup < 1 || side != kickturnSide || epoch != kickturnEpoch ||
+            player == null || player != SkateRig.LocalT || !SkateFootContacts.Ready || footVersion != SkateFootContacts.Version) return;
+        kickturnPosePlayer = player; kickturnFootVersion = footVersion; kickturnPoseAt = Time.realtimeSinceStartup;
+    }
+    public static void RefuseKickturnPose()
+    { if (Kickturning) { kickturnPoseAt = -99f; kickturnRelease = true; } }
+    private static bool KickturnPoseFresh()
+    {
+        var age = Time.realtimeSinceStartup - kickturnPoseAt;
+        return kickturnPosePlayer != null && kickturnPosePlayer == SkateRig.LocalT &&
+            SkateFootContacts.Ready && kickturnFootVersion == SkateFootContacts.Version && age >= 0 && age <= .12f;
+    }
     private static float KickturnCurve(float f) { return f * f * f * (10f + f * (-15f + 6f * f)); }
     private static float KickturnPhase(float visible)
     {
@@ -1049,16 +1068,32 @@ public static class SkateRide
             if (!KickturnSupport(side, out axle)) return;
             kickturnSide = side; kickturnEpoch = SkateKeys.InputEpoch; kickturnNose = SkateKeys.NoseManual;
             kickturnLift = KickturnPhase(Math.Abs(SkateBoard.Tip));
+            kickturnSetup = 0; kickturnPoseAt = -99f; kickturnPosePlayer = null; kickturnFootVersion = -1;
             kickturnTurned = 0; kickturnRelease = false; kickturnRearm = true; Kickturns++;
         }
         if (!KickturnSupport(kickturnSide, out axle)) { ResetKickturn(); return; }
         if (!intent || SkateKeys.NoseManual != kickturnNose || kickturnTurned >= KickturnLimit) kickturnRelease = true;
-        kickturnLift = Clamp(kickturnLift + (kickturnRelease ? -1 : 1) * dt / KickturnLiftSeconds, 0, 1);
-        if (kickturnLift <= 0) { kickturnSide = 0; kickturnTurned = 0; }
+        if (kickturnRelease)
+        {
+            kickturnLift = Math.Max(0, kickturnLift - dt / KickturnLiftSeconds);
+            // Keep the weight and tail foot until the front wheels are down.
+            if (kickturnLift == 0) kickturnSetup = Math.Max(0, kickturnSetup - dt / KickturnSetupSeconds);
+            if (kickturnSetup == 0) { kickturnSide = 0; kickturnTurned = 0; kickturnPoseAt = -99f; }
+            return;
+        }
+        if (kickturnSetup < 1)
+        {
+            // A pre-existing partial manual first settles, without a new pivot.
+            if (kickturnLift > 0) kickturnLift = Math.Max(0, kickturnLift - dt / KickturnLiftSeconds);
+            else kickturnSetup = Math.Min(1, kickturnSetup + dt / KickturnSetupSeconds);
+            return;
+        }
+        if (!KickturnPoseFresh()) { if (kickturnLift > 0) kickturnRelease = true; return; }
+        kickturnLift = Math.Min(1, kickturnLift + dt / KickturnLiftSeconds);
     }
     private static void MoveKickturn(float dt)
     {
-        if (!Kickturning || kickturnRelease || kickturnLift < 1f) return;
+        if (!Kickturning || kickturnRelease || kickturnLift < 1f || !KickturnPoseFresh()) return;
         Vector3 axle; if (!KickturnSupport(kickturnSide, out axle)) { ResetKickturn(); return; }
         var step = Math.Min(KickturnLimit - kickturnTurned, KickturnRate * dt * Math.Abs(KickturnSteer())) * Math.Sign(KickturnSteer());
         var nextYaw = Yaw + step;
