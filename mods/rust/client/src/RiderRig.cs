@@ -1074,6 +1074,7 @@ public static class RiderRig
                     if (Refusals++ == 0 || error != Error) Say("pose refused: " + error);
                     Error = error;
                     if (wall || bodyFlip) SkateRide.Bail();
+                    SkateRide.RefuseKickturnPose();
                     return;
                 }
                 if (WithoutPush++ == 0 || error != Error) Say("pose shown without the push: " + error);
@@ -1336,6 +1337,7 @@ public static class RiderRig
         {
             RestoreGrabFingers(lGrabFingers); RestoreGrabFingers(rGrabFingers);
             RestoreGrabHand(LHand, ref lGrabHand); RestoreGrabHand(RHand, ref rGrabHand);
+            SkateRide.RefuseKickturnPose();
             failed = true; Say("pose threw " + e.GetType().Name + ": " + e.Message);
         }
     }
