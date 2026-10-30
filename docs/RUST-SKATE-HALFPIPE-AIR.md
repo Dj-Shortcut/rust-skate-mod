@@ -17,6 +17,13 @@ plant or non-air mode cannot inherit this class. Flatground, grind exits, wall
 and independent actions keep their existing policy. Other ordinary free air
 still uses the estimated-apex world-up release; it is not reclassified here.
 
+A valid grab request during that natural vert departure starts the existing
+trick/scoring lifecycle without adding a pop or marking the rider as jumped.
+The existing action, flip, shove and planted-foot restrictions still apply;
+wall, body-flip and special-board owners cannot open this route. Releasing the
+grab retains its normal landing score, while holding it through contact still
+bails. An ordinary fall without this departure class remains unscored.
+
 `SkateRide.ViewNormal` supplies one common base for the board and rider's lower
 body; `RiderViewNormal` reads that same value. Existing ollie pitch, grab tweaks,
 flips and body flips remain relative rotations on top. Foot and grab contacts are

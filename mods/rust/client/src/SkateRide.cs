@@ -1450,7 +1450,13 @@ public static class SkateRide
             bodyLeft = body; TrickAir = true;
         }
         var spinAxis = carryingBoard || SkateSurfaceRide.BodyFlip.Known ? 0f : SpinAxis(left, dt);
-        Grab = TrickAir && !SkateActions.Owns && !SkateOldschoolRide.Active && !BoardPath.Active && !FootPlanted && Math.Abs(flipLeft) < 0.001f && Math.Abs(shoveLeft) < 0.001f ? SkateKeys.Grab : SkateGrabKind.None;
+        var grabReady = !SkateActions.Owns && !SkateOldschoolRide.Active && !BoardPath.Active && !FootPlanted && Math.Abs(flipLeft) < 0.001f && Math.Abs(shoveLeft) < 0.001f;
+        // A real vert departure needs no pop to become a grab trick. Start the
+        // existing scorer lifetime only on an eligible request; Jumped stays false.
+        if (!TrickAir && airViewVertDeparture && grabReady && SkateKeys.Grab != SkateGrabKind.None &&
+            !Handplant && !GroundGrab.Active && !SkateSurfaceRide.Active && !SkateSurfaceRide.BodyFlip.Known && !BoardPath.Known)
+            TrickAir = true;
+        Grab = TrickAir && grabReady ? SkateKeys.Grab : SkateGrabKind.None;
         SkateSurfaceRide.TickFlip(pos, dt, TimeToGround(), SkateKeys.BodyFlipRequest); if (Mode != RideMode.Air) return;
         CancelFlipFlickForOwner();
 
