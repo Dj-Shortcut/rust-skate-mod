@@ -39,6 +39,8 @@ Native avatar contact and Shadow gameplay remain separate gates.
 Existing contact entry/hold/release weights still own the pose. No input selection,
 physics, scoring, catch or landing guard changes.
 
+Active Weddle air gathers its knee bend planes toward the torso, independently of the twisted shoe toe axes. The former toe-driven poles could send the nose-side knee above and away from the back rather than into the compact Xbox hold. This is an authored reconstruction of the visible silhouette, not measured depth. Pelvis, upper body, board and all foot/wrist endpoints retain their existing solutions and contact blend; only the two knee bend planes change. The explicit positive airborne-contact gate excludes ground grabs, other grabs and other pose owners.
+
 `SkateRider.TryGrabHandFrame` exposes an optional wrist frame for the selected
 hand. `RiderRig` measures the actual avatar hand's finger direction and dorsal
 basis from its middle/index/little proximal bones, including mirrored mapping.

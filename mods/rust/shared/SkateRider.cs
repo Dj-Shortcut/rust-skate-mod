@@ -1045,12 +1045,25 @@ namespace Shortcut.RustMod
             var leftHip = leftHipBase + up * height;
             var rightHip = rightHipBase + up * height;
             SkateVector leftKnee, rightKnee;
+            var leftKneeAim = leftToeDir - pelvisRight * 0.15
+                + (input.Bailed ? travel * 2 : default(SkateVector));
+            var rightKneeAim = rightToeDir + pelvisRight * 0.15
+                + (input.Bailed ? travel * 2 : default(SkateVector));
+            if (WeddleAirTuck(input))
+            {
+                // The Xbox hold gathers the knees beneath the torso. A twisted
+                // shoe's toe direction must not send the nose-side knee away
+                // above the back. Keep every endpoint and solve the same limbs.
+                var gathered = facing + up * .6;
+                leftKneeAim = gathered + forward * (backIsLeft ? .25 : -.55) - pelvisRight * .1;
+                rightKneeAim = gathered + forward * (backIsLeft ? -.55 : .25) + pelvisRight * .1;
+            }
             if (!Limb(leftHip, leftAnkle, rig.ThighLength, rig.ShinLength,
                       (frontsideAirFold ? facing + up * .75 - pelvisRight * .1 :
-                       leftToeDir - pelvisRight * 0.15 + (input.Bailed ? travel * 2 : default(SkateVector))), floor, up, out leftKnee) ||
+                       leftKneeAim), floor, up, out leftKnee) ||
                 !Limb(rightHip, rightAnkle, rig.ThighLength, rig.ShinLength,
                       (frontsideAirFold ? facing + up * .75 + pelvisRight * .1 :
-                       rightToeDir + pelvisRight * 0.15 + (input.Bailed ? travel * 2 : default(SkateVector))), floor, up, out rightKnee))
+                       rightKneeAim), floor, up, out rightKnee))
             { error = "Skate rider legs cannot reach above the ground plane."; return false; }
 
             double chestYaw = input.Bailed ? bailYaw : (RidingChestYaw + (PushChestYaw - RidingChestYaw) * turn) * yawScale * Math.PI / 180;
@@ -1414,6 +1427,14 @@ namespace Shortcut.RustMod
             return input.Airborne && !input.Bailed && input.GrabKind == SkateGrabKind.Frontside &&
                 input.DeckFrame.Initialized && input.Contact.Initialized && input.Contact.Airborne &&
                 input.Contact.GrabKind == SkateGrabKind.Frontside && input.Contact.GrabWeight > 0 &&
+                !input.BoardPath.Known && input.Handplant <= .001 && input.FootPlant <= .001;
+        }
+
+        private static bool WeddleAirTuck(SkateRiderInput input)
+        {
+            return input.Airborne && !input.Bailed && input.GrabKind == SkateGrabKind.Weddle &&
+                input.DeckFrame.Initialized && input.Contact.Initialized && input.Contact.Airborne &&
+                input.Contact.GrabKind == SkateGrabKind.Weddle && input.Contact.GrabWeight > 0 &&
                 !input.BoardPath.Known && input.Handplant <= .001 && input.FootPlant <= .001;
         }
 
