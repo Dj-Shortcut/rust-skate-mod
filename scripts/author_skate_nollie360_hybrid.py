@@ -38,7 +38,11 @@ def attached(s,f,side):
  x,z=e['ankle'][0],e['ankle'][2]
  if side=='Left':x+=.026*u # Front foot scoops the actual nose toward toeside.
  else:z=z*(1-u)-.25*u # Rear instep moves from the known charge middle to tail.
- return deck_shoe(s,o,r,x,z,65 if side=='Left'else 85,.003)
+ target,fr=deck_shoe(s,o,r,x,z,65 if side=='Left'else 85,.003)
+ up=unit(e['up']);forward=unit(np.array(e['toe'])-np.array(e['ankle'])+up*.07)
+ seedframe=r@np.column_stack([unit(np.cross(up,forward)),up,forward]);seed=o+r@(np.array(e['ankle'])-UP*.092)
+ weight=smooth((f-s['popFrame'])/1.3)
+ return seed*(1-weight)+target*weight,orientation(seedframe,fr,weight)
 
 def instep(s,f):
  o,r,_,_=board(s,f);shape=s['hybrid']['popContact'];p=np.array(s['instepDeckFeature']);kick=max(0,abs(p[2])-shape['kickStart'])
