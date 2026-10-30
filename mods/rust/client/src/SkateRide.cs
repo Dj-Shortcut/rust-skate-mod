@@ -339,6 +339,7 @@ public static class SkateRide
 
     public static void Mount(Rigidbody b, float yaw)
     {
+        observedSupportValid = false;
         body = b; Yaw = yaw; flatgroundFlight = initialFlipFlick = false; flightGravity = AirGravity;
         try
         {
@@ -380,6 +381,7 @@ public static class SkateRide
 
     public static void Dismount(string reason)
     {
+        observedSupportValid = false;
         SkateRig.ReleaseRootProxy();
         if (Mode == RideMode.Off) return;
         if (SkateOldschoolRide.Active) SkateBoard.ReleaseIndependent(SkateOldschoolRide.Frame, V(SkateOldschoolRide.State.Velocity));
@@ -405,7 +407,10 @@ public static class SkateRide
 
     public static void Step()
     {
+        observedSupportValid = false;
         if (Mode == RideMode.Off) return;
+        var supportStep = Steps;
+        var completed = false;
         try
         {
             if (body == null) { Dismount("the movement body is gone"); return; }
@@ -499,8 +504,15 @@ public static class SkateRide
                 ViewNormal = (ViewNormal + (target - ViewNormal) * 0.3f).normalized;
             }
             SkateKeys.EndStep();
+            // Sense stamped the step being executed. Publish only that hit to
+            // the completed counter consumed by the following render frames.
+            if (observedSupportValid && observedSupportStep == supportStep && Steps == supportStep + 1)
+                observedSupportStep = Steps;
+            else observedSupportValid = false;
+            completed = true;
         }
         catch (Exception e) { Dismount("the step threw"); Out.Say("SKATE step threw " + e.GetType().Name + ": " + e.Message); }
+        finally { if (!completed) observedSupportValid = false; }
     }
 
     // A wall the next step would reach. The physics engine moves the player's capsule one step at
