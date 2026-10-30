@@ -128,7 +128,7 @@ def sample(source, s, sf):
         pole = original[side+'Knee']-old_hip-axis*np.dot(original[side+'Knee']-old_hip, axis)/np.dot(axis, axis)
         if side == 'Right':
             # The FS recovery witness keeps the rear shin steep, rather than
-            # kneeling tailward. Feet, hips and pre-Land chains stay unchanged.
+            # kneeling tailward. Pre-Land chains and all foot targets stay unchanged.
             if recovery > 0:
                 pole = unit(pole)*(1-recovery)+unit(frame[:, 2])*recovery
         joints[side+'Knee'] = limb(hip, ankle, .44, .43, pole)
