@@ -121,7 +121,7 @@ function Find-Shortcut($name) {
       $app = $t.Substring($n, $t.IndexOf([char]0, $n) - $n)
       if ($app -ne $name) { continue }
       $e = $t.IndexOf($exeKey, $n, [StringComparison]::OrdinalIgnoreCase); $exe = ''
-      if ($e -ge 0) { $e += $exeKey.Length; $exe = $t.Substring($e, $t.IndexOf([char]0, $e) - $e) }
+      if ($e -ge 0) { $e += $exeKey.Length; $exe = [Text.Encoding]::UTF8.GetString([Text.Encoding]::GetEncoding(28591).GetBytes($t.Substring($e, $t.IndexOf([char]0, $e) - $e))) }
       return $exe
     }
   }

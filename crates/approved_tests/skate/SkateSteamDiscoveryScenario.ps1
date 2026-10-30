@@ -160,6 +160,56 @@ Scenario 'real UTF-8 KeyValues file preserves Unicode directory' {
 }
 if ([Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT) {
   Remove-Item Function:Test-Path
+  Scenario 'production recovery receipt preserves Unicode, C default and historical ASCII' {
+    $tokens = $null; $errors = $null; $tools = Split-Path $Diagnostics
+    $session = [Management.Automation.Language.Parser]::ParseFile((Join-Path $tools 'session.ps1'), [ref]$tokens, [ref]$errors)
+    $write = @($session.FindAll({ param($n) $n -is [Management.Automation.Language.CommandAst] -and $n.GetCommandName() -eq 'Set-Content' -and $n.Extent.Text -like 'Set-Content -LiteralPath $mark *' }, $true))
+    $clean = [Management.Automation.Language.Parser]::ParseFile((Join-Path $tools 'clean.ps1'), [ref]$tokens, [ref]$errors)
+    $reads = @($clean.FindAll({ param($n) $n -is [Management.Automation.Language.CommandAst] -and $n.GetCommandName() -eq 'Get-Content' -and $n.Extent.Text -like 'Get-Content -LiteralPath $mark*' }, $true))
+    Assert ($write.Count -eq 1 -and $reads.Count -eq 2) 'Production receipt commands missing'
+    $mark = [IO.Path]::GetTempFileName(); $run = 'isolated-receipt'; $prints = @()
+    try {
+      foreach ($rust in @(('E:\' + [char]0x6e38 + [char]0x620f + '\SteamLibrary\steamapps\common\Rust'), "$default\steamapps\common\Rust")) {
+        & ([scriptblock]::Create($write[0].Extent.Text))
+        foreach ($read in $reads) {
+          $receipt = @(& ([scriptblock]::Create($read.Extent.Text)))
+          Assert (Test-SkateRecoveryFolder $receipt $rust) 'Written Rust folder changed during receipt roundtrip'
+        }
+      }
+      [IO.File]::WriteAllText($mark, "put there yesterday`r`nfile HASH winhttp.dll`r`n", [Text.Encoding]::ASCII)
+      foreach ($read in $reads) {
+        $receipt = @(& ([scriptblock]::Create($read.Extent.Text)))
+        Assert (Test-SkateRecoveryFolder $receipt "$default\steamapps\common\Rust") 'Historical ASCII receipt rejected'
+        Assert (-not (Test-SkateRecoveryFolder $receipt 'E:\Rust')) 'Historical receipt accepted for another library'
+      }
+    } finally { [IO.File]::Delete($mark) }
+  }
+  foreach ($tool in 'install', 'session') {
+    Scenario "production $tool shortcut decodes UTF-8 target without changing binary AppId" {
+      $tokens = $null; $errors = $null
+      $ast = [Management.Automation.Language.Parser]::ParseFile((Join-Path (Split-Path $Diagnostics) "$tool.ps1"), [ref]$tokens, [ref]$errors)
+      $definition = @($ast.FindAll({ param($n) $n -is [Management.Automation.Language.FunctionDefinitionAst] -and $n.Name -eq 'Find-Shortcut' }, $true))
+      Assert ($definition.Count -eq 1) 'Production shortcut reader missing'
+      . ([scriptblock]::Create($definition[0].Extent.Text))
+      $tempRoot = Join-Path ([IO.Path]::GetTempPath()) ('skate-shortcut-' + [Guid]::NewGuid().ToString('N'))
+      $steam = $tempRoot; $steamRust = @{Steam=$tempRoot}; $config = Join-Path $tempRoot 'userdata\1\config'
+      try {
+        $null = New-Item -ItemType Directory -Path $config -Force
+        foreach ($rust in @(('E:\' + [char]0x6e38 + [char]0x620f + '\SteamLibrary\steamapps\common\Rust'), "$default\steamapps\common\Rust")) {
+          $exe = '"' + $rust + '\RustClient.exe"'; $appId = [uint32]2214589089
+          $bytes = [byte[]](@(2) + [Text.Encoding]::ASCII.GetBytes(('appid' + [char]0)) + [BitConverter]::GetBytes($appId) +
+            @(1) + [Text.Encoding]::UTF8.GetBytes(('appname' + [char]0 + 'RustClient' + [char]0)) +
+            @(1) + [Text.Encoding]::UTF8.GetBytes(('exe' + [char]0 + $exe + [char]0)) + @(8))
+          [IO.File]::WriteAllBytes((Join-Path $config 'shortcuts.vdf'), $bytes)
+          $shortcut = Find-Shortcut 'RustClient'
+          $actual = if ($tool -eq 'session') { $shortcut.Exe } else { $shortcut }
+          Assert ($actual -ceq $exe) 'Shortcut executable UTF-8 bytes changed'
+          Assert (Test-SkateRustShortcut $actual $rust) 'Correct selected-library target rejected'
+          if ($tool -eq 'session') { Assert ($shortcut.GameId -eq (([uint64]$appId -shl 32) -bor [uint64]0x02000000)) 'Binary AppId bytes changed' }
+        }
+      } finally { Microsoft.PowerShell.Management\Remove-Item -LiteralPath $tempRoot -Recurse -Force -ErrorAction SilentlyContinue }
+    }
+  }
   Scenario 'Windows actual filesystem with non-default library and missing drive' {
     $tempRoot = Join-Path ([IO.Path]::GetTempPath()) ('skate-discovery-' + [Guid]::NewGuid().ToString('N'))
     $steamRoot = Join-Path $tempRoot 'Steam'; $rustLibrary = Join-Path $tempRoot ('Library ' + [char]0x00fc)

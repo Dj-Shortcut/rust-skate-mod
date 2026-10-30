@@ -113,7 +113,7 @@ function Find-Shortcut($name) {
       $app = $t.Substring($n, $t.IndexOf([char]0, $n) - $n)
       if ($app -ne $name) { continue }
       $e = $t.IndexOf($exeKey, $n, [StringComparison]::OrdinalIgnoreCase); $exe = ''
-      if ($e -ge 0) { $e += $exeKey.Length; $exe = $t.Substring($e, $t.IndexOf([char]0, $e) - $e) }
+      if ($e -ge 0) { $e += $exeKey.Length; $exe = [Text.Encoding]::UTF8.GetString([Text.Encoding]::GetEncoding(28591).GetBytes($t.Substring($e, $t.IndexOf([char]0, $e) - $e))) }
       return [pscustomobject]@{ GameId = (($id -shl 32) -bor [uint64]0x02000000); Exe = $exe }
     }
   }
@@ -144,7 +144,7 @@ if (-not (Test-Path "$stage\winhttp.dll")) {
 $stRoots = ls $stage -Force | % Name
 say ('stage roots: ' + ($stRoots -join ','))
 try {
-  Set-Content -LiteralPath $mark -Value (@(('put there ' + (Get-Date -Format 's') + ' by session ' + $run), ('rust ' + $rust)) + ($prints | % { 'file ' + (Get-FileHash -LiteralPath (Join-Path $stage $_) -Algorithm SHA256).Hash + ' ' + $_ }))
+  Set-Content -LiteralPath $mark -Encoding UTF8 -Value (@(('put there ' + (Get-Date -Format 's') + ' by session ' + $run), ('rust ' + $rust)) + ($prints | % { 'file ' + (Get-FileHash -LiteralPath (Join-Path $stage $_) -Algorithm SHA256).Hash + ' ' + $_ }))
   foreach ($n in $stRoots) { Copy-Item -LiteralPath (Join-Path $stage $n) -Destination $rust -Recurse }
   $bx = Join-Path $rust 'BepInEx'
   New-Item -ItemType Directory -Force "$bx\interop","$bx\config","$bx\plugins" | Out-Null

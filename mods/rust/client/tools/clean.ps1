@@ -18,7 +18,7 @@ if (Get-Command Get-SkateRustFolder -ErrorAction SilentlyContinue) {
 if (Get-Process RustClient -ErrorAction SilentlyContinue) { 'ABORT: RustClient is running; quit Rust first'; return }
 # Validate the recorded library before even discarding a receipt for an empty folder.
 if ((Test-Path -LiteralPath $mark) -and (Get-Command Test-SkateRecoveryFolder -ErrorAction SilentlyContinue)) {
-  if (-not (Test-SkateRecoveryFolder @(Get-Content -LiteralPath $mark) $rust)) {
+  if (-not (Test-SkateRecoveryFolder @(Get-Content -LiteralPath $mark -Encoding UTF8) $rust)) {
     'ABORT: the recovery note belongs to another Rust folder or has no safe folder binding. Nothing was changed; reconnect the original library.'; return
   }
 }
@@ -30,7 +30,7 @@ if (-not (Test-Path -LiteralPath $mark)) { 'ABORT: the Rust folder holds mod loa
 # differently belongs to somebody else's loader. A file that is missing or cannot be read proves
 # nothing, and neither does a note without hashes, which an earlier session.ps1 wrote: leaving
 # this loader in the Rust folder by mistake is the worse error.
-foreach ($line in (Get-Content -LiteralPath $mark | ? { $_ -like 'file *' })) {
+foreach ($line in (Get-Content -LiteralPath $mark -Encoding UTF8 | ? { $_ -like 'file *' })) {
   $want, $name = ($line -split ' ', 3)[1, 2]
   $have = try { (Get-FileHash -LiteralPath (Join-Path $rust $name) -Algorithm SHA256 -ErrorAction Stop).Hash } catch { $null }
   if ($have -and $have -ne $want) { 'ABORT: ' + $name + ' in the Rust folder is not the file these tools put there, so this is another mod loader: ' + ($found -join ',') + '. Nothing was changed.'; return }
