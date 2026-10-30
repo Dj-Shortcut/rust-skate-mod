@@ -48,12 +48,10 @@ public static class SkateFlickCards
             Flick("Front Foot Impossible", Path().Rim(270).Rim(90), "RB"),
             Flick("Underflip", Path().Rim(270).Rim(90), "LB + RB"),
         } },
-        new Section { Title = "MANUALS AND LATE FLIPS", Cards = new[] {
+        new Section { Title = "MANUALS", Cards = new[] {
             Held("Manual", 0f, -0.45f),
             Held("Nose Manual", 0f, 0.45f),
             Flick("No Comply", Path().Rim(270).Rim(90), "A"),
-            Flick("Late Kickflip", Path().To(0f, 0f).Rim(0)),
-            Flick("Late Heelflip", Path().To(0f, 0f).Rim(180)),
         } },
     };
 
