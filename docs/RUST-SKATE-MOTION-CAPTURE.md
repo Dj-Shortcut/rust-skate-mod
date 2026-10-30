@@ -757,10 +757,9 @@ Load still uses the common 75-degree knee target, 32-degree torso fold and
 ordinary gaze: the filmed Fakie crouch folds farther and looks more directly
 down at the board. Charge is already fully applied; this is not a partial-charge
 fixture error. No future-trick selection or global charge-pose change is added.
-The read-only diagnostic checker currently reports 8/13 for both normal stances,
-and 8/13 Regular / 9/13 Goofy for the low jump. Its remaining front-sole,
-hip-height, hand-height and acceleration misses remain explicit; no threshold
-was weakened. The visible held-source hop is repaired, but native Shadow play
+The read-only diagnostic checker still flags front-sole, hip-height, hand-height
+and acceleration limits; the per-profile reports remain beside the bound render
+set, and no threshold was weakened. The visible held-source hop is repaired, but native Shadow play
 and the remaining grounded Load presentation are separate acceptance work.
 
 Keep generated JSON and packs in ignored `context/`. Starting with the retained

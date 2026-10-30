@@ -96,9 +96,14 @@ namespace Shortcut.RustMod
                 // After the real foot release, a held source pose must not keep
                 // climbing through a different root-blend age. Physics, pressure
                 // and flick still use elapsed; resume this age on observed progress.
-                if (elapsed <= gate * 2.4 || !Finite(rootSourceCursor) || sourceSeconds.Value > rootSourceCursor + 1e-9)
-                { rootSourceCursor = sourceSeconds.Value; rootBlendAge = elapsed; }
-                rootAge = rootBlendAge;
+                if (elapsed > gate * 2.4)
+                {
+                    // Seed at the release transition itself, not from the last
+                    // pressure frame: absolute float time can straddle the gate.
+                    if (!Finite(rootSourceCursor) || sourceSeconds.Value > rootSourceCursor + 1e-9)
+                    { rootSourceCursor = sourceSeconds.Value; rootBlendAge = elapsed; }
+                    rootAge = rootBlendAge;
+                }
             }
             if (rootAge >= RootJoinSeconds) return true;
             double press = elapsed <= gate ? Smooth(elapsed / (gate * .7)) : 1 - Smooth((elapsed - gate) / gate);
