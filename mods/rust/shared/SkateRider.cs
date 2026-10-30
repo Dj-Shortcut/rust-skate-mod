@@ -699,6 +699,7 @@ namespace Shortcut.RustMod
             // Ground-grab adapters have no airborne contact state and retain their pose.
             // TryCreate blends this held endpoint with the free endpoint once.
             bool frontsideAirFold = namedGrab && FrontsideAirFold(input);
+            bool crossboneAir = namedGrab && CrossboneAirShape(input);
             var grip = namedGrab ? Grip(input.GrabKind, backIsLeft, input.Stance == SkateStance.Regular) : default(GrabGrip);
             var definition = namedGrab ? SkateGrabCatalog.Get(input.GrabKind) : default(SkateGrabDefinition);
             var deckForward = input.DeckForward.LengthSquared > 0.5 ? input.DeckForward : forward;
@@ -1019,12 +1020,57 @@ namespace Shortcut.RustMod
                 centre = ankles - up * SkateVector.Dot(ankles - centre, up)
                     - facing * ((rig.ThighLength + rig.ShinLength) * .27);
             }
+            SkateVector crossUp = default(SkateVector), crossForward = default(SkateVector), crossRight = default(SkateVector), crossWrist = default(SkateVector);
+            if (crossboneAir)
+            {
+                // Source-led Crossbone: extend the nose-side chain while the
+                // hips sit beside the gathered rear leg. All contact anchors stay put.
+                var ankles = (leftAnkle + rightAnkle) * .5;
+                var leg = rig.ThighLength + rig.ShinLength;
+                var baseCentre = ankles - up * SkateVector.Dot(ankles - centre, up) - facing * (leg * .16);
+                CrossboneChest(up, facing, travel, grabLeft, out crossUp, out crossForward, out crossRight);
+                double toeSide = SkateVector.Dot(facing, Cross(up, deckForward)) >= 0 ? 1 : -1;
+                double alongSide = SkateVector.Dot(travel, deckForward) >= 0 ? 1 : -1;
+                SkateHandGripFrame contact;
+                if (!SkateGrabCatalog.TryGrip(input.DeckFrame, grip.Across * toeSide, grip.Along * alongSide,
+                    grabLeft ? rig.LeftHand : rig.RightHand, out contact))
+                { error = "Crossbone needs its existing measured wrist contact."; return false; }
+                crossWrist = contact.Wrist;
+                var shoulderOffset = crossUp * (rig.SpineLength + rig.ShoulderRise)
+                    + crossRight * ((grabLeft ? -1 : 1) * rig.ShoulderWidth * .5);
+                double gathered = leg * .42, extended = leg * .78;
+                centre = baseCentre - forward * extended;
+                if (!CrossboneRange(rig, centre, pelvisRight, up, leftAnkle, rightAnkle, shoulderOffset, crossWrist))
+                {
+                    // The entering board has not reached its full tweak yet.
+                    // Solve the largest actual extension that keeps all three
+                    // chains reachable; never move a sole or fake the wrist.
+                    centre = baseCentre - forward * gathered;
+                    if (!CrossboneRange(rig, centre, pelvisRight, up, leftAnkle, rightAnkle, shoulderOffset, crossWrist))
+                    { error = "Crossbone cannot reach its existing contacts."; return false; }
+                    for (int i = 0; i < 8; i++)
+                    {
+                        double extensionDistance = (gathered + extended) * .5;
+                        if (CrossboneRange(rig, baseCentre - forward * extensionDistance, pelvisRight, up,
+                            leftAnkle, rightAnkle, shoulderOffset, crossWrist)) gathered = extensionDistance;
+                        else extended = extensionDistance;
+                    }
+                    centre = baseCentre - forward * gathered;
+                }
+            }
             var leftHipBase = centre - pelvisRight * (rig.HipWidth * 0.5);
             var rightHipBase = centre + pelvisRight * (rig.HipWidth * 0.5);
             double minimum = SkatePose.FootLift, maximum = MaximumMeasurement * 2;
             if (!HeightRange(leftHipBase, leftAnkle, up, rig.ThighLength, rig.ShinLength, ref minimum, ref maximum) ||
                 !HeightRange(rightHipBase, rightAnkle, up, rig.ThighLength, rig.ShinLength, ref minimum, ref maximum))
             { error = "Skate rider legs cannot reach the foot positions."; return false; }
+            if (crossboneAir)
+            {
+                var shoulder = centre + crossUp * (rig.SpineLength + rig.ShoulderRise)
+                    + crossRight * ((grabLeft ? -1 : 1) * rig.ShoulderWidth * .5);
+                if (!HeightRange(shoulder, crossWrist, up, rig.UpperArmLength, rig.ForearmLength, ref minimum, ref maximum))
+                { error = "Crossbone cannot keep both soles and the wrist within measured reach."; return false; }
+            }
             // The body dips a little for the push, settled before the foot is down: a pelvis that
             // moved while the foot stands on the ground would drag it, since the secondary motion's
             // pelvis lags the pose and the leg then falls short.
@@ -1038,6 +1084,9 @@ namespace Shortcut.RustMod
             if (frontsideAirFold)
                 requested = SkateVector.Dot((leftAnkle + rightAnkle) * .5 - centre, up)
                     + (rig.ThighLength + rig.ShinLength) * .42;
+            if (crossboneAir)
+                requested = SkateVector.Dot((leftAnkle + rightAnkle) * .5 - centre, up)
+                    + (rig.ThighLength + rig.ShinLength) * .28;
             if (grabbing) requested = riding + (requested - riding) * folded;
             if (input.Bailed) requested = rig.PelvisHeight - pelvisDown;
             double height = Math.Max(minimum, Math.Min(maximum, requested));
@@ -1059,11 +1108,13 @@ namespace Shortcut.RustMod
                 rightKneeAim = gathered + forward * (backIsLeft ? -.55 : .25) + pelvisRight * .1;
             }
             if (!Limb(leftHip, leftAnkle, rig.ThighLength, rig.ShinLength,
-                      (frontsideAirFold ? facing + up * .75 - pelvisRight * .1 :
-                       leftKneeAim), floor, up, out leftKnee) ||
-                !Limb(rightHip, rightAnkle, rig.ThighLength, rig.ShinLength,
-                      (frontsideAirFold ? facing + up * .75 + pelvisRight * .1 :
-                       rightKneeAim), floor, up, out rightKnee))
+                       (crossboneAir ? (backIsLeft ? facing - forward * .25 : forward + facing * .25) + up * .35 - pelvisRight * .1 :
+                        frontsideAirFold ? facing + up * .75 - pelvisRight * .1 :
+                        leftKneeAim), floor, up, out leftKnee) ||
+                 !Limb(rightHip, rightAnkle, rig.ThighLength, rig.ShinLength,
+                       (crossboneAir ? (backIsLeft ? forward + facing * .25 : facing - forward * .25) + up * .35 + pelvisRight * .1 :
+                        frontsideAirFold ? facing + up * .75 + pelvisRight * .1 :
+                        rightKneeAim), floor, up, out rightKnee))
             { error = "Skate rider legs cannot reach above the ground plane."; return false; }
 
             double chestYaw = input.Bailed ? bailYaw : (RidingChestYaw + (PushChestYaw - RidingChestYaw) * turn) * yawScale * Math.PI / 180;
@@ -1112,7 +1163,7 @@ namespace Shortcut.RustMod
                 if (grip.Both) secondGrab = input.DeckFrame.Point(new SkateVector(definition.SecondAcross * toeSide, 0, definition.SecondAlong * alongSide));
             }
             double roll = 0;
-            if (grabbing)
+            if (grabbing && !crossboneAir)
             {
                 // The roll toward the grabbing hand comes in with the fold and grows a little as it is held: the tweak.
                 roll = namedGrab && grip.Both ? 0 : GrabRoll * (grabLeft ? -1 : 1) * (0.4 + 0.6 * folded) * (1 + 0.25 * Math.Min(1, Math.Max(0, input.GrabSeconds - GrabIn) / 0.6));
@@ -1139,6 +1190,7 @@ namespace Shortcut.RustMod
                 chestRight = chestRight * Math.Cos(roll) - chestUp * Math.Sin(roll);
                 chestUp = bentUp;
             }
+            if (crossboneAir) { chestUp = crossUp; chestForward = crossForward; chestRight = crossRight; }
             var chest = pelvis + chestUp * rig.SpineLength;
             var neck = chest + chestUp * (rig.SpineLength * 0.12);
             var head = neck + chestUp * rig.NeckToHeadLength;
@@ -1189,6 +1241,13 @@ namespace Shortcut.RustMod
                         - up * (armLength * .25) - facing * (armLength * .15);
                     freeLeft = leftShoulder - chestRight * (armLength * .65)
                         - up * (armLength * .25) - facing * (armLength * .15);
+                }
+                if (crossboneAir)
+                {
+                    // In the source the free arm reaches toward the raised nose,
+                    // rather than following a torso solver back into world-up.
+                    freeRight = rightShoulder + forward * (armLength * .78) + crossUp * (armLength * .12);
+                    freeLeft = leftShoulder + forward * (armLength * .78) + crossUp * (armLength * .12);
                 }
                 if (namedGrab)
                 {
@@ -1438,6 +1497,40 @@ namespace Shortcut.RustMod
                 !input.BoardPath.Known && input.Handplant <= .001 && input.FootPlant <= .001;
         }
 
+        private static bool CrossboneAirShape(SkateRiderInput input)
+        {
+            return input.Airborne && !input.Bailed && input.GrabKind == SkateGrabKind.Crossbone &&
+                input.DeckFrame.Initialized && input.Contact.Initialized && input.Contact.Airborne &&
+                input.Contact.GrabKind == SkateGrabKind.Crossbone && input.Contact.GrabWeight > 0 &&
+                !input.BoardPath.Known && input.Handplant <= .001 && input.FootPlant <= .001;
+        }
+
+        private static bool CrossboneRange(SkateRiderRig rig, SkateVector centre, SkateVector right, SkateVector up,
+            SkateVector leftAnkle, SkateVector rightAnkle, SkateVector shoulderOffset, SkateVector wrist)
+        {
+            double lo = SkatePose.FootLift, hi = MaximumMeasurement * 2;
+            return HeightRange(centre - right * (rig.HipWidth * .5), leftAnkle, up,
+                       rig.ThighLength, rig.ShinLength, ref lo, ref hi) &&
+                   HeightRange(centre + right * (rig.HipWidth * .5), rightAnkle, up,
+                       rig.ThighLength, rig.ShinLength, ref lo, ref hi) &&
+                   HeightRange(centre + shoulderOffset, wrist, up,
+                       rig.UpperArmLength, rig.ForearmLength, ref lo, ref hi);
+        }
+
+        private static void CrossboneChest(SkateVector up, SkateVector facing, SkateVector travel, bool grabLeft,
+            out SkateVector chestUp, out SkateVector chestForward, out SkateVector chestRight)
+        {
+            // Authored from the visible Xbox silhouette, in the existing body
+            // frame: no world-up correction, measured mocap or new board rotation.
+            var ahead = Unit(facing + travel * .1);
+            double pitch = 65 * Math.PI / 180, roll = (grabLeft ? -1 : 1) * .08;
+            chestUp = up * Math.Cos(pitch) + ahead * Math.Sin(pitch);
+            chestForward = ahead * Math.Cos(pitch) - up * Math.Sin(pitch);
+            chestRight = Cross(chestUp, chestForward);
+            var bent = chestUp * Math.Cos(roll) + chestRight * Math.Sin(roll);
+            chestRight = chestRight * Math.Cos(roll) - chestUp * Math.Sin(roll);
+            chestUp = bent;
+        }
         // Run after contact/secondary solving: those stages rebuild the head from the rolled chest.
         // Keep the measured neck length and bound gaze yaw; never move a grip or foot contact.
         public static bool TryReferenceGrabLook(SkateRiderRig rig, SkateRiderInput input, SkateRiderPose source,
@@ -1469,10 +1562,10 @@ namespace Shortcut.RustMod
             var direction = Unit(lookDirection);
             double down = direction.LengthSquared > .5 ? Math.Max(0, Math.Min(.35, -SkateVector.Dot(direction, up))) : 0;
             var targetUp = Unit(up + ahead * (.10 + .35 * down));
-            if (FrontsideAirFold(input))
+            if (FrontsideAirFold(input) || CrossboneAirShape(input))
             {
                 // Keep the existing velocity look, but do not lever the neck back
-                // to world-up above this deeply folded, source-led FS torso.
+                // to world-up above these deeply folded, source-led torsos.
                 var torsoUp = Unit(source.ChestUp);
                 var axis = Cross(torsoUp, targetUp);
                 double turn = Math.Atan2(axis.Length, SkateVector.Dot(torsoUp, targetUp));
