@@ -77,6 +77,50 @@ function Get-SkateArtworkFiles([string]$Manifest, [string]$Directory = '') {
   return $names
 }
 
+# Where Steam is on this PC. Steam's own folder on C: is the owner's PC and stays the first answer,
+# so that nothing changes there; a friend may have put Steam on another drive. Steam names its
+# folder in the registry (HKCU SteamPath with forward slashes, HKLM InstallPath).
+function Get-SkateSteamFolder {
+  $default = 'C:\Program Files (x86)\Steam'
+  if (Test-Path -LiteralPath ($default + '\steam.exe') -PathType Leaf) { return $default }
+  foreach ($key in 'HKCU:\Software\Valve\Steam', 'HKLM:\SOFTWARE\WOW6432Node\Valve\Steam', 'HKLM:\SOFTWARE\Valve\Steam') {
+    foreach ($name in 'SteamPath', 'InstallPath') {
+      $value = try { '' + (Get-ItemProperty -Path $key -ErrorAction Stop).$name } catch { '' }
+      $folder = ($value -replace '/', '\').TrimEnd('\')
+      if ($folder -and (Test-Path -LiteralPath ($folder + '\steam.exe') -PathType Leaf)) { return $folder }
+    }
+  }
+  return $default
+}
+
+# Where Rust is on this PC: Steam, the Rust folder, Rust's manifest (appmanifest_252490.acf, which
+# carries the build) and whether they were found. Steam lists every library it uses in
+# steamapps\libraryfolders.vdf, its own folder first; Rust is in the one whose steamapps holds the
+# manifest, under common\<installdir>. The owner's C: library is tried first and gives the same
+# paths as before. Paths are joined as text: a library on a drive that is not plugged in would make
+# Join-Path fail in Windows PowerShell. Nothing found gives the owner's paths back, not found.
+function Get-SkateRustFolder {
+  $steam = Get-SkateSteamFolder
+  $libraries = @($steam)
+  $vdf = $steam + '\steamapps\libraryfolders.vdf'
+  if (Test-Path -LiteralPath $vdf -PathType Leaf) {
+    foreach ($m in [regex]::Matches([IO.File]::ReadAllText($vdf), '"path"\s+"([^"]+)"')) {
+      $library = ($m.Groups[1].Value -replace '\\\\', '\').TrimEnd('\')
+      if ($library -and $libraries -notcontains $library) { $libraries += $library }
+    }
+  }
+  foreach ($library in $libraries) {
+    $acf = $library + '\steamapps\appmanifest_252490.acf'
+    $found = try { Test-Path -LiteralPath $acf -PathType Leaf } catch { $false }
+    if (-not $found) { continue }
+    $installDir = 'Rust'
+    foreach ($line in (Get-Content -LiteralPath $acf)) { if ($line -match '^\s*"installdir"\s+"([^"]+)"') { $installDir = $Matches[1]; break } }
+    $rust = $library + '\steamapps\common\' + $installDir
+    if (Test-Path -LiteralPath ($rust + '\RustClient.exe') -PathType Leaf) { return @{ Steam = $steam; Rust = $rust; Acf = $acf; Found = $true } }
+  }
+  return @{ Steam = $steam; Rust = ($steam + '\steamapps\common\Rust'); Acf = ($steam + '\steamapps\appmanifest_252490.acf'); Found = $false }
+}
+
 function Save-SkateLogSnapshot([string]$RustPath, [string]$ProbePath, [string]$Reason = 'before-launch') {
   $sources = @('BepInEx/plugins/skate.log', 'BepInEx/LogOutput.log', 'BepInEx/ErrorLog.log')
   $present = @($sources | Where-Object { Test-Path -LiteralPath (Join-Path $RustPath $_) -PathType Leaf })
@@ -212,7 +256,7 @@ function Show-SkateChecks([string]$RustPath, [string]$ProbePath) {
 
 if ($MyInvocation.InvocationName -ne '.') {
   $diagnosticProbe = "$HOME\Downloads\claude-loader-probe"
-  $diagnosticRust = 'C:\Program Files (x86)\Steam\steamapps\common\Rust'
+  $diagnosticRust = (Get-SkateRustFolder).Rust
   $saved = Save-SkateLogSnapshot $diagnosticRust $diagnosticProbe 'manual-diagnostics'
   if ($saved.Count) { Write-Host ('  Preserved ' + $saved.Count + ' existing logs in ' + $saved.Directory) }
   Show-SkateChecks $diagnosticRust $diagnosticProbe

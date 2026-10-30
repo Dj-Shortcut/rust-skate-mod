@@ -4,6 +4,7 @@
 # the two desktop files. Nothing is downloaded, nothing is built and the Rust folder is not touched:
 # the launcher puts the mod there while a session runs and takes it out again.
 $here = $PSScriptRoot
+$steam = 'C:\Program Files (x86)\Steam'
 $rust = 'C:\Program Files (x86)\Steam\steamapps\common\Rust'
 $acf = 'C:\Program Files (x86)\Steam\steamapps\appmanifest_252490.acf'
 $probe = "$HOME\Downloads\claude-loader-probe"
@@ -18,7 +19,20 @@ if (-not $pack['build']) { abort 'This folder is not an unpacked Rust Skate pack
 $from = "$here\claude-loader-probe"
 line ('  ' + $pack['pack'] + ', made ' + $pack['made'])
 line ''
-if (-not ((Test-Path $acf) -and (Test-Path "$rust\RustClient.exe"))) { abort 'Rust is not installed in Steam''s own library on C: (C:\Program Files (x86)\Steam\steamapps\common\Rust). The launcher only knows that place.'; return }
+# Steam and Rust may be on another drive on this PC. The pack's launcher helper finds them (Steam's
+# registry entry and its libraryfolders.vdf); a legacy pack has no helper and knows only C:.
+$steamRust = $null
+if (Test-Path -LiteralPath "$from\launcher\diagnostics.ps1" -PathType Leaf) {
+  . "$from\launcher\diagnostics.ps1"
+  if (Get-Command Get-SkateRustFolder -ErrorAction SilentlyContinue) { $steamRust = Get-SkateRustFolder }
+}
+if ($null -ne $steamRust) { $steam = $steamRust.Steam; $rust = $steamRust.Rust; $acf = $steamRust.Acf }
+if (-not ((Test-Path -LiteralPath $acf) -and (Test-Path -LiteralPath "$rust\RustClient.exe"))) {
+  if ($null -ne $steamRust) { abort "Rust is not installed through Steam on this PC: no Rust in Steam's own library ($steam) or in any library Steam lists. Install Rust from Steam first." }
+  else { abort 'Rust is not installed in Steam''s own library on C: (C:\Program Files (x86)\Steam\steamapps\common\Rust). This pack''s launcher only knows that place; a newer pack also finds other Steam libraries.' }
+  return
+}
+if ($null -ne $steamRust -and $rust -ne 'C:\Program Files (x86)\Steam\steamapps\common\Rust') { line "  Rust found in $rust." }
 $pb = ((gc $acf | sls '"buildid"').Line -split '"')[3]
 if ($pb -ne $pack['build']) { abort ("This pack was made for Rust build " + $pack['build'] + " and this PC has build $pb. Ask the owner for a pack made for your build."); return }
 if (Get-Process RustClient -ErrorAction SilentlyContinue) { abort 'Rust is running. Quit Rust first, then start this again.'; return }
@@ -98,7 +112,7 @@ if ($supportsSounds) {
 # layout made for it applies on foot as well. Steam keeps those shortcuts in a binary file; the
 # installer only reads it, it does not make the shortcut.
 function Find-Shortcut($name) {
-  foreach ($f in (ls 'C:\Program Files (x86)\Steam\userdata\*\config\shortcuts.vdf' -ErrorAction SilentlyContinue)) {
+  foreach ($f in (ls "$steam\userdata\*\config\shortcuts.vdf" -ErrorAction SilentlyContinue)) {
     $t = [Text.Encoding]::GetEncoding(28591).GetString([IO.File]::ReadAllBytes($f.FullName))
     $nameKey = [string][char]1 + 'appname' + [char]0; $exeKey = [string][char]1 + 'exe' + [char]0
     $i = 0

@@ -182,6 +182,11 @@ moves to another Unity version needs both changed, and the base libraries for th
    source (otherwise `sounds\`) holds the 18 WAV files. Set `$psoundpath` to an existing complete
    folder before installation to retain that source without another permanent copy. The launcher
    stages only those eighteen names on each start; it does not build or fetch audio.
+   `diagnostics.ps1` also says where Steam and Rust are (`Get-SkateRustFolder`: Steam's own
+   library on `C:` first, otherwise Steam's registry entry and `libraryfolders.vdf`); `skate.ps1`,
+   `session.ps1`, `clean.ps1` and the friend's installer take their Rust folder from it, so that a
+   friend's Rust may be on another drive. `zz session` with an installed launcher older than that
+   function keeps the `C:` paths. Not yet run on Windows.
 4. `zz launchertest`.
 
 ## Settings

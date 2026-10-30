@@ -32,17 +32,31 @@ $reader = $null
 if (-not $ptag) { $ptag = 'A' }
 if ($null -eq $plisten) { $plisten = $false }
 if (-not $pwait) { $pwait = 45 }
-$rust = 'C:\Program Files (x86)\Steam\steamapps\common\Rust'
 $dl = "$HOME\Downloads"
 $probe = "$dl\claude-loader-probe"
 $zip = "$dl\BepInEx-Unity.IL2CPP-win-x64-6.0.0-be.788+5b766a3.zip"
+# The shared launcher checks and log recovery (diagnostics.ps1) come first: they also say where Steam
+# and Rust are on this PC. The owner's C: library is the first answer and gives the paths this
+# script always used; on a friend's PC Rust may be in another Steam library.
+$diagnostics = if ($PSScriptRoot) { Join-Path $PSScriptRoot 'diagnostics.ps1' } else { "$probe\launcher\diagnostics.ps1" }
+if (-not (Test-Path -LiteralPath $diagnostics) -and (Get-Command zg -ErrorAction SilentlyContinue)) {
+  $diagnostics = "$probe\diagnostics.ps1"
+  [IO.File]::WriteAllText($diagnostics, ("" + (zg 'diagnostics.ps1')), (New-Object Text.UTF8Encoding($false)))
+}
+if (-not (Test-Path -LiteralPath $diagnostics)) { throw 'Log recovery tools are missing; nothing was staged or started. Install the prepared launcher again.' }
+. $diagnostics
+# An installed launcher older than this script has no Get-SkateRustFolder yet: the owner's paths then.
+if (Get-Command Get-SkateRustFolder -ErrorAction SilentlyContinue) { $steamRust = Get-SkateRustFolder }
+else { $steamRust = @{ Steam = 'C:\Program Files (x86)\Steam'; Rust = 'C:\Program Files (x86)\Steam\steamapps\common\Rust'; Acf = 'C:\Program Files (x86)\Steam\steamapps\appmanifest_252490.acf'; Found = (Test-Path -LiteralPath 'C:\Program Files (x86)\Steam\steamapps\appmanifest_252490.acf' -PathType Leaf) } }
+$rust = $steamRust.Rust
+if (-not $steamRust.Found) { Write-Host 'ABORT: Rust is not installed through Steam on this PC (not in Steam''s own library, not in any library Steam lists)'; return }
 # The sound pack is the owner's private set of 18 WAV files (never committed); the plugin reads it
 # from plugins\skate_sounds. Its file names mirror SkateSoundPack.cs in the client source.
 $sounds = ''; $soundSource = $null; $soundsDisabled = "$psounds" -in '0', 'false'
 # The interop set must have been generated for the installed Steam build. A set from another build
 # resolves wrappers to the wrong native methods and crashes the client, so there is no fallback:
 # generate first with `zz interop`.
-$pb = ((gc 'C:\Program Files (x86)\Steam\steamapps\appmanifest_252490.acf' | sls '"buildid"').Line -split '"')[3]
+$pb = ((gc -LiteralPath $steamRust.Acf | sls '"buildid"').Line -split '"')[3]
 $gen = "$dl\claude-loader-probe\gen-$pb\out"
 if (-not ((Test-Path "$gen\Assembly-CSharp.dll") -and (sls -Path "$dl\claude-loader-probe\gen-$pb\gen.log" -Pattern 'GEN DONE.* errors=0( |$)' -Quiet))) { Write-Host "ABORT: no complete, error-free interop set for installed build $pb; run zz interop first"; return }
 $run = "$probe\run-$ptag-" + (Get-Date -Format 'yyyyMMdd-HHmmssfff') + '-' + [Guid]::NewGuid().ToString('N').Substring(0, 8)
@@ -85,7 +99,7 @@ if ($pkeep) { try { $typed = InFront } catch { } }
 # Steam keeps non-Steam shortcuts in a binary file. Returns the 64-bit id that steam://rungameid
 # expects for the shortcut with this name, plus its target, or nothing when there is none.
 function Find-Shortcut($name) {
-  foreach ($f in (ls 'C:\Program Files (x86)\Steam\userdata\*\config\shortcuts.vdf' -ErrorAction SilentlyContinue)) {
+  foreach ($f in (ls ($steamRust.Steam + '\userdata\*\config\shortcuts.vdf') -ErrorAction SilentlyContinue)) {
     $t = [Text.Encoding]::GetEncoding(28591).GetString([IO.File]::ReadAllBytes($f.FullName))
     $idKey = [string][char]2 + 'appid' + [char]0; $nameKey = [string][char]1 + 'appname' + [char]0; $exeKey = [string][char]1 + 'exe' + [char]0
     $i = 0
@@ -106,13 +120,6 @@ function Find-Shortcut($name) {
 }
 if (Get-Process RustClient -ErrorAction SilentlyContinue) { say 'ABORT: RustClient is already running'; return }
 # Preserve an interrupted session before any new loader, plugin or log can replace its files.
-$diagnostics = if ($PSScriptRoot) { Join-Path $PSScriptRoot 'diagnostics.ps1' } else { "$probe\launcher\diagnostics.ps1" }
-if (-not (Test-Path -LiteralPath $diagnostics) -and (Get-Command zg -ErrorAction SilentlyContinue)) {
-  $diagnostics = "$probe\diagnostics.ps1"
-  [IO.File]::WriteAllText($diagnostics, ("" + (zg 'diagnostics.ps1')), (New-Object Text.UTF8Encoding($false)))
-}
-if (-not (Test-Path -LiteralPath $diagnostics)) { throw 'Log recovery tools are missing; nothing was staged or started. Install the prepared launcher again.' }
-. $diagnostics
 $recovered = Save-SkateLogSnapshot $rust $probe 'before-session'
 if ($recovered.Count) { say ('preserved existing client logs: ' + $recovered.Directory) }
 if (-not $soundsDisabled) {

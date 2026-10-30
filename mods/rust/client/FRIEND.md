@@ -14,8 +14,11 @@ and playing from it are still open; see the [status](#status).
 
 ## What the friend needs
 
-- Windows, Rust bought on Steam and installed in Steam's own library on `C:` (the launcher knows
-  only `C:\Program Files (x86)\Steam\steamapps\common\Rust`), Steam signed in.
+- Windows, Rust bought on Steam and installed through Steam, Steam signed in. Steam's own folder
+  and Rust's library may be on any drive: the installer and the launcher read where Steam is from
+  the registry and where Rust is from Steam's `libraryfolders.vdf` and Rust's own manifest, and try
+  Steam's own library on `C:` first (a legacy pack, made from the pinned 0.18.40 release, still knows
+  only `C:\Program Files (x86)\Steam\steamapps\common\Rust`). Not yet run on any PC.
 - The same Rust build as the owner. The pack is made for one Steam build; after a Rust update
   the launcher refuses to start and the owner makes a new pack.
 - An Xbox controller (XInput) for the controls as in the skate. games. The keyboard works too
@@ -75,14 +78,15 @@ and is not published; nothing of it belongs in this repository.
 ## The friend: installing and playing
 
 1. Unpack the zip anywhere (right-click, Extract All) and open the unpacked folder.
-2. In Steam: Games > Add a Non-Steam Game to My Library > Browse, pick
-   `C:\Program Files (x86)\Steam\steamapps\common\Rust\RustClient.exe`, add it and keep its name,
-   `RustClient`. On its page in the library, under the controller icon, choose the layout template
+2. In Steam: Games > Add a Non-Steam Game to My Library > Browse, pick `RustClient.exe` in the Rust
+   folder (usually `C:\Program Files (x86)\Steam\steamapps\common\Rust`; the installer names the
+   folder it found when it is another one), add it and keep its name, `RustClient`. On its page in the library, under the controller icon, choose the layout template
    "Keyboard (WASD) and Mouse". The launcher starts Rust through this shortcut so that the
    controller works on foot as well as on the board ([why](README.md#the-controller)); with the
    "Gamepad" layout the controller does nothing in Rust.
-3. Double-click `Install Rust Skate.cmd`. It checks that the folder is a pack, that Rust is in
-   Steam's own library and is the build the pack was made for, that Rust is not running, that no
+3. Double-click `Install Rust Skate.cmd`. It checks that the folder is a pack, that Rust is
+   installed through Steam (in Steam's own library on `C:`, or in another Steam library) and is
+   the build the pack was made for, that Rust is not running, that no
    earlier session left the mod in the Rust folder, that the pack is complete (its loader, interop
    set, runtime, plugin, launcher scripts, declared icons and sound set), and the free space; then
    it copies the pack to `Downloads\claude-loader-probe` and puts two files on the desktop:
@@ -121,7 +125,9 @@ and the sounds follow the pack: a pack without them takes an older address or so
 
 - Code present: `tools/pack.ps1`, `tools/install.ps1`, the launcher's messages for a friend
   (`tools/skate.ps1`), the sound-pack, icon, capture-pair and candidate-receipt handling that
-  #569 and #575 added to them.
+  #569 and #575 added to them, and the lookup of Steam and Rust's library on the friend's PC
+  (`Get-SkateRustFolder` in `tools/diagnostics.ps1`, used by the installer, `skate.ps1`,
+  `session.ps1` and `clean.ps1`; the owner's `C:` paths come first and stay as they were).
 - Checked outside the game: `pack.ps1` and `install.ps1` were run on Linux against a stand-in
   folder tree with the Windows paths swapped (the zip holds the expected files and nothing else
   from `play\`, `pack.txt` carries the build, the installer copies the tree, writes the desktop
@@ -137,6 +143,8 @@ and the sounds follow the pack: a pack without them takes an older address or so
   candidate cannot be ridden either until that is solved; a pack from the pinned release rides
   the older 0.18.40 plugin. The size of a real pack, Steam Input on the friend's shortcut and two
   clients on the owner's server are all still to be seen.
-- Known limits: Rust in a Steam library other than `C:` is refused, the Steam shortcut is made by
+- Known limits: the lookup of Steam and of Rust's library (registry, `libraryfolders.vdf`,
+  manifest) is script source that has not run on Windows; a pack made from the pinned 0.18.40
+  release still refuses Rust outside Steam's own library on `C:`. The Steam shortcut is made by
   hand, and the owner's server must accept the second rider (its ShortcutSkate plugin, or its
   speed checks turned off; see [playing it](README.md#playing-it-the-owners-launcher)).

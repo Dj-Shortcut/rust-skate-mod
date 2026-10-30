@@ -5,6 +5,12 @@
 $rust = 'C:\Program Files (x86)\Steam\steamapps\common\Rust'
 $probe = "$HOME\Downloads\claude-loader-probe"
 $mark = "$probe\loader-in-rust-folder.txt"
+# On a friend's PC Rust may be in another Steam library; the launcher's helper next to this script
+# finds it (diagnostics.ps1, Get-SkateRustFolder). The owner's C: library stays the first answer,
+# and without the helper (`zz clean` from a distance, an old launcher) the path above is used.
+$helper = if ($PSScriptRoot) { Join-Path $PSScriptRoot 'diagnostics.ps1' } else { "$probe\launcher\diagnostics.ps1" }
+if (-not (Get-Command Get-SkateRustFolder -ErrorAction SilentlyContinue) -and (Test-Path -LiteralPath $helper -PathType Leaf)) { . $helper }
+if (Get-Command Get-SkateRustFolder -ErrorAction SilentlyContinue) { $rust = (Get-SkateRustFolder).Rust }
 if (Get-Process RustClient -ErrorAction SilentlyContinue) { 'ABORT: RustClient is running; quit Rust first'; return }
 $roots = 'BepInEx','dotnet','winhttp.dll','doorstop_config.ini','.doorstop_version','changelog.txt'
 $found = @($roots + (ls $rust -Filter 'preloader_*.log' -ErrorAction SilentlyContinue | % Name) | ? { Test-Path -LiteralPath (Join-Path $rust $_) })
