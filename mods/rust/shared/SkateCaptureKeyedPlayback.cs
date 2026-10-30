@@ -109,14 +109,17 @@ namespace Shortcut.RustMod
             { error = "Invalid source-keyed entry baseline."; return false; }
             if (Clip.Id == HardflipClipId && !groundCarrierOrigin.HasValue)
             { error = "Hardflip needs an observed flatground takeoff plane."; return false; }
+            if (Clip.Id == NollieTreFlipClipId && !groundCarrierOrigin.HasValue)
+            { error = "Nollie360 needs an observed flatground takeoff plane."; return false; }
             // Family joins: compact Air for Kick264/Heel354/Tre408; Hard142
             // keeps the still-supported rear leg low before its later Air148.
+            // Nollie4598 joins after its nose foot is unambiguously free.
             // The independent upper entry and exact foot/board paths stay short.
             double rootFraction = Clip.Id == RequiredClipId ? .3125 :
                 Clip.Id == HeelflipClipId && groundCarrierOrigin.HasValue ? 1.0 / 3.0 :
                 Clip.Id == TreFlipClipId && groundCarrierOrigin.HasValue ? 5.0 / 21.0 :
                 Clip.Id == HardflipClipId && groundCarrierOrigin.HasValue ? 2.0 / 11.0 :
-                Clip.Id == NollieTreFlipClipId && groundCarrierOrigin.HasValue ? 5.0 / 17.0 : .125;
+                Clip.Id == NollieTreFlipClipId && groundCarrierOrigin.HasValue ? 6.0 / 17.0 : .125;
             double span = (SourceLand - SourcePop) * rootFraction;
             double targetTime = SourcePop + span, step = Math.Min(.005, span * .1);
             SkateCaptureFrame target, before, after;
@@ -222,6 +225,8 @@ namespace Shortcut.RustMod
             if (!TrySourceTime(elapsedSeconds, frozenFlightSeconds, actuallyLanded, secondsSinceLand, out seconds, out error)) return false;
             if (!SkateBoardPath.Valid(uprightCarrier) || uprightCarrier.Up.Y < .98)
             { error = "Source-keyed playback requires the current upright physical carrier."; return false; }
+            if (Clip.Id == NollieTreFlipClipId && !groundOrigin.HasValue)
+            { error = "Nollie360 has no observed flatground takeoff plane."; return false; }
             SkateCaptureFrame source; SkateRiderPose pose;
             if (!SkateCaptureSampler.TrySample(Clip, seconds, rig, stance, out source, out error)) return false;
             // Source coordinates are already carrier-local: do NOT subtract the
