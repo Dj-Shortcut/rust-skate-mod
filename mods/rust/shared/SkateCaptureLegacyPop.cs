@@ -11,16 +11,18 @@ namespace Shortcut.RustMod
         private readonly SkateRiderPose groundPose;
         private readonly SkateBoardPose groundDeck;
         private readonly SkateVector groundLeftUp, groundRightUp, groundOrigin, groundNormal, groundVelocity;
-        private readonly bool nosePop, leftPops, kickFlick;
+        private readonly bool nosePop, leftPops, kickFlick, sourceCoupledRoot;
         private readonly double deckTop, sourcePop, sourceAir;
+        private double rootSourceCursor = double.NaN, rootBlendAge;
         private SkateDeckFootFitter sideSource, sidePositive, sideNegative;
         private static readonly SkateBoardMesh Mesh = SkateBoardMesh.CreateDetailed();
         private const double StrikeAngle = 44.2, RootJoinSeconds = .30;
         private SkateCaptureLegacyPop(SkateRiderPose pose, SkateBoardPose deck, SkateVector lu, SkateVector ru,
-            SkateVector origin, SkateVector normal, SkateVector velocity, double top, bool nose, double pop, double air, bool kick)
+            SkateVector origin, SkateVector normal, SkateVector velocity, double top, bool nose, double pop, double air, bool kick, bool coupleRoot)
         {
             groundPose = pose; groundDeck = deck; groundLeftUp = lu; groundRightUp = ru;
             groundOrigin = origin; groundNormal = Unit(normal); groundVelocity = velocity; deckTop = top; nosePop = nose; kickFlick = kick; sourcePop = pop; sourceAir = air;
+            sourceCoupledRoot = coupleRoot;
             double l = SkateVector.Dot(pose.LeftAnkle - deck.Origin, deck.Forward);
             double r = SkateVector.Dot(pose.RightAnkle - deck.Origin, deck.Forward);
             leftPops = nose ? l > r : l < r;
@@ -61,7 +63,8 @@ namespace Shortcut.RustMod
             }
             if (pop < 0 || air <= pop)
             { error = "Initial-five pop needs its own ordered Pop/Air phases."; return false; }
-            playback = new SkateCaptureLegacyPop(pose, deck, lu, ru, origin, normal, velocity, top, nose, pop, air, signature.Flip > 0); return true;
+            playback = new SkateCaptureLegacyPop(pose, deck, lu, ru, origin, normal, velocity, top, nose, pop, air, signature.Flip > 0,
+                clip.Id == "fakie-kickflip" || clip.Id == "switch-heelflip"); return true;
         }
         // A held zero-degree scorer must not freeze the filmed Pop at its
         // first pose. The actual flick gate owns this short source Pop sequence;
@@ -75,7 +78,8 @@ namespace Shortcut.RustMod
             { phase = SkateCapturePhase.Pop; value = progress; }
         }
         public bool TryApply(SkateRiderRig rig, SkateCaptureFrame input, SkateBoardPose carrier, double elapsed,
-            SkateDeckFootFitter leftFitter, SkateDeckFootFitter rightFitter, out SkateCaptureFrame output, out string error)
+            SkateDeckFootFitter leftFitter, SkateDeckFootFitter rightFitter, out SkateCaptureFrame output, out string error,
+            double? sourceSeconds = null)
         {
             output = input; error = null;
             if (!Finite(elapsed) || elapsed < 0 || !SkateBoardPath.Valid(input.Board) || !input.Board.Initialized ||
@@ -84,6 +88,24 @@ namespace Shortcut.RustMod
             { error = "Invalid observed legacy pop carrier."; return false; }
             if (elapsed >= RootJoinSeconds) return true;
             var up = groundNormal; double gate = SkateFlipFlick.EdgeReleaseSeconds;
+            double rootAge = elapsed;
+            if (sourceCoupledRoot && sourceSeconds.HasValue)
+            {
+                if (!Finite(sourceSeconds.Value) || sourceSeconds.Value < 0)
+                { error = "Observed legacy pop source cursor is invalid."; return false; }
+                // After the real foot release, a held source pose must not keep
+                // climbing through a different root-blend age. Physics, pressure
+                // and flick still use elapsed; resume this age on observed progress.
+                if (elapsed > gate * 2.4)
+                {
+                    // Seed at the release transition itself, not from the last
+                    // pressure frame: absolute float time can straddle the gate.
+                    if (!Finite(rootSourceCursor) || sourceSeconds.Value > rootSourceCursor + 1e-9)
+                    { rootSourceCursor = sourceSeconds.Value; rootBlendAge = elapsed; }
+                    rootAge = rootBlendAge;
+                }
+            }
+            if (rootAge >= RootJoinSeconds) return true;
             double press = elapsed <= gate ? Smooth(elapsed / (gate * .7)) : 1 - Smooth((elapsed - gate) / gate);
             var board = input.Board; var rotation = input.Rotation;
             if (press > 0)
@@ -116,7 +138,7 @@ namespace Shortcut.RustMod
             if (heading.LengthSquared < .5) { error = "Legacy pop ground heading is degenerate."; return false; }
             var groundedCarrier = new SkateBoardPose(floorOrigin, Unit(heading), up);
             var from = groundedCarrier.Point(groundPose.Pelvis + groundVelocity * elapsed);
-            var root = from * (1 - Smooth(elapsed / RootJoinSeconds)) + input.Pose.Pelvis * Smooth(elapsed / RootJoinSeconds);
+            var root = from * (1 - Smooth(rootAge / RootJoinSeconds)) + input.Pose.Pelvis * Smooth(rootAge / RootJoinSeconds);
             var shift = root - input.Pose.Pelvis; var p = input.Pose;
             var moved = new SkateRiderPose(p.Pelvis + shift, p.LeftHip + shift, p.RightHip + shift,
                 p.LeftKnee + shift, p.RightKnee + shift, p.LeftAnkle + shift, p.RightAnkle + shift,
