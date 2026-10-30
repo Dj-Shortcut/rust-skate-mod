@@ -200,12 +200,21 @@ public class SkateRig : MonoBehaviour
         }
     }
 
+    // The detectCollisions getter is an unstripping stub in this client and throws; the engine call
+    // behind it is there and takes the native Unity object, not the IL2CPP wrapper. The setter works.
+    private static bool Collides(Rigidbody body)
+    {
+        var native = body.GetCachedPtr();
+        if (native == IntPtr.Zero) throw new InvalidOperationException("rigidbody has no native object");
+        return Rigidbody.get_detectCollisions_Injected(native);
+    }
+
     private static bool ProxyCurrent(RootProxyLease p)
     {
         return p != null && Local == p.Player && LocalT == p.Root && Body == p.Physical && Walk == p.Movement && AwakeAt == p.Life &&
             Local != null && Local.lifestate == BaseCombatEntity.LifeState.Alive && LocalT != null && LocalT == Local.transform && LocalT.parent == null &&
-            Body != null && !Body.isKinematic && Body.detectCollisions && Body.transform == p.Frame && p.Frame.parent == p.Parent && !p.Frame.IsChildOf(LocalT) &&
-            Walk != null && Walk.enabled && Walk.transform == p.Frame && p.Proxy != null && p.Proxy.transform == LocalT && p.Proxy.isKinematic && !p.Proxy.detectCollisions;
+            Body != null && !Body.isKinematic && Collides(Body) && Body.transform == p.Frame && p.Frame.parent == p.Parent && !p.Frame.IsChildOf(LocalT) &&
+            Walk != null && Walk.enabled && Walk.transform == p.Frame && p.Proxy != null && p.Proxy.transform == LocalT && p.Proxy.isKinematic && !Collides(p.Proxy);
     }
 
     [HideFromIl2Cpp]
@@ -227,7 +236,7 @@ public class SkateRig : MonoBehaviour
             step = "physical body mode";
             if (Body.isKinematic) throw new InvalidOperationException("player is not ready");
             step = "physical collision flag";
-            if (!Body.detectCollisions) throw new InvalidOperationException("player is not ready");
+            if (!Collides(Body)) throw new InvalidOperationException("player is not ready");
             step = "physical body transform";
             var frame = Body.transform;
             step = "root Rigidbody lookup";
@@ -259,7 +268,7 @@ public class SkateRig : MonoBehaviour
             if (!ProxyFinite(position) || !ProxyFinite(velocity) || !ProxyFinite(world) || !ProxyFinite(rotation) || !ProxyFinite(LocalT.position) || (LocalT.position - position).sqrMagnitude > 1f)
                 throw new InvalidOperationException("player proxy is too far from the body");
             step = "root proxy collision flag";
-            var originalCollisions = proxy.detectCollisions;
+            var originalCollisions = Collides(proxy);
             step = "root proxy parent";
             var parent = frame.parent;
             rootProxy = new RootProxyLease { Player = Local, Root = LocalT, Proxy = proxy, Physical = Body, Movement = Walk,
@@ -325,8 +334,8 @@ public class SkateRig : MonoBehaviour
             {
                 if (p.Proxy.transform != p.Root) throw new InvalidOperationException("player proxy identity changed");
                 // A different value is already the original one; do not overwrite another owner.
-                if (!p.Proxy.detectCollisions) p.Proxy.detectCollisions = p.OriginalCollisions;
-                if (p.Proxy.detectCollisions != p.OriginalCollisions) throw new InvalidOperationException("collision restoration did not verify");
+                if (!Collides(p.Proxy)) p.Proxy.detectCollisions = p.OriginalCollisions;
+                if (Collides(p.Proxy) != p.OriginalCollisions) throw new InvalidOperationException("collision restoration did not verify");
             }
             var gone = p.Proxy == null;
             rootProxy = null;
