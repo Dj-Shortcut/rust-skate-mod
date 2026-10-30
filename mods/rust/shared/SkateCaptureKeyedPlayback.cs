@@ -9,6 +9,9 @@ namespace Shortcut.RustMod
         public const string RequiredClipId = "kickflip-source-keyed-v1";
         public const string HeelflipClipId = "heelflip-source-keyed-v1";
         public const string TreFlipClipId = "360-flip-source-keyed-v1";
+        public const string HardflipClipId = "hardflip-source-keyed-v1";
+        private static readonly SkateCaptureTrickSignature HardflipSignature =
+            new SkateCaptureTrickSignature(SkatePopKind.Ollie, false, false, 360, 180, 0, 0);
         private static readonly SkateCaptureTrickSignature TreFlipSignature =
             new SkateCaptureTrickSignature(SkatePopKind.Ollie, false, false, 360, -360, 0, 0);
         private static readonly SkateCaptureTrickSignature HeelflipSignature =
@@ -30,6 +33,9 @@ namespace Shortcut.RustMod
         private double entryUpperSeconds;
         private double pressStart = 1.0 / 16, pressEnd = 3.0 / 16;
         private SkateVector? groundOrigin;
+        private static SkateVector[] hardflipSupport;
+        public double GroundClearanceCorrection { get; private set; }
+        public double MaximumGroundClearanceCorrection { get; private set; }
 
         private SkateCaptureKeyedPlayback(SkateCaptureClip clip, double pop, double caught, double land)
         { Clip = clip; SourcePop = pop; SourceCatch = caught; SourceLand = land; }
@@ -38,13 +44,14 @@ namespace Shortcut.RustMod
         {
             return clip != null && (clip.Id == RequiredClipId && clip.MovementKind == "kickflip" && RequiredSignature.Same(signature) ||
                 clip.Id == HeelflipClipId && clip.MovementKind == "heelflip" && HeelflipSignature.Same(signature) ||
-                clip.Id == TreFlipClipId && clip.MovementKind == "360-flip" && TreFlipSignature.Same(signature));
+                clip.Id == TreFlipClipId && clip.MovementKind == "360-flip" && TreFlipSignature.Same(signature) ||
+                clip.Id == HardflipClipId && clip.MovementKind == "hardflip" && HardflipSignature.Same(signature));
         }
 
         public static bool TryCreate(SkateCaptureClip clip, out SkateCaptureKeyedPlayback playback, out string error)
         {
             playback = null; error = null;
-            if (clip == null || !clip.Ready || !Accepts(clip, clip.Id == HeelflipClipId ? HeelflipSignature : clip.Id == TreFlipClipId ? TreFlipSignature : RequiredSignature))
+            if (clip == null || !clip.Ready || !Accepts(clip, clip.Id == HeelflipClipId ? HeelflipSignature : clip.Id == TreFlipClipId ? TreFlipSignature : clip.Id == HardflipClipId ? HardflipSignature : RequiredSignature))
             { error = "An exact bounded source-keyed flip clip is required."; return false; }
             // Reuse the existing strict event/contact contract. Building its
             // optional inverse clocks does not make those clocks authoritative.
@@ -53,6 +60,8 @@ namespace Shortcut.RustMod
             playback = new SkateCaptureKeyedPlayback(clip, events.SourceTime(SkateCapturePhase.Pop, 0),
                 events.SourceTime(SkateCapturePhase.Catch, 0), events.SourceTime(SkateCapturePhase.Land, 0));
             if (clip.Id != RequiredClipId && !playback.TryFamilyPressWindow(out error))
+            { playback = null; return false; }
+            if (clip.Id == HardflipClipId && !TryHardflipSupport(out error))
             { playback = null; return false; }
             return true;
         }
@@ -88,14 +97,19 @@ namespace Shortcut.RustMod
             SkateVector? groundCarrierOrigin = null)
         {
             entry = false; entryUpper = null; groundOrigin = null; error = null;
+            GroundClearanceCorrection = MaximumGroundClearanceCorrection = 0;
             if (!ValidFlight(frozenFlightSeconds) || !Finite(localRoot.LengthSquared) || !Finite(localVelocity.LengthSquared) ||
                 groundCarrierOrigin.HasValue && !Finite(groundCarrierOrigin.Value.LengthSquared))
             { error = "Invalid source-keyed entry baseline."; return false; }
-            // Each family joins its own compact Air: Kick264, Heel354 and Tre408.
+            if (Clip.Id == HardflipClipId && !groundCarrierOrigin.HasValue)
+            { error = "Hardflip needs an observed flatground takeoff plane."; return false; }
+            // Family joins: compact Air for Kick264/Heel354/Tre408; Hard142
+            // keeps the still-supported rear leg low before its later Air148.
             // The independent upper entry and exact foot/board paths stay short.
             double rootFraction = Clip.Id == RequiredClipId ? .3125 :
                 Clip.Id == HeelflipClipId && groundCarrierOrigin.HasValue ? 1.0 / 3.0 :
-                Clip.Id == TreFlipClipId && groundCarrierOrigin.HasValue ? 5.0 / 21.0 : .125;
+                Clip.Id == TreFlipClipId && groundCarrierOrigin.HasValue ? 5.0 / 21.0 :
+                Clip.Id == HardflipClipId && groundCarrierOrigin.HasValue ? 2.0 / 11.0 : .125;
             double span = (SourceLand - SourcePop) * rootFraction;
             double targetTime = SourcePop + span, step = Math.Min(.005, span * .1);
             SkateCaptureFrame target, before, after;
@@ -107,7 +121,7 @@ namespace Shortcut.RustMod
             // The observed flatground launch span supplies its actual takeoff
             // speed. Subtract the carrier derivative in local space so adding
             // that carrier preserves the held body's world velocity at release.
-            if ((Clip.Id == RequiredClipId || Clip.Id == HeelflipClipId || Clip.Id == TreFlipClipId) && groundCarrierOrigin.HasValue)
+            if ((Clip.Id == RequiredClipId || Clip.Id == HeelflipClipId || Clip.Id == TreFlipClipId || Clip.Id == HardflipClipId) && groundCarrierOrigin.HasValue)
                 entryVelocity -= new SkateVector(0, SkateFlatgroundPop.Gravity * frozenFlightSeconds * .5, 0);
             entryUpper = localBody; entryUpperSeconds = frozenFlightSeconds * .125;
             groundOrigin = groundCarrierOrigin;
@@ -138,6 +152,58 @@ namespace Shortcut.RustMod
                 double beforeLand = SourceLand - span * .0000001;
                 sourceSeconds = Math.Min(beforeLand, SourcePop + Math.Min(1, elapsedSeconds / frozenFlightSeconds) * span);
             }
+            return true;
+        }
+
+        private static bool TryHardflipSupport(out string error)
+        {
+            error = null;
+            if (hardflipSupport == null)
+            {
+                var mesh = SkateBoardMesh.CreateDetailed();
+                if (mesh.Parts.Length != 13) { error = "Hardflip needs the complete original board hull."; return false; }
+                var points = new SkateVector[mesh.Positions.Length / 3];
+                for (int n = 0; n < points.Length; n++) points[n] = new SkateVector(
+                    mesh.Positions[n * 3], mesh.Positions[n * 3 + 1] - .092, mesh.Positions[n * 3 + 2]);
+                hardflipSupport = points;
+            }
+            return true;
+        }
+
+        private bool TryHardflipFloor(SkateCaptureFrame frame, bool actuallyLanded, SkateVector up,
+            double fraction, out SkateCaptureFrame result, out string error)
+        {
+            result = frame; error = null; GroundClearanceCorrection = 0;
+            // Only this exact flatground family, with its observed takeoff plane.
+            // The caller already requires the frozen flatground flight span.
+            if (Clip.Id != HardflipClipId || actuallyLanded) return true;
+            if (!groundOrigin.HasValue)
+            { error = "Hardflip has no observed flatground takeoff plane."; return false; }
+            if (!TryHardflipSupport(out error)) return false;
+            double lowest = double.PositiveInfinity;
+            var localUp = new SkateVector(SkateVector.Dot(frame.Board.Right, up),
+                SkateVector.Dot(frame.Board.Up, up), SkateVector.Dot(frame.Board.Forward, up));
+            double originHeight = SkateVector.Dot(frame.Board.Origin - groundOrigin.Value, up);
+            foreach (var point in hardflipSupport)
+                lowest = Math.Min(lowest, originHeight + SkateVector.Dot(point, localUp));
+            double margin = .003 * (1 - PressRelease(fraction, pressStart, pressEnd));
+            double amount = Math.Max(0, margin - lowest);
+            if (!Finite(amount)) { error = "Invalid Hardflip observed-floor envelope."; return false; }
+            GroundClearanceCorrection = amount;
+            MaximumGroundClearanceCorrection = Math.Max(MaximumGroundClearanceCorrection, amount);
+            if (amount > .12) { error = "Hardflip presentation exceeds the bounded observed-floor correction."; return false; }
+            if (amount == 0) return true;
+            if ((frame.Observation.Contacts & (SkateCaptureContacts.LeftHand | SkateCaptureContacts.RightHand)) != 0)
+            { error = "Hardflip floor translation cannot move a held hand."; return false; }
+            var lift = up * amount;
+            SkateRiderPose pose;
+            if (!SkateRider.TryTransformPose(frame.Pose, SourceCarrier,
+                new SkateBoardPose(lift, SourceCarrier.Forward, SourceCarrier.Up), out pose))
+            { error = "Invalid coupled Hardflip floor translation."; return false; }
+            result = new SkateCaptureFrame(pose,
+                new SkateBoardPose(frame.Board.Origin + lift, frame.Board.Forward, frame.Board.Up), frame.Rotation,
+                frame.LeftSoleUp, frame.RightSoleUp, frame.HasEvent, frame.Observation,
+                frame.PelvisCorrection + lift, frame.LeftHandCorrection, frame.RightHandCorrection, frame.RiderUp);
             return true;
         }
 
@@ -236,7 +302,8 @@ namespace Shortcut.RustMod
                     shown.HasEvent, shown.Observation, shown.PelvisCorrection,
                     shown.LeftHandCorrection, shown.RightHandCorrection, shown.RiderUp);
             }
-            return true;
+            return TryHardflipFloor(shown, actuallyLanded, uprightCarrier.Up,
+                (seconds - SourcePop) / (SourceLand - SourcePop), out shown, out error);
         }
 
         private static bool ValidFlight(double value) { return Finite(value) && value > 0 && value <= 10; }
