@@ -67,17 +67,21 @@ def source_rear_arm(s, sf, joints):
     if weight <= 0: return
     anchors = []
     for row in s['_rawFrames']:
+        if row['frame_index'] in spec['authoredGapFrames']: continue
         points = row['image_landmarks'][row['target_selection']['selectedCandidateIndex']]
         shoulders = (points[11]['y']+points[12]['y'])*.5
         hips = (points[23]['y']+points[24]['y'])*.5
         span = hips-shoulders
         if span <= 0 or min(points[k].get('visibility', 0) for k in (11,13,15)) < .5:
             continue
+        wrist_y = points[15]['y']
+        for mark in spec['wristPixelOverrides']:
+            if row['frame_index'] == mark['frame']: wrist_y = mark['pixel'][1]/row['height']
         anchors.append((row['frame_index'], [-(points[13]['y']-points[11]['y'])/span,
-                                             -(points[15]['y']-points[13]['y'])/span]))
+                                             -(wrist_y-points[13]['y'])/span]))
     if len(anchors) < 2 or not anchors[0][0] <= sf <= anchors[-1][0]:
         raise ValueError('Source rear-arm guide lacks actual bracketing anchors')
-    # Low-confidence94/96 are explicit authored interpolation, never observations.
+    # Rejected94–96 and the uncertain wrist93 mark remain explicit authored guidance.
     vertical_rise = (joints['LeftShoulder'][1]+joints['RightShoulder'][1])*.5-joints['Pelvis'][1]
     dy = curve([a[0] for a in anchors], [a[1] for a in anchors], sf)*vertical_rise
     side = 'Right'
@@ -176,6 +180,11 @@ def sample(source, s, sf):
         j[k] += shift
     for side, (ankle, frame) in feet.items():
         pole = transport_leg_pole(original[side + 'Hip'], original[side + 'Knee'], original[side + 'Ankle'], j[side + 'Hip'], ankle)
+        if side == 'Right' and sf > s['rearLandingKnee']['start']:
+            spec = s['rearLandingKnee']
+            weight = smooth((sf-spec['start'])/(spec['full']-spec['start']))
+            toe = frame[:, 2]-UP*frame[1, 2]
+            pole = unit(unit(pole)*(1-weight)+unit(toe)*weight)
         j[side + 'Knee'] = limb(j[side + 'Hip'], ankle, s['_rig']['thigh'], s['_rig']['shin'], pole)
         j[side + 'Ankle'] = ankle
         j[side + 'Toe'] = ankle + frame[:, 2] * math.sqrt(s['_rig']['foot'] ** 2 - s['_rig']['toeDrop'] ** 2) - frame[:, 1] * s['_rig']['toeDrop']
@@ -240,7 +249,7 @@ def bake(source, controls, raw):
                 sourceVideoOffsetSeconds=s['firstSourceFrame'] / s['sourceFps'],
                 sourceCacheOriginalOffsetSeconds=s['sourceCacheOriginalOffsetSeconds'], referenceGroundPress=s['reference'],
                 combinedWinding=dict(nativeFlip=0, nativeShove=-360, canonicalYaw=360),
-                sourcePhaseLimit=s['sourcePhaseLimit'], sourceRootJoinFrame=p['airJoin'], authoredRearPickup=s['rearPickupKeys'], rearArmImageGuide=s['rearArmImageGuide'],
+                sourcePhaseLimit=s['sourcePhaseLimit'], sourceRootJoinFrame=p['airJoin'], authoredRearPickup=s['rearPickupKeys'], rearArmImageGuide=s['rearArmImageGuide'], rearLandingKnee=s['rearLandingKnee'],
                 contactLimit='Monocular source-role/contact estimates and authored shaped-deck reconstruction; no measured contact confidence.')
     duration = (s['lastSourceFrame'] - s['firstSourceFrame']) / s['sourceFps']
     clip = dict(format='skate-source-keyed-bs360/1', metadata=meta, stance='regular', fps=s['sourceFps'] * 6, duration=duration,

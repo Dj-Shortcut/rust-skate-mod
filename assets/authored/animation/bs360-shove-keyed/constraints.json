@@ -2016,7 +2016,7 @@
   "sourceSurfaceSha256": "8873121f728af49a9af90c2ee4ba723b7f56259d60913155f578d3a88e976acd",
   "soleGap": 0.003,
   "freeFootBlendFrames": 1.5,
-  "provenance": "Own Kroetkov white-shirt landed BS360 shove take, normalized from filmed Goofy to canonical sourceLeft-front/sourceRight-rear. Own captured body directions/free-foot basis; original authored board translation removed once. New authored whole-board real-tail pressure and current observed-ground/C1 carrier, full360 yaw with no flip/bodyspin, source-led rotating-tail contact through86, free release87\u201388, one-foot-first catch100/both101 and Land103. No Cole/Kick/Heel/Tre body pose is used. Own rear free pickup around source90\u201396 is source-led authored reconstruction; rear-arm vertical components follow the retained actor image landmarks instead of the old lowered world33 prior. Air board pitch follows the same take after the new pressure phase.",
+  "provenance": "Own Kroetkov white-shirt landed BS360 shove take, normalized from filmed Goofy to canonical sourceLeft-front/sourceRight-rear. Own captured body directions/free-foot basis; original authored board translation removed once. New authored whole-board real-tail pressure and current observed-ground/C1 carrier, full360 yaw with no flip/bodyspin, source-led rotating-tail contact through86, free release87\u201388, one-foot-first catch100/both101 and Land103. No Cole/Kick/Heel/Tre body pose is used. Own rear free pickup around source90\u201396 is source-led authored reconstruction; rear-arm vertical components follow the retained actor image landmarks instead of the old lowered world33 prior. Air board pitch follows the same take after the new pressure phase. Pixel review corrects the blurred source93 rear wrist and rejects raw95; the raised arm is established by87, as in the visible take. Rear landing bend follows its source shoe toe tangent from98\u2013103, preventing the old tail-kneeling plane while endpoints stay fixed.",
   "uncertainty": "Monocular depth, exact sole yaw/pressure, first contact subframes and metric board pitch remain reconstruction, not calibrated3D mocap. Original81 raw detections and previous packs are preserved. Board yaw follows the previous source-led winding, while the pre-tailstrike15-degree pressure/guessed height is discarded.",
   "libraryEdit": "Source frames78\u2013125 from preserved45\u2013125 take: short observed crouch, real pop/scoop, entire360 Air/Catch/Land and captured rollaway. No missing frames are invented.",
   "sourceCacheOriginalOffsetSeconds": 148,
@@ -2054,16 +2054,34 @@
     ]
   ],
   "rearArmImageGuide": {
-    "start": 87,
-    "full": 91,
+    "start": 85,
+    "full": 87,
     "returnStart": 97,
     "end": 103,
     "rawAnatomicalSide": "Left",
     "canonicalSide": "Right",
-    "limit": "Source image vertical components scaled by the actor torso; original X/Z depth direction retained and both measured bone lengths solved exactly. Monocular depth remains authored, not new observations. Low-visibility94/96 interpolate between retained actual anchors without confidence inflation.",
+    "limit": "Retained image vertical components scaled by this actor torso, with original X/Z depth direction and exact measured limb lengths. Raw94/96 have low visibility; raw95 falsely follows a high trail and is rejected after pixel review. These frames are authored interpolation. Wrist93 is an explicit uncertain image mark. No confidence increase.",
     "authoredGapFrames": [
       94,
+      95,
       96
+    ],
+    "wristPixelOverrides": [
+      {
+        "frame": 93,
+        "pixel": [
+          1188,
+          260
+        ],
+        "uncertaintyPixels": 25,
+        "provenance": "Visible high rear wrist in the retained source93 image; raw wrist297 tracks too low in motion blur. Authored image mark, not detector evidence."
+      }
     ]
+  },
+  "rearLandingKnee": {
+    "start": 98,
+    "full": 103,
+    "direction": "current source shoe toe tangent, projected by unchanged fixed-length IK",
+    "provenance": "Source100\u2013112 rear shin stays steeper in the forward crouch; reject the old tail-kneeling world33 pole. Only rear bend plane, no foot/root displacement."
   }
 }

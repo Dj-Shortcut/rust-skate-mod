@@ -26,8 +26,11 @@ and limb directions, and fits the unchanged fixed-length legs to authored foot
 targets. The rear free-foot pickup follows the visible asymmetric collection.
 The source's retained image landmarks guide the rear balance arm vertically,
 while its original depth direction and both measured arm lengths remain fixed.
-Low-visibility arm frames 94 and 96 are authored interpolation between actual
-anchors, with no confidence increase. The source's own slight Air pitch remains
+Low-visibility arm frames 94/96 and the visibly false raw wrist at 95 are
+reconstructed between actual anchors. The blurred wrist at 93 is an explicit
+uncertain image mark. No detector confidence is increased. At landing only the
+rear knee bend plane follows the source shoe toe tangent; feet, root and limb
+lengths stay fixed. The source's own slight Air pitch remains
 after the pressure phase. The rear shoe follows the rotating tail until it releases. The front
 lifts clear without a kick/heel flick. Full360 restores the original nose/tail
 order at catch, unlike a half-turn's reversed deck-local foot pins.

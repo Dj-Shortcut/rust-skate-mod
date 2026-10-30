@@ -17,7 +17,9 @@ Current input-owned neutral Ground setup, source93 world-C1 join and bounded
 whole-body/board floor correction are runtime presentation, with no extra physics
 arc or scoring change. A full360 restores the original deck-local foot ends at
 catch. The own rear pickup and image-guided rear-arm height are labelled reconstruction;
-low-visibility arm frames 94/96 interpolate between actual anchors. Its slight
+low-visibility arm frames 94/96 and visibly false wrist95 interpolate between
+actual anchors; wrist93 is an uncertain authored image mark. The rear landing
+knee follows its shoe toe tangent without moving the feet or body root. Its slight
 Air board pitch is retained after pressure release. There is no longitudinal flip, instep flick or body180.
 
 Original and generated packs remain Reviewed=false. Approve only a separate
