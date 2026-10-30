@@ -753,7 +753,9 @@ public static class SkateCapturedTricks
                     active.SourceMovementKind == "kickflip" || active.SourceMovementKind == "heelflip" || active.SourceMovementKind == "360-flip" ||
                     active.SourceMovementKind == "switch-heelflip" || active.SourceMovementKind == "nollie-heelflip" ||
                     active.SourceMovementKind == "fakie-kickflip" ||
-                    active.SourceMovementKind == "nollie-backside-180-heelflip" || active.SourceMovementKind == "nollie-360-flip"))
+                    active.SourceMovementKind == "nollie-backside-180-heelflip" || active.SourceMovementKind == "nollie-360-flip",
+                    active.Clip.Id == "fakie-kickflip" && active.SourceMovementKind == "fakie-kickflip" &&
+                    SkateCaptureLegacyPop.Accepts(active.Clip, signature)))
                 { Refuse(nextToken, error ?? "supported recovery frame unavailable"); return false; }
                 frame = new SkateCaptureFrame(settled, frame.Board, frame.Rotation, frame.LeftSoleUp, frame.RightSoleUp,
                     frame.HasEvent, frame.Observation, frame.PelvisCorrection, frame.LeftHandCorrection, frame.RightHandCorrection, frame.RiderUp);

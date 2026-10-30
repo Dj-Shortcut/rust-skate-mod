@@ -724,7 +724,8 @@ namespace Shortcut.RustMod
         // depth jitter must not twist a planted knee around its hip/ankle axis.
         // Feet and torso are unchanged; optional head transport follows the gaze.
         public static bool TryGroundRecovery(SkateRiderRig rig, SkateRiderPose impact, SkateRiderPose ordinary,
-            SkateRiderPose body, SkateVector supportUp, double weight, double gazeWeight, out SkateRiderPose pose, out string error, bool followHeadGaze = false)
+            SkateRiderPose body, SkateVector supportUp, double weight, double gazeWeight, out SkateRiderPose pose, out string error,
+            bool followHeadGaze = false, bool keepSourceGaze = false)
         {
             pose = body; error = null;
             if (!Finite(weight) || weight < 0 || weight > 1 || !Finite(gazeWeight) || gazeWeight < 0 || gazeWeight > 1 ||
@@ -743,7 +744,10 @@ namespace Shortcut.RustMod
                     TurnDirection(la, lb, weight, body.LeftAnkle - body.LeftHip), out lk, out error) ||
                 !SkateOllieStyles.TryLimb(body.RightHip, body.RightAnkle, rig.ThighLength, rig.ShinLength,
                     TurnDirection(ra, rb, weight, body.RightAnkle - body.RightHip), out rk, out error)) return false;
-            var gaze = RecoveryGaze(impact.HeadForward, ordinary.HeadForward, body.ChestForward, supportUp, gazeWeight);
+            // Body already includes the clip's bounded recovery-to-ordinary blend.
+            // Keep its authored gaze when early travel-facing recovery is inappropriate.
+            var gaze = keepSourceGaze ? body.HeadForward :
+                RecoveryGaze(impact.HeadForward, ordinary.HeadForward, body.ChestForward, supportUp, gazeWeight);
             if (!Finite(gaze.LengthSquared) || Math.Abs(gaze.LengthSquared - 1) > .00001)
             { error = "Supported recovery gaze is degenerate."; return false; }
             var head = body.Head;
