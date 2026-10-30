@@ -11,7 +11,7 @@
   "pressFadeFrames": 2,
   "airFrame": 4597.25,
   "frontCatchFrame": 4607,
-  "rearCatchFrame": 4608,
+  "rearCatchFrame": 4608.5,
   "landFrame": 4609,
   "recoveryFrame": 4615,
   "referenceFlight": 0.6,
@@ -2478,7 +2478,8 @@
       "Minimum native flight .528 coupled model-hull envelope is presentation-only; physics/scoring unchanged.",
       "Nose/front Left support and first catch are source-led authored roles; exact sole-touch depth/frame is blurred/occluded. The old Right-only masks are not reused.",
       "Visible lead wrist height during4592\u20134605 is reconstructed from this take; old standing-root arm projection dropped it below the filmed shoulder-level balance. Own horizontal direction, arm reach and far-arm motion retained.",
-      "Free-body metric pickup rebuilt coherently from4602 whole-shoe/real-deck separation, not claimed as measured3D translation. Board/physics unchanged; no runtime extra arc."
+      "Free-body metric pickup rebuilt coherently from4602 whole-shoe/real-deck separation, not claimed as measured3D translation. Board/physics unchanged; no runtime extra arc.",
+      "Source4607 visibly retains the rear knee and shoe above the first front catch. Its own rear free-foot curve and later4608.5 catch are reconstructed; original old both-catch4608 was not treated as exact measured contact."
     ],
     "sourceAuthor": "The Berrics \u2014 BATB multi-trick reference; striped-shirt Nollie360 take",
     "sourceRights": "Reference footage remains with its owners and is not distributed by this source repository. Source poses and reconstructed motion remain unreviewed.",
@@ -2531,5 +2532,44 @@
       4607
     ],
     "provenance": "Own free pelvis and both ankles move together during source collection. The old metric placement cut through the correctly oriented deck; one exact frozen whole-shoe witness at source4602 requires9.97cm for conservative15mm world-up separation. No shape/knee change; source nose contact, instep, Catch and landing positions are preserved."
-  }
+  },
+  "rearCatchApproachStartFrame": 4607.25,
+  "rearCatchLiftKeys": [
+    [
+      4584,
+      0
+    ],
+    [
+      4603,
+      0
+    ],
+    [
+      4604,
+      0
+    ],
+    [
+      4605,
+      0.03
+    ],
+    [
+      4606,
+      0.1
+    ],
+    [
+      4607,
+      0.13
+    ],
+    [
+      4608,
+      0.05
+    ],
+    [
+      4608.5,
+      0
+    ],
+    [
+      4625,
+      0
+    ]
+  ]
 }

@@ -4,7 +4,7 @@ This family uses the cached striped-shirt take from the owner's [Berrics referen
 
 `author_skate_nollie360_hybrid.py` uses this take's own relative upper-body directions. It excludes the old standing pelvis/mean-ankle prior and the V5 free-foot heights that made the original preview too high and uneven. The reconstructed pelvis and both free ankles share one upright carrier and their own source-led pickup and knee planes. No ordinary Tre, Kickflip or Heelflip movement keys are copied. A source-specific free pickup translates the pelvis and both ankles together after separation and returns to zero at the first Catch; it corrects the old metric placement that let the properly rotating deck cut through the soles. The knee shape, nose/instep contacts, board motion and Catch/Land positions remain unchanged. This metric reconstruction is explicit, not measured3D motion or another gameplay arc.
 
-The real input-owned Nollie charge places the nose/front footprint on the nose and the rear footprint around the middle. The visible lead wrist's shoulder-level Air balance is reconstructed where the old standing-root retarget pulled it down; its own horizontal direction, fixed arm lengths and the real high far-arm motion remain. This family then uses a front-foot nose scoop, a rear-foot instep exit, independent complete +360 longitudinal roll and +360 canonical yaw, asymmetric collection, catch, later absorption and soft roll-away. Native signature remains Nollie / flip +360 / shove −360 / no body spin. Physics, scoring, collision timing and the real landing remain authoritative.
+The real input-owned Nollie charge places the nose/front footprint on the nose and the rear footprint around the middle. The visible lead wrist's shoulder-level Air balance is reconstructed where the old standing-root retarget pulled it down; its own horizontal direction, fixed arm lengths and the real high far-arm motion remain. This family then uses a front-foot nose scoop, a rear-foot instep exit, independent complete +360 longitudinal roll and +360 canonical yaw, asymmetric collection, asymmetric front-first catch with the rear knee still collected, later absorption and soft roll-away. Native signature remains Nollie / flip +360 / shove −360 / no body spin. Physics, scoring, collision timing and the real landing remain authoritative.
 
 | Source frame | Visible phase and reconstruction |
 | --- | --- |
@@ -13,7 +13,7 @@ The real input-owned Nollie charge places the nose/front footprint on the nose a
 | 4593.75–4595 | Rear sole releases into its instep contact and then leaves the tail |
 | 4595.25–4597.25 | Front nose sole leaves; explicit short authored press fade |
 | 4602 | Collected compact Air, own asymmetric feet and toe-facing knee planes |
-| 4607 / 4608 | Authored front-first catch, then both soles on returning grip |
+| 4607 / 4608.5 | Authored front-first catch, then both soles on returning grip |
 | 4609 | Source landing, mapped only after an actual native landing |
 | 4612–4625 | Absorption and continuous roll-away |
 

@@ -62,13 +62,15 @@ def foot(s,f,side):
  if side=='Right'and f<=release:
   a,ar=attached(s,f,side);b,br=instep(s,f);w=smooth((f-sole)/(release-sole));return a*(1-w)+b*w,orientation(ar,br,w)
  o,r,h,correction=board(s,f);target=vector(s['freeWorldFeet'][side],f)+UP*correction
+ if side=='Right':target+=UP*scalar(s['rearCatchLiftKeys'],f)
  flat=foot_basis(scalar(s['airYaw'][side],f),0,scalar(s['airDorsi'][side],f))
  # Leave from this take's actual last contact; do not hold the flick foot
  # against the rising tail and then drop it onto unrelated free-height keys.
  start,sr=attached(s,release,side)if side=='Left'else instep(s,release)
  start+=UP*(correction-board(s,release)[3])
  w=smooth((f-release)/s['releaseBlendFrames']);ankle=start*(1-w)+target*w;fr=orientation(sr,flat,w)
- catch=s['frontCatchFrame']if side=='Left'else s['rearCatchFrame'];a,ar=caught(s,f,side);cw=smooth((f-(catch-s['catchApproachFrames']))/s['catchApproachFrames'])
+ catch=s['frontCatchFrame']if side=='Left'else s['rearCatchFrame'];a,ar=caught(s,f,side)
+ start=catch-s['catchApproachFrames']if side=='Left'else s['rearCatchApproachStartFrame'];cw=smooth((f-start)/(catch-start))
  return ankle*(1-cw)+a*cw,orientation(fr,ar,cw)
 
 def sample(controls,s,f):
