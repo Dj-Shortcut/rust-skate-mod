@@ -40,7 +40,7 @@ def reconstruct(source, controls):
     bounds = controls['sourceFrames']
     if not len(bounds) == 4 or not all(a < b for a, b in zip(bounds, bounds[1:])):
         raise ValueError('Air window must have ordered start/full/release/end source frames')
-    if bounds[0] < 2721 or bounds[-1] > 2729.5:
+    if bounds[0] < 2720.375 or bounds[-1] > 2729.125:
         raise ValueError('The established pop/instep and Catch must remain outside the repair')
     result = copy.deepcopy(source)
     rig = source['metadata']['rig']
@@ -49,6 +49,8 @@ def reconstruct(source, controls):
         blend = weight(row['sourceFrame'], bounds)
         if blend == 0:
             continue
+        if row['contacts'] & 3:
+            raise ValueError('Only the actually free-foot Air interval may be reconstructed')
         joints = {name: np.asarray(value, dtype=float) for name, value in before['joints'].items()}
         board = np.asarray(before['board']['origin'], dtype=float)
         target_height = board[1] + controls['pelvisAboveBoardM']
@@ -70,7 +72,7 @@ def reconstruct(source, controls):
         raise ValueError('No original source samples intersect the authored Air window')
     for side in ('Left', 'Right'):
         result['metadata']['freeFootPaths'][side]['provenance'] += (
-            ' The source2721–2729.5 Air segment is replaced by the separately '
+            ' The source2720.375–2729.125 Air segment is replaced by the separately '
             'declared coherent authored pelvis/free-ankle reconstruction; source '
             'depth and confidence remain unchanged.'
         )
