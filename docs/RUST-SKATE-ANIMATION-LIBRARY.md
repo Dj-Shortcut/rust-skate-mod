@@ -8,9 +8,9 @@ selections are reference material, not a limit or a count of finished animations
 
 | Batch | Coverage | Current gate |
 | --- | --- | --- |
-| 1 | Switch Heelflip, Nollie Heelflip, Fakie Kickflip, Nollie Backside 180 Heelflip, Nollie 360 Flip | Viewer revision includes corrected head/neck frames, quicker recovery, relaxed cruise arms, targeted free-foot return and coupled trucks on the detailed board. Normal and slow visual review uses the reference skin; Rust/Shadow acceptance remains open. This source change does not approve or install a capture pack. |
+| 1 | Switch Heelflip, Nollie Heelflip, Fakie Kickflip, Nollie Backside 180 Heelflip, Nollie 360 Flip | Offline viewer review completed on 30 October at main `5cbbf2f7`: twenty full normal/low, Regular/Goofy replays on the frozen skin and thirteen-part board. Deep Ground preparation, pop/release, Air, catch, landing and roll-away were inspected beside the source, including slow motion. Original pack approval, native controller binding and Shadow remain open. |
 | 2 | Riding, steering, crouch, normal/mongo push, ollie/nollie, braking, powerslide, revert, kickturn, both manuals, landing and upright roll-away | Existing procedural routes need visual review. Dedicated manual-revert, speed-check and kickturn actions are still missing. |
-| 3 | All requested flip/shove families and stance/spin variants, composed from shared source families; separate references for exceptional foot/body actions | The registry contains 17 signatures: 11 base and 6 double/triple derivatives, including Hardflip. Impossible has a separate board-path adapter. A new source-led Nollie360 candidate replaces its older source within the same kind. Code/source presence is not a finished-animation count; per-trick visual review, exact pack approval and Shadow remain separate. Batch 1 and the remaining 40-reference coverage stay open. |
+| 3 | All requested flip/shove families and stance/spin variants, composed from shared source families; separate references for exceptional foot/body actions | The registry contains 17 signatures: 11 base and 6 double/triple derivatives, including Hardflip. Impossible has a separate board-path adapter. Source-keyed Nollie360 and BS Pop Shove-it replace older sources within their existing kinds. Code/source presence is not a finished-animation count; the remaining 40-reference coverage, per-trick review, exact pack approval and Shadow stay open. |
 | 4 | All requested air grabs, tweaks and one-foot/no-foot variants | Existing grab catalogue and procedural presentation need hand/foot and motion review. Review airs above a halfpipe, including entry, hold, release, catch and landing. |
 | 5 | All grinds, slides and stalls, darkslide, both exit directions | Existing action/pose source remains separate from approved capture playback. Rail, ledge and coping contact must be verified. |
 | 6 | Ground grabs, coffin, boneless, beanplant, fastplant, no comply, caveman and hippie-jump variants | Existing source needs distinct per-action contact/motion review; shared generic poses do not count as individual finished animations. |
@@ -26,6 +26,31 @@ recovery, stiff cruise posture and shoe/deck errors in the viewer, spending at m
 half a day per trick. Do not prolong this pass with further precision-measurement
 rounds. Review normal and slow playback, compile, push the improvement, then add
 new tricks through #584. Keep the later Shadow playtest as a separate gate.
+
+### Reviewed batch-1 snapshot, 30 October
+
+| Trick | Selected clip ID | Offline viewer | Native Rust/Shadow |
+| --- | --- | --- | --- |
+| Switch Heelflip | `switch-heelflip` | Reviewed, normal/low and both physical stances | Pending |
+| Nollie Heelflip | `nollie-heelflip` | Reviewed, normal/low and both physical stances | Pending |
+| Fakie Kickflip | `fakie-kickflip` | Reviewed, normal/low and both physical stances | Pending |
+| Nollie BS180 Heelflip | `nollie-backside-180-heelflip` | Reviewed, normal/low and both physical stances | Pending |
+| Nollie 360 Flip | `nollie-360-flip-source-keyed-v1` | Reviewed, normal/low and both physical stances | Pending |
+
+The integrated replay uses actual Pad/Ground, Flicking and TakePop transitions.
+The ordinary charged pose persists across recognition, with deeper authored
+Ground preparation and the same measured shoe anchors. Review covered the new
+preparation-to-pop transition and post-landing stability, not just isolated Air
+poses. The separate truck trace shows the actual opposed hanger/axle steering
+and bushing deformation; it uses controlled source-fixture inputs and does not
+establish native grip forces or a Rust ride.
+
+This is a bounded offline review at the pinned source revision. The original
+packs remain `Reviewed=false`; their production approval, installation and game
+test are separate. Raw diagnostic failures remain visible and no thresholds
+were weakened. Physical Regular/Goofy labels follow the actual companion skin
+feet: this exporter swaps native left/right names, so native requested stance
+is recorded separately until the controller binding can be checked on Shadow.
 
 ## Batch 3: shared references, individual animations
 
@@ -101,7 +126,8 @@ Impossible uses its own board-path adapter and is not an eighteenth registry
 signature. The source-keyed Nollie360 candidate replaces its older source within
 the existing kind; it does not add another signature or approve the original
 pack. These are implemented selection paths, not a count of finished animations.
-Batch 1 remains open as a group. Every result retains independent viewer, exact
+Batch 1 has the pinned offline review above; its exact pack approval and native
+Shadow gates remain open. Every other result retains independent viewer, exact
 pack-approval and native Shadow gates. Later families need their own entry/hold/
 exit and contact rules rather than relaxing the flat-ground exclusions. Ground, rail and coping
 anchors must come from the active game action. Physics, board rotation, scoring,

@@ -695,6 +695,12 @@ What each trick has to look like (start position, pop, flick, tuck, catch,
 landing) is in [the trick anatomy reference](RUST-SKATE-TRICK-ANATOMY.md). Read
 the trick's section before authoring or repairing it.
 
+The [30 October batch-1 coverage record](RUST-SKATE-ANIMATION-LIBRARY.md#reviewed-batch-1-snapshot-30-october)
+records the integrated twenty-clip offline review at main `5cbbf2f7`, using real
+Pad/Ground-to-pop transitions, normal/low flights and both physical stances.
+It does not flip original approval bits, install a pack or establish native
+Rust/Shadow acceptance. Source-derived variants retain separate review gates.
+
 ### Switch Heelflip recovery head alignment
 
 The original Switch Heelflip uses the same supported recovery head alignment
@@ -752,15 +758,18 @@ gaze instead of prematurely replacing it with ordinary travel-facing gaze.
 The existing recovery blend still returns to ordinary riding. This gaze option
 defaults off and is enabled only for the exact base Fakie ID/kind/signature.
 
-This does not make the complete Fakie animation source-identical. The grounded
-Load still uses the common 75-degree knee target, 32-degree torso fold and
-ordinary gaze: the filmed Fakie crouch folds farther and looks more directly
-down at the board. Charge is already fully applied; this is not a partial-charge
-fixture error. No future-trick selection or global charge-pose change is added.
+This does not make the complete Fakie animation source-identical. Its grounded
+Load uses the shared ordinary preparation rather than predicting a future
+family. The shared Ground repair retains that pose across Held-to-Flicking and
+uses authored 55-degree full-charge knee/torso targets with the same measured
+shoe anchors. The public Air/upper-fold helper remains at 32 degrees. The short
+entry carries the actual Ground pose into Pop; physics, scoring and the source
+Air/Catch/Land shapes remain authoritative.
 The read-only diagnostic checker still flags front-sole, hip-height, hand-height
 and acceleration limits; the per-profile reports remain beside the bound render
-set, and no threshold was weakened. The visible held-source hop is repaired, but native Shadow play
-and the remaining grounded Load presentation are separate acceptance work.
+set, and no threshold was weakened. The visible held-source hop and shared
+Ground preparation passed the integrated offline review above. Exact production
+pack approval and native Shadow play remain separate acceptance work.
 
 Keep generated JSON and packs in ignored `context/`. Starting with the retained
 **complete first-five composition manifest**, these commands replace only its
