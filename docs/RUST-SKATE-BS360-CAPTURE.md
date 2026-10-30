@@ -11,7 +11,7 @@ legacy prototype remain preserved privately.
 | Native signature | Ollie, normal, tail not leading; Flip 0 / Shove −360 / Spin 0 / Body 0 |
 | Canonical board | Pure yaw +360; no longitudinal flip or body180 |
 | Source window | Cache frames 78–125 from the preserved 45–125 take, 30000/1001 fps |
-| Source phases | Pop85, rear release87–88, press fade ends90, collected Air93, first catch100 / both101, Land103, Roll112 |
+| Source phases | Pop 85, rear release 87–88, press fade ends 90, collected Air 93, first catch 100 / both 101, Land 103, Roll 112 |
 
 The actual board completes its full shove with grip up while the body does not
 turn180. The original footage is Goofy: anatomical Right is front, Left is rear.
@@ -23,7 +23,12 @@ The source-led baker replaces the old prototype's 15-degree pressure and guessed
 height with the current whole-board tail support and upright physical carrier.
 It removes the previous board translation once, preserves this take's body
 and limb directions, and fits the unchanged fixed-length legs to authored foot
-targets. The rear shoe follows the rotating tail until it releases. The front
+targets. The rear free-foot pickup follows the visible asymmetric collection.
+The source's retained image landmarks guide the rear balance arm vertically,
+while its original depth direction and both measured arm lengths remain fixed.
+Low-visibility arm frames 94 and 96 are authored interpolation between actual
+anchors, with no confidence increase. The source's own slight Air pitch remains
+after the pressure phase. The rear shoe follows the rotating tail until it releases. The front
 lifts clear without a kick/heel flick. Full360 restores the original nose/tail
 order at catch, unlike a half-turn's reversed deck-local foot pins.
 
@@ -42,6 +47,7 @@ Executable authoring uses the existing SHA-pinned private canonical input:
 ```sh
 python scripts/author_skate_bs360_shove.py \
   --input "$PRIVATE_BS360_SOURCE_JSON" \
+  --raw "$PRIVATE_BS360_RAW_POSE_GZIP" \
   --output context/artifacts/bs360-source-keyed/output
 ```
 

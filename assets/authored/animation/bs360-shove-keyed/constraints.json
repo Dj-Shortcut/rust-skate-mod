@@ -99,6 +99,26 @@
     ],
     [
       90,
+      16.089910089910095
+    ],
+    [
+      93,
+      10.33391608391608
+    ],
+    [
+      96,
+      5.089160839160842
+    ],
+    [
+      99,
+      1.317432567432564
+    ],
+    [
+      101,
+      0.0
+    ],
+    [
+      103,
       0
     ],
     [
@@ -1996,11 +2016,54 @@
   "sourceSurfaceSha256": "8873121f728af49a9af90c2ee4ba723b7f56259d60913155f578d3a88e976acd",
   "soleGap": 0.003,
   "freeFootBlendFrames": 1.5,
-  "provenance": "Own Kroetkov white-shirt landed BS360 shove take, normalized from filmed Goofy to canonical sourceLeft-front/sourceRight-rear. Own captured body directions/free-foot basis; original authored board translation removed once. New authored whole-board real-tail pressure and current observed-ground/C1 carrier, full360 yaw with no flip/bodyspin, source-led rotating-tail contact through86, free release87\u201388, one-foot-first catch100/both101 and Land103. No Cole/Kick/Heel/Tre body pose is used.",
+  "provenance": "Own Kroetkov white-shirt landed BS360 shove take, normalized from filmed Goofy to canonical sourceLeft-front/sourceRight-rear. Own captured body directions/free-foot basis; original authored board translation removed once. New authored whole-board real-tail pressure and current observed-ground/C1 carrier, full360 yaw with no flip/bodyspin, source-led rotating-tail contact through86, free release87\u201388, one-foot-first catch100/both101 and Land103. No Cole/Kick/Heel/Tre body pose is used. Own rear free pickup around source90\u201396 is source-led authored reconstruction; rear-arm vertical components follow the retained actor image landmarks instead of the old lowered world33 prior. Air board pitch follows the same take after the new pressure phase.",
   "uncertainty": "Monocular depth, exact sole yaw/pressure, first contact subframes and metric board pitch remain reconstruction, not calibrated3D mocap. Original81 raw detections and previous packs are preserved. Board yaw follows the previous source-led winding, while the pre-tailstrike15-degree pressure/guessed height is discarded.",
   "libraryEdit": "Source frames78\u2013125 from preserved45\u2013125 take: short observed crouch, real pop/scoop, entire360 Air/Catch/Land and captured rollaway. No missing frames are invented.",
   "sourceCacheOriginalOffsetSeconds": 148,
   "sourcePhaseLimit": "Front lifts84\u201385; rear shoe follows the rotating tail through86 and separates87\u201388. First catch100/both101 and wheels around102\u2013104 are source brackets; Land103 is an authored representative contact. Actual game collision owns landing.",
   "originalRawPoseSha256": "c1d497852fed39294aa14a865894c495e40a4f00094f01f45c7b6c7a0d71d2de",
-  "sourceJobSha256": "6d14e2f6434dfb3137dc3e669c9c344aba7ac159198045d6bd3a36a5a5a5b5ee"
+  "sourceJobSha256": "6d14e2f6434dfb3137dc3e669c9c344aba7ac159198045d6bd3a36a5a5a5b5ee",
+  "rearPickupKeys": [
+    [
+      78,
+      0
+    ],
+    [
+      87,
+      0
+    ],
+    [
+      90,
+      0.1
+    ],
+    [
+      93,
+      0.13
+    ],
+    [
+      96,
+      0.1
+    ],
+    [
+      99,
+      0
+    ],
+    [
+      125,
+      0
+    ]
+  ],
+  "rearArmImageGuide": {
+    "start": 87,
+    "full": 91,
+    "returnStart": 97,
+    "end": 103,
+    "rawAnatomicalSide": "Left",
+    "canonicalSide": "Right",
+    "limit": "Source image vertical components scaled by the actor torso; original X/Z depth direction retained and both measured bone lengths solved exactly. Monocular depth remains authored, not new observations. Low-visibility94/96 interpolate between retained actual anchors without confidence inflation.",
+    "authoredGapFrames": [
+      94,
+      96
+    ]
+  }
 }

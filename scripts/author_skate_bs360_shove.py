@@ -3,6 +3,7 @@
 import argparse
 import copy
 import hashlib
+import gzip
 import json
 import math
 from pathlib import Path
@@ -59,6 +60,37 @@ def source_body(source, sf):
     return j, dirs, soles
 
 
+def source_rear_arm(s, sf, joints):
+    spec = s['rearArmImageGuide']
+    weight = min(smooth((sf-spec['start'])/(spec['full']-spec['start'])),
+                 1-smooth((sf-spec['returnStart'])/(spec['end']-spec['returnStart'])))
+    if weight <= 0: return
+    anchors = []
+    for row in s['_rawFrames']:
+        points = row['image_landmarks'][row['target_selection']['selectedCandidateIndex']]
+        shoulders = (points[11]['y']+points[12]['y'])*.5
+        hips = (points[23]['y']+points[24]['y'])*.5
+        span = hips-shoulders
+        if span <= 0 or min(points[k].get('visibility', 0) for k in (11,13,15)) < .5:
+            continue
+        anchors.append((row['frame_index'], [-(points[13]['y']-points[11]['y'])/span,
+                                             -(points[15]['y']-points[13]['y'])/span]))
+    if len(anchors) < 2 or not anchors[0][0] <= sf <= anchors[-1][0]:
+        raise ValueError('Source rear-arm guide lacks actual bracketing anchors')
+    # Low-confidence94/96 are explicit authored interpolation, never observations.
+    vertical_rise = (joints['LeftShoulder'][1]+joints['RightShoulder'][1])*.5-joints['Pelvis'][1]
+    dy = curve([a[0] for a in anchors], [a[1] for a in anchors], sf)*vertical_rise
+    side = 'Right'
+    vectors = [joints[side+'Elbow']-joints[side+'Shoulder'], joints[side+'Hand']-joints[side+'Elbow']]
+    for n, (root, tip, length) in enumerate((('Shoulder','Elbow',s['_rig']['upperArm']), ('Elbow','Hand',s['_rig']['forearm']))):
+        old = vectors[n]; horizontal = old-UP*old[1]; y = float(dy[n])
+        if abs(y) >= length*.998 or np.linalg.norm(horizontal) < 1e-8:
+            raise ValueError('Source arm image guide exceeds its measured chain at '+str(sf))
+        goal = unit(horizontal)*math.sqrt(length*length-y*y)+UP*y
+        direction = unit(old*(1-weight)+goal*weight)
+        joints[side+tip] = joints[side+root]+direction*length
+
+
 def reference_height(s, sf):
     p = s['phases']
     f = float(np.clip((sf - p['pop']) / (p['land'] - p['pop']), 0, 1))
@@ -98,6 +130,7 @@ def foot(s, sf, side, raw, soles):
         return attached(s, sf, side)
     start, old_basis = attached(s, release, side)
     target = raw[side + 'Ankle'].copy()
+    if side == 'Right': target[1] += scalar(s['rearPickupKeys'], sf)
     forward = unit(raw[side + 'Toe'] - raw[side + 'Ankle'] + soles[side] * s['_rig']['toeDrop'])
     free_basis = basis(forward, soles[side])
     weight = smooth((sf - release) / s['freeFootBlendFrames'])
@@ -121,6 +154,7 @@ def foot(s, sf, side, raw, soles):
 
 def sample(source, s, sf):
     j, dirs, soles = source_body(source, sf)
+    source_rear_arm(s, sf, j)
     original = {k: v.copy() for k, v in j.items()}
     feet = {side: foot(s, sf, side, original, soles) for side in ('Left', 'Right')}
     # Constrain only root height against both unchanged foot targets. This is
@@ -155,8 +189,10 @@ def sample(source, s, sf):
                 board=dict(origin=origin.tolist(), quaternion=matrix_quat(rotation).tolist()))
 
 
-def bake(source, controls):
+def bake(source, controls, raw):
     s = copy.deepcopy(controls)
+    if hashlib.sha256(raw).hexdigest() != s['originalRawPoseSha256']: raise ValueError('Wrong raw actor track')
+    s['_rawFrames'] = json.loads(gzip.decompress(raw))['frames']
     m = source['metadata']
     if m['id'] != s['originalId'] or m['movementKind'] != s['movementKind'] or m['reviewed']:
         raise ValueError('Use the exact original unreviewed Kroetkov360 capture')
@@ -204,7 +240,7 @@ def bake(source, controls):
                 sourceVideoOffsetSeconds=s['firstSourceFrame'] / s['sourceFps'],
                 sourceCacheOriginalOffsetSeconds=s['sourceCacheOriginalOffsetSeconds'], referenceGroundPress=s['reference'],
                 combinedWinding=dict(nativeFlip=0, nativeShove=-360, canonicalYaw=360),
-                sourcePhaseLimit=s['sourcePhaseLimit'], sourceRootJoinFrame=p['airJoin'],
+                sourcePhaseLimit=s['sourcePhaseLimit'], sourceRootJoinFrame=p['airJoin'], authoredRearPickup=s['rearPickupKeys'], rearArmImageGuide=s['rearArmImageGuide'],
                 contactLimit='Monocular source-role/contact estimates and authored shaped-deck reconstruction; no measured contact confidence.')
     duration = (s['lastSourceFrame'] - s['firstSourceFrame']) / s['sourceFps']
     clip = dict(format='skate-source-keyed-bs360/1', metadata=meta, stance='regular', fps=s['sourceFps'] * 6, duration=duration,
@@ -215,12 +251,13 @@ def bake(source, controls):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--input', type=Path, required=True)
+    parser.add_argument('--raw', type=Path, required=True)
     parser.add_argument('--controls', type=Path, default=CONTROLS)
     parser.add_argument('--output', type=Path, required=True)
     args = parser.parse_args()
     if args.output.resolve() in args.input.resolve().parents:
         raise ValueError('Keep authored output separate from its immutable source')
-    clip, pack = bake(json.loads(args.input.read_text()), json.loads(args.controls.read_text()))
+    clip, pack = bake(json.loads(args.input.read_text()), json.loads(args.controls.read_text()), args.raw.read_bytes())
     payloads = [('bs-360-shove-it-source-keyed-v1.json', (json.dumps(clip, indent=2)+'\n').encode()), ('skate_captures.skmc', pack)]
     args.output.mkdir(parents=True, exist_ok=True)
     for name, data in payloads:
