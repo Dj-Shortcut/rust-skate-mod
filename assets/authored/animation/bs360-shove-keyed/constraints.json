@@ -2092,5 +2092,19 @@
   "boardTiltFrame": {
     "basis": "upright carrier, applied before the full yaw sweep",
     "provenance": "Source85\u201396 board silhouette: nose rises at the strike, then the same sloped deck plane sweeps through180 so its opposite end is high around93. Fade before firstCatch100. Camera-limited authored3D reconstruction; pitch values are estimates, not measured3D."
+  },
+  "airUpperFold": {
+    "start": 85,
+    "full": 89,
+    "release": 94,
+    "end": 100,
+    "absoluteDegrees": 38,
+    "direction": [
+      0.1387497607968731,
+      0,
+      0.990327473050612
+    ],
+    "rearInternalElbowDegrees": 100,
+    "provenance": "Source89\u201394 places head/torso over the collected front knee, not over the toes. One authored upper-body fold follows this take own source93 front-knee plane; all upper joints and gaze rotate together around unchanged pelvis. The high rear balance forearm bends upward in its own humerus plane. No independent head counteranimation; hips/legs/feet/board/contact-root stay exact."
   }
 }

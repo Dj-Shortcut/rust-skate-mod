@@ -121,6 +121,37 @@ def source_rear_arm(s, sf, joints):
         joints[side+tip] = joints[side+root]+direction*length
 
 
+def source_air_upper(s, sf, joints, dirs):
+    spec = s['airUpperFold']
+    weight = min(smooth((sf-spec['start'])/(spec['full']-spec['start'])),
+                 1-smooth((sf-spec['release'])/(spec['end']-spec['release'])))
+    if weight <= 0: return
+    shoulder, elbow = joints['RightShoulder'], joints['RightElbow']
+    humerus = unit(elbow-shoulder)
+    upward = UP-humerus*np.dot(UP, humerus)
+    if np.linalg.norm(upward) < 1e-6:
+        raise ValueError('Source high balance-arm bend is underdetermined')
+    angle = math.radians(180-spec['rearInternalElbowDegrees'])
+    goal_forearm = humerus*math.cos(angle)+unit(upward)*math.sin(angle)
+    previous = unit(joints['RightHand']-elbow)
+    joints['RightHand'] = elbow+unit(previous*(1-weight)+goal_forearm*weight)*s['_rig']['forearm']
+    old = unit(joints['Neck']-joints['Pelvis'])
+    angle = math.radians(spec['absoluteDegrees'])
+    goal = UP*math.cos(angle)+unit(np.asarray(spec['direction']))*math.sin(angle)
+    target = unit(old*(1-weight)+goal*weight)
+    cross = np.cross(old, target); cosine = float(np.dot(old, target))
+    if cosine < -.9995: raise ValueError('Source upper fold axes oppose')
+    x, y, z = cross
+    skew = np.array([[0,-z,y],[z,0,-x],[-y,x,0]])
+    rotation = np.eye(3)+skew+skew@skew/(1+cosine)
+    pivot = joints['Pelvis']
+    for name in ('Chest','Neck','Head','LeftShoulder','RightShoulder',
+                 'LeftElbow','RightElbow','LeftHand','RightHand'):
+        joints[name] = pivot+rotation@(joints[name]-pivot)
+    for name in ('ChestForward','ChestUp','HeadForward'):
+        dirs[name] = rotation@dirs[name]
+
+
 def reference_height(s, sf):
     p = s['phases']
     f = float(np.clip((sf - p['pop']) / (p['land'] - p['pop']), 0, 1))
@@ -218,6 +249,7 @@ def sample(source, s, sf):
         j[side + 'Ankle'] = ankle
         j[side + 'Toe'] = ankle + frame[:, 2] * math.sqrt(s['_rig']['foot'] ** 2 - s['_rig']['toeDrop'] ** 2) - frame[:, 1] * s['_rig']['toeDrop']
         soles[side] = frame[:, 1]
+    source_air_upper(s, sf, j, dirs)
     origin, rotation = board_at(s, sf)
     return dict(t=(sf - s['firstSourceFrame']) / s['sourceFps'], sourceFrame=sf,
                 sourceCacheTime=sf / s['sourceFps'],
@@ -278,7 +310,7 @@ def bake(source, controls, raw):
                 sourceVideoOffsetSeconds=s['firstSourceFrame'] / s['sourceFps'],
                 sourceCacheOriginalOffsetSeconds=s['sourceCacheOriginalOffsetSeconds'], referenceGroundPress=s['reference'],
                 combinedWinding=dict(nativeFlip=0, nativeShove=-360, canonicalYaw=360),
-                sourcePhaseLimit=s['sourcePhaseLimit'], sourceRootJoinFrame=p['airJoin'], authoredRearPickup=s['rearPickupKeys'], rearArmImageGuide=s['rearArmImageGuide'], rearLandingKnee=s['rearLandingKnee'], catchRootJoin=s['catchRootJoin'],
+                sourcePhaseLimit=s['sourcePhaseLimit'], sourceRootJoinFrame=p['airJoin'], authoredRearPickup=s['rearPickupKeys'], rearArmImageGuide=s['rearArmImageGuide'], rearLandingKnee=s['rearLandingKnee'], catchRootJoin=s['catchRootJoin'], airUpperFold=s['airUpperFold'],
                 contactLimit='Monocular source-role/contact estimates and authored shaped-deck reconstruction; no measured contact confidence.')
     duration = (s['lastSourceFrame'] - s['firstSourceFrame']) / s['sourceFps']
     clip = dict(format='skate-source-keyed-bs360/1', metadata=meta, stance='regular', fps=s['sourceFps'] * 6, duration=duration,

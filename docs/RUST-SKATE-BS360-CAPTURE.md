@@ -46,6 +46,10 @@ The actually observed launch derivative is subtracted before adding the live
 carrier. A real flatground takeoff plane is required. The existing complete
 13-part hull bounds a coupled body/board floor correction to 0.12m; missing plane,
 non-finite data, held hands, excess correction or measured reach fails capture.
+The short Air interval has one authored forward fold toward this take’s front
+knee plane, with a high bent rear balance arm. Upper torso, neck, head and arms
+move coherently; no independent head counteranimation is applied. Hips, leg
+chains, feet, board and contact-root endpoints are unchanged.
 Physics, scoring, contact/reach tolerances and other keyed IDs are unchanged.
 Current shared input-owned charge and its native owner handoff are used without
 predicting the trick while grounded.
