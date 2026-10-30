@@ -286,7 +286,8 @@ public static class SkatePad
         if (!heldAir) { heldAir = true; heldSeconds = 0; }
         heldSeconds += dt;
         // Queue before the first rotation can finish, so physics keeps one continuous burst.
-        var interval = 360.0 / SkateMotion.FlipRate - (heldExtras == 0 ? SkateMotion.MaximumStep : 0);
+        var interval = SkateRide.CanContinueFlatFlip ? .10 :
+            360.0 / SkateMotion.FlipRate - (heldExtras == 0 ? SkateMotion.MaximumStep : 0);
         if (heldSeconds + 1e-9 >= interval)
         {
             heldSeconds -= interval;
