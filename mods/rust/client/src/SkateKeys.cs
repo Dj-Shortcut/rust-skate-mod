@@ -189,7 +189,7 @@ public static class SkateKeys
                 WallHeld = DropTap = WallPop = false; BodyFlipRequest = SkateBodyFlipKind.None;
                 surfaceBlocked |= SkatePad.Buttons & SurfaceButtons;
             }
-            if (Help && SkatePad.Shared && SkateRide.On && (padDown & (SkatePad.DpadLeft | SkatePad.DpadRight)) != 0) HelpPage = (HelpPage + ((padDown & SkatePad.DpadRight) != 0 ? 1 : 2)) % 3;
+            if (Help && SkatePad.Shared && SkateRide.On && (padDown & (SkatePad.DpadLeft | SkatePad.DpadRight)) != 0) HelpPage = (HelpPage + ((padDown & SkatePad.DpadRight) != 0 ? 1 : 3)) % 4;
             // The first readable frame establishes held keys; it cannot distinguish a new press
             // from one carried through chat, a missing keyboard or a ride reset.
             if (keyboardSuspended)
