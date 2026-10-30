@@ -124,5 +124,15 @@ def main():
  events=[dict(t=(f-first)/fps,phase=phase,contacts=contacts)for f,phase,contacts in [(first,'load',['LeftFoot','RightFoot']),(s['popFrame'],'pop',['LeftFoot','RightFoot']),(s['rearSoleReleaseFrame'],'pop',['LeftFoot']),(s['frontSoleReleaseFrame'],'air',[]),(s['frontSoleReleaseFrame']+s['pressFadeFrames'],'air',[]),(s['frontCatchFrame'],'catch',['LeftFoot']),(s['rearCatchFrame'],'catch',['LeftFoot','RightFoot']),(s['landFrame'],'land',['LeftFoot','RightFoot']),(s['recoveryFrame'],'recovery',['LeftFoot','RightFoot'])]]
  meta=dict(s['metadata'],id='nollie-360-flip-source-keyed-v1',label='Nollie360 Flip — striped-rider nose scoop and rear instep [UNREVIEWED]',movementKind='nollie-360-flip',reviewed=False,authored=True,canonicalStance='regular',sourceFps=fps,firstSourceFrame=first,lastSourceFrame=end,sourceBodySha256=s['sourceBodySha256'],sourcePoseSha256=controls['sourcePoseSha256'],provenance='Own Nollie360 upper-body capture basis with visible lead-arm balance reconstruction; source-led nose/front-pop and rear-instep/free-foot/root reconstruction. Complete +360roll/+360yaw. Monocular depth/contact/foot-orientation is authored; not measured 3D capture.')
  clip=dict(format='skate-capture-hybrid/1',metadata=meta,stance='regular',fps=60,duration=duration,events=contact_events(events,duration),frames=frames)
- a.output.mkdir(parents=True,exist_ok=True);(a.output/'nollie-360-flip-source-keyed-v1.json').write_text(json.dumps(clip,indent=2)+'\n');pack=encode_pack([clip]);(a.output/'skate_captures.skmc').write_bytes(pack);print('NOLLIE360_READY',len(frames),len(pack),hashlib.sha256(pack).hexdigest())
+ # Validate and encode before touching an existing reader-valid output.
+ pack=encode_pack([clip]);document=json.dumps(clip,indent=2)+'\n'
+ a.output.mkdir(parents=True,exist_ok=True)
+ pose=a.output/'nollie-360-flip-source-keyed-v1.json';binary=a.output/'skate_captures.skmc'
+ pose_tmp=pose.with_suffix('.json.tmp');binary_tmp=binary.with_suffix('.skmc.tmp')
+ try:
+  pose_tmp.write_text(document);binary_tmp.write_bytes(pack)
+  pose_tmp.replace(pose);binary_tmp.replace(binary)
+ finally:
+  pose_tmp.unlink(missing_ok=True);binary_tmp.unlink(missing_ok=True)
+ print('NOLLIE360_READY',len(frames),len(pack),hashlib.sha256(pack).hexdigest())
 if __name__=='__main__':main()
