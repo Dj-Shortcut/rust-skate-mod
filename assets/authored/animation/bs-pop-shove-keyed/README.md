@@ -12,10 +12,10 @@ source basis. Monocular depth, precise sole release and first-catch contact are
 estimates. Filmed anatomical stance remains unverified; Regular/Goofy refer to
 the canonical runtime mapping until the frozen model is checked visually.
 
-The source window is frames 128–152 of a 29.97002997 fps cache starting at original
-video 124 s (128.271–129.072s in the original video). The previous 128–180 capture
+The source window is frames 128–153 of a 29.97002997 fps cache starting at original
+video 124 s (128.271–129.105s in the original video). The previous 128–180 capture
 and its complete footage are retained privately. The shorter library edit keeps
-Load, Pop, Air, Catch, Land and about 0.75 s of recovery at a 0.6 s physical flight.
+Load, Pop, Air, Catch, Land and about 0.67 s of recovery at a 0.6 s physical flight.
 
 | Event | Cache frame | Original video time | Contact estimate |
 | --- | ---: | ---: | --- |
@@ -25,8 +25,10 @@ Load, Pop, Air, Catch, Land and about 0.75 s of recovery at a 0.6 s physical fli
 | Rear release |135|128.505s|Neither |
 | Free Air / press fade ends |137|128.571s|Neither |
 | First catch |140|128.671s|Canonical Left |
-| Both catch |141|128.705s|Both |
-| Land |142|128.738s|Both |
+| Both catch |142.75|128.763s|Both (authored estimate) |
+| Stable two-foot landing |143|128.771s|Both (authored estimate) |
+
+The original frames 140–146 show the rear shoe still raised on 141–142 and down on 143. Its later return and approximate seven-centimetre free-sole gap are explicit reconstruction. The first wheel/ground collision is obscured and may precede stable two-foot support; the game still owns actual landing. Original head/gaze and torso directions are preserved: the exported face basis already follows the captured gaze.
 
 The board recipe is canonical yaw +180°, native Shove −180°, Flip 0 and Body 0.
 Contacts use the project's own curved deck and measured neutral charge shoe

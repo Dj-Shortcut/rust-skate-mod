@@ -90,11 +90,18 @@ def attached(s, sf, side):
 
 def foot(s, sf, side, raw, soles):
     p = s['phases']
-    release = p['frontRelease'] if side == 'Left' else p['rearRelease']
+    # The source front sole may release before Pop, but the live clip is
+    # unknown during ground Load. Begin its free guide at the observed Pop
+    # footing, avoiding a hidden forward step on the first captured frame.
+    release = max(p['frontRelease'], p['pop']) if side == 'Left' else p['rearRelease']
     if sf <= release:
         return attached(s, sf, side)
     start, old_basis = attached(s, release, side)
     target = raw[side + 'Ankle'].copy()
+    if side == 'Right' and sf >= p['firstCatch']:
+        # Old source142-era contact fitting already flattened this free shoe.
+        # Preserve its own last free anchor until the visible later return.
+        target = s['_rearFreeAnkle'].copy() + raw['Pelvis'] - s['_rearFreePelvis']
     forward = unit(raw[side + 'Toe'] - raw[side + 'Ankle'] + soles[side] * s['_rig']['toeDrop'])
     free_basis = basis(forward, soles[side])
     weight = smooth((sf - release) / s['freeFootBlendFrames'])
@@ -103,9 +110,15 @@ def foot(s, sf, side, raw, soles):
     origin, rotation = board_at(s, sf)
     # Only triangles beneath this actual shoe footprint can lift a free foot;
     # no remote-nose/full-deck projection or source-confidence inflation.
-    ankle[1] += free_foot_clearance(s, origin, rotation, ankle, frame)
+    clearance_spec = s
+    if side == 'Right':
+        hold = s['lateRearClearance']
+        gap = s['soleGap'] + (hold['minimum'] - s['soleGap']) * smooth((sf - hold['start']) / (hold['full'] - hold['start']))
+        clearance_spec = dict(s, authored=dict(minimumAirSoleClearance=gap))
+    ankle[1] += free_foot_clearance(clearance_spec, origin, rotation, ankle, frame)
     caught = p['firstCatch'] if side == 'Left' else p['bothCatch']
-    catch_weight = smooth((sf - (caught - 1.5)) / 1.5)
+    catch_start = caught - 1.5 if side == 'Left' else s['rearCatchStart']
+    catch_weight = smooth((sf - catch_start) / (caught - catch_start))
     # A board-only half turn reverses deck-local front/back; anatomy does not
     # turn180 with it. Canonical Left stays over world+nose and Right behind.
     z = -.24 if side == 'Left' else .24
@@ -171,10 +184,12 @@ def bake(source, controls):
     s['shoe'] = dict(s['hybrid']['popContact'], soleGap=s['soleGap'])
     s['authored'] = dict(minimumAirSoleClearance=s['soleGap'])
     p = s['phases']
+    rear_free = source_body(source, p['firstCatch'])[0]
+    s['_rearFreeAnkle'], s['_rearFreePelvis'] = rear_free['RightAnkle'], rear_free['Pelvis']
     ordered = [s['firstSourceFrame'], p['frontRelease'], p['pop'], p['strike'], p['rearRelease'], p['pressEnd'], p['firstCatch'], p['bothCatch'], p['land'], p['recovery'], s['lastSourceFrame']]
     if not all(a < b for a, b in zip(ordered, ordered[1:])):
         raise ValueError('Expected ordered source-specific shove phases')
-    times = np.unique(np.r_[np.linspace(s['firstSourceFrame'], s['lastSourceFrame'], 145), ordered])
+    times = np.unique(np.round(np.r_[np.arange(s['firstSourceFrame'], s['lastSourceFrame'] + 1e-7, 1.0 / 6), ordered], 9))
     frames = [sample(source, s, float(sf)) for sf in times]
     if any(qmatrix(r['board']['quaternion'])[1, 1] <= 0 for r in frames):
         raise ValueError('A BS shove must not acquire a longitudinal board flip')
@@ -198,6 +213,7 @@ def bake(source, controls):
                 sourceVideoOffsetSeconds=s['firstSourceFrame'] / s['sourceFps'],
                 sourceCacheOriginalOffsetSeconds=s['sourceCacheOriginalOffsetSeconds'], referenceGroundPress=s['reference'],
                 combinedWinding=dict(nativeFlip=0, nativeShove=-180, canonicalYaw=180),
+                sourcePhaseLimit=s['sourcePhaseLimit'], lateRearClearance=s['lateRearClearance'],
                 contactLimit='Monocular source-role/contact estimates and authored shaped-deck reconstruction; no measured contact confidence.')
     duration = (s['lastSourceFrame'] - s['firstSourceFrame']) / s['sourceFps']
     clip = dict(format='skate-source-keyed-shove/1', metadata=meta, stance='regular', fps=s['sourceFps'] * 6, duration=duration,

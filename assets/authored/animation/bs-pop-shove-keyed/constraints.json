@@ -10,7 +10,7 @@
     180
   ],
   "firstSourceFrame": 128,
-  "lastSourceFrame": 152,
+  "lastSourceFrame": 153,
   "originalId": "backside-pop-shove-it-batb12-cole",
   "originalPackSha256": "b1c232ca24c0738df4da228b5133a5b862b995030b7c7e0b242a4b81e253bcaa",
   "sourceVideoSha256": "038fa40ab62d32d05967971e600a3e9b6ce5075593f66f3969a8b0c9fab6e70d",
@@ -21,8 +21,8 @@
     "rearRelease": 135,
     "pressEnd": 137,
     "firstCatch": 140,
-    "bothCatch": 141,
-    "land": 142,
+    "bothCatch": 142.75,
+    "land": 143,
     "recovery": 151
   },
   "yawKeys": [
@@ -1971,8 +1971,17 @@
   "sourceSurfaceSha256": "8873121f728af49a9af90c2ee4ba723b7f56259d60913155f578d3a88e976acd",
   "soleGap": 0.003,
   "freeFootBlendFrames": 2,
-  "provenance": "Own Cole black-skull-shirt take. Preserve its non-spinning captured body directions and free-foot X/Z; remove the original board translation once. Authored tail pressure, 180-degree backside scoop without flip, curved-deck foot fit, coherent fixed-foot root constraint and source contact clocks. Not measured3D mocap.",
+  "provenance": "Own Cole black-skull-shirt take. Preserve its non-spinning captured body directions and free-foot X/Z; remove the original board translation once. Authored tail pressure, 180-degree backside scoop without flip, curved-deck foot fit, coherent fixed-foot root constraint and source contact clocks. Not measured3D mocap. Source-led delayed rear return through142, stable two-foot support143, first Pop kept on the observed charge footprint.",
   "uncertainty": "Board pitch/yaw, sole-release instants, depth and surface contact are reconstructed from monocular images. Hands can be clipped near takeoff. Canonical source anatomy is retained; rendered native handedness needs its own review.",
-  "libraryEdit": "Keep original128\u2013180 input private and unchanged; bounded output ends152 after sourceRecovery151. No missing source pose is invented.",
-  "sourceCacheOriginalOffsetSeconds": 124
+  "libraryEdit": "Authored128\u2013153 library edit; original128\u2013180 capture and first candidate remain private and unchanged.",
+  "sourceCacheOriginalOffsetSeconds": 124,
+  "rearCatchStart": 142,
+  "lateRearClearance": {
+    "start": 139,
+    "full": 140,
+    "minimum": 0.07,
+    "limit": "Authored approximate visible sole gap; monocular depth is uncertain, not measured clearance"
+  },
+  "sourcePhaseLimit": "First front sole returns around140; rear shoe remains visibly raised141\u2013142 and is down143. BothCatch142.75 and stable two-foot Land143 are authored subframe/contact estimates; exact earlier wheel-ground onset is not measured. Physical game landing remains authoritative.",
+  "headGazeReview": "Original source gaze and upper-body directions retained: actual exported face local+Z matches out HeadForward in both stances; no gaze/pitch correction based on camera impression."
 }
