@@ -9,6 +9,7 @@ import argparse
 import copy
 import hashlib
 import json
+import math
 from pathlib import Path
 
 import numpy as np
@@ -23,6 +24,18 @@ DEFAULT_CONTROLS = ROOT / 'assets/authored/animation/switch-heelflip-air/constra
 def smooth(value):
     value = float(np.clip(value, 0, 1))
     return value ** 3 * (10 + value * (-15 + 6 * value))
+
+
+def upper_rotation(current, target):
+    current = current / np.linalg.norm(current)
+    target = target / np.linalg.norm(target)
+    cross = np.cross(current, target)
+    cosine = float(np.dot(current, target))
+    if cosine < -.9995:
+        raise ValueError('Opposing torso axes need an explicit source reconstruction')
+    x, y, z = cross
+    skew = np.array([[0., -z, y], [z, 0., -x], [-y, x, 0.]])
+    return np.eye(3) + skew + skew @ skew / (1 + cosine)
 
 
 def reconstruct(source, controls):
@@ -56,6 +69,23 @@ def reconstruct(source, controls):
         # These are upright carrier coordinates. Do not rotate the rider root
         # with the flipping deck or add a second physical flight trajectory.
         posed = {key: point + shift for key, point in joints.items()}
+        # The source's forward fold is missing from the shallow monocular
+        # torso. Rotate the upper group coherently, retaining its relative arm
+        # gesture and gaze; no yaw change or individual arm/neck key is added.
+        forward = np.asarray(before['dirs']['ChestForward'], dtype=float)
+        forward[1] = 0
+        if np.linalg.norm(forward) < 1e-8:
+            raise ValueError('The source torso has no horizontal facing')
+        forward /= np.linalg.norm(forward)
+        lean = math.radians(controls['torsoForwardLeanDegrees'])
+        desired_up = forward * math.sin(lean) + np.array([0., math.cos(lean), 0.])
+        old_up = np.asarray(before['dirs']['ChestUp'], dtype=float)
+        rotation = upper_rotation(old_up, old_up * (1 - blend) + desired_up * blend)
+        for key in ('Chest', 'Neck', 'Head', 'LeftShoulder', 'RightShoulder',
+                    'LeftElbow', 'RightElbow', 'LeftHand', 'RightHand'):
+            posed[key] = posed['Pelvis'] + rotation @ (posed[key] - posed['Pelvis'])
+        for key in ('ChestForward', 'ChestUp', 'HeadForward'):
+            row['dirs'][key] = (rotation @ np.asarray(before['dirs'][key])).tolist()
         for side in ('Left', 'Right'):
             guide = controls['feet'][side]
             target = joints[side + 'Ankle'].copy()
@@ -77,7 +107,9 @@ def reconstruct(source, controls):
         result['metadata']['freeFootPaths'][side]['provenance'] += (
             ' Source2235–2244.75 now uses the separately declared source-led '
             'pelvis/both-free-ankle Air reconstruction; tangential foot paths '
-            'and source bend planes are retained. Hidden depth remains authored.')
+            'and source bend planes are retained. The upper group receives a '
+            'coherent source-led forward fold; relative arms/gaze are retained. '
+            'Hidden depth remains authored.')
     result['metadata']['reviewed'] = False
     result['metadata']['authoredAirReconstruction'] = dict(
         controls, converterSha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),

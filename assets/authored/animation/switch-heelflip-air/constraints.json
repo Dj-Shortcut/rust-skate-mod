@@ -3,12 +3,22 @@
   "movementKind": "switch-heelflip",
   "originalPackSha256": "33097aca96337fe757a4bb35dd1696b07517e02c6328ad7cf62552d238b6db69",
   "sourceUrl": "https://www.youtube.com/watch?v=PqJZcwTY1QE",
-  "sourceFrames": [2235.0, 2238.5, 2240.0, 2244.75],
+  "sourceFrames": [
+    2235.0,
+    2238.5,
+    2240.0,
+    2244.75
+  ],
   "pelvisAboveBoardM": 0.69,
   "feet": {
-    "Left": {"heightAboveBoardM": 0.36},
-    "Right": {"heightAboveBoardM": 0.33}
+    "Left": {
+      "heightAboveBoardM": 0.36
+    },
+    "Right": {
+      "heightAboveBoardM": 0.33
+    }
   },
-  "provenance": "Authored reconstruction of the actual striped-shirt Switch Heelflip, source2239: both legs gather while the take retains its own wide heel-side free-foot gesture. Reconcile the old standing pelvis prior with both free-ankle heights in one upright source-carrier frame. Preserve captured torso/arms/head, tangential foot paths, source bend planes and shoe orientations. No additional world jump, physics or scoring change.",
-  "uncertainty": "Single-camera metric scale, depth and the compact airborne root are reconstructed. These controls are not measured3D motion. The established pop/heel release before2235, Catch2245, Land2248 and recovery remain exact; the existing615 recovery head correction remains runtime-owned. Original data stays unreviewed; mesh and Shadow checks remain separate."
+  "provenance": "Authored reconstruction of the actual striped-shirt Switch Heelflip, source2239: both legs gather while the take retains its own wide heel-side free-foot gesture. Reconcile the old standing pelvis prior with both free-ankle heights in one upright source-carrier frame. Reconstruct the visible forward torso fold as one upper-group rotation, preserving relative arms/head and the source facing; preserve tangential foot paths, source bend planes and shoe orientations. No additional world jump, physics or scoring change.",
+  "uncertainty": "Single-camera metric scale, depth and the compact airborne root and upper-body fold are reconstructed. These controls are not measured3D motion. The established pop/heel release before2235, Catch2245, Land2248 and recovery remain exact; the existing615 recovery head correction remains runtime-owned. Original data stays unreviewed; mesh and Shadow checks remain separate.",
+  "torsoForwardLeanDegrees": 45.0
 }
