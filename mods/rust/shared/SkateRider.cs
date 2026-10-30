@@ -693,6 +693,15 @@ namespace Shortcut.RustMod
                 (input.Bailed || pushing ? input.GroundDrop : 0) - plantDown - Math.Abs(SkatePose.FootOffset * Math.Sin(input.DeckPitch)));
             bool backIsLeft = (input.Stance == SkateStance.Goofy) != input.Switch;
             bool namedGrab = grabbing && input.GrabKind != SkateGrabKind.Legacy;
+            // Authored from the owner's airborne FS Grab reference: gather both
+            // knees in front, then fold the torso over them. The old minimum-hip
+            // reach pose could put a knee below the deck and leave the chest upright.
+            // Ground-grab adapters have no airborne contact state and retain their pose.
+            // TryCreate blends this held endpoint with the free endpoint once.
+            bool frontsideAirFold = namedGrab && input.GrabKind == SkateGrabKind.Frontside &&
+                input.Contact.Initialized && input.Contact.Airborne && input.Contact.GrabKind == SkateGrabKind.Frontside &&
+                input.Contact.GrabWeight > 0 && !input.BoardPath.Known &&
+                input.Handplant <= .001 && input.FootPlant <= .001;
             var grip = namedGrab ? Grip(input.GrabKind, backIsLeft, input.Stance == SkateStance.Regular) : default(GrabGrip);
             var definition = namedGrab ? SkateGrabCatalog.Get(input.GrabKind) : default(SkateGrabDefinition);
             var deckForward = input.DeckForward.LengthSquared > 0.5 ? input.DeckForward : forward;
@@ -1002,6 +1011,12 @@ namespace Shortcut.RustMod
                 centre -= pitchForward * (PitchWeight * Math.Sin(input.DeckPitch));
                 if (input.DeckPitchFrame) centre += deckForward * (input.DeckSupport * 0.65);
             }
+            if (frontsideAirFold)
+            {
+                var ankles = (leftAnkle + rightAnkle) * .5;
+                centre = ankles - up * SkateVector.Dot(ankles - centre, up)
+                    - facing * ((rig.ThighLength + rig.ShinLength) * .27);
+            }
             var leftHipBase = centre - pelvisRight * (rig.HipWidth * 0.5);
             var rightHipBase = centre + pelvisRight * (rig.HipWidth * 0.5);
             double minimum = SkatePose.FootLift, maximum = MaximumMeasurement * 2;
@@ -1018,6 +1033,9 @@ namespace Shortcut.RustMod
             double riding = requested;
             if (grabbing) requested = minimum + GrabTuckMargin;
             if (namedGrab) requested = grip.Extension > 0 ? minimum + (maximum - minimum) * grip.Extension : minimum + grip.Tuck;
+            if (frontsideAirFold)
+                requested = SkateVector.Dot((leftAnkle + rightAnkle) * .5 - centre, up)
+                    + (rig.ThighLength + rig.ShinLength) * .42;
             if (grabbing) requested = riding + (requested - riding) * folded;
             if (input.Bailed) requested = rig.PelvisHeight - pelvisDown;
             double height = Math.Max(minimum, Math.Min(maximum, requested));
@@ -1026,9 +1044,11 @@ namespace Shortcut.RustMod
             var rightHip = rightHipBase + up * height;
             SkateVector leftKnee, rightKnee;
             if (!Limb(leftHip, leftAnkle, rig.ThighLength, rig.ShinLength,
-                      leftToeDir - pelvisRight * 0.15 + (input.Bailed ? travel * 2 : default(SkateVector)), floor, up, out leftKnee) ||
+                      (frontsideAirFold ? facing + up * .75 - pelvisRight * .1 :
+                       leftToeDir - pelvisRight * 0.15 + (input.Bailed ? travel * 2 : default(SkateVector))), floor, up, out leftKnee) ||
                 !Limb(rightHip, rightAnkle, rig.ThighLength, rig.ShinLength,
-                      rightToeDir + pelvisRight * 0.15 + (input.Bailed ? travel * 2 : default(SkateVector)), floor, up, out rightKnee))
+                      (frontsideAirFold ? facing + up * .75 + pelvisRight * .1 :
+                       rightToeDir + pelvisRight * 0.15 + (input.Bailed ? travel * 2 : default(SkateVector))), floor, up, out rightKnee))
             { error = "Skate rider legs cannot reach above the ground plane."; return false; }
 
             double chestYaw = input.Bailed ? bailYaw : (RidingChestYaw + (PushChestYaw - RidingChestYaw) * turn) * yawScale * Math.PI / 180;
@@ -1090,6 +1110,11 @@ namespace Shortcut.RustMod
                 if (namedGrab && grip.Both) pitch = Math.Max(pitch,
                     GrabPitch(pelvis, carved, ahead, secondGrab, rig, roll, !grabLeft, 0.1 + 0.12 * crouch));
             }
+            if (frontsideAirFold)
+            {
+                pitch = 80 * Math.PI / 180;
+                roll = (grabLeft ? -1 : 1) * .15;
+            }
             var chestUp = carved * Math.Cos(pitch) + ahead * Math.Sin(pitch);
             var chestForward = ahead * Math.Cos(pitch) - carved * Math.Sin(pitch);
             var chestRight = Cross(chestUp, chestForward);
@@ -1142,6 +1167,13 @@ namespace Shortcut.RustMod
                         - chestForward * (armLength * 0.08);
                     freeLeft = leftShoulder + (chestRight * -Math.Cos(elevation) + chestUp * Math.Sin(elevation)) * (armLength * 0.9)
                         - chestForward * (armLength * 0.08);
+                }
+                if (frontsideAirFold)
+                {
+                    freeRight = rightShoulder + chestRight * (armLength * .65)
+                        - up * (armLength * .25) - facing * (armLength * .15);
+                    freeLeft = leftShoulder - chestRight * (armLength * .65)
+                        - up * (armLength * .25) - facing * (armLength * .15);
                 }
                 if (namedGrab)
                 {
