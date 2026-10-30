@@ -11,22 +11,25 @@ namespace Shortcut.RustMod
         private readonly SkateRiderPose groundPose;
         private readonly SkateBoardPose groundDeck;
         private readonly SkateVector groundLeftUp, groundRightUp, groundOrigin, groundNormal, groundVelocity;
-        private readonly bool nosePop, leftPops, kickFlick, sourceCoupledRoot;
+        private readonly bool nosePop, leftPops, kickFlick, sourceCoupledRoot, followCarrierRise;
         private readonly double deckTop, sourcePop, sourceAir;
         private double rootSourceCursor = double.NaN, rootBlendAge;
         private SkateDeckFootFitter sideSource, sidePositive, sideNegative;
         private static readonly SkateBoardMesh Mesh = SkateBoardMesh.CreateDetailed();
         private const double StrikeAngle = 44.2, RootJoinSeconds = .30;
         private SkateCaptureLegacyPop(SkateRiderPose pose, SkateBoardPose deck, SkateVector lu, SkateVector ru,
-            SkateVector origin, SkateVector normal, SkateVector velocity, double top, bool nose, double pop, double air, bool kick, bool coupleRoot)
+            SkateVector origin, SkateVector normal, SkateVector velocity, double top, bool nose, double pop, double air, bool kick, bool coupleRoot, bool followRise)
         {
             groundPose = pose; groundDeck = deck; groundLeftUp = lu; groundRightUp = ru;
             groundOrigin = origin; groundNormal = Unit(normal); groundVelocity = velocity; deckTop = top; nosePop = nose; kickFlick = kick; sourcePop = pop; sourceAir = air;
-            sourceCoupledRoot = coupleRoot;
+            sourceCoupledRoot = coupleRoot; followCarrierRise = followRise;
             double l = SkateVector.Dot(pose.LeftAnkle - deck.Origin, deck.Forward);
             double r = SkateVector.Dot(pose.RightAnkle - deck.Origin, deck.Forward);
             leftPops = nose ? l > r : l < r;
         }
+        // These source poses already extend at the pop. Finish the initial
+        // procedural upper-body handoff by the existing physical strike phase.
+        public double EntryBlendSeconds { get { return followCarrierRise ? SkateFlipFlick.EdgeReleaseSeconds : .1; } }
         public static bool Accepts(SkateCaptureClip clip, SkateCaptureTrickSignature signature)
         {
             if (clip == null || clip.Id != clip.MovementKind) return false;
@@ -64,7 +67,7 @@ namespace Shortcut.RustMod
             if (pop < 0 || air <= pop)
             { error = "Initial-five pop needs its own ordered Pop/Air phases."; return false; }
             playback = new SkateCaptureLegacyPop(pose, deck, lu, ru, origin, normal, velocity, top, nose, pop, air, signature.Flip > 0,
-                clip.Id == "fakie-kickflip" || clip.Id == "switch-heelflip"); return true;
+                clip.Id == "fakie-kickflip" || clip.Id == "switch-heelflip", clip.Id == "nollie-heelflip"); return true;
         }
         // A held zero-degree scorer must not freeze the filmed Pop at its
         // first pose. The actual flick gate owns this short source Pop sequence;
@@ -138,6 +141,10 @@ namespace Shortcut.RustMod
             if (heading.LengthSquared < .5) { error = "Legacy pop ground heading is degenerate."; return false; }
             var groundedCarrier = new SkateBoardPose(floorOrigin, Unit(heading), up);
             var from = groundedCarrier.Point(groundPose.Pelvis + groundVelocity * elapsed);
+            // Keep the measured entry on the real ascending carrier. Blending
+            // from the floor would multiply physics ascent by the blend weight
+            // and suppress this source's already-started pop extension.
+            if (followCarrierRise) from += up * SkateVector.Dot(carrier.Origin - floorOrigin, up);
             var root = from * (1 - Smooth(rootAge / RootJoinSeconds)) + input.Pose.Pelvis * Smooth(rootAge / RootJoinSeconds);
             var shift = root - input.Pose.Pelvis; var p = input.Pose;
             var moved = new SkateRiderPose(p.Pelvis + shift, p.LeftHip + shift, p.RightHip + shift,

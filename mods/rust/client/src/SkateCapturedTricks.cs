@@ -649,7 +649,7 @@ public static class SkateCapturedTricks
                 frame, impactWeight, out frame, out error, true))
             { Refuse(nextToken, error ?? "landing transition carrier unavailable"); return false; }
         }
-        double weight = SkateCaptureFootSupport.CatchPreparationWeight(now - beganAt, .1);
+        double weight = SkateCaptureFootSupport.CatchPreparationWeight(now - beganAt, legacyPop != null ? legacyPop.EntryBlendSeconds : .1);
         if (landed) weight = Math.Min(weight, active.RecoveryWeight(value));
         if (weight <= 0) return false; // The first live pop frame keeps the exact procedural pose.
         // Keep the pop-foot target through release until entry is complete;
