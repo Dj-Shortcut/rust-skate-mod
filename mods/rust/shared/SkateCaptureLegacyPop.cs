@@ -145,7 +145,8 @@ namespace Shortcut.RustMod
             // from the floor would multiply physics ascent by the blend weight
             // and suppress this source's already-started pop extension.
             if (followCarrierRise) from += up * SkateVector.Dot(carrier.Origin - floorOrigin, up);
-            var root = from * (1 - Smooth(rootAge / RootJoinSeconds)) + input.Pose.Pelvis * Smooth(rootAge / RootJoinSeconds);
+            double rootJoin = followCarrierRise ? gate * 2.4 : RootJoinSeconds;
+            var root = from * (1 - Smooth(rootAge / rootJoin)) + input.Pose.Pelvis * Smooth(rootAge / rootJoin);
             var shift = root - input.Pose.Pelvis; var p = input.Pose;
             var moved = new SkateRiderPose(p.Pelvis + shift, p.LeftHip + shift, p.RightHip + shift,
                 p.LeftKnee + shift, p.RightKnee + shift, p.LeftAnkle + shift, p.RightAnkle + shift,
@@ -153,7 +154,7 @@ namespace Shortcut.RustMod
                 p.LeftShoulder + shift, p.RightShoulder + shift, p.LeftElbow + shift, p.RightElbow + shift,
                 p.LeftHand + shift, p.RightHand + shift, p.PelvisForward, p.PelvisUp, p.ChestForward, p.ChestUp, p.HeadForward);
             SkateRiderPose posed;
-            if (!SkateCaptureFootSupport.TrySetFeet(rig, moved, la, lt, ra, rt, false, out posed, out error)) return false;
+            if (!SkateCaptureFootSupport.TrySetFeet(rig, moved, la, lt, ra, rt, followCarrierRise && elapsed < gate * 2.4, out posed, out error)) return false;
             var contacts = input.Observation.Contacts;
             if (elapsed < gate)
             {
@@ -164,7 +165,7 @@ namespace Shortcut.RustMod
                 contacts &= ~(SkateCaptureContacts.LeftFoot | SkateCaptureContacts.RightFoot);
             var observation = new SkateCaptureEvent(input.Observation.Time, input.Observation.Phase, contacts);
             output = new SkateCaptureFrame(posed, board, rotation, lu, ru, input.HasEvent, observation,
-                input.PelvisCorrection + shift, input.LeftHandCorrection, input.RightHandCorrection, input.RiderUp);
+                input.PelvisCorrection + (followCarrierRise ? posed.Pelvis - input.Pose.Pelvis : shift), input.LeftHandCorrection, input.RightHandCorrection, input.RiderUp);
             return true;
         }
         private bool Foot(SkateRiderRig rig, SkateBoardPose board, bool left, double weight, double elapsed,

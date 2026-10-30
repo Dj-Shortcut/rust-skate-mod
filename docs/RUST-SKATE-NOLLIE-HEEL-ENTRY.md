@@ -8,8 +8,11 @@ physics ascent by the entry blend weight and left the rider crouched after pop.
 
 For this exact source ID and its validated Nollie Heelflip signature,
 `SkateCaptureLegacyPop` carries the observed entry root with the real upright
-carrier's vertical displacement. The existing 0.30-second C2 join and absolute
-deadline remain. Its initial procedural-to-capture body handoff finishes at the
+carrier's vertical displacement. The same C2 join finishes at the existing last foot release
+(`2.4 * EdgeReleaseSeconds`), before the source begins its tuck. While a foot
+is still supported, the existing measured support solver fits the root within
+its unchanged correction and limb-reach limits. The absolute 0.30-second
+legacy deadline remains. Its initial procedural-to-capture body handoff finishes at the
 existing physical strike phase, `SkateFlipFlick.EdgeReleaseSeconds`.
 
 The nose pressure, rear-foot heel release, real shaped board, measured-foot
