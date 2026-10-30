@@ -73,6 +73,10 @@ public static class SkateRide
     private static SkateRiderAirFrameState airView;
     private static int airViewTrace;
     private static bool airViewFromGrind;
+    private static bool airViewVertDeparture;
+    private static int groundedRampStep = -2;
+    private static float groundedRampAt;
+    private static Vector3 groundedRampUp;
     public static readonly int GroundMask = ~((1 << 12) | (1 << 17) | (1 << 18) | (1 << 4) | (1 << 10) | (1 << 9) | (1 << 2));
 
     public static RideMode Mode = RideMode.Off;
@@ -351,6 +355,7 @@ public static class SkateRide
     public static void Mount(Rigidbody b, float yaw)
     {
         observedSupportValid = false;
+        airViewVertDeparture = false; groundedRampStep = -2;
         body = b; Yaw = yaw; flatgroundFlight = initialFlipFlick = false; flightGravity = AirGravity;
         try
         {
@@ -393,6 +398,7 @@ public static class SkateRide
     public static void Dismount(string reason)
     {
         observedSupportValid = false;
+        airViewVertDeparture = false; groundedRampStep = -2;
         SkateRig.ReleaseRootProxy();
         if (Mode == RideMode.Off) return;
         if (SkateOldschoolRide.Active) SkateBoard.ReleaseIndependent(SkateOldschoolRide.Frame, V(SkateOldschoolRide.State.Velocity));
@@ -404,6 +410,8 @@ public static class SkateRide
     private static void Enter(RideMode m)
     {
         if (m != RideMode.Ground) ResetKickturn();
+        if (m != RideMode.Air) airViewVertDeparture = false;
+        if (m != RideMode.Ground) groundedRampStep = -2;
         // A pump's pass lives on the ground: leaving it (air, grind, bail) forgets the charge, so a
         // crouch let go in the air cannot be paid out on the next ground step.
         if (m != RideMode.Ground && Mode == RideMode.Ground) { Pump = default(SkatePumpState); PumpHeld = 0f; RevertLeft = revertTurned = 0f; }
@@ -507,7 +515,7 @@ public static class SkateRide
             if ((Mode == RideMode.Air || Mode == RideMode.Ground) && SkateSurfaceRide.DisplayWall && SkateSurfaceRide.WallFrame.Initialized)
             {
                 ViewNormal = V(SkateSurfaceRide.WallFrame.Up);
-                airViewFrom = ViewNormal; airViewAt = AirTime; airViewRise = Math.Max(0, VSpeed); ResetAirDisplay();
+                airViewVertDeparture = false; airViewFrom = ViewNormal; airViewAt = AirTime; airViewRise = Math.Max(0, VSpeed); ResetAirDisplay();
             }
             else if (Mode == RideMode.Air) AirView(dt);
             else
@@ -735,7 +743,16 @@ public static class SkateRide
     private static int observedSupportStep;
     private static bool observedSupportValid;
     private static void ObserveSupport(Vector3 pos, RaycastHit hit)
-    { observedSupport = hit; observedSupportAt = pos; observedSupportStep = Steps; observedSupportValid = hit.m_Normal.y > .001f; }
+    {
+        observedSupport = hit; observedSupportAt = pos; observedSupportStep = Steps; observedSupportValid = hit.m_Normal.y > .001f;
+        if (Mode == RideMode.Ground && Grounded)
+        {
+            // Only the immediately preceding, actually supported ramp face can
+            // classify a natural lip departure when the next ray misses it.
+            groundedRampStep = OnRamp && SkateParks.IsRamp(hit) && !SkateParks.IsCoping(hit) ? Steps : -2;
+            groundedRampAt = Time.realtimeSinceStartup; groundedRampUp = hit.m_Normal;
+        }
+    }
     // Reuse the current physics observation, including RampContact's along-normal hit. A later
     // render frame, another position or a missing query cannot claim remembered world support.
     public static bool TryObservedGround(Vector3 pos, out RaycastHit hit)
@@ -1161,7 +1178,7 @@ public static class SkateRide
         var flat = Flat(outgoing); var sign = Speed < 0f ? -1f : 1f;
         if (flat.sqrMagnitude > 0.0001f) Yaw = (float)(Math.Atan2(flat.x * sign, flat.z * sign) * 180.0 / Math.PI);
         Speed = flat.magnitude * sign;
-        TakeOff(pop > 0f, outgoing.y + gravity * dt, flatground);
+        TakeOff(pop > 0f, outgoing.y + gravity * dt, flatground, outgoing.y);
         // Equal-height presentation span from the actual charged launch, before
         // the one-step gravity compensation. It never changes player motion.
         flatgroundFlightSeconds = flatground && outgoing.y > 0f ? 2f * outgoing.y / gravity : 0f;
@@ -1254,8 +1271,11 @@ public static class SkateRide
         if (carry) KeepAirPose(nose, deck);
     }
 
-    private static void TakeOff(bool jumped, float vertical, bool flatground = false)
+    private static void TakeOff(bool jumped, float vertical, bool flatground = false, float? departureRise = null)
     {
+        // Capture before resetting any action/wall owner. Speed was just set
+        // from Flat(outgoing) by Launch, so it is the real horizontal departure.
+        airViewVertDeparture = PreserveVertDeparture(departureRise ?? vertical);
         flatgroundFlight = flatground;
         flatgroundFlightSeconds = 0f;
         initialFlipFlick = flatground && jumped && wantFlip != 0 && wantSpecial == SkateBoardTrickKind.None;
@@ -1285,8 +1305,11 @@ public static class SkateRide
     // A planted foot retains its support frame until released.
     private static void AirView(float dt)
     {
+        if (Handplant || SkateActions.Owns || SkateOldschoolRide.Active || SkateSurfaceRide.Active || SkateSurfaceRide.BodyFlip.Known || BoardPath.Known)
+            airViewVertDeparture = false;
         if (FootPlanted)
         {
+            airViewVertDeparture = false;
             airViewFrom = ViewNormal; airViewAt = AirTime; airViewRise = Math.Max(0f, VSpeed);
             ResetAirDisplay();
             return;
@@ -1295,9 +1318,11 @@ public static class SkateRide
         var closing = Math.Max(0f, -Vector3.Dot(velocity, contact));
         // Align before the existing air-step contact threshold, not after a catch or landing snap.
         var gap = Clearance - Math.Max(0.04f, closing * dt + 0.02f);
+        // A straight vert air keeps its departure basis until a landing is
+        // actually observed. Reaching the ballistic apex is not a new surface.
         SkateVector shown; SkateRiderAirFrameState next; string error;
         if (SkateRiderMotion.TryAirFrame(airView, dt, V(airViewFrom), Math.Max(0f, AirTime - airViewAt), airViewRise,
-            CurrentAirGravity, V(BelowNormal), gap, closing, out shown, out next, out error))
+            CurrentAirGravity, V(BelowNormal), gap, closing, airViewVertDeparture, out shown, out next, out error))
         { airView = next; ViewNormal = V(shown); }
         if (airViewFrom.y < .85f)
         {
@@ -1305,6 +1330,16 @@ public static class SkateRide
             if (airViewRise > 0 && VSpeed <= 0) TraceAirFrame(2, "descending");
             if (airView.Initialized && airView.LandingShare > 0) TraceAirFrame(4, "landing-approach");
         }
+    }
+
+    private static bool PreserveVertDeparture(float vertical)
+    {
+        var age = Time.realtimeSinceStartup - groundedRampAt;
+        var ramp = groundedRampStep >= 0 && groundedRampStep <= Steps && Steps - groundedRampStep <= 1 && age >= 0 && age <= .1f;
+        return Mode == RideMode.Ground && ramp && groundedRampUp.y > 0 && groundedRampUp.y < .15f &&
+            vertical > 0 && Math.Abs(Speed) <= vertical * .25f && !FootPlanted && !Handplant && !GroundGrab.Active &&
+            !SkateActions.Owns && !SkateOldschoolRide.Active && !SkateSurfaceRide.DisplayWall && !SkateSurfaceRide.Active &&
+            !SkateSurfaceRide.BodyFlip.Known && !BoardPath.Known && wantSpecial == SkateBoardTrickKind.None;
     }
 
     private static void ResetAirDisplay()
@@ -1364,7 +1399,7 @@ public static class SkateRide
             flipLeft = shoveLeft = bodyLeft = 0; pendFlip = 0; pendShove = 0; spinning = spinLate = false;
             Tangent = flat.sqrMagnitude > .0001f ? flat.normalized * sign : Dir(Yaw);
             if (!SkateSurfaceRide.Active)
-            { airViewFrom = ViewNormal; airViewAt = AirTime; airViewRise = Math.Max(0, VSpeed); ResetAirDisplay(); }
+            { airViewVertDeparture = false; airViewFrom = ViewNormal; airViewAt = AirTime; airViewRise = Math.Max(0, VSpeed); ResetAirDisplay(); }
             if (pos.y - takeOffY > AirPeak) AirPeak = pos.y - takeOffY;
             if (TrickAir) TrickTick(true, false, 0, 0, 0, 0, dt);
             return;

@@ -86,6 +86,7 @@ public static class SkateBoard
             Vector3 axle; RaycastHit pivotPlane;
             if (SkateRide.Kickturning && TryKickturnAxle(SkateRide.KickturnSide, out axle) &&
                 SkateRide.TryObservedGround(SkateRide.Position, out pivotPlane) && pivotPlane.m_Normal.y >= .9995f &&
+                (playerT.position - SkateRide.Position).sqrMagnitude <= .5625f &&
                 Math.Abs(Vector3.Dot(RawContact(playerT) + Vector3.up * axle.y - pivotPlane.m_Point, pivotPlane.m_Normal) - .027f) <= .04f)
             {
                 contactOffset = pivotPlane.m_Normal * (.027f - Vector3.Dot(RawContact(playerT) + Vector3.up * axle.y - pivotPlane.m_Point, pivotPlane.m_Normal));
