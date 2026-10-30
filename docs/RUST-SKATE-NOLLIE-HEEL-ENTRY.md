@@ -18,6 +18,11 @@ poses, source events, board rotation, physics, scoring or approval flags. Other
 source IDs keep their existing entry behavior; source-keyed families return
 before this legacy route.
 
+The source also keeps its board-directed recovery gaze through the existing
+`keepSourceGaze` option. The early travel-facing recovery blend had replaced
+that downward gaze and rotated the head upward. The existing recovery-to-ordinary
+weight still owns the final return; no source gaze is counter-animated.
+
 The original source pack remains unreviewed. Evaluation copies are test-only.
 Review the complete normal and low jumps in both stances, including the early
 Pop, Air, actual Catch, landing and recovery. Generic grounded charge/gaze still
