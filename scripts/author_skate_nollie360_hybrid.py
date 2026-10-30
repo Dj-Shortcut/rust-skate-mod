@@ -92,7 +92,7 @@ def sample(controls,s,f):
    # The visible lead wrist stays around shoulder level during this Air.
    # Its old standing-root retarget pulled it down; preserve its own depth
    # and measured reach, rebuilding only this source-led balance height.
-   weight=smooth((f-4590)/2)*(1-smooth((f-4605)/2))
+   weight=smooth((f-4590)/2)*(1-smooth((f-4602)/5))
    offset=j[side+'Hand']-shoulder;reach=np.linalg.norm(offset);height=scalar(s['leadWristHeightKeys'],f)
    horizontal=unit(np.array([offset[0],0.,offset[2]]));goal=horizontal*math.sqrt(max(0,reach*reach-height*height))+UP*height
    target=shoulder+offset*(1-weight)+goal*weight
