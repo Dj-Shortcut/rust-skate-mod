@@ -25,21 +25,25 @@ def scalar(keys, sf):
     return float(curve([v[0] for v in keys], [[v[1]] for v in keys], sf)[0])
 
 
-def source_local_root(source, sf):
-    row = min(source['frames'], key=lambda f: abs(f['sourceFrame']-sf))
-    if abs(row['sourceFrame']-sf) > 1e-6:
-        raise ValueError('The source root join needs its actual recorded endpoint')
-    return np.asarray(row['joints']['Pelvis'])-np.asarray(row['board']['origin'])+UP*.092
+def source_local_root(source, sf, derivative=False):
+    frames = source['frames']; times = [r['sourceFrame'] for r in frames]
+    i = max(0, min(len(frames)-2, int(np.searchsorted(times, sf, side='right'))-1))
+    a, b = frames[i:i+2]; span = times[i+1]-times[i]
+    root = lambda row: np.asarray(row['joints']['Pelvis'])-np.asarray(row['board']['origin'])+UP*.092
+    ra, rb = root(a), root(b)
+    if derivative: return (rb-ra)/span
+    u = float(np.clip((sf-times[i])/span, 0, 1))
+    return ra*(1-u)+rb*u
 
 
 def source_catch_root(source, sf, spec, ordinary):
     start, end = spec['start'], spec['end']
     if not start < sf < end: return ordinary
     a, b = source_local_root(source, start), source_local_root(source, end)
-    va = a-source_local_root(source, start-1)
-    vb = source_local_root(source, end+1)-b
+    va = source_local_root(source, start, derivative=True)
+    vb = source_local_root(source, end, derivative=True)
     span = end-start; u = (sf-start)/span
-    # Preserve actual positions and both source-frame derivatives. Only the
+    # Preserve the original interpolated positions and both actual source-time derivatives. Only the
     # old contact-prior discontinuity inside this own take is reconstructed.
     return ((2*u**3-3*u*u+1)*a+(u**3-2*u*u+u)*span*va
             +(-2*u**3+3*u*u)*b+(u**3-u*u)*span*vb)

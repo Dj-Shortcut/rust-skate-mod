@@ -2087,6 +2087,6 @@
   "catchRootJoin": {
     "start": 99,
     "end": 103,
-    "provenance": "Own recorded source99/103 pelvis positions plus actual98\u219299 and103\u2192104 velocities. A C1 Hermite join removes the original contact-prior lateral/root step; translate the whole body and free foot guides coherently, then solve the same fixed feet. Board/contacts/physics unchanged."
+    "provenance": "Own original source-time99/103 pelvis positions and exact piecewise-linear endpoint derivatives; the canonical input was previously resampled, so these are not claimed new detector frames. A C1 Hermite join removes the old contact-prior root step; translate body and free-foot guides coherently, then solve the same fixed feet. Board/contacts/physics unchanged."
   }
 }
