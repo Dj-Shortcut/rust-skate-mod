@@ -732,3 +732,46 @@ source-keyed normal Kickflip, Heelflip, Tre and Impossible routes do not use thi
 helper. A missing or stale observed stance does not create an invented anchor. This
 bounded pop repair does not approve the older airborne body reconstruction or
 landing; those still require their own visible source comparisons.
+### Rebuild the source-led Fakie Air candidate
+
+`author_skate_fakie_kickflip_air.py` reconstructs the free-Air root and both
+ankles together from the striped-shirt reference around source frame 2724.
+It accepts only the checksum-pinned original unreviewed Fakie JSON. The controls
+are authored estimates of monocular depth. Board/events and the established
+pressure, side-instep release and Catch stay outside the repaired interval.
+The ordinary Fakie ID/signature is retained, so the existing normal trick route
+uses the replacement source without a new selector or runtime correction.
+
+Keep generated JSON and packs in ignored `context/`. Starting with the retained
+**complete first-five composition manifest**, these commands replace only its
+Fakie source; all other source entries and derived variants remain present:
+
+```sh
+python scripts/author_skate_fakie_kickflip_air.py \
+  --input context/private/source-clips/fakie-kickflip.json \
+  --output context/private/fakie-air
+
+python - context/private/compose.json \
+  context/private/fakie-air/fakie-kickflip.json \
+  context/private/compose-fakie-air.json <<'PY'
+import json, sys
+from pathlib import Path
+old, replacement, target = map(Path, sys.argv[1:])
+manifest = json.loads(old.read_text())
+required = {'switch-heelflip', 'nollie-heelflip', 'fakie-kickflip',
+            'nollie-backside-180-heelflip', 'nollie-360-flip'}
+assert required <= manifest['sources'].keys(), 'Use the complete retained manifest'
+manifest['sources'] = {kind: str((old.parent / path).resolve())
+                       for kind, path in manifest['sources'].items()}
+manifest['sources']['fakie-kickflip'] = str(replacement.resolve())
+target.write_text(json.dumps(manifest, indent=2) + '\n')
+PY
+
+python scripts/capture_pipeline.py compose context/private/compose-fakie-air.json \
+  --include-base --output context/private/first-five-fakie-air-candidate
+```
+
+This composes the declared first-five/derived set, not unrelated game-pack
+families: retain those entries when assembling the complete game pack. Original
+source flags stay unreviewed; derived variants start unreviewed too. A new pack
+hash still needs its separate visual review and exact approval before gameplay.
