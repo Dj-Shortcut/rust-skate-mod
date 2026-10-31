@@ -35,11 +35,14 @@ force a 720-degree catch: the capture requires the last actually observed windin
 Double landing tolerance, otherwise native presentation takes over. A missed final native
 sample can conservatively fall back; neither scoring nor collision is changed.
 
-The bounded lower-profile replay uses a real shorter held charge, not a forced
-flight duration. The absolute minimum charge currently reaches the old single
-tail-press pose with a much higher incoming hip and can trigger its existing
-reach refusal before any extra hold is known. That pre-continuation limit is
-preserved, not hidden by predicting Double during Ground or relaxing reach.
+The lower profiles use real shorter held charges, not forced flight durations.
+A minimum charge can enter the single tail press with a much higher observed
+hip. Its source ankles are reachable until the actual press compensation moves
+the final target down. If that final solve refuses during the existing single
+entry window, the existing measured pelvis fit brings the coherent body within
+reach of the same foot targets. It retains the measured reach share, bend-plane
+and limb guards; already successful solves stay unchanged. No extra hold is
+predicted during Ground, and the pop, entry and source clocks do not restart.
 
 Offline source compilation, real Pad/native-state replay, measured body output,
 mesh review, continuous viewer review and native avatar/game acceptance are
