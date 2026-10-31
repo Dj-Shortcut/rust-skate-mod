@@ -22,6 +22,12 @@ actual anchors; wrist93 is an uncertain authored image mark. The rear landing
 knee follows its shoe toe tangent without moving the feet or body root. Its slight
 Air board pitch is retained after pressure release. There is no longitudinal flip, instep flick or body180.
 
+Arm segment lengths come from the canonical rig, rather than video measurements.
+The carrier tilt prevents this clip from using the optional generic inverse
+rotation clock under its unchanged five-degree inactive-roll guard; keyed flight
+timing is independent. Arm depth and the filmed Goofy-to-canonical mirror remain
+both-stance viewer checks; see the [capture route notes](../../../../docs/RUST-SKATE-BS360-CAPTURE.md).
+
 Original and generated packs remain Reviewed=false. Approve only a separate
 TEST-ONLY-NOT-FOR-INSTALL copy for private reader/normal-route evaluation. No
 approval, footage, raw pose, generated pack or game assets are published. A chosen

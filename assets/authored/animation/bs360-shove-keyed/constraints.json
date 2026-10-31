@@ -2060,7 +2060,7 @@
     "end": 103,
     "rawAnatomicalSide": "Left",
     "canonicalSide": "Right",
-    "limit": "Retained image vertical components scaled by this actor torso, with original X/Z depth direction and exact measured limb lengths. Raw94/96 have low visibility; raw95 falsely follows a high trail and is rejected after pixel review. These frames are authored interpolation. Wrist93 is an explicit uncertain image mark. No confidence increase.",
+    "limit": "Retained image vertical components scaled by this actor torso, with original X/Z depth direction and fixed canonical rig lengths. Raw94/96 have low visibility; raw95 falsely follows a high trail and is rejected after pixel review. These frames are authored interpolation. Wrist93 is an explicit uncertain image mark. No confidence increase.",
     "authoredGapFrames": [
       94,
       95,

@@ -24,8 +24,9 @@ height with the current whole-board tail support and upright physical carrier.
 It removes the previous board translation once, preserves this take's body
 and limb directions, and fits the unchanged fixed-length legs to authored foot
 targets. The rear free-foot pickup follows the visible asymmetric collection.
-The source's retained image landmarks guide the rear balance arm vertically,
-while its original depth direction and both measured arm lengths remain fixed.
+The source's retained image landmarks guide the rear balance arm, with fixed
+canonical segment lengths from `source.metadata.rig`. These are rig constants,
+rather than limb measurements from the video.
 Low-visibility arm frames 94/96 and the visibly false raw wrist at 95 are
 reconstructed between actual anchors. The blurred wrist at 93 is an explicit
 uncertain image mark. No detector confidence is increased. At landing only the
@@ -40,6 +41,17 @@ camera-limited authored estimates. The rear shoe follows the rotating tail until
 lifts clear without a kick/heel flick. Full360 restores the original nose/tail
 order at catch, unlike a half-turn's reversed deck-local foot pins.
 
+The authored board orientation is `Rx(-pitch) * Ry(yaw)`. The generic
+`BuildRotationClock` reader decomposes orientation as `Y*X*Z`, where this carrier
+tilt appears as roll during the scoop. That apparent roll exceeds its unchanged
+five-degree inactive-axis guard, so this clip does not produce the optional
+Air-to-Catch or Pop-to-Catch inverse rotation clock. The `bs-360-shove-it` clock
+case alone does not enable those clocks. This is outside the inactive-roll
+condition described for the yaw-only inverse in the
+[motion-capture notes](RUST-SKATE-MOTION-CAPTURE.md). The keyed route instead maps
+physical flight time from source Pop to Land and waits for observed landing;
+it operates independently of that optional inverse clock.
+
 The exact keyed adapter derives its pressure window from this clip's events and
 joins the world-C1 body root at source93, with the separate short upper entry.
 The actually observed launch derivative is subtracted before adding the live
@@ -50,6 +62,12 @@ The short Air interval has one authored forward fold toward this take’s front
 knee plane, with a high bent rear balance arm. Upper torso, neck, head and arms
 move coherently; no independent head counteranimation is applied. Hips, leg
 chains, feet, board and contact-root endpoints are unchanged.
+The high rear arm uses raw anatomical Left image landmarks (11/13/15) projected
+into the fixed canonical camera plane `sourceCameraOffset [0.907, 0.1, -0.421]`;
+its depth is authored. `source_balance_plane` applies no explicit pixel mirror.
+A viewer pass beside the source must confirm whether the camera offset already
+accounts for the filmed Goofy-to-canonical mirror and whether the arm bends in
+the expected depth direction in both stances. This remains an open visual check.
 Physics, scoring, contact/reach tolerances and other keyed IDs are unchanged.
 Current shared input-owned charge and its native owner handoff are used without
 predicting the trick while grounded.
