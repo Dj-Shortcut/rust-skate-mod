@@ -1017,7 +1017,7 @@ namespace Shortcut.RustMod
             {
                 var ankles = (leftAnkle + rightAnkle) * .5;
                 centre = ankles - up * SkateVector.Dot(ankles - centre, up)
-                    - facing * ((rig.ThighLength + rig.ShinLength) * .27);
+                    - facing * ((rig.ThighLength + rig.ShinLength) * .05);
             }
             var leftHipBase = centre - pelvisRight * (rig.HipWidth * 0.5);
             var rightHipBase = centre + pelvisRight * (rig.HipWidth * 0.5);
@@ -1037,7 +1037,7 @@ namespace Shortcut.RustMod
             if (namedGrab) requested = grip.Extension > 0 ? minimum + (maximum - minimum) * grip.Extension : minimum + grip.Tuck;
             if (frontsideAirFold)
                 requested = SkateVector.Dot((leftAnkle + rightAnkle) * .5 - centre, up)
-                    + (rig.ThighLength + rig.ShinLength) * .42;
+                    + (rig.ThighLength + rig.ShinLength) * .18;
             if (grabbing) requested = riding + (requested - riding) * folded;
             if (input.Bailed) requested = rig.PelvisHeight - pelvisDown;
             double height = Math.Max(minimum, Math.Min(maximum, requested));
@@ -1104,7 +1104,7 @@ namespace Shortcut.RustMod
                 double alongSide = grip.End || SkateVector.Dot(travel, deckForward) >= 0 ? 1 : -1;
                 SkateHandGripFrame measuredGrip;
                 if (SkateGrabCatalog.HasReferenceHand(input.GrabKind) && SkateGrabCatalog.TryGrip(input.DeckFrame,
-                    grip.Across * toeSide, grip.Along * alongSide, grabLeft ? rig.LeftHand : rig.RightHand, out measuredGrip))
+                    grip.Across * toeSide, grip.Along * alongSide, grabLeft ? rig.LeftHand : rig.RightHand, out measuredGrip, GripOutset(input), GripRise(input)))
                     grab = measuredGrip.Wrist;
                 else grab = GrabWrist(definition,
                     input.DeckFrame.Point(new SkateVector(grip.Across * toeSide, 0, grip.Along * alongSide)),
@@ -1127,8 +1127,11 @@ namespace Shortcut.RustMod
             }
             if (frontsideAirFold)
             {
-                pitch = 80 * Math.PI / 180;
-                roll = (grabLeft ? -1 : 1) * .15;
+                // A low, deeply bent tuck reaches the edge with a 45 degree torso. The
+                // former 80 degree fold over high knees bent the hip past 160 degrees,
+                // beyond what the frozen skin can show without ballooning.
+                pitch = 45 * Math.PI / 180;
+                roll = (grabLeft ? 1 : -1) * .15;
             }
             var chestUp = carved * Math.Cos(pitch) + ahead * Math.Sin(pitch);
             var chestForward = ahead * Math.Cos(pitch) - carved * Math.Sin(pitch);
@@ -1298,8 +1301,13 @@ namespace Shortcut.RustMod
             }
             var leftHip = pelvis - pr * (rig.HipWidth * 0.5); var rightHip = pelvis + pr * (rig.HipWidth * 0.5);
             SkateVector leftKnee, rightKnee;
-            if (!Limb(leftHip, authored.LeftAnkle, rig.ThighLength, rig.ShinLength, authored.LeftToe - authored.LeftAnkle - pr * 0.15, floor, up, out leftKnee) ||
-                !Limb(rightHip, authored.RightAnkle, rig.ThighLength, rig.ShinLength, authored.RightToe - authored.RightAnkle + pr * 0.15, floor, up, out rightKnee))
+            // The FS fold authored gathered knee planes; a moved pelvis keeps them
+            // instead of falling back to the toe direction, which splays the knees.
+            bool keepKneePlanes = FrontsideAirFold(input);
+            var leftBend = keepKneePlanes ? authored.LeftKnee - (authored.LeftHip + authored.LeftAnkle) * 0.5 : authored.LeftToe - authored.LeftAnkle - pr * 0.15;
+            var rightBend = keepKneePlanes ? authored.RightKnee - (authored.RightHip + authored.RightAnkle) * 0.5 : authored.RightToe - authored.RightAnkle + pr * 0.15;
+            if (!Limb(leftHip, authored.LeftAnkle, rig.ThighLength, rig.ShinLength, leftBend, floor, up, out leftKnee) ||
+                !Limb(rightHip, authored.RightAnkle, rig.ThighLength, rig.ShinLength, rightBend, floor, up, out rightKnee))
             { error = "Skate grab leg chain is unreachable."; return false; }
             var chest = pelvis + chestUp * rig.SpineLength; var neck = chest + chestUp * (rig.SpineLength * 0.12);
             var chestRight = Cross(chestUp, chestForward); var leftShoulder = chest + chestUp * rig.ShoulderRise - chestRight * (rig.ShoulderWidth * 0.5); var rightShoulder = chest + chestUp * rig.ShoulderRise + chestRight * (rig.ShoulderWidth * 0.5);
@@ -1422,6 +1430,10 @@ namespace Shortcut.RustMod
             return rail + outwards * definition.HandOutset + up * definition.HandRise;
         }
 
+        // Only the active FS air contact straddles the toe edge; ground adapters keep their grip.
+        private static double GripOutset(SkateRiderInput input) { return FrontsideAirFold(input) ? .010 : .020; }
+        private static double GripRise(SkateRiderInput input) { return FrontsideAirFold(input) ? -.015 : .013; }
+
         private static bool FrontsideAirFold(SkateRiderInput input)
         {
             return input.Airborne && !input.Bailed && input.GrabKind == SkateGrabKind.Frontside &&
@@ -1522,7 +1534,7 @@ namespace Shortcut.RustMod
             double alongSide = definition.End || SkateVector.Dot(travel, deckForward) >= 0 ? 1 : -1;
             SkateHandGripFrame grip;
             if (!SkateGrabCatalog.TryGrip(input.DeckFrame, definition.Across * toeSide, definition.Along * alongSide,
-                SkateHandMeasurements.Reference, out grip)) { weight = 0; return false; }
+                SkateHandMeasurements.Reference, out grip, GripOutset(input), GripRise(input))) { weight = 0; return false; }
             var wrist = left ? pose.LeftHand : pose.RightHand;
             var finger = grip.Forward;
             var back = grip.Back;
@@ -1549,7 +1561,7 @@ namespace Shortcut.RustMod
             double alongSide = definition.End || SkateVector.Dot(travel, deckForward) >= 0 ? 1 : -1;
             SkateHandGripFrame grip;
             if (!SkateGrabCatalog.TryGrip(input.DeckFrame, definition.Across * toeSide, definition.Along * alongSide,
-                left ? rig.LeftHand : rig.RightHand, out grip)) return false;
+                left ? rig.LeftHand : rig.RightHand, out grip, GripOutset(input), GripRise(input))) return false;
             var delta = (left ? pose.LeftHand : pose.RightHand) - grip.Wrist;
             if (delta.LengthSquared > .025 * .025) return false;
             contact = grip.Edge + delta;

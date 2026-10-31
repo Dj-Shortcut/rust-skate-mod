@@ -11,15 +11,8 @@ $ErrorActionPreference = 'Stop'
 $dl = "$HOME\Downloads"; $probe = "$dl\claude-loader-probe"; $L = "$probe\launcher"
 $rust = 'C:\Program Files (x86)\Steam\steamapps\common\Rust'
 $acf = 'C:\Program Files (x86)\Steam\steamapps\appmanifest_252490.acf'
-if (-not (Test-Path $acf)) { 'ABORT: Rust is not installed in the default Steam library'; return }
-$pb = ((gc $acf | sls '"buildid"').Line -split '"')[3]
-if (-not $pb) { 'ABORT: could not read the installed Rust build'; return }
 $version = if (Test-Path "$L\version.txt") { (gc "$L\version.txt" -First 1).Trim() } else { '' }
 if (-not $version) { 'ABORT: no installed launcher (no launcher\version.txt); run zz launcher first'; return }
-if ($version -notmatch "for Rust build $pb$") { "ABORT: the launcher was prepared for another Rust build ($version; installed $pb); run zz launcher first"; return }
-$rel = if ($version -match '^Skate mod ([0-9a-f]{7})') { $Matches[1] } else { 'unknown' }
-$gen = "$probe\gen-$pb"
-if (-not ((Test-Path "$gen\out\Assembly-CSharp.dll") -and (sls -Path "$gen\gen.log" -Pattern 'GEN DONE.* errors=0( |$)' -Quiet))) { "ABORT: no complete, error-free interop set for build $pb (zz interop)"; return }
 $launcherFiles = @('session.ps1', 'skate.ps1', 'watch.ps1', 'clean.ps1', 'sticks.ps1')
 $need = @("$probe\bep788\winhttp.dll", "$probe\bep788\BepInEx\core\BepInEx.Core.dll", "$probe\rt\Il2CppInterop.Runtime.dll", "$probe\play\ShortcutSkateClient.dll") + @($launcherFiles | % { "$L\$_" })
 $missing = @($need | ? { -not (Test-Path -LiteralPath $_) })
@@ -28,11 +21,17 @@ $needsDiagnostics = @($launcherFiles | Where-Object { [IO.File]::ReadAllText("$L
 $sessionSource = [IO.File]::ReadAllText("$L\session.ps1")
 $supportsCaptures = $sessionSource -match 'skate_captures\.skmc'
 $supportsSounds = $sessionSource -match 'skate_sounds'
-$icons = @(); $sounds = $false; $soundSource = $null
+$icons = @(); $sounds = $false; $soundSource = $null; $steamRust = $null
 if ($needsDiagnostics) {
   if (-not (Test-Path -LiteralPath "$L\diagnostics.ps1" -PathType Leaf)) { 'ABORT: this installed launcher requires diagnostics.ps1; install the complete launcher again'; return }
   $launcherFiles += 'diagnostics.ps1'
   . "$L\diagnostics.ps1"
+  # Use the selected session's discovery, rather than requiring C: before its helper is loaded.
+  # Older sessions keep their original default-library behavior even if a newer helper remains.
+  if ($sessionSource -match '\bGet-SkateRustFolder\b') {
+    if (-not (Get-Command Get-SkateRustFolder -ErrorAction SilentlyContinue)) { 'ABORT: this launcher requires Steam discovery; install the complete launcher again'; return }
+    $steamRust = Get-SkateRustFolder
+  }
   $icons = @(Get-SkateArtworkFiles "$probe\play\artwork.txt" "$probe\play")
   if ("$psounds" -notin '0', 'false') {
     $soundSource = Resolve-SkateSoundSource $probe -Strict
@@ -57,6 +56,17 @@ if ($needsDiagnostics) {
     $soundSource = [pscustomobject]@{ Directory = "$probe\sounds"; Files = $names; Configured = $false }; $sounds = $true
   }
 }
+if ($null -ne $steamRust) {
+  if (-not $steamRust.Found) { 'ABORT: Rust was not found in the Steam libraries used by this launcher'; return }
+  $rust = $steamRust.Rust; $acf = $steamRust.Acf
+}
+if (-not (Test-Path -LiteralPath $acf)) { 'ABORT: this legacy launcher requires Rust in the default Steam library; use a current candidate launcher for other libraries'; return }
+$pb = if ($null -ne $steamRust) { $steamRust.BuildId } else { ((gc -LiteralPath $acf | sls '"buildid"').Line -split '"')[3] }
+if (-not $pb) { 'ABORT: could not read the installed Rust build'; return }
+if ($version -notmatch "for Rust build $pb$") { "ABORT: the launcher was prepared for another Rust build ($version; installed $pb); run zz launcher first"; return }
+$rel = if ($version -match '^Skate mod ([0-9a-f]{7})') { $Matches[1] } else { 'unknown' }
+$gen = "$probe\gen-$pb"
+if (-not ((Test-Path "$gen\out\Assembly-CSharp.dll") -and (sls -Path "$gen\gen.log" -Pattern 'GEN DONE.* errors=0( |$)' -Quiet))) { "ABORT: no complete, error-free interop set for build $pb (zz interop)"; return }
 # The installer is taken from this branch, like every other script: it is not part of the launcher.
 $enc = New-Object Text.UTF8Encoding($false)
 $inst = "" + (zg 'install.ps1')
@@ -102,17 +112,19 @@ $soundInstructions = if ($supportsSounds) {
   '   The skateboard sounds come with the pack when pack.txt says "sounds included"; without them' + "`n" +
   '   the ride is silent and the game shows "Skateboard sound pack is unavailable" once.'
 } else { '   This older launcher has no private WAV staging; it retains its original audio behavior.' }
+$rustRequirement = if ($null -ne $steamRust) { 'Rust installed through Steam in one of its libraries' } else { 'Rust installed in Steam''s own library on C:' }
+$shortcutClient = if ($null -ne $steamRust) { 'RustClient.exe in your Rust folder (Steam: right-click Rust > Manage > Browse local files)' } else { 'C:\Program Files (x86)\Steam\steamapps\common\Rust\RustClient.exe' }
 $readme = @"
 RUST SKATE - the skate mod for Rust, for the owner's own server
 
-What you need: Rust installed through Steam in Steam's own library on C:, Steam signed in, and
+What you need: $rustRequirement, Steam signed in, and
 (for the real controls) an Xbox controller. The mod runs on the owner's server only, which has no
 anti-cheat. Rust started by this launcher cannot join other servers, and Rust started the normal
 way is unchanged: the mod is in the Rust folder only while the launcher's window is open.
 
 1. Unpack this zip anywhere (right-click, Extract All) and open the unpacked folder.
 2. In Steam: Games > Add a Non-Steam Game to My Library > Browse, pick
-   C:\Program Files (x86)\Steam\steamapps\common\Rust\RustClient.exe and add it. Keep its name,
+   $shortcutClient and add it. Keep its name,
    RustClient. In that game's page: controller icon > controller layout > choose the template
    "Keyboard (WASD) and Mouse". Without the shortcut the launcher does not start; with another
    layout the controller does nothing in Rust.

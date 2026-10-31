@@ -39,6 +39,11 @@ commit of a development candidate):
 zz pack
 ```
 
+When the installed candidate session supports Steam discovery, `pack` uses its
+helper to find Rust in Steam's own or another listed library, including a custom
+install-folder name. Legacy sessions still require the default library on `C:`.
+Packing still requires the installed launcher and interop to match that Rust build.
+
 It writes `Downloads\RustSkate-<commit>-build<build>.zip` from `Downloads\claude-loader-probe`:
 
 - `bep788\`: the unpacked loader.

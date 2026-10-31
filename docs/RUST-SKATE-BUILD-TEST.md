@@ -15,6 +15,13 @@ Expected transition logs are `PIECES wheel mode=Skate` after native-wheel hiding
 and cursor acquisition, and `PIECES wheel mode=Rust` while awaiting native open.
 These logs report state transitions; inspect actual visibility separately.
 
+After selecting a Skate piece, B, Escape, F1 or Tab cancels the selection before
+any place input in that frame. The client requests the existing server `off`
+acknowledgement and retains pending placement/payment state until that reply.
+If sending fails, it keeps the unresolved selection and sends no placement in that frame.
+Check cancellation with RT/left click held, delayed or mismatched replies,
+then re-entry. Ordinary Rust building keeps its own cancel handling.
+
 The administrator's `skate.items all` command supplies the inventory catalogue.
 Equip and place each marked item through the native square-foundation route:
 
@@ -41,5 +48,12 @@ server permission, support, occupancy and payment checks remain authoritative.
 `PIECES inventory reader: GetActiveItem unavailable` explicitly means the client
 cannot verify the inventory preview on that wrapper. It is not a successful
 twelve-item test. The reader never substitutes an arbitrary Item-returning method.
+An optional read-only `skate.held` observation can supply the preview kind from the
+server's current full item/belt/Planner identity. Replies are nonce/lifetime-bound,
+expire from request time and are revoked on an active-item change. An old server,
+unknown identity or late reply leaves the preview unavailable. This does not
+select a builder mode, authorize placement or change any item/Wood transaction.
+The existing native planner rotation fallback remains zero when unreadable;
+correct rotated previews and the complete native inventory flow remain open.
 Recheck this route against the current laptop interop, then run the native test
 on Shadow. Source compilation, catalogue checks and CI remain separate gates.

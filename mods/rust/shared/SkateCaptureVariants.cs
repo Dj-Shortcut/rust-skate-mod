@@ -30,11 +30,14 @@ namespace Shortcut.RustMod
             new SkateCaptureVariant("fakie-double-kickflip", "fakie-kickflip", SkatePopKind.Ollie, true, true, 720),
             new SkateCaptureVariant("fakie-triple-kickflip", "fakie-kickflip", SkatePopKind.Ollie, true, true, 1080),
             new SkateCaptureVariant("kickflip", "kickflip", SkatePopKind.Ollie, false, false, 360),
+            new SkateCaptureVariant("double-kickflip", "kickflip", SkatePopKind.Ollie, false, false, 720),
             new SkateCaptureVariant("heelflip", "heelflip", SkatePopKind.Ollie, false, false, -360),
             new SkateCaptureVariant("360-flip", "360-flip", SkatePopKind.Ollie, false, false, 360, -360),
             new SkateCaptureVariant("bs-pop-shove-it", "bs-pop-shove-it", SkatePopKind.Ollie, false, false, 0, -180),
             new SkateCaptureVariant("fs-pop-shove-it", "fs-pop-shove-it", SkatePopKind.Ollie, false, false, 0, 180),
-            new SkateCaptureVariant("hardflip", "hardflip", SkatePopKind.Ollie, false, false, 360, 180)
+            new SkateCaptureVariant("hardflip", "hardflip", SkatePopKind.Ollie, false, false, 360, 180),
+            new SkateCaptureVariant("varial-kickflip", "varial-kickflip", SkatePopKind.Ollie, false, false, 360, -180),
+            new SkateCaptureVariant("fs-360-shove-it", "fs-360-shove-it", SkatePopKind.Ollie, false, false, 0, 360)
         };
         public static SkateCaptureVariant Get(int index)
         { return index >= 0 && index < Entries.Length ? Entries[index] : default(SkateCaptureVariant); }

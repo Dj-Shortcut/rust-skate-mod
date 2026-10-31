@@ -33,6 +33,11 @@ control data, not a new detector result or an all-body hand animation.
   ground-press window subtracts its T=.6/g8 reference rise from board-local Y;
   runtime compensates the reference/actual rise difference during that window.
   This keeps tail pressure on the ground without adding a second jump arc.
+- The minimum-charge press-fit fallback belongs to the ordinary
+  `kickflip-source-keyed-v1` entry, including single Kickflips without a held
+  extension. It retries only a failed press-foot fit during that entry with the
+  same measured pelvis/reach/foot guards. Successful solves, foot targets and
+  pop/entry/source clocks remain unchanged.
 - Body capture continues past278 through the available real source296.
   Any viewer source cursor must distinguish this from the historical held
   all-body-key recovery.

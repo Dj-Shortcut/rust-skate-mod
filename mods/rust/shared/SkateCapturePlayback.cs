@@ -256,9 +256,14 @@ namespace Shortcut.RustMod
                 case "360-flip": case "nollie-360-flip": rollTurn = 360; yawTurn = 360; break;
                 case "bs-pop-shove-it": rollTurn = 0; yawTurn = 180; break;
                 case "fs-pop-shove-it": rollTurn = 0; yawTurn = -180; break;
+                case "fs-360-shove-it": rollTurn = 0; yawTurn = -360; break;
                 case "hardflip": rollTurn = 360; yawTurn = -180; break;
+                case "varial-kickflip": rollTurn = 360; yawTurn = 180; break;
                 default: return;
             }
+            // This separately authored clip contains its complete two-turn path.
+            // It is not the legacy recipe that repeats a one-turn source track.
+            if (clip.Id == SkateCaptureKeyedPlayback.DoubleKickflipClipId && clip.MovementKind == "double-kickflip") rollTurn = 720;
             var samples = new double[clip.SampleCount + 2]; int sampleCount = 0;
             for (int row = 0; row < clip.SampleCount && clip.Number(row, 0) < caught; row++) samples[sampleCount++] = clip.Number(row, 0);
             samples[sampleCount++] = air; samples[sampleCount++] = caught;

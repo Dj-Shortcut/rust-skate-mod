@@ -12,6 +12,15 @@ namespace Shortcut.RustMod
         public const string HardflipClipId = "hardflip-source-keyed-v1";
         public const string NollieTreFlipClipId = "nollie-360-flip-source-keyed-v1";
         public const string BsPopShoveClipId = "bs-pop-shove-it-source-keyed-v1";
+        public const string DoubleKickflipClipId = "double-kickflip-source-keyed-v1";
+        public static readonly SkateCaptureTrickSignature DoubleKickflipSignature =
+            new SkateCaptureTrickSignature(SkatePopKind.Ollie, false, false, 720, 0, 0, 0);
+        public const string VarialKickflipClipId = "varial-kickflip-derived-tre-v1";
+        private static readonly SkateCaptureTrickSignature VarialKickflipSignature =
+            new SkateCaptureTrickSignature(SkatePopKind.Ollie, false, false, 360, -180, 0, 0);
+        public const string Fs360ShoveClipId = "fs-360-shove-it-source-keyed-v1";
+        private static readonly SkateCaptureTrickSignature Fs360ShoveSignature =
+            new SkateCaptureTrickSignature(SkatePopKind.Ollie, false, false, 0, 360, 0, 0);
         private static readonly SkateCaptureTrickSignature BsPopShoveSignature =
             new SkateCaptureTrickSignature(SkatePopKind.Ollie, false, false, 0, -180, 0, 0);
         private static readonly SkateCaptureTrickSignature NollieTreFlipSignature =
@@ -39,6 +48,8 @@ namespace Shortcut.RustMod
         private double entryUpperSeconds;
         private double pressStart = 1.0 / 16, pressEnd = 3.0 / 16;
         private SkateVector? groundOrigin;
+        private bool continuedDouble;
+        private double continuationAngle, continuationOffset, lastNativeAngle, doubleReturnStart;
         private static SkateVector[] hardflipSupport;
         public double GroundClearanceCorrection { get; private set; }
         public double MaximumGroundClearanceCorrection { get; private set; }
@@ -53,13 +64,16 @@ namespace Shortcut.RustMod
                 clip.Id == TreFlipClipId && clip.MovementKind == "360-flip" && TreFlipSignature.Same(signature) ||
                 clip.Id == HardflipClipId && clip.MovementKind == "hardflip" && HardflipSignature.Same(signature) ||
                 clip.Id == NollieTreFlipClipId && clip.MovementKind == "nollie-360-flip" && NollieTreFlipSignature.Same(signature) ||
-                clip.Id == BsPopShoveClipId && clip.MovementKind == "bs-pop-shove-it" && BsPopShoveSignature.Same(signature));
+                clip.Id == BsPopShoveClipId && clip.MovementKind == "bs-pop-shove-it" && BsPopShoveSignature.Same(signature) ||
+                clip.Id == DoubleKickflipClipId && clip.MovementKind == "double-kickflip" && DoubleKickflipSignature.Same(signature) ||
+                clip.Id == VarialKickflipClipId && clip.MovementKind == "varial-kickflip" && VarialKickflipSignature.Same(signature) ||
+                clip.Id == Fs360ShoveClipId && clip.MovementKind == "fs-360-shove-it" && Fs360ShoveSignature.Same(signature));
         }
 
         public static bool TryCreate(SkateCaptureClip clip, out SkateCaptureKeyedPlayback playback, out string error)
         {
             playback = null; error = null;
-            if (clip == null || !clip.Ready || !Accepts(clip, clip.Id == HeelflipClipId ? HeelflipSignature : clip.Id == TreFlipClipId ? TreFlipSignature : clip.Id == HardflipClipId ? HardflipSignature : clip.Id == NollieTreFlipClipId ? NollieTreFlipSignature : clip.Id == BsPopShoveClipId ? BsPopShoveSignature : RequiredSignature))
+            if (clip == null || !clip.Ready || !Accepts(clip, clip.Id == HeelflipClipId ? HeelflipSignature : clip.Id == TreFlipClipId ? TreFlipSignature : clip.Id == HardflipClipId ? HardflipSignature : clip.Id == NollieTreFlipClipId ? NollieTreFlipSignature : clip.Id == BsPopShoveClipId ? BsPopShoveSignature : clip.Id == DoubleKickflipClipId ? DoubleKickflipSignature : clip.Id == VarialKickflipClipId ? VarialKickflipSignature : clip.Id == Fs360ShoveClipId ? Fs360ShoveSignature : RequiredSignature))
             { error = "An exact bounded source-keyed flip clip is required."; return false; }
             // Reuse the existing strict event/contact contract. Building its
             // optional inverse clocks does not make those clocks authoritative.
@@ -67,12 +81,70 @@ namespace Shortcut.RustMod
             if (!SkateCapturePlayback.TryCreate(clip, out events, out error)) return false;
             playback = new SkateCaptureKeyedPlayback(clip, events.SourceTime(SkateCapturePhase.Pop, 0),
                 events.SourceTime(SkateCapturePhase.Catch, 0), events.SourceTime(SkateCapturePhase.Land, 0));
-            if (clip.Id != RequiredClipId && !playback.TryFamilyPressWindow(out error))
+            if (clip.Id != RequiredClipId && clip.Id != DoubleKickflipClipId && !playback.TryFamilyPressWindow(out error))
             { playback = null; return false; }
-            if ((clip.Id == HardflipClipId || clip.Id == BsPopShoveClipId) && !TryHardflipSupport(out error))
+            if ((clip.Id == HardflipClipId || clip.Id == BsPopShoveClipId || clip.Id == VarialKickflipClipId || clip.Id == Fs360ShoveClipId) && !TryHardflipSupport(out error))
             { playback = null; return false; }
             return true;
         }
+
+        // Change only the approved same-pop destination. The original entry,
+        // physical flight and source clock survive; no second BeginEntry runs.
+        public bool TryContinue(SkateCaptureClip next, int budgetedTurns, double elapsedSeconds, double flightSeconds, double executedFlip,
+            SkateBoardPose lastShownBoard, SkateBoardPose lastCarrier, SkateStance stance,
+            out SkateCaptureKeyedPlayback continued, out string error)
+        {
+            continued = null; error = null;
+            if (Clip.Id != RequiredClipId || next == null || next.Id != DoubleKickflipClipId || budgetedTurns != 2 ||
+                !entry || !groundOrigin.HasValue || !Finite(elapsedSeconds) || elapsedSeconds < 0 ||
+                !ValidFlight(flightSeconds) || elapsedSeconds > flightSeconds * .3125 ||
+                !Finite(executedFlip) || executedFlip < 0 || executedFlip >= 720 ||
+                !SkateBoardPath.Valid(lastShownBoard) || !SkateBoardPath.Valid(lastCarrier))
+            { error = "Double capture requires the same observed single-pop owner and a budgeted held confirmation."; return false; }
+            SkateCaptureKeyedPlayback candidate;
+            if (!TryCreate(next, out candidate, out error)) return false;
+            if (SourcePop != candidate.SourcePop || SourceLand != candidate.SourceLand || Clip.Duration != next.Duration)
+            { error = "Double continuation cannot replace the established physical/source clock."; return false; }
+            // Retain the original C1 target and its interpolation neighbours.
+            double join = SourcePop + (SourceLand - SourcePop) * .3125;
+            bool crossed = false; int row = 0;
+            for (; row < Clip.SampleCount && !crossed; row++)
+            {
+                if (row >= next.SampleCount || Clip.Number(row, 0) != next.Number(row, 0))
+                { error = "Double continuation has a different entry sample clock."; return false; }
+                crossed = Clip.Number(row, 0) > join;
+                for (int column = 8; column < 83; column++)
+                    if (Clip.Number(row, column) != next.Number(row, column))
+                    { error = "Double continuation changes the established entry body or feet."; return false; }
+            }
+            candidate.doubleReturnStart = 0;
+            for (int n = 0; n < next.EventCount; n++)
+            {
+                var e = next.GetEvent(n);
+                if (e.Phase == SkateCapturePhase.Air && e.Contacts == SkateCaptureContacts.None && e.Time < candidate.SourceCatch)
+                    candidate.doubleReturnStart = e.Time;
+            }
+            if (!(candidate.doubleReturnStart > join && candidate.doubleReturnStart < candidate.SourceCatch))
+            { error = "Double capture needs its own late free-foot return marker."; return false; }
+            var right = Local(lastShownBoard.Right, lastCarrier);
+            if (right.X * right.X + right.Y * right.Y < .000001)
+            { error = "Double continuation has no bounded board roll basis."; return false; }
+            double angle = Math.Atan2(right.Y, right.X) * 180 / Math.PI;
+            if (stance == SkateStance.Goofy) angle = -angle;
+            angle += Math.Round((executedFlip - angle) / 360) * 360;
+            candidate.continuedDouble = true;
+            candidate.continuationAngle = candidate.lastNativeAngle = executedFlip;
+            candidate.continuationOffset = angle - executedFlip;
+            candidate.entry = entry; candidate.entrySeconds = entrySeconds;
+            candidate.entryRoot = entryRoot; candidate.entryVelocity = entryVelocity;
+            candidate.entryTarget = entryTarget; candidate.entryTargetVelocity = entryTargetVelocity;
+            candidate.entryUpper = entryUpper; candidate.entryUpperSeconds = entryUpperSeconds;
+            candidate.groundOrigin = groundOrigin; candidate.pressStart = pressStart; candidate.pressEnd = pressEnd;
+            continued = candidate; return true;
+        }
+
+        private static SkateVector Local(SkateVector v, SkateBoardPose carrier)
+        { return new SkateVector(SkateVector.Dot(v, carrier.Right), SkateVector.Dot(v, carrier.Up), SkateVector.Dot(v, carrier.Forward)); }
 
         private bool TryFamilyPressWindow(out string error)
         {
@@ -111,6 +183,10 @@ namespace Shortcut.RustMod
             if (!ValidFlight(frozenFlightSeconds) || !Finite(localRoot.LengthSquared) || !Finite(localVelocity.LengthSquared) ||
                 groundCarrierOrigin.HasValue && !Finite(groundCarrierOrigin.Value.LengthSquared))
             { error = "Invalid source-keyed entry baseline."; return false; }
+            if (Clip.Id == Fs360ShoveClipId && !groundCarrierOrigin.HasValue)
+            { error = "FS360 Shove-it needs an observed flatground takeoff plane."; return false; }
+            if (Clip.Id == VarialKickflipClipId && !groundCarrierOrigin.HasValue)
+            { error = "Varial Kickflip needs an observed flatground takeoff plane."; return false; }
             if (Clip.Id == HardflipClipId && !groundCarrierOrigin.HasValue)
             { error = "Hardflip needs an observed flatground takeoff plane."; return false; }
             if (Clip.Id == NollieTreFlipClipId && !groundCarrierOrigin.HasValue)
@@ -124,10 +200,11 @@ namespace Shortcut.RustMod
             // The independent upper entry and exact foot/board paths stay short.
             double rootFraction = Clip.Id == RequiredClipId ? .3125 :
                 Clip.Id == HeelflipClipId && groundCarrierOrigin.HasValue ? 1.0 / 3.0 :
-                Clip.Id == TreFlipClipId && groundCarrierOrigin.HasValue ? 5.0 / 21.0 :
+                (Clip.Id == TreFlipClipId || Clip.Id == VarialKickflipClipId) && groundCarrierOrigin.HasValue ? 5.0 / 21.0 :
                 Clip.Id == HardflipClipId && groundCarrierOrigin.HasValue ? 2.0 / 11.0 :
                 Clip.Id == NollieTreFlipClipId && groundCarrierOrigin.HasValue ? 6.0 / 17.0 :
-                Clip.Id == BsPopShoveClipId && groundCarrierOrigin.HasValue ? pressEnd : .125;
+                Clip.Id == BsPopShoveClipId && groundCarrierOrigin.HasValue ? pressEnd :
+                Clip.Id == Fs360ShoveClipId && groundCarrierOrigin.HasValue ? 5.0 / 15.0 : .125;
             double span = (SourceLand - SourcePop) * rootFraction;
             double targetTime = SourcePop + span, step = Math.Min(.005, span * .1);
             SkateCaptureFrame target, before, after;
@@ -139,7 +216,7 @@ namespace Shortcut.RustMod
             // The observed flatground launch span supplies its actual takeoff
             // speed. Subtract the carrier derivative in local space so adding
             // that carrier preserves the held body's world velocity at release.
-            if ((Clip.Id == RequiredClipId || Clip.Id == HeelflipClipId || Clip.Id == TreFlipClipId || Clip.Id == HardflipClipId || Clip.Id == NollieTreFlipClipId || Clip.Id == BsPopShoveClipId) && groundCarrierOrigin.HasValue)
+            if ((Clip.Id == RequiredClipId || Clip.Id == HeelflipClipId || Clip.Id == TreFlipClipId || Clip.Id == HardflipClipId || Clip.Id == NollieTreFlipClipId || Clip.Id == BsPopShoveClipId || Clip.Id == VarialKickflipClipId || Clip.Id == Fs360ShoveClipId) && groundCarrierOrigin.HasValue)
                 entryVelocity -= new SkateVector(0, SkateFlatgroundPop.Gravity * frozenFlightSeconds * .5, 0);
             entryUpper = localBody; entryUpperSeconds = frozenFlightSeconds * .125;
             groundOrigin = groundCarrierOrigin;
@@ -195,8 +272,9 @@ namespace Shortcut.RustMod
             // Only this exact flatground family, with its observed takeoff plane.
             // The caller already requires the frozen flatground flight span.
             bool hardflip = Clip.Id == HardflipClipId;
-            if ((!hardflip && Clip.Id != BsPopShoveClipId) || actuallyLanded) return true;
-            string family = hardflip ? "Hardflip" : "BS pop shove-it";
+            bool varial = Clip.Id == VarialKickflipClipId;
+            if ((!hardflip && !varial && Clip.Id != BsPopShoveClipId && Clip.Id != Fs360ShoveClipId) || actuallyLanded) return true;
+            string family = hardflip ? "Hardflip" : varial ? "Varial Kickflip" : Clip.Id == Fs360ShoveClipId ? "FS360 Shove-it" : "BS pop shove-it";
             if (!groundOrigin.HasValue)
             { error = family + " has no observed flatground takeoff plane."; return false; }
             if (!TryHardflipSupport(out error)) return false;
@@ -229,18 +307,24 @@ namespace Shortcut.RustMod
 
         public bool TrySample(SkateRiderRig rig, SkateStance stance, double elapsedSeconds,
             double frozenFlightSeconds, bool actuallyLanded, double secondsSinceLand, SkateBoardPose uprightCarrier,
-            out SkateCaptureFrame shown, out string error)
+            out SkateCaptureFrame shown, out string error, double? executedFlip = null)
         {
             shown = default(SkateCaptureFrame); double seconds;
             if (!TrySourceTime(elapsedSeconds, frozenFlightSeconds, actuallyLanded, secondsSinceLand, out seconds, out error)) return false;
             if (!SkateBoardPath.Valid(uprightCarrier) || uprightCarrier.Up.Y < .98)
             { error = "Source-keyed playback requires the current upright physical carrier."; return false; }
+            if (Clip.Id == Fs360ShoveClipId && !groundOrigin.HasValue)
+            { error = "FS360 Shove-it has no observed flatground takeoff plane."; return false; }
+            if (Clip.Id == VarialKickflipClipId && !groundOrigin.HasValue)
+            { error = "Varial Kickflip has no observed flatground takeoff plane."; return false; }
             if (Clip.Id == NollieTreFlipClipId && !groundOrigin.HasValue)
             { error = "Nollie360 has no observed flatground takeoff plane."; return false; }
             if (Clip.Id == BsPopShoveClipId && !groundOrigin.HasValue)
             { error = "BS pop shove-it has no observed flatground takeoff plane."; return false; }
             SkateCaptureFrame source; SkateRiderPose pose;
             if (!SkateCaptureSampler.TrySample(Clip, seconds, rig, stance, out source, out error)) return false;
+            if (Clip.Id == DoubleKickflipClipId &&
+                !TryDoubleFrame(rig, stance, seconds, actuallyLanded, executedFlip, source, out source, out error)) return false;
             // Source coordinates are already carrier-local: do NOT subtract the
             // current board centre or add another procedural pitch/pop envelope.
             if (!SkateRider.TryTransformPose(source.Pose, SourceCarrier, uprightCarrier, out pose))
@@ -281,13 +365,24 @@ namespace Shortcut.RustMod
                     // Family metadata describes the whole authored press, including
                     // an upper-shoe contact that is not a sole-contact bit.
                     // Keep its relative foot/board placement during compensation.
-                    bool familyPress = Clip.Id != RequiredClipId;
+                    bool familyPress = Clip.Id != RequiredClipId && Clip.Id != DoubleKickflipClipId;
                     double front = familyPress ? 1 : PressRelease(fraction, 2.0 / 16, 3.0 / 16);
                     double rear = familyPress ? 1 : PressRelease(fraction, 1.0 / 16, 2.5 / 16);
                     bool goofy = stance == SkateStance.Goofy;
                     var left = boardShift * (goofy ? rear : front);
                     var right = boardShift * (goofy ? front : rear);
-                    if (!SkateCaptureFootSupport.TryShiftFeet(rig, pose, left, right, false, out pose, out error)) return false;
+                    var beforePress = pose;
+                    if (!SkateCaptureFootSupport.TryShiftFeet(rig, pose, left, right, false, out pose, out error))
+                    {
+                        // A shallow observed charge can reach the source feet but
+                        // not their final downward press compensation. Keep every
+                        // successful solve unchanged; only during this single-entry
+                        // window use the same measured pelvis fit as deck conforming.
+                        if (Clip.Id != RequiredClipId || !entry || elapsedSeconds >= entrySeconds ||
+                            !SkateCaptureFootSupport.TryShiftFeet(rig, beforePress, left, right, true, out pose, out error))
+                            return false;
+                        entryShift += pose.Pelvis - beforePress.Pelvis;
+                    }
                 }
             }
             var board = new SkateBoardPose(uprightCarrier.Point(source.Board.Origin) + boardShift,
@@ -328,6 +423,60 @@ namespace Shortcut.RustMod
             }
             return TryHardflipFloor(shown, actuallyLanded, uprightCarrier.Up,
                 (seconds - SourcePop) / (SourceLand - SourcePop), out shown, out error);
+        }
+
+        private bool TryDoubleFrame(SkateRiderRig rig, SkateStance stance, double seconds, bool landed,
+            double? executed, SkateCaptureFrame source, out SkateCaptureFrame frame, out string error)
+        {
+            frame = source; error = null;
+            if (!continuedDouble || !executed.HasValue || !Finite(executed.Value) || executed.Value < lastNativeAngle - .001 ||
+                executed.Value > 720 + SkateTricks.FlipTolerance || landed && executed.Value < 720 - SkateTricks.FlipTolerance)
+            { error = "Double capture has no matching monotone executed winding."; return false; }
+            double native = executed.Value; lastNativeAngle = Math.Max(lastNativeAngle, native);
+            var body = source.Pose; var leftUp = source.LeftSoleUp; var rightUp = source.RightSoleUp;
+            var observation = source.Observation;
+            if (!landed && seconds >= doubleReturnStart && (seconds < SourceCatch || native < 719.999))
+            {
+                SkateCaptureFrame free, caught;
+                if (!SkateCaptureSampler.TrySample(Clip, doubleReturnStart, rig, stance, out free, out error) ||
+                    !SkateCaptureSampler.TrySample(Clip, Math.Max(SourceCatch, seconds), rig, stance, out caught, out error)) return false;
+                // The body clock continues. Only the authored free-foot return
+                // waits for the actual last sixth-turn; it cannot catch at360.
+                double weight = SkateCaptureFootSupport.CatchPreparationWeight(native - 660, 60);
+                var freeShift = source.Board.Origin - free.Board.Origin;
+                var catchShift = source.Board.Origin - caught.Board.Origin;
+                var la = (free.Pose.LeftAnkle + freeShift) * (1 - weight) + (caught.Pose.LeftAnkle + catchShift) * weight;
+                var ra = (free.Pose.RightAnkle + freeShift) * (1 - weight) + (caught.Pose.RightAnkle + catchShift) * weight;
+                var lf = (free.Pose.LeftToe - free.Pose.LeftAnkle) * (1 - weight) + (caught.Pose.LeftToe - caught.Pose.LeftAnkle) * weight;
+                var rf = (free.Pose.RightToe - free.Pose.RightAnkle) * (1 - weight) + (caught.Pose.RightToe - caught.Pose.RightAnkle) * weight;
+                if (lf.LengthSquared < .000001 || rf.LengthSquared < .000001 ||
+                    !SkateCaptureFootSupport.TrySetFeet(rig, body, la, la + lf * (rig.FootLength / lf.Length),
+                        ra, ra + rf * (rig.FootLength / rf.Length), false, out body, out error)) return false;
+                leftUp = free.LeftSoleUp * (1 - weight) + caught.LeftSoleUp * weight;
+                rightUp = free.RightSoleUp * (1 - weight) + caught.RightSoleUp * weight;
+                leftUp = leftUp * (1 / leftUp.Length); rightUp = rightUp * (1 / rightUp.Length);
+            }
+            if (!landed && native < 719.999)
+                observation = new SkateCaptureEvent(seconds, SkateCapturePhase.Air, SkateCaptureContacts.None);
+            // Anchor the previous displayed angle and consume only the real
+            // additional winding. The offset vanishes C2 at native completion;
+            // neither the body clock nor a quaternion loop creates another turn.
+            double u = Math.Max(0, Math.Min(1, (native - continuationAngle) / (720 - continuationAngle)));
+            double release = u * u * u * (10 + u * (-15 + 6 * u));
+            double angle = landed ? 720 : native + continuationOffset * (1 - release);
+            if (stance == SkateStance.Goofy) angle = -angle;
+            // The shared baker's original order is Z(roll)*Y(yaw)*X(pitch).
+            // A rolled pitched nose has nonzero Forward.X even with zero shove.
+            var right = source.Board.Right;
+            if (right.X * right.X + right.Y * right.Y < .000001)
+            { error = "Double capture has no finite source roll basis."; return false; }
+            double sourceAngle = Math.Atan2(right.Y, right.X) * 180 / Math.PI;
+            double half = (angle - sourceAngle) * Math.PI / 360;
+            var rotation = Multiply(new SkateCaptureRotation(0, 0, Math.Sin(half), Math.Cos(half)), source.Rotation);
+            var board = new SkateBoardPose(source.Board.Origin, rotation.Rotate(new SkateVector(0, 0, 1)), rotation.Rotate(new SkateVector(0, 1, 0)));
+            frame = new SkateCaptureFrame(body, board, rotation, leftUp, rightUp,
+                source.HasEvent, observation, source.PelvisCorrection, source.LeftHandCorrection, source.RightHandCorrection, source.RiderUp);
+            return true;
         }
 
         private static bool ValidFlight(double value) { return Finite(value) && value > 0 && value <= 10; }

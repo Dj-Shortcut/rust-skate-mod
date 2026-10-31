@@ -1,0 +1,41 @@
+{
+  "format": "authored-double-kickflip-derived/1",
+  "id": "double-kickflip-source-keyed-v1",
+  "movementKind": "double-kickflip",
+  "sourceMovementKind": "kickflip",
+  "targetFlipDegrees": 720,
+  "baseBodySha256": "b5224ee43c8e371fdfcfe498cbae2402c447aa97702cc05e3c63b1fc7032e387",
+  "baseConstraintsSha256": "05b117635e6d76c681d6c2e053704829cf98d90ea969b117c07425c4e3da8a4c",
+  "prefixThroughSourceFrame": 264,
+  "startsAfterSourceFrame": 265,
+  "extraWindingWindow": [265, 274],
+  "returnStartSourceFrame": 272.75,
+  "catchSourceFrame": 274.2,
+  "landSourceFrame": 275,
+  "freeSoleGap": 0.01,
+  "freeFeet": {"Left": [-0.055, 0.30], "Right": [0.055, -0.30]},
+  "upperFoldWindow": [265, 266, 282, 293.5],
+  "targetTorsoFoldDegrees": 70,
+  "torsoFoldKeys": [[265, 70], [269.5, 70], [274.2, 40], [275, 40], [278.2, 50], [282, 45], [293.5, 45]],
+  "maximumNeckTurnDegrees": 30,
+  "minimumFoldedGazeDegrees": 40,
+  "armBalance": {
+    "upperDirection": [0.98, -0.15, 0.12],
+    "foreDirection": [0.78, -0.60, 0.16]
+  },
+  "reference": {
+    "url": "https://www.youtube.com/watch?v=_oRoo1x1uzM&t=484",
+    "uploader": "The Berrics",
+    "windowSeconds": [480, 492],
+    "nativeFps": [30000, 1001],
+    "popFrames": [142, 144],
+    "firstGraphicFrames": [144, 146],
+    "firstGripFrames": [148, 149],
+    "secondGraphicFrames": [152, 154],
+    "secondGripFrames": [156, 158],
+    "landingFrames": [160, 165],
+    "referenceInspected": true,
+    "scope": "Qualitative Double motion reference, independently inspected from original native frames. Edited playback does not establish physical flight duration or calibrated 3D. Shared body controls come from a different ordinary Kickflip take."
+  },
+  "provenance": "Shared reconstructed ordinary Kickflip setup, tail pressure, upper-instep release and lower/root basis. A distinct authored extra-winding/free-foot/late-return interval and anatomical upper reconstruction follow the inspected Double silhouette: compact Air, retained forward Catch/absorption, then bounded recovery. Upper depth and occluded balance are authored; no measured 3D claim. Body/feet/board and original sample grid remain exact through the first original row after 264. No future held input, native physics or source approval is supplied by this data."
+}
