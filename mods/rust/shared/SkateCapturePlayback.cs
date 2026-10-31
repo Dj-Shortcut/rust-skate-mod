@@ -259,6 +259,9 @@ namespace Shortcut.RustMod
                 case "hardflip": rollTurn = 360; yawTurn = -180; break;
                 default: return;
             }
+            // This separately authored clip contains its complete two-turn path.
+            // It is not the legacy recipe that repeats a one-turn source track.
+            if (clip.Id == SkateCaptureKeyedPlayback.DoubleKickflipClipId && clip.MovementKind == "double-kickflip") rollTurn = 720;
             var samples = new double[clip.SampleCount + 2]; int sampleCount = 0;
             for (int row = 0; row < clip.SampleCount && clip.Number(row, 0) < caught; row++) samples[sampleCount++] = clip.Number(row, 0);
             samples[sampleCount++] = air; samples[sampleCount++] = caught;
