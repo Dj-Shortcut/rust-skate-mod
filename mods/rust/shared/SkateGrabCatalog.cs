@@ -69,7 +69,7 @@ namespace Shortcut.RustMod
             points[n] = new SkateVector(.102, 0, 0); return points;
         }
         public static bool TryGrip(SkateBoardPose frame, double across, double along, SkateHandMeasurements hand,
-            out SkateHandGripFrame grip)
+            out SkateHandGripFrame grip, double outset = .020, double rise = .013)
         {
             grip = default(SkateHandGripFrame);
             if (!SkateBoardPath.Valid(frame) || !frame.Initialized || double.IsNaN(across) || double.IsInfinity(across) ||
@@ -92,7 +92,7 @@ namespace Shortcut.RustMod
             double tilt = 20 * Math.PI / 180;
             var forward = normal * -Math.Cos(tilt) + outward * Math.Sin(tilt);
             var back = outward * Math.Cos(tilt) + normal * Math.Sin(tilt);
-            var mcp = edge + outward * .020 + normal * .013;
+            var mcp = edge + outward * outset + normal * rise;
             grip = new SkateHandGripFrame(frame.Point(edge), frame.Point(mcp - forward * hand.McpLength), frame.Rotate(forward), frame.Rotate(back));
             return true;
         }
