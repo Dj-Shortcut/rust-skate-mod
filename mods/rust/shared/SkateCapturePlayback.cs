@@ -256,6 +256,7 @@ namespace Shortcut.RustMod
                 case "360-flip": case "nollie-360-flip": rollTurn = 360; yawTurn = 360; break;
                 case "bs-pop-shove-it": rollTurn = 0; yawTurn = 180; break;
                 case "fs-pop-shove-it": rollTurn = 0; yawTurn = -180; break;
+                case "fs-360-shove-it": rollTurn = 0; yawTurn = -360; break;
                 case "hardflip": rollTurn = 360; yawTurn = -180; break;
                 case "varial-kickflip": rollTurn = 360; yawTurn = 180; break;
                 default: return;

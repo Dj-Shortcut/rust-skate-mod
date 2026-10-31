@@ -1,0 +1,187 @@
+{
+  "format": "authored-fs360-shove-controls/1",
+  "id": "fs-360-shove-it-source-keyed-v1",
+  "movementKind": "fs-360-shove-it",
+  "sourceId": "frontside-pop-shove-it-batb12-kroetkov",
+  "sourceJsonSha256": "c5e7742516b4b59784731494b000b0ae11fa92c5f7653caab2f514b0463da307",
+  "retargetHelperSha256": "01f0a04414f76671f9c442e13a0b7f210d2c6b2eb1e67cf509cfa22a562745e5",
+  "geometrySha256": "806a59f06a0f28eb0a81550675e2cff391bf27b286f788690b65ed857794d4c5",
+  "sourceFps": 29.97002997002997,
+  "firstSourceFrame": 190,
+  "lastSourceFrame": 252,
+  "pop": 211,
+  "frontRelease": 211,
+  "rearRelease": 212,
+  "pressEnd": 214,
+  "rotationEnd": 223,
+  "catchStart": 220,
+  "catch": 224,
+  "catchFeet": {
+    "Left": {
+      "sourceFrame": 224,
+      "xyz": [-0.04, 0, 0.24],
+      "toeHeadingDegrees": 65
+    },
+    "Right": {
+      "sourceFrame": 224,
+      "xyz": [-0.04, 0, -0.24],
+      "toeHeadingDegrees": 85
+    }
+  },
+  "land": 226,
+  "recovery": 241,
+  "maximumReachShare": 0.998,
+  "yawKeys": [
+    [
+      190,
+      0
+    ],
+    [
+      211,
+      0
+    ],
+    [
+      212,
+      -20
+    ],
+    [
+      214,
+      -80
+    ],
+    [
+      216,
+      -165
+    ],
+    [
+      220,
+      -315
+    ],
+    [
+      223,
+      -360
+    ],
+    [
+      252,
+      -360
+    ]
+  ],
+  "pitchKeys": [
+    [
+      190,
+      0
+    ],
+    [
+      211,
+      0
+    ],
+    [
+      211.6,
+      55
+    ],
+    [
+      212,
+      55
+    ],
+    [
+      214,
+      38
+    ],
+    [
+      216,
+      24
+    ],
+    [
+      220,
+      7
+    ],
+    [
+      223,
+      0
+    ],
+    [
+      252,
+      0
+    ]
+  ],
+  "frontFreeKeys": [
+    [
+      211,
+      -0.04,
+      0.104,
+      0.043
+    ],
+    [
+      212,
+      -0.04,
+      0.19,
+      0.09
+    ],
+    [
+      214,
+      -0.045,
+      0.3,
+      0.21
+    ],
+    [
+      216,
+      -0.04,
+      0.32,
+      0.24
+    ],
+    [
+      220,
+      -0.04,
+      0.27,
+      0.24
+    ],
+    [
+      224,
+      -0.04,
+      0.1,
+      0.24
+    ]
+  ],
+  "rearFreeKeys": [
+    [
+      212,
+      -0.045,
+      0.1,
+      -0.323
+    ],
+    [
+      213,
+      0.07,
+      0.14,
+      -0.25
+    ],
+    [
+      214,
+      0.14,
+      0.21,
+      -0.17
+    ],
+    [
+      216,
+      0.08,
+      0.25,
+      -0.2
+    ],
+    [
+      220,
+      -0.03,
+      0.23,
+      -0.24
+    ],
+    [
+      224,
+      -0.04,
+      0.1,
+      -0.24
+    ]
+  ],
+  "provenance": "Authored FS360 derivation from the actual cached FS180 Kroetkov body/scoop reference. Own extra yaw, free rear pickup and later full360 catch; reference footage is FS180, not a filmed FS360. Existing own shoe/deck geometry and fixed limb lengths; no BS body copied. Authored rear recovery knee turns toward its anatomical toe direction after Land226; Air/Catch and all foot/board targets retained. Recovery pelvis/upper recenter together over measured sole-footprint centres with a half-hip-width heelward balance, then both fixed-foot legs are solved again; no Y arc is added.",
+  "recoveryKneeWindow": [
+    226,
+    236
+  ]
+}

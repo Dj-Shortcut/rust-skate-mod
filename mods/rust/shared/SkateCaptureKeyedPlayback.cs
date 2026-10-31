@@ -18,6 +18,9 @@ namespace Shortcut.RustMod
         public const string VarialKickflipClipId = "varial-kickflip-derived-tre-v1";
         private static readonly SkateCaptureTrickSignature VarialKickflipSignature =
             new SkateCaptureTrickSignature(SkatePopKind.Ollie, false, false, 360, -180, 0, 0);
+        public const string Fs360ShoveClipId = "fs-360-shove-it-source-keyed-v1";
+        private static readonly SkateCaptureTrickSignature Fs360ShoveSignature =
+            new SkateCaptureTrickSignature(SkatePopKind.Ollie, false, false, 0, 360, 0, 0);
         private static readonly SkateCaptureTrickSignature BsPopShoveSignature =
             new SkateCaptureTrickSignature(SkatePopKind.Ollie, false, false, 0, -180, 0, 0);
         private static readonly SkateCaptureTrickSignature NollieTreFlipSignature =
@@ -63,13 +66,14 @@ namespace Shortcut.RustMod
                 clip.Id == NollieTreFlipClipId && clip.MovementKind == "nollie-360-flip" && NollieTreFlipSignature.Same(signature) ||
                 clip.Id == BsPopShoveClipId && clip.MovementKind == "bs-pop-shove-it" && BsPopShoveSignature.Same(signature) ||
                 clip.Id == DoubleKickflipClipId && clip.MovementKind == "double-kickflip" && DoubleKickflipSignature.Same(signature) ||
-                clip.Id == VarialKickflipClipId && clip.MovementKind == "varial-kickflip" && VarialKickflipSignature.Same(signature));
+                clip.Id == VarialKickflipClipId && clip.MovementKind == "varial-kickflip" && VarialKickflipSignature.Same(signature) ||
+                clip.Id == Fs360ShoveClipId && clip.MovementKind == "fs-360-shove-it" && Fs360ShoveSignature.Same(signature));
         }
 
         public static bool TryCreate(SkateCaptureClip clip, out SkateCaptureKeyedPlayback playback, out string error)
         {
             playback = null; error = null;
-            if (clip == null || !clip.Ready || !Accepts(clip, clip.Id == HeelflipClipId ? HeelflipSignature : clip.Id == TreFlipClipId ? TreFlipSignature : clip.Id == HardflipClipId ? HardflipSignature : clip.Id == NollieTreFlipClipId ? NollieTreFlipSignature : clip.Id == BsPopShoveClipId ? BsPopShoveSignature : clip.Id == DoubleKickflipClipId ? DoubleKickflipSignature : clip.Id == VarialKickflipClipId ? VarialKickflipSignature : RequiredSignature))
+            if (clip == null || !clip.Ready || !Accepts(clip, clip.Id == HeelflipClipId ? HeelflipSignature : clip.Id == TreFlipClipId ? TreFlipSignature : clip.Id == HardflipClipId ? HardflipSignature : clip.Id == NollieTreFlipClipId ? NollieTreFlipSignature : clip.Id == BsPopShoveClipId ? BsPopShoveSignature : clip.Id == DoubleKickflipClipId ? DoubleKickflipSignature : clip.Id == VarialKickflipClipId ? VarialKickflipSignature : clip.Id == Fs360ShoveClipId ? Fs360ShoveSignature : RequiredSignature))
             { error = "An exact bounded source-keyed flip clip is required."; return false; }
             // Reuse the existing strict event/contact contract. Building its
             // optional inverse clocks does not make those clocks authoritative.
@@ -79,7 +83,7 @@ namespace Shortcut.RustMod
                 events.SourceTime(SkateCapturePhase.Catch, 0), events.SourceTime(SkateCapturePhase.Land, 0));
             if (clip.Id != RequiredClipId && clip.Id != DoubleKickflipClipId && !playback.TryFamilyPressWindow(out error))
             { playback = null; return false; }
-            if ((clip.Id == HardflipClipId || clip.Id == BsPopShoveClipId || clip.Id == VarialKickflipClipId) && !TryHardflipSupport(out error))
+            if ((clip.Id == HardflipClipId || clip.Id == BsPopShoveClipId || clip.Id == VarialKickflipClipId || clip.Id == Fs360ShoveClipId) && !TryHardflipSupport(out error))
             { playback = null; return false; }
             return true;
         }
@@ -179,6 +183,8 @@ namespace Shortcut.RustMod
             if (!ValidFlight(frozenFlightSeconds) || !Finite(localRoot.LengthSquared) || !Finite(localVelocity.LengthSquared) ||
                 groundCarrierOrigin.HasValue && !Finite(groundCarrierOrigin.Value.LengthSquared))
             { error = "Invalid source-keyed entry baseline."; return false; }
+            if (Clip.Id == Fs360ShoveClipId && !groundCarrierOrigin.HasValue)
+            { error = "FS360 Shove-it needs an observed flatground takeoff plane."; return false; }
             if (Clip.Id == VarialKickflipClipId && !groundCarrierOrigin.HasValue)
             { error = "Varial Kickflip needs an observed flatground takeoff plane."; return false; }
             if (Clip.Id == HardflipClipId && !groundCarrierOrigin.HasValue)
@@ -197,7 +203,8 @@ namespace Shortcut.RustMod
                 (Clip.Id == TreFlipClipId || Clip.Id == VarialKickflipClipId) && groundCarrierOrigin.HasValue ? 5.0 / 21.0 :
                 Clip.Id == HardflipClipId && groundCarrierOrigin.HasValue ? 2.0 / 11.0 :
                 Clip.Id == NollieTreFlipClipId && groundCarrierOrigin.HasValue ? 6.0 / 17.0 :
-                Clip.Id == BsPopShoveClipId && groundCarrierOrigin.HasValue ? pressEnd : .125;
+                Clip.Id == BsPopShoveClipId && groundCarrierOrigin.HasValue ? pressEnd :
+                Clip.Id == Fs360ShoveClipId && groundCarrierOrigin.HasValue ? 5.0 / 15.0 : .125;
             double span = (SourceLand - SourcePop) * rootFraction;
             double targetTime = SourcePop + span, step = Math.Min(.005, span * .1);
             SkateCaptureFrame target, before, after;
@@ -209,7 +216,7 @@ namespace Shortcut.RustMod
             // The observed flatground launch span supplies its actual takeoff
             // speed. Subtract the carrier derivative in local space so adding
             // that carrier preserves the held body's world velocity at release.
-            if ((Clip.Id == RequiredClipId || Clip.Id == HeelflipClipId || Clip.Id == TreFlipClipId || Clip.Id == HardflipClipId || Clip.Id == NollieTreFlipClipId || Clip.Id == BsPopShoveClipId || Clip.Id == VarialKickflipClipId) && groundCarrierOrigin.HasValue)
+            if ((Clip.Id == RequiredClipId || Clip.Id == HeelflipClipId || Clip.Id == TreFlipClipId || Clip.Id == HardflipClipId || Clip.Id == NollieTreFlipClipId || Clip.Id == BsPopShoveClipId || Clip.Id == VarialKickflipClipId || Clip.Id == Fs360ShoveClipId) && groundCarrierOrigin.HasValue)
                 entryVelocity -= new SkateVector(0, SkateFlatgroundPop.Gravity * frozenFlightSeconds * .5, 0);
             entryUpper = localBody; entryUpperSeconds = frozenFlightSeconds * .125;
             groundOrigin = groundCarrierOrigin;
@@ -266,8 +273,8 @@ namespace Shortcut.RustMod
             // The caller already requires the frozen flatground flight span.
             bool hardflip = Clip.Id == HardflipClipId;
             bool varial = Clip.Id == VarialKickflipClipId;
-            if ((!hardflip && !varial && Clip.Id != BsPopShoveClipId) || actuallyLanded) return true;
-            string family = hardflip ? "Hardflip" : varial ? "Varial Kickflip" : "BS pop shove-it";
+            if ((!hardflip && !varial && Clip.Id != BsPopShoveClipId && Clip.Id != Fs360ShoveClipId) || actuallyLanded) return true;
+            string family = hardflip ? "Hardflip" : varial ? "Varial Kickflip" : Clip.Id == Fs360ShoveClipId ? "FS360 Shove-it" : "BS pop shove-it";
             if (!groundOrigin.HasValue)
             { error = family + " has no observed flatground takeoff plane."; return false; }
             if (!TryHardflipSupport(out error)) return false;
@@ -306,6 +313,8 @@ namespace Shortcut.RustMod
             if (!TrySourceTime(elapsedSeconds, frozenFlightSeconds, actuallyLanded, secondsSinceLand, out seconds, out error)) return false;
             if (!SkateBoardPath.Valid(uprightCarrier) || uprightCarrier.Up.Y < .98)
             { error = "Source-keyed playback requires the current upright physical carrier."; return false; }
+            if (Clip.Id == Fs360ShoveClipId && !groundOrigin.HasValue)
+            { error = "FS360 Shove-it has no observed flatground takeoff plane."; return false; }
             if (Clip.Id == VarialKickflipClipId && !groundOrigin.HasValue)
             { error = "Varial Kickflip has no observed flatground takeoff plane."; return false; }
             if (Clip.Id == NollieTreFlipClipId && !groundOrigin.HasValue)
