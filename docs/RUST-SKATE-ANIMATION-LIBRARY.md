@@ -117,16 +117,16 @@ names the state and, where there is one, the clip on `main`: **native accepted**
 authored controls on `main`, `reviewed=false`, not yet viewed as a whole), **kind
 only** (registry signature without a source route), **open PR** (draft, not on
 `main`), or **none**. Source video ids are the Berrics references the authoring
-docs name; the footage itself stays private. State as of `main` `a4248fa`.
+docs name; the footage itself stays private. State as of `main` `a838003`.
 
 | Source family | Normal | Fakie | Nollie | Switch |
 | --- | --- | --- | --- | --- |
 | Ollie | none for normal riding (the CC BY-SA video ollie in `ollie-video/` is sampled by the rigging showcase only) | none | none | none |
-| Kickflip | source present: `kickflip-source-keyed-v1` (`kickflip-keyed/`, authored from reference images); held Double: open PR #662, min-charge entry #663 | **offline reviewed**: `fakie-kickflip` (`fakie-kickflip-air/`), double/triple derivatives registered | none | none |
+| Kickflip | source present: `kickflip-source-keyed-v1` (`kickflip-keyed/`, authored from reference images); held Double on the same pop: `double-kickflip-source-keyed-v1` source present (#662, #663), bound to #659's native held-flip clock | **offline reviewed**: `fakie-kickflip` (`fakie-kickflip-air/`), double/triple derivatives registered | none | none |
 | Heelflip | source present: `heelflip-source-keyed-v1` (`heelflip-keyed/`, `_oRoo1x1uzM` 136–158 s) | none | **offline reviewed**: `nollie-heelflip`, double/triple registered | **offline reviewed**: `switch-heelflip` (`switch-heelflip-air/`, `PqJZcwTY1QE` t=74), double/triple registered |
-| BS pop shove-it | source present: `bs-pop-shove-it-source-keyed-v1` (`bs-pop-shove-keyed/`, Cole `YcmPDIj2BFo` t=128); BS 360: open PR #602 (`bs-360-shove-it`, genuine Kroetkov take) | none | none | none |
-| FS pop shove-it | kind only (`fs-pop-shove-it` registered, no keyed route or authored controls on `main`); FS 360: open PR #653 (authored derivation from the FS 180 reconstruction) | none | none | none |
-| 360 flip | source present: `360-flip-source-keyed-v1` (`treflip-keyed/`, `_oRoo1x1uzM` ~253 s, filmed goofy); Varial Kickflip: open PR #640 (authored Tre derivation, no filmed take) | none | **offline reviewed**: `nollie-360-flip-source-keyed-v1` (`nollie360-keyed/`, `PqJZcwTY1QE` t=153) | none |
+| BS pop shove-it | source present: `bs-pop-shove-it-source-keyed-v1` (`bs-pop-shove-keyed/`, Cole `YcmPDIj2BFo` t=128); BS 360: open PR #602 (`bs-360-shove-it`, genuine Kroetkov take, not on `main`) | none | none | none |
+| FS pop shove-it | kind only (`fs-pop-shove-it` registered, no keyed route or authored controls on `main`); FS 360: `fs-360-shove-it-source-keyed-v1` source present (#653), an authored derivation from the unreviewed FS 180 reconstruction, no filmed FS 360 take | none | none | none |
+| 360 flip | source present: `360-flip-source-keyed-v1` (`treflip-keyed/`, `_oRoo1x1uzM` ~253 s, filmed goofy); Varial Kickflip: `varial-kickflip-derived-tre-v1` source present (#640), an authored Tre derivation with its own 180 scoop and half-turn catch, no filmed take | none | **offline reviewed**: `nollie-360-flip-source-keyed-v1` (`nollie360-keyed/`, `PqJZcwTY1QE` t=153) | none |
 | Hardflip | source present: `hardflip-source-keyed-v1` (`hardflip-keyed/`, `_oRoo1x1uzM` t=192) | none | none | none |
 | Inward heelflip | none | none | none | none |
 | BS 180 | none (procedural spin only) | none | combined only: `nollie-backside-180-heelflip` (`nollie-bs180-heelflip-air/`, `PqJZcwTY1QE` t=115), **offline reviewed**; not a standalone BS 180 reference | none |
