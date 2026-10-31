@@ -279,10 +279,39 @@ public static class SkateHud
         return s;
     }
 
+    // The address of the owner's server, when the session staged it beside the plugin
+    // (plugins\skate_server.txt, written by session.ps1 from the staging folder's server.txt), so
+    // that the main menu can say what to type after F1. Read once, the first line only, and kept
+    // only when it looks like a host name or an address with a port: the line is drawn as rich
+    // text. It is never logged. Shown until the rider has been ready in a world once: after that
+    // he is on the server, or knows the way back.
+    private static string server;
+    private static bool serverRead, wasReady;
+    private static string ServerAddress()
+    {
+        if (serverRead) return server;
+        serverRead = true; server = "";
+        try
+        {
+            var path = System.IO.Path.Combine(BepInEx.Paths.PluginPath, "skate_server.txt");
+            if (!System.IO.File.Exists(path)) return server;
+            var text = System.IO.File.ReadAllText(path);
+            var end = text.IndexOfAny(new[] { '\r', '\n' });
+            var first = (end < 0 ? text : text.Substring(0, end)).Trim();
+            if (first.Length == 0 || first.Length > 80) return server;
+            foreach (var c in first)
+                if (!(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == '.' || c == ':' || c == '-')) return server;
+            server = first;
+        }
+        catch (Exception e) { Out.Say("HUD server hint not read: " + e.GetType().Name); }
+        return server;
+    }
+
     public static void Draw()
     {
         var now = Time.realtimeSinceStartup;
         var v = Staged ? Stage : Sample(now);
+        if (SkateRig.Ready) wasReady = true;
         if ((SkatePieces.Open || SkatePieces.RustModeHint) && !v.Riding) { SkateBuildWheel.Draw(); return; }
         if (!v.Riding) SkateSupportFootprint.Draw();
         var onFoot = !Scenarios.Active && !v.Riding && (!SkateRig.Ready || now - SkateRig.AwakeAt < 12f || SkateKeys.Help);
@@ -296,7 +325,8 @@ public static class SkateHud
         if (Scenarios.Active) Text(40f * k, 110f * k, w - 80f * k, "SKATE TEST  " + Scenarios.Phase, (int)(19 * k), Ink, 0, 1f);
         if (onFoot)
         {
-            var hint = !SkateRig.Ready ? "Skate mod " + SkatePlugin.Version + " loaded"
+            var address = wasReady ? "" : ServerAddress();
+            var hint = !SkateRig.Ready ? "Skate mod " + SkatePlugin.Version + " loaded" + (address == "" ? "" : "   To join the server: press F1, type   connect " + address + "   then Enter")
                 : (SkatePad.Shared ? "Skate mod: press Y on the controller, or K, or jump twice to get on the board" : "Skate mod: press K or jump twice to get on the board") + "   (stance " + SkateRide.StanceName + ": hold F2" + (SkatePad.Shared ? " or Back+Y" : "") + " to switch)   hold H to see this again";
             Text(40f * k, 110f * k, w - 80f * k, hint, (int)(19 * k), Ink, 0, 1f);
         }

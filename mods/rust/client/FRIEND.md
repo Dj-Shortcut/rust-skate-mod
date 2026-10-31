@@ -98,7 +98,9 @@ and is not published; nothing of it belongs in this repository.
    "Legacy launcher" instead of the icon and sound lines.
 4. Start **Rust Skate** from the desktop and keep its window open while playing. Steam is started
    when it is not running. In Rust's main menu press `F1` and type `connect <address>` (the
-   window shows the address when it was packed in), then `Enter`. The window's first lines are
+   window shows the address when it was packed in, and so does the mod's own line at the top left
+   of the main menu, "To join the server: press F1, type connect ...", until you have been on the
+   server once; not yet seen on any PC), then `Enter`. The window's first lines are
    the launcher's own checks of the Rust folder and the staging folder; the same checks without
    starting Rust: `launcher\skate.ps1 -Diagnostics` in `Downloads\claude-loader-probe` (not in a
    legacy pack, whose launcher has no such switch).
@@ -127,7 +129,9 @@ and the sounds follow the pack: a pack without them takes an older address or so
   (`tools/skate.ps1`), the sound-pack, icon, capture-pair and candidate-receipt handling that
   #569 and #575 added to them, and the lookup of Steam and Rust's library on the friend's PC
   (`Get-SkateRustFolder` in `tools/diagnostics.ps1`, used by the installer, `skate.ps1`,
-  `session.ps1` and `clean.ps1`; the owner's `C:` paths come first and stay as they were).
+  `session.ps1` and `clean.ps1`; the owner's `C:` paths come first and stay as they were), and the
+  main-menu line with the `connect` command (`session.ps1` writes the packed address beside the
+  plugin as `skate_server.txt`; `SkateHud.cs` shows it until the rider is first ready in a world).
 - Checked outside the game: `pack.ps1` and `install.ps1` were run on Linux against a stand-in
   folder tree with the Windows paths swapped (the zip holds the expected files and nothing else
   from `play\`, `pack.txt` carries the build, the installer copies the tree, writes the desktop
@@ -144,7 +148,8 @@ and the sounds follow the pack: a pack without them takes an older address or so
   the older 0.18.40 plugin. The size of a real pack, Steam Input on the friend's shortcut and two
   clients on the owner's server are all still to be seen.
 - Known limits: the lookup of Steam and of Rust's library (registry, `libraryfolders.vdf`,
-  manifest) is script source that has not run on Windows; a pack made from the pinned 0.18.40
+  manifest) and the main-menu `connect` line are script and client source that have not run on
+  Windows or been seen in the game; a pack made from the pinned 0.18.40
   release still refuses Rust outside Steam's own library on `C:`. The Steam shortcut is made by
   hand, and the owner's server must accept the second rider (its ShortcutSkate plugin, or its
   speed checks turned off; see [playing it](README.md#playing-it-the-owners-launcher)).

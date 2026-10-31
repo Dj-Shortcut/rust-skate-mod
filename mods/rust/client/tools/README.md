@@ -38,7 +38,10 @@ plugin), `launcher\` (the owner's launcher), `sounds\` (the owner's private soun
 ([which](../../../../docs/RUST-SKATE-AUDIO.md)); `session` copies them in, `pack` carries them to a
 friend, and they are never committed), `run-<tag>-<time>\` (one folder per session with its
 logs and the loader files taken back out of the Rust folder) and `server.txt` (the address of the
-private test server as `ip:port`; it is read by `ping` and `session` and is never committed).
+private test server as `ip:port`; it is read by `ping` and `session` and is never committed;
+`session` also writes its first line beside the plugin as `BepInEx\plugins\skate_server.txt`, which
+the plugin shows in the main menu as the `connect` command to type after `F1`, until the rider is
+first ready in a world; it leaves the Rust folder with the loader).
 
 ## Starting
 
