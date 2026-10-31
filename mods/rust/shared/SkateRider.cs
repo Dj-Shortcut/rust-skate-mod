@@ -1104,7 +1104,7 @@ namespace Shortcut.RustMod
                 double alongSide = grip.End || SkateVector.Dot(travel, deckForward) >= 0 ? 1 : -1;
                 SkateHandGripFrame measuredGrip;
                 if (SkateGrabCatalog.HasReferenceHand(input.GrabKind) && SkateGrabCatalog.TryGrip(input.DeckFrame,
-                    grip.Across * toeSide, grip.Along * alongSide, grabLeft ? rig.LeftHand : rig.RightHand, out measuredGrip, GripOutset(input.GrabKind), GripRise(input.GrabKind)))
+                    grip.Across * toeSide, grip.Along * alongSide, grabLeft ? rig.LeftHand : rig.RightHand, out measuredGrip, GripOutset(input), GripRise(input)))
                     grab = measuredGrip.Wrist;
                 else grab = GrabWrist(definition,
                     input.DeckFrame.Point(new SkateVector(grip.Across * toeSide, 0, grip.Along * alongSide)),
@@ -1430,9 +1430,9 @@ namespace Shortcut.RustMod
             return rail + outwards * definition.HandOutset + up * definition.HandRise;
         }
 
-        // The FS proxy fist straddles the toe edge instead of resting on the griptape.
-        private static double GripOutset(SkateGrabKind kind) { return kind == SkateGrabKind.Frontside ? .010 : .020; }
-        private static double GripRise(SkateGrabKind kind) { return kind == SkateGrabKind.Frontside ? -.015 : .013; }
+        // Only the active FS air contact straddles the toe edge; ground adapters keep their grip.
+        private static double GripOutset(SkateRiderInput input) { return FrontsideAirFold(input) ? .010 : .020; }
+        private static double GripRise(SkateRiderInput input) { return FrontsideAirFold(input) ? -.015 : .013; }
 
         private static bool FrontsideAirFold(SkateRiderInput input)
         {
@@ -1534,7 +1534,7 @@ namespace Shortcut.RustMod
             double alongSide = definition.End || SkateVector.Dot(travel, deckForward) >= 0 ? 1 : -1;
             SkateHandGripFrame grip;
             if (!SkateGrabCatalog.TryGrip(input.DeckFrame, definition.Across * toeSide, definition.Along * alongSide,
-                SkateHandMeasurements.Reference, out grip, GripOutset(input.GrabKind), GripRise(input.GrabKind))) { weight = 0; return false; }
+                SkateHandMeasurements.Reference, out grip, GripOutset(input), GripRise(input))) { weight = 0; return false; }
             var wrist = left ? pose.LeftHand : pose.RightHand;
             var finger = grip.Forward;
             var back = grip.Back;
@@ -1561,7 +1561,7 @@ namespace Shortcut.RustMod
             double alongSide = definition.End || SkateVector.Dot(travel, deckForward) >= 0 ? 1 : -1;
             SkateHandGripFrame grip;
             if (!SkateGrabCatalog.TryGrip(input.DeckFrame, definition.Across * toeSide, definition.Along * alongSide,
-                left ? rig.LeftHand : rig.RightHand, out grip, GripOutset(input.GrabKind), GripRise(input.GrabKind))) return false;
+                left ? rig.LeftHand : rig.RightHand, out grip, GripOutset(input), GripRise(input))) return false;
             var delta = (left ? pose.LeftHand : pose.RightHand) - grip.Wrist;
             if (delta.LengthSquared > .025 * .025) return false;
             contact = grip.Edge + delta;
