@@ -1,0 +1,199 @@
+{
+  "id": "varial-kickflip-derived-tre-v1",
+  "movementKind": "varial-kickflip",
+  "sourceId": "360-flip-source-keyed-v1",
+  "sourceJsonSha256": "7c25f45e4701cbd60c75313cc595a0cd3d911ba1f742239502ef388c4bed49e3",
+  "treHelperSha256": "cb8b012ef99f7a98920c8e114948cfa7b2540b9567db7f40450da568bee91ac9",
+  "firstSourceFrame": 398,
+  "lastSourceFrame": 446,
+  "pop": 403,
+  "rearRelease": 404,
+  "upperRelease": 404.5,
+  "pressEnd": 406,
+  "rotationEnd": 418.5,
+  "catchStart": 416,
+  "catch": 420,
+  "land": 424,
+  "recovery": 430,
+  "pressYawDegrees": 12.5,
+  "rearScoopDepthReduction": 0.2,
+  "maximumReachShare": 0.998,
+  "provenance": "Authored Varial Kickflip derivation from the shared BATB Tre body reference. No filmed Varial attempt is claimed. Smaller BS180 scoop, full kickflip, free rear-foot depth and complete reversed-deck catch placement/heading are authored. Tre source images remain labelled Tre reference. Monocular body depth and reconstructed contacts are not measured 3D. Original and derived packs remain Reviewed=false.",
+  "upperBalance": {
+    "window": [
+      406,
+      408,
+      426,
+      438
+    ],
+    "foldKeys": [
+      [
+        408,
+        45
+      ],
+      [
+        416,
+        45
+      ],
+      [
+        420,
+        30
+      ],
+      [
+        424,
+        30
+      ],
+      [
+        426,
+        35
+      ],
+      [
+        438,
+        20
+      ]
+    ],
+    "arms": {
+      "Left": {
+        "upper": [
+          [
+            408,
+            [
+              -0.95,
+              0.25,
+              0.15
+            ]
+          ],
+          [
+            416,
+            [
+              -0.95,
+              0.25,
+              0.15
+            ]
+          ],
+          [
+            420,
+            [
+              -0.85,
+              -0.35,
+              0.15
+            ]
+          ],
+          [
+            424,
+            [
+              -0.75,
+              -0.5,
+              0.1
+            ]
+          ]
+        ],
+        "fore": [
+          [
+            408,
+            [
+              -0.65,
+              0.65,
+              0.2
+            ]
+          ],
+          [
+            416,
+            [
+              -0.65,
+              0.65,
+              0.2
+            ]
+          ],
+          [
+            420,
+            [
+              -0.8,
+              -0.3,
+              0.15
+            ]
+          ],
+          [
+            424,
+            [
+              -0.65,
+              -0.55,
+              0.1
+            ]
+          ]
+        ]
+      },
+      "Right": {
+        "upper": [
+          [
+            408,
+            [
+              0.95,
+              -0.3,
+              0.15
+            ]
+          ],
+          [
+            416,
+            [
+              0.95,
+              -0.3,
+              0.15
+            ]
+          ],
+          [
+            420,
+            [
+              0.85,
+              -0.35,
+              0.15
+            ]
+          ],
+          [
+            424,
+            [
+              0.75,
+              -0.5,
+              0.1
+            ]
+          ]
+        ],
+        "fore": [
+          [
+            408,
+            [
+              0.65,
+              -0.35,
+              0.2
+            ]
+          ],
+          [
+            416,
+            [
+              0.65,
+              -0.35,
+              0.2
+            ]
+          ],
+          [
+            420,
+            [
+              0.8,
+              -0.3,
+              0.15
+            ]
+          ],
+          [
+            424,
+            [
+              0.65,
+              -0.55,
+              0.1
+            ]
+          ]
+        ]
+      }
+    },
+    "provenance": "Authored Varial-specific forward chest frame and side balance for the smaller 180 scoop. Shared Tre412 has a real high V, but its crosswise reconstructed lean and two exaggerated raised wrists are not copied as a filmed Varial requirement. One source-side hand remains modestly raised in Air; both settle by Catch. Pelvis, legs, soles and board unchanged."
+  }
+}

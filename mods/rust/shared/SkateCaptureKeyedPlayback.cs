@@ -15,6 +15,9 @@ namespace Shortcut.RustMod
         public const string DoubleKickflipClipId = "double-kickflip-source-keyed-v1";
         public static readonly SkateCaptureTrickSignature DoubleKickflipSignature =
             new SkateCaptureTrickSignature(SkatePopKind.Ollie, false, false, 720, 0, 0, 0);
+        public const string VarialKickflipClipId = "varial-kickflip-derived-tre-v1";
+        private static readonly SkateCaptureTrickSignature VarialKickflipSignature =
+            new SkateCaptureTrickSignature(SkatePopKind.Ollie, false, false, 360, -180, 0, 0);
         private static readonly SkateCaptureTrickSignature BsPopShoveSignature =
             new SkateCaptureTrickSignature(SkatePopKind.Ollie, false, false, 0, -180, 0, 0);
         private static readonly SkateCaptureTrickSignature NollieTreFlipSignature =
@@ -59,13 +62,14 @@ namespace Shortcut.RustMod
                 clip.Id == HardflipClipId && clip.MovementKind == "hardflip" && HardflipSignature.Same(signature) ||
                 clip.Id == NollieTreFlipClipId && clip.MovementKind == "nollie-360-flip" && NollieTreFlipSignature.Same(signature) ||
                 clip.Id == BsPopShoveClipId && clip.MovementKind == "bs-pop-shove-it" && BsPopShoveSignature.Same(signature) ||
-                clip.Id == DoubleKickflipClipId && clip.MovementKind == "double-kickflip" && DoubleKickflipSignature.Same(signature));
+                clip.Id == DoubleKickflipClipId && clip.MovementKind == "double-kickflip" && DoubleKickflipSignature.Same(signature) ||
+                clip.Id == VarialKickflipClipId && clip.MovementKind == "varial-kickflip" && VarialKickflipSignature.Same(signature));
         }
 
         public static bool TryCreate(SkateCaptureClip clip, out SkateCaptureKeyedPlayback playback, out string error)
         {
             playback = null; error = null;
-            if (clip == null || !clip.Ready || !Accepts(clip, clip.Id == HeelflipClipId ? HeelflipSignature : clip.Id == TreFlipClipId ? TreFlipSignature : clip.Id == HardflipClipId ? HardflipSignature : clip.Id == NollieTreFlipClipId ? NollieTreFlipSignature : clip.Id == BsPopShoveClipId ? BsPopShoveSignature : clip.Id == DoubleKickflipClipId ? DoubleKickflipSignature : RequiredSignature))
+            if (clip == null || !clip.Ready || !Accepts(clip, clip.Id == HeelflipClipId ? HeelflipSignature : clip.Id == TreFlipClipId ? TreFlipSignature : clip.Id == HardflipClipId ? HardflipSignature : clip.Id == NollieTreFlipClipId ? NollieTreFlipSignature : clip.Id == BsPopShoveClipId ? BsPopShoveSignature : clip.Id == DoubleKickflipClipId ? DoubleKickflipSignature : clip.Id == VarialKickflipClipId ? VarialKickflipSignature : RequiredSignature))
             { error = "An exact bounded source-keyed flip clip is required."; return false; }
             // Reuse the existing strict event/contact contract. Building its
             // optional inverse clocks does not make those clocks authoritative.
@@ -75,7 +79,7 @@ namespace Shortcut.RustMod
                 events.SourceTime(SkateCapturePhase.Catch, 0), events.SourceTime(SkateCapturePhase.Land, 0));
             if (clip.Id != RequiredClipId && clip.Id != DoubleKickflipClipId && !playback.TryFamilyPressWindow(out error))
             { playback = null; return false; }
-            if ((clip.Id == HardflipClipId || clip.Id == BsPopShoveClipId) && !TryHardflipSupport(out error))
+            if ((clip.Id == HardflipClipId || clip.Id == BsPopShoveClipId || clip.Id == VarialKickflipClipId) && !TryHardflipSupport(out error))
             { playback = null; return false; }
             return true;
         }
@@ -175,6 +179,8 @@ namespace Shortcut.RustMod
             if (!ValidFlight(frozenFlightSeconds) || !Finite(localRoot.LengthSquared) || !Finite(localVelocity.LengthSquared) ||
                 groundCarrierOrigin.HasValue && !Finite(groundCarrierOrigin.Value.LengthSquared))
             { error = "Invalid source-keyed entry baseline."; return false; }
+            if (Clip.Id == VarialKickflipClipId && !groundCarrierOrigin.HasValue)
+            { error = "Varial Kickflip needs an observed flatground takeoff plane."; return false; }
             if (Clip.Id == HardflipClipId && !groundCarrierOrigin.HasValue)
             { error = "Hardflip needs an observed flatground takeoff plane."; return false; }
             if (Clip.Id == NollieTreFlipClipId && !groundCarrierOrigin.HasValue)
@@ -188,7 +194,7 @@ namespace Shortcut.RustMod
             // The independent upper entry and exact foot/board paths stay short.
             double rootFraction = Clip.Id == RequiredClipId ? .3125 :
                 Clip.Id == HeelflipClipId && groundCarrierOrigin.HasValue ? 1.0 / 3.0 :
-                Clip.Id == TreFlipClipId && groundCarrierOrigin.HasValue ? 5.0 / 21.0 :
+                (Clip.Id == TreFlipClipId || Clip.Id == VarialKickflipClipId) && groundCarrierOrigin.HasValue ? 5.0 / 21.0 :
                 Clip.Id == HardflipClipId && groundCarrierOrigin.HasValue ? 2.0 / 11.0 :
                 Clip.Id == NollieTreFlipClipId && groundCarrierOrigin.HasValue ? 6.0 / 17.0 :
                 Clip.Id == BsPopShoveClipId && groundCarrierOrigin.HasValue ? pressEnd : .125;
@@ -203,7 +209,7 @@ namespace Shortcut.RustMod
             // The observed flatground launch span supplies its actual takeoff
             // speed. Subtract the carrier derivative in local space so adding
             // that carrier preserves the held body's world velocity at release.
-            if ((Clip.Id == RequiredClipId || Clip.Id == HeelflipClipId || Clip.Id == TreFlipClipId || Clip.Id == HardflipClipId || Clip.Id == NollieTreFlipClipId || Clip.Id == BsPopShoveClipId) && groundCarrierOrigin.HasValue)
+            if ((Clip.Id == RequiredClipId || Clip.Id == HeelflipClipId || Clip.Id == TreFlipClipId || Clip.Id == HardflipClipId || Clip.Id == NollieTreFlipClipId || Clip.Id == BsPopShoveClipId || Clip.Id == VarialKickflipClipId) && groundCarrierOrigin.HasValue)
                 entryVelocity -= new SkateVector(0, SkateFlatgroundPop.Gravity * frozenFlightSeconds * .5, 0);
             entryUpper = localBody; entryUpperSeconds = frozenFlightSeconds * .125;
             groundOrigin = groundCarrierOrigin;
@@ -259,8 +265,9 @@ namespace Shortcut.RustMod
             // Only this exact flatground family, with its observed takeoff plane.
             // The caller already requires the frozen flatground flight span.
             bool hardflip = Clip.Id == HardflipClipId;
-            if ((!hardflip && Clip.Id != BsPopShoveClipId) || actuallyLanded) return true;
-            string family = hardflip ? "Hardflip" : "BS pop shove-it";
+            bool varial = Clip.Id == VarialKickflipClipId;
+            if ((!hardflip && !varial && Clip.Id != BsPopShoveClipId) || actuallyLanded) return true;
+            string family = hardflip ? "Hardflip" : varial ? "Varial Kickflip" : "BS pop shove-it";
             if (!groundOrigin.HasValue)
             { error = family + " has no observed flatground takeoff plane."; return false; }
             if (!TryHardflipSupport(out error)) return false;
@@ -299,6 +306,8 @@ namespace Shortcut.RustMod
             if (!TrySourceTime(elapsedSeconds, frozenFlightSeconds, actuallyLanded, secondsSinceLand, out seconds, out error)) return false;
             if (!SkateBoardPath.Valid(uprightCarrier) || uprightCarrier.Up.Y < .98)
             { error = "Source-keyed playback requires the current upright physical carrier."; return false; }
+            if (Clip.Id == VarialKickflipClipId && !groundOrigin.HasValue)
+            { error = "Varial Kickflip has no observed flatground takeoff plane."; return false; }
             if (Clip.Id == NollieTreFlipClipId && !groundOrigin.HasValue)
             { error = "Nollie360 has no observed flatground takeoff plane."; return false; }
             if (Clip.Id == BsPopShoveClipId && !groundOrigin.HasValue)
