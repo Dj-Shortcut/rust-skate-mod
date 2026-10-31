@@ -31,3 +31,9 @@ python3 scripts/author_skate_varial_kickflip.py \
 The input hash is pinned. Footage, detector outputs, evaluation approvals and
 generated packs remain private. Original and generated source packs stay
 `Reviewed=false`; a local test-only approval does not approve a game pack.
+
+The Varial upper body uses an explicitly authored forward chest frame and side
+balance through Air/Catch, then settles through absorption. The shared Tre
+frame has a genuine high V; this derivation retains one modestly raised hand
+instead of copying two exaggerated wrists and a crosswise reconstructed lean.
+Pelvis, knees, shoes and board are preserved by this upper-body adjustment.

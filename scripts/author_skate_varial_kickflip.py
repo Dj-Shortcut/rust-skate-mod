@@ -15,6 +15,30 @@ TRE=ROOT/'assets/authored/animation/treflip-keyed'
 sha=lambda data:hashlib.sha256(data).hexdigest()
 
 
+def balance_keys(keys,sf):
+    for (a,x),(b,y) in zip(keys,keys[1:]):
+        if sf<=b:return np.asarray(x)+(np.asarray(y)-x)*tre.smooth((sf-a)/(b-a))
+    return np.asarray(keys[-1][1])
+
+
+def varial_upper(row,s,sf):
+    """Authored 180-scoop balance, not a claim of a filmed Varial body."""
+    c=s['upperBalance'];a,b,h,z=c['window'];weight=tre.smooth((sf-a)/(b-a))*(1-tre.smooth((sf-h)/(z-h)))
+    if not weight:return
+    j={k:np.asarray(v)for k,v in row['joints'].items()};d=row['dirs'];old_up=unit(j['Neck']-j['Pelvis']);old_forward=np.asarray(d['ChestForward']);old_forward=unit(old_forward-old_up*np.dot(old_forward,old_up));old_right=unit(np.cross(old_up,old_forward));forward=unit(old_forward-UP*np.dot(old_forward,UP));right=unit(np.cross(UP,forward));angle=math.radians(float(balance_keys(c['foldKeys'],sf)));target_up=UP*math.cos(angle)+forward*math.sin(angle);target_forward=forward*math.cos(angle)-UP*math.sin(angle)
+    full=np.column_stack((right,target_up,target_forward))@np.column_stack((old_right,old_up,old_forward)).T;rotation=qmatrix(slerp([0.,0.,0.,1.],matrix_quat(full),weight));anchor=j['Pelvis'];old_arms={side:(unit(j[side+'Elbow']-j[side+'Shoulder']),unit(j[side+'Hand']-j[side+'Elbow']))for side in ['Left','Right']}
+    for key in ['Chest','Neck','Head','LeftShoulder','RightShoulder','LeftElbow','RightElbow','LeftHand','RightHand']:j[key]=anchor+rotation@(j[key]-anchor)
+    for key in ['ChestUp','ChestForward','HeadForward']:d[key]=(rotation@np.asarray(d[key])).tolist()
+    # One modestly raised source-side hand; both arms settle for Catch/Land.
+    # Segment lengths come from the pinned shared rig, not video measurements.
+    for side in ['Left','Right']:
+        vectors=[]
+        for previous,key in zip(old_arms[side],['upper','fore']):
+            x,y,z=balance_keys(c['arms'][side][key],sf);target=unit(right*x+UP*y+forward*z);vectors.append(unit(previous*(1-weight)+target*weight))
+        j[side+'Elbow']=j[side+'Shoulder']+vectors[0]*s['_armLengths'][side][0];j[side+'Hand']=j[side+'Elbow']+vectors[1]*s['_armLengths'][side][1]
+    row['joints']={k:j[k].tolist()for k in JOINTS}
+
+
 def source_at(source,sf):
     rows=source['frames'];times=source['_times'];t=(sf-source['metadata']['firstSourceFrame'])/source['metadata']['sourceFps'];i=max(0,min(len(rows)-2,int(np.searchsorted(times,t,side='right'))-1));u=float(np.clip((t-times[i])/(times[i+1]-times[i]),0,1))
     blend=lambda a,b:np.asarray(a)*(1-u)+np.asarray(b)*u
@@ -82,13 +106,13 @@ def sample(source,s,sf):
     for key in j:j[key]+=delta
     for side,(ankle,F)in feet.items():
         hip=j[side+'Hip'];a=original[side+'Hip'];end=original[side+'Ankle'];v=end-a;pole=original[side+'Knee']-a-v*np.dot(original[side+'Knee']-a,v)/np.dot(v,v);j[side+'Knee']=limb(hip,ankle,.44,.43,pole);j[side+'Ankle']=ankle;j[side+'Toe']=ankle+F[:,2]*math.sqrt(.14**2-.07**2)-F[:,1]*.07;soles[side]=F[:,1]
-    return dict(t=(sf-s['firstSourceFrame'])/s['_fps'],sourceFrame=sf,sourceCacheTime=sf/s['_fps'],joints={k:j[k].tolist()for k in JOINTS},dirs={k:d[k].tolist()for k in DIRS},soleUp={k:soles[k].tolist()for k in soles},board=dict(origin=origin.tolist(),quaternion=q.tolist()))
+    row=dict(t=(sf-s['firstSourceFrame'])/s['_fps'],sourceFrame=sf,sourceCacheTime=sf/s['_fps'],joints={k:j[k].tolist()for k in JOINTS},dirs={k:d[k].tolist()for k in DIRS},soleUp={k:soles[k].tolist()for k in soles},board=dict(origin=origin.tolist(),quaternion=q.tolist()));varial_upper(row,s,sf);return row
 
 
 def bake(raw,s):
     if sha(raw)!=s['sourceJsonSha256']:raise ValueError('Shared Tre source differs from its pinned reconstruction')
     if sha(Path(tre.__file__).read_bytes())!=s['treHelperSha256']:raise ValueError('Shared geometry helper changed')
-    source=json.loads(raw);m=source['metadata']
+    source=json.loads(raw);m=source['metadata'];first=source['frames'][0]['joints'];s['_armLengths']={side:(float(np.linalg.norm(np.asarray(first[side+'Elbow'])-first[side+'Shoulder'])),float(np.linalg.norm(np.asarray(first[side+'Hand'])-first[side+'Elbow'])))for side in ['Left','Right']}
     if m['id']!=s['sourceId']or m['reviewed']is not False:raise ValueError('An explicitly unreviewed Tre source is required')
     source['_times']=[r['t']for r in source['frames']];s['_fps']=m['sourceFps'];b=json.loads((TRE/'constraints.json').read_text());surface_raw=(TRE/'own-board-surface.json').read_bytes()
     if sha(surface_raw)!=b['sourceSurfaceSha256']:raise ValueError('Own board surface changed')
@@ -97,7 +121,7 @@ def bake(raw,s):
         ankle,F=tre.deck_shoe(b,np.zeros(3),np.eye(3),-.04,z,yaw);s['_catchWorld'][side]=(ankle,F[:,2])
     phases=[(s['firstSourceFrame'],'load',['LeftFoot','RightFoot']),(s['pop'],'pop',['RightFoot']),(s['rearRelease'],'air',[]),(s['pressEnd'],'air',[]),(s['catch'],'catch',['LeftFoot','RightFoot']),(s['land'],'land',['LeftFoot','RightFoot']),(s['recovery'],'recovery',['LeftFoot','RightFoot'])]
     frames=np.unique(np.round(np.r_[np.arange(s['firstSourceFrame'],s['lastSourceFrame']+1e-7,1/6),[v[0]for v in phases],s['upperRelease'],s['rotationEnd'],s['catchStart']],9));samples=[sample(source,s,float(sf))for sf in frames];duration=(s['lastSourceFrame']-s['firstSourceFrame'])/s['_fps']
-    meta=dict(id=s['id'],label='Varial Kickflip — authored shared-Tre derivation [UNREVIEWED]',movementKind=s['movementKind'],reviewed=False,authored=True,capturedBody=True,sourceUrl=m['sourceUrl'],sourceAuthor=m['sourceAuthor'],sourceFilmedStance=m['sourceFilmedStance'],sourcePoseSha256=m['sourcePoseSha256'],sourceFps=s['_fps'],firstSourceFrame=s['firstSourceFrame'],lastSourceFrame=s['lastSourceFrame'],canonicalStance='regular',referenceFootageMovementKind='360-flip',filmedVarialTake=False,sharedSourceId=s['sourceId'],sharedSourceJsonSha256=s['sourceJsonSha256'],provenance=s['provenance'],referenceGroundPress=b['reference'],combinedWinding=dict(nativeFlip=360,nativeShove=-180,canonicalYaw=180,bodySpin=0),catchTransform='Anatomical world targets transformed by final deck R-transpose: full XYZ and toe heading, with measured sole/deck fitting',sourceRootMotion='Carrier-local body and board; reference ballistic carrier excluded; actual physical carrier added once by playback')
+    meta=dict(id=s['id'],label='Varial Kickflip — authored shared-Tre derivation [UNREVIEWED]',movementKind=s['movementKind'],reviewed=False,authored=True,capturedBody=True,sourceUrl=m['sourceUrl'],sourceAuthor=m['sourceAuthor'],sourceFilmedStance=m['sourceFilmedStance'],sourcePoseSha256=m['sourcePoseSha256'],sourceFps=s['_fps'],firstSourceFrame=s['firstSourceFrame'],lastSourceFrame=s['lastSourceFrame'],canonicalStance='regular',referenceFootageMovementKind='360-flip',filmedVarialTake=False,sharedSourceId=s['sourceId'],sharedSourceJsonSha256=s['sourceJsonSha256'],provenance=s['provenance'],authoredUpperBalance=s['upperBalance'],referenceGroundPress=b['reference'],combinedWinding=dict(nativeFlip=360,nativeShove=-180,canonicalYaw=180,bodySpin=0),catchTransform='Anatomical world targets transformed by final deck R-transpose: full XYZ and toe heading, with measured sole/deck fitting',sourceRootMotion='Carrier-local body and board; reference ballistic carrier excluded; actual physical carrier added once by playback')
     clip=dict(format='skate-capture-authored-varial/1',metadata=meta,stance='regular',fps=s['_fps']*6,duration=duration,events=contact_events([dict(t=(sf-s['firstSourceFrame'])/s['_fps'],phase=p,contacts=c)for sf,p,c in phases],duration),frames=samples)
     return clip,encode_pack([clip])
 
