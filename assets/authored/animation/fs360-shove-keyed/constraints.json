@@ -5,15 +5,29 @@
   "sourceId": "frontside-pop-shove-it-batb12-kroetkov",
   "sourceJsonSha256": "c5e7742516b4b59784731494b000b0ae11fa92c5f7653caab2f514b0463da307",
   "retargetHelperSha256": "01f0a04414f76671f9c442e13a0b7f210d2c6b2eb1e67cf509cfa22a562745e5",
+  "geometrySha256": "806a59f06a0f28eb0a81550675e2cff391bf27b286f788690b65ed857794d4c5",
   "sourceFps": 29.97002997002997,
   "firstSourceFrame": 190,
   "lastSourceFrame": 252,
   "pop": 211,
+  "frontRelease": 211,
   "rearRelease": 212,
   "pressEnd": 214,
   "rotationEnd": 223,
   "catchStart": 220,
   "catch": 224,
+  "catchFeet": {
+    "Left": {
+      "sourceFrame": 224,
+      "xyz": [-0.04, 0, 0.24],
+      "toeHeadingDegrees": 65
+    },
+    "Right": {
+      "sourceFrame": 224,
+      "xyz": [-0.04, 0, -0.24],
+      "toeHeadingDegrees": 85
+    }
+  },
   "land": 226,
   "recovery": 241,
   "maximumReachShare": 0.998,

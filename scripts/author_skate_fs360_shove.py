@@ -52,35 +52,37 @@ def attached(s, sf, side):
 
 
 def catch_frame(s, origin, rotation, side):
-    # Transform the complete anatomical world target and toe heading into
-    # the final deck basis, even though a complete360 returns to the same basis.
+    # Transform the anatomical catch footprint and toe heading into the final
+    # deck basis. Its zero Y datum leaves ankle height to the shaped-deck fit.
     final = qmatrix(euler_quat([0, -360, 0]))
-    world = np.array([-.04, 0, .24 if side == 'Left' else -.24])
-    angle = math.radians(65 if side == 'Left' else 85)
+    target = s['catchFeet'][side]
+    world = np.asarray(target['xyz'])
+    angle = math.radians(target['toeHeadingDegrees'])
     local, forward = final.T@world, final.T@np.array([math.sin(angle), 0, math.cos(angle)])
     return deck_shoe(s['_geometry'], origin, rotation, float(local[0]), float(local[2]),
                      math.degrees(math.atan2(forward[0], forward[2])))
 
 
 def foot(s, sf, side):
-    release = s['pop'] if side == 'Left' else s['rearRelease']
+    release = s['frontRelease'] if side == 'Left' else s['rearRelease']
     if sf <= release:
         return attached(s, sf, side)
     start, start_basis = attached(s, release, side)
     keys = s['frontFreeKeys'] if side == 'Left' else s['rearFreeKeys']
     target = curve([r[0] for r in keys], [r[1:] for r in keys], sf)+UP*.092
-    yaw = math.radians(65 if side == 'Left' else 85)
+    yaw = math.radians(s['catchFeet'][side]['toeHeadingDegrees'])
     free_basis = basis(np.array([math.sin(yaw), 0, math.cos(yaw)]), UP)
     weight = smooth((sf-release)/2)
     ankle = start*(1-weight)+target*weight
     frame = qmatrix(slerp(matrix_quat(start_basis), matrix_quat(free_basis), weight))
     origin, rotation = board_at(s, sf)
-    caught = smooth((sf-s['catchStart'])/(s['catch']-s['catchStart']))
+    catch = s['catchFeet'][side]['sourceFrame']
+    caught = smooth((sf-s['catchStart'])/(catch-s['catchStart']))
     if caught:
         goal, goal_basis = catch_frame(s, origin, rotation, side)
         ankle = ankle*(1-caught)+goal*caught
         frame = qmatrix(slerp(matrix_quat(frame), matrix_quat(goal_basis), caught))
-    if sf < s['catch']:
+    if sf < catch:
         ankle[1] += free_foot_clearance(s['_geometry'], origin, rotation, ankle, frame)
     return ankle, frame
 
@@ -89,6 +91,7 @@ def sample(source, s, sf):
     # This generic measured-chain reconstruction reads only the FS source;
     # none of the BS source body, arm or foot controls is imported.
     joints, dirs, soles = source_body(source, sf)
+    rig = source['metadata']['rig']
     original = {k: value.copy() for k, value in joints.items()}
     feet = {side: foot(s, sf, side) for side in ('Left', 'Right')}
     begin, end = s['recoveryKneeWindow']
@@ -104,12 +107,12 @@ def sample(source, s, sf):
         local = np.array([centroid[0], shoe['soleLocalY'], centroid[1]])
         centres = [ankle+frame@local for ankle, frame in feet.values()]
         toe = unit(sum((frame[:, 2] for _, frame in feet.values()), np.zeros(3))*[1, 0, 1])
-        target = np.mean(centres, axis=0)-toe*source['metadata']['rig']['hipHalfWidth']
+        target = np.mean(centres, axis=0)-toe*rig['hipHalfWidth']
         shift = (target-joints['Pelvis'])*[recovery, 0, recovery]
         for key in joints:
             joints[key] += shift
     lo, hi = -float('inf'), float('inf')
-    reach = (.44+.43)*s['maximumReachShare']
+    reach = (rig['thigh']+rig['shin'])*s['maximumReachShare']
     for side, (ankle, _) in feet.items():
         offset = joints[side+'Hip']-joints['Pelvis']
         horizontal = float(np.sum((joints[side+'Hip'][[0, 2]]-ankle[[0, 2]])**2))
@@ -131,9 +134,9 @@ def sample(source, s, sf):
             # kneeling tailward. Pre-Land chains and all foot targets stay unchanged.
             if recovery > 0:
                 pole = unit(pole)*(1-recovery)+unit(frame[:, 2])*recovery
-        joints[side+'Knee'] = limb(hip, ankle, .44, .43, pole)
+        joints[side+'Knee'] = limb(hip, ankle, rig['thigh'], rig['shin'], pole)
         joints[side+'Ankle'] = ankle
-        joints[side+'Toe'] = ankle+frame[:, 2]*math.sqrt(.14**2-.07**2)-frame[:, 1]*.07
+        joints[side+'Toe'] = ankle+frame[:, 2]*math.sqrt(rig['foot']**2-rig['toeDrop']**2)-frame[:, 1]*rig['toeDrop']
         soles[side] = frame[:, 1]
     origin, rotation = board_at(s, sf)
     return dict(t=(sf-s['firstSourceFrame'])/s['sourceFps'], sourceFrame=sf,
@@ -152,7 +155,16 @@ def bake(raw, s):
     source = json.loads(raw)
     if source['metadata']['id'] != s['sourceId'] or source['metadata']['reviewed'] is not False:
         raise ValueError('The exact unreviewed FS180 source is required')
-    geometry = json.loads((GEOMETRY/'constraints.json').read_text())
+    if s['frontRelease'] != s['pop']:
+        raise ValueError('The FS360 front release must coincide with its Pop event')
+    for side in ('Left', 'Right'):
+        target = s['catchFeet'][side]
+        if target['sourceFrame'] != s['catch'] or target['xyz'][1] != 0:
+            raise ValueError('FS360 feet must share the catch event and fitted deck-plane datum')
+    geometry_raw = (GEOMETRY/'constraints.json').read_bytes()
+    if sha(geometry_raw) != s['geometrySha256']:
+        raise ValueError('Own shoe and entry geometry differs')
+    geometry = json.loads(geometry_raw)
     surface_raw = (GEOMETRY/'own-board-surface.json').read_bytes()
     if sha(surface_raw) != geometry['sourceSurfaceSha256']:
         raise ValueError('Own shaped deck differs')
