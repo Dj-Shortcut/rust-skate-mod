@@ -4,7 +4,9 @@
 Tre body reference. It is not a filmed Varial capture. Its exact normal
 signature is Ollie, no switch/tail-first/body turn, flip +360 and shove -180.
 
-The authoring input retains the shared body gesture and its landing/recovery.
+The authoring input retains the shared lower body and landing/recovery.
+The upper frame and balance arms are explicitly authored for the 180 scoop: a
+forward fold, one raised hand in Air, and settling arms through Catch.
 The board has its own smaller backside scoop and complete longitudinal flip.
 The rear free-foot depth is smaller, and the final anatomical foot targets
 retain their world sides while their deck-local X/Z and toe headings reverse.
@@ -28,3 +30,10 @@ Normal/low and both anatomical previews need independent mesh review. The
 reference remains labelled Tre and is never mirrored or represented as filmed
 Varial board motion. Offline reconstruction review, owner pack approval and
 native Shadow validation remain separate gates. Source output is unreviewed.
+
+The current private replays use actual Pad input and native Step/Land records,
+then the measured body route. Normal charge is .30 s and lower charge .12 s;
+the lower frozen flight is about .556 s, rather than the old synthetic .528 s
+profile. All four routes reach the native Varial landing and retain capture
+through Air. This is managed controlled-geometry evidence, not an engine or
+Shadow playtest. Continuous playback and precise native grip remain pending.
