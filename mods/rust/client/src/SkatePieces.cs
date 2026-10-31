@@ -71,8 +71,8 @@ public static class SkatePieces
     private static int placementKind = -1;
     private static bool placementUnknown;
     private static string BuilderControls { get { return builderPad
-        ? "RT places, RB / LB rotate. Back, then X: Rust building."
-        : "Left click places, R rotates. Open the wheel, then Shift + P: Rust building."; } }
+        ? "RT places, RB / LB rotate. B cancels. Back, then X: Rust building."
+        : "Left click places, R rotates. Escape cancels. Open the wheel, then Shift + P: Rust building."; } }
     private static bool offPending;
     private static float offUntil;
     private static int previewKind = -1;
@@ -222,6 +222,16 @@ public static class SkatePieces
             wasP = p; wasBack = back; wasRight = right;
             return 0;
         }
+        if (!Open && cancelKey && (builderRequested || requestedKind >= 0 || offPending))
+        {
+            // Cancelling a selected piece owns this frame, including a simultaneous place press.
+            // Keep the existing receipt/payment state until the server acknowledges off.
+            switchingToRust = false; cancelledHold = true;
+            bool ready = NativeMode(now); Close(ready);
+            BlocksControls = true;
+            wasP = p; wasBack = back; wasRight = right;
+            return 0;
+        }
         bool canOpen = !uiBlocked && !SkateRide.On && SkateRig.Ready && SkateRig.Local != null && Application.isFocused;
         if (!canOpen || (Open && (!ReferenceEquals(menuPlayer, SkateRig.Local) || !ReferenceEquals(menuBody, SkateRig.Body) || menuAwakeAt != SkateRig.AwakeAt)))
         {
@@ -277,7 +287,13 @@ public static class SkatePieces
             bool cancel = (padDown & SkatePad.B) != 0 || (keyboard != null &&
                 (keyboard.escapeKey.wasPressedThisFrame || keyboard.backspaceKey.wasPressedThisFrame || keyboard.f1Key.wasPressedThisFrame ||
                 keyboard.tabKey.wasPressedThisFrame || (!opened && p && !wasP && !shift)));
-            if (cancel) { switchingToRust = false; cancelledHold = true; bool ready = NativeMode(now); Close(ready); }
+            if (cancel)
+            {
+                switchingToRust = false; cancelledHold = true; bool ready = NativeMode(now); Close(ready);
+                BlocksControls = true;
+                wasP = p; wasBack = back; wasRight = right;
+                return 0;
+            }
             else if (switchPressed)
             {
                 cancelledHold = true;

@@ -15,6 +15,13 @@ Expected transition logs are `PIECES wheel mode=Skate` after native-wheel hiding
 and cursor acquisition, and `PIECES wheel mode=Rust` while awaiting native open.
 These logs report state transitions; inspect actual visibility separately.
 
+After selecting a Skate piece, B, Escape, F1 or Tab cancels the selection before
+any place input in that frame. The client requests the existing server `off`
+acknowledgement and retains pending placement/payment state until that reply.
+If sending fails, it keeps the unresolved selection and sends no placement in that frame.
+Check cancellation with RT/left click held, delayed or mismatched replies,
+then re-entry. Ordinary Rust building keeps its own cancel handling.
+
 The administrator's `skate.items all` command supplies the inventory catalogue.
 Equip and place each marked item through the native square-foundation route:
 
