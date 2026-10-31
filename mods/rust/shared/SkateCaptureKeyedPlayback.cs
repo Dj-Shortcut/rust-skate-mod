@@ -353,7 +353,18 @@ namespace Shortcut.RustMod
                     bool goofy = stance == SkateStance.Goofy;
                     var left = boardShift * (goofy ? rear : front);
                     var right = boardShift * (goofy ? front : rear);
-                    if (!SkateCaptureFootSupport.TryShiftFeet(rig, pose, left, right, false, out pose, out error)) return false;
+                    var beforePress = pose;
+                    if (!SkateCaptureFootSupport.TryShiftFeet(rig, pose, left, right, false, out pose, out error))
+                    {
+                        // A shallow observed charge can reach the source feet but
+                        // not their final downward press compensation. Keep every
+                        // successful solve unchanged; only during this single-entry
+                        // window use the same measured pelvis fit as deck conforming.
+                        if (Clip.Id != RequiredClipId || !entry || elapsedSeconds >= entrySeconds ||
+                            !SkateCaptureFootSupport.TryShiftFeet(rig, beforePress, left, right, true, out pose, out error))
+                            return false;
+                        entryShift += pose.Pelvis - beforePress.Pelvis;
+                    }
                 }
             }
             var board = new SkateBoardPose(uprightCarrier.Point(source.Board.Origin) + boardShift,

@@ -36,6 +36,12 @@ remain fixed through that handoff. Neutral charging hinges toward the rider's
 own facing direction in either stance; it does not require knowing the later
 trick family or twist every charge along the board's nose axis.
 
+The minimum-charge press-fit recovery belongs to this ordinary clip ID, so it
+also applies to single Kickflips without a held extension. Only a failed final
+press-foot solve during the existing entry window retries the measured pelvis
+fit with the same reach and foot guards. Successful solves, foot targets and
+pop/entry/source clocks remain unchanged; this is not a Double-only fallback.
+
 Ordinary grounded charging now prepares the actual measured shoes before the
 trick is selected: the rear footprint centres on the tail at -0.32 m and the
 front footprint near the middle at +0.06 m. A known nose charge reverses those
