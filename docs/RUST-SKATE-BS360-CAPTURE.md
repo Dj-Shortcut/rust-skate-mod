@@ -72,6 +72,17 @@ Physics, scoring, contact/reach tolerances and other keyed IDs are unchanged.
 Current shared input-owned charge and its native owner handoff are used without
 predicting the trick while grounded.
 
+The current isolated replay feeds the real Pad rim gesture through the native
+32 Hz Step/controller and Land/scorer, then replays those observed states through
+the measured body route at 60 Hz. Both stances produce one Ollie with Flip 0 /
+Shove −360 and a landed `360 Shove-it`. Normal input freezes a 0.600 s flight;
+the lower 0.12 s initial hold plus the same rim gesture freezes about 0.560 s.
+The historical selected-signature 0.528 s fixture is not evidence for this input.
+All 36 normal and 34 lower Air samples remain in the coupled keyed route in each
+stance. This is managed controlled-geometry evidence, not execution in Rust.
+The source pack, 283 pose samples and events remain identical to the reviewed
+99d upper-body candidate; optional inverse rotation clocks remain disabled.
+
 Executable authoring uses the existing SHA-pinned private canonical input:
 
 ```sh

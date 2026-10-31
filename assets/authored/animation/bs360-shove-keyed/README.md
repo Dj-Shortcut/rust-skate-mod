@@ -33,3 +33,10 @@ TEST-ONLY-NOT-FOR-INSTALL copy for private reader/normal-route evaluation. No
 approval, footage, raw pose, generated pack or game assets are published. A chosen
 gamepack selects the new keyed ID instead of the previous Kroetkov legacy ID.
 Native Shadow acceptance remains separate from offline visual/source review.
+
+The current private normal/lower replay uses the actual Pad composition and
+native Step/Land observations, then the measured body route. Its normal and
+lower-input flights are 0.600 s and about 0.560 s, with 36/36 and 34/34 coupled
+Air frames per stance. Historical selected-signature 0.528 s output is not proof
+of that lower input. The 283 source poses/events and original false pack remain
+unchanged; complete watched playback and native acceptance are separate gates.
