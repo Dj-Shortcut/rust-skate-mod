@@ -48,5 +48,12 @@ server permission, support, occupancy and payment checks remain authoritative.
 `PIECES inventory reader: GetActiveItem unavailable` explicitly means the client
 cannot verify the inventory preview on that wrapper. It is not a successful
 twelve-item test. The reader never substitutes an arbitrary Item-returning method.
+An optional read-only `skate.held` observation can supply the preview kind from the
+server's current full item/belt/Planner identity. Replies are nonce/lifetime-bound,
+expire from request time and are revoked on an active-item change. An old server,
+unknown identity or late reply leaves the preview unavailable. This does not
+select a builder mode, authorize placement or change any item/Wood transaction.
+The existing native planner rotation fallback remains zero when unreadable;
+correct rotated previews and the complete native inventory flow remain open.
 Recheck this route against the current laptop interop, then run the native test
 on Shadow. Source compilation, catalogue checks and CI remain separate gates.

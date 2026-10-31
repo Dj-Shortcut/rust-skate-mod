@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Reflection;
 using Shortcut.RustMod;
 
@@ -14,6 +15,88 @@ public static partial class SkateHeld
     private static MethodInfo activeItem;
     private static Type activeItemType;
     public static string ItemReadState { get; private set; } = "not checked";
+
+    // An optional server observation for the preview, never an inventory or builder owner.
+    internal const string HeldReplyPrefix = "[SKATE-HELD] ";
+    private const float HeldReplySeconds = .75f;
+    private static object heldPlayer, heldBody;
+    private static float heldAwakeAt, heldNextRequest, heldPendingUntil, heldUntil;
+    private static string heldPending = "", heldReceipt = "";
+    private static int serverHeldKind = -1;
+    internal static bool NeedsServerObservation { get { return ItemReadState == "GetActiveItem unavailable; inventory preview unverified" ||
+        ItemReadState == "native item read failed; inventory preview unverified"; } }
+
+    internal static void ClearServerObservation()
+    {
+        heldPlayer = heldBody = null; heldAwakeAt = heldNextRequest = 0;
+        ClearHeldReceipt();
+    }
+
+    private static void ClearHeldReceipt()
+    { heldPending = heldReceipt = ""; heldPendingUntil = heldUntil = 0; serverHeldKind = -1; }
+
+    private static bool HeldContext(object player, object body, float awakeAt, float now)
+    {
+        if (player == null || body == null || float.IsNaN(awakeAt) || float.IsInfinity(awakeAt) || awakeAt <= 0 ||
+            float.IsNaN(now) || float.IsInfinity(now) || now < awakeAt)
+        { ClearServerObservation(); return false; }
+        if (!ReferenceEquals(player, heldPlayer) || !ReferenceEquals(body, heldBody) || awakeAt != heldAwakeAt)
+        {
+            ClearServerObservation(); heldPlayer = player; heldBody = body; heldAwakeAt = awakeAt;
+        }
+        if (heldPending.Length != 0 && now >= heldPendingUntil) ClearHeldReceipt();
+        if (heldReceipt.Length != 0 && now >= heldUntil)
+        { heldReceipt = ""; heldUntil = 0; serverHeldKind = -1; }
+        return true;
+    }
+
+    internal static bool BeginServerObservation(object player, object body, float awakeAt, float now, out string nonce)
+    {
+        nonce = "";
+        if (!HeldContext(player, body, awakeAt, now) || heldPending.Length != 0 || now < heldNextRequest) return false;
+        nonce = heldPending = Guid.NewGuid().ToString("N");
+        heldPendingUntil = now + HeldReplySeconds; heldNextRequest = now + .5f;
+        return true;
+    }
+
+    internal static void RefuseServerObservation(string nonce)
+    { if (nonce == heldPending) ClearHeldReceipt(); }
+
+    internal static bool TryServerKind(object player, object body, float awakeAt, float now, out int kind)
+    {
+        kind = -1;
+        if (!HeldContext(player, body, awakeAt, now) || heldReceipt.Length == 0 || serverHeldKind < 0) return false;
+        kind = serverHeldKind; return true;
+    }
+
+    internal static void ServerObservationReply(string message, object player, object body, float awakeAt, float now)
+    {
+        if (message == null || message.Length > 100 || !message.StartsWith(HeldReplyPrefix, StringComparison.Ordinal)) return;
+        var words = message.Substring(HeldReplyPrefix.Length).Split(new[] { ' ' }, StringSplitOptions.None);
+        if ((words.Length != 3 && words.Length != 4) || words[0] != "1" || words[1].Length != 32) return;
+        foreach (char c in words[1]) if (!((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f'))) return;
+        bool clear = words.Length == 3 && words[2] == "clear";
+        bool empty = words.Length == 3 && (words[2] == "none" || words[2] == "unknown");
+        int kind = -1;
+        bool item = words.Length == 4 && words[2] == "item" &&
+            int.TryParse(words[3], NumberStyles.None, CultureInfo.InvariantCulture, out kind) &&
+            kind >= 0 && kind < SkateParkBuildItems.PieceCount && words[3] == kind.ToString(CultureInfo.InvariantCulture);
+        if (!clear && !empty && !item) return;
+        // A reply cannot establish a new local lifetime or revive a reset observation.
+        if (!ReferenceEquals(player, heldPlayer) || !ReferenceEquals(body, heldBody) || awakeAt != heldAwakeAt ||
+            !HeldContext(player, body, awakeAt, now)) return;
+        if (clear)
+        {
+            // Also discard a newer in-flight query: it may have observed the old item before
+            // this invalidation. A later fresh query can observe the replacement normally.
+            if (words[1] == heldPending || words[1] == heldReceipt) ClearHeldReceipt();
+            return;
+        }
+        if (words[1] != heldPending || heldPending.Length == 0) return;
+        if (empty) { ClearHeldReceipt(); return; }
+        heldReceipt = heldPending; heldUntil = heldPendingUntil; serverHeldKind = kind;
+        heldPending = ""; heldPendingUntil = 0;
+    }
 
     private static bool ItemReadResult(bool result, string state)
     {

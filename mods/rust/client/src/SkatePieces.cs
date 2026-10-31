@@ -485,6 +485,11 @@ public static class SkatePieces
 
     private static void BuilderReply(string message, string trace, LogType type)
     {
+        if (message != null && message.StartsWith(SkateHeld.HeldReplyPrefix, StringComparison.Ordinal))
+        {
+            SkateHeld.ServerObservationReply(message, SkateRig.Local, SkateRig.Body, SkateRig.AwakeAt, Time.realtimeSinceStartup);
+            return;
+        }
         const string prefix = "[SKATE-BUILDER] ";
         if (message == null || !message.StartsWith(prefix, StringComparison.Ordinal)) return;
         string reply = message.Substring(prefix.Length).Trim();
@@ -594,6 +599,7 @@ public static class SkatePieces
         }
         if (Open)
         {
+            SkateHeld.ClearServerObservation();
             // A native input callback can open its wheel later in the frame that began ours.
             // Never paint over it; close only that same owned menu before taking focus again.
             if (!CanDrawWheel)
@@ -624,6 +630,25 @@ public static class SkatePieces
         var was = HeldKind;
         var read = !SkateRide.On && SkateRig.Local != null && SkateHeld.Read(SkateRig.Local);
         HeldKind = read ? SkateHeld.HeldKind() : -1;
+        bool serverObserved = false;
+        bool observe = !read && SkateHeld.NeedsServerObservation && !SkateRide.On && SkateRig.Ready && Application.isFocused &&
+            !builderRequested && BuilderKind < 0 && requestedKind < 0 && !offPending && placementToken.Length == 0 &&
+            SkateHeld.HasPlanner(SkateRig.Local);
+        if (observe)
+        {
+            ListenForReplies();
+            if (replyListener != null)
+            {
+                string nonce;
+                if (SkateHeld.BeginServerObservation(SkateRig.Local, SkateRig.Body, SkateRig.AwakeAt, now, out nonce) &&
+                    !SkateConsole.Send("skate.held " + nonce)) SkateHeld.RefuseServerObservation(nonce);
+                int observed;
+                if (SkateHeld.TryServerKind(SkateRig.Local, SkateRig.Body, SkateRig.AwakeAt, now, out observed))
+                { HeldKind = observed; serverObserved = true; }
+            }
+            else SkateHeld.ClearServerObservation();
+        }
+        else SkateHeld.ClearServerObservation();
         if (!SkateRide.On && BuilderKind >= 0 && SkateHeld.HasPlanner(SkateRig.Local)) HeldKind = BuilderKind;
         else if (!SkateRide.On && BuilderKind >= 0)
         {
@@ -631,7 +656,8 @@ public static class SkatePieces
             bool ready = NativeMode(now);
             Close(ready);
         }
-        if (HeldKind != was) Out.Say("PIECES held: " + (HeldKind < 0 ? "no park item" : SkateHeld.ItemNames[HeldKind]) + " (item " + SkateHeld.Shortname + " '" + SkateHeld.Name + "' marker " + SkateHeld.Marker.ToString("X") + ")");
+        if (HeldKind != was) Out.Say("PIECES held: " + (HeldKind < 0 ? "no park item" : SkateHeld.ItemNames[HeldKind]) +
+            (serverObserved ? " (server-observed inventory preview)" : " (item " + SkateHeld.Shortname + " '" + SkateHeld.Name + "' marker " + SkateHeld.Marker.ToString("X") + ")"));
         AimOk = false;
         if (HeldKind < 0) { HeldClear(); return; }
         if (HeldKind == (int)SkateParks.Kind.HalfWallKicker) { HeldWallFrame(now); return; }
@@ -655,7 +681,8 @@ public static class SkatePieces
         else if (Vector3.Distance(previewAt, origin) > 0.01f || Math.Abs(previewYaw - Yaw) > 0.01f) { SkateParks.PreviewMove(origin, Yaw); previewAt = origin; previewYaw = Yaw; }
         if (now >= builderNoticeUntil)
         {
-            Said = SkateHeld.ItemNames[HeldKind] + (Valid ? ": client support fits; server still verifies placement and 10 Wood" : ": support unverified: " + GhostWhy) + "  |  " + (BuilderKind >= 0 ? BuilderControls : "Shift + right click: Rust building"); SaidAt = now;
+            Said = SkateHeld.ItemNames[HeldKind] + (Valid ? BuilderKind >= 0 ? ": client support fits; server still verifies placement and 10 Wood"
+                : ": client support fits; server still verifies placement and the held park item" : ": support unverified: " + GhostWhy) + "  |  " + (BuilderKind >= 0 ? BuilderControls : "Shift + right click: Rust building"); SaidAt = now;
         }
         if (GhostWhy != lastWhy) { lastWhy = GhostWhy; Out.Say("PIECES ghost " + SkateHeld.ItemNames[HeldKind] + (Valid ? " fits" + (OnFoundation ? " on a foundation" : "") : ": " + GhostWhy)); }
     }
@@ -752,6 +779,7 @@ public static class SkatePieces
     public static Vector2 Pointer { get { return pointer; } }
     public static void CancelFocus()
     {
+        SkateHeld.ClearServerObservation();
         switchingToRust = false;
         bool ready = NativeMode(Time.realtimeSinceStartup);
         Close(ready);
@@ -759,6 +787,7 @@ public static class SkatePieces
     }
     public static void Reset()
     {
+        SkateHeld.ClearServerObservation();
         switchingToRust = false;
         ForgetRustWheel();
         if (builderRequested) NativeMode(Time.realtimeSinceStartup);
