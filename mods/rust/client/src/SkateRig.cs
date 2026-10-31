@@ -3,6 +3,7 @@
 // component, a dynamic Rigidbody, a capsule) that is replaced on death and reconnect, so it is
 // looked up again and gets a fresh late driver each time.
 using System;
+using Il2CppInterop.Runtime;
 using Il2CppInterop.Runtime.Attributes;
 using UnityEngine;
 
@@ -218,6 +219,34 @@ public class SkateRig : MonoBehaviour
     }
 
     [HideFromIl2Cpp]
+    private static bool HasMountJoints(Transform frame, string owner)
+    {
+        try { return frame.GetComponentsInChildren<Joint>(true).Length != 0; }
+        catch (NotSupportedException) { }
+        try
+        {
+            var joints = frame.GetComponentsInChildren(Il2CppType.Of<Joint>(), true);
+            Say("ROOTSYNC Joint check " + owner + ": non-generic fallback");
+            return joints.Length != 0;
+        }
+        catch (NotSupportedException) { }
+        try
+        {
+            var components = frame.GetComponentsInChildren<Component>(true);
+            foreach (var component in components)
+                if (component != null && component.TryCast<Joint>() != null)
+                { Say("ROOTSYNC Joint check " + owner + ": Component fallback found Joint"); return true; }
+            Say("ROOTSYNC Joint check " + owner + ": Component fallback");
+            return false;
+        }
+        catch (NotSupportedException)
+        {
+            Say("ROOTSYNC Joint check " + owner + ": SKIPPED; Unity enumeration unavailable");
+            return false;
+        }
+    }
+
+    [HideFromIl2Cpp]
     private static bool AcquireRootProxy()
     {
         ReleaseRootProxy();
@@ -251,10 +280,10 @@ public class SkateRig : MonoBehaviour
             if (bodies.Length != 1 || bodies[0] != proxy)
                 throw new InvalidOperationException("player proxy has other physical owners");
             step = "root Joint children";
-            if (LocalT.GetComponentsInChildren<Joint>(true).Length != 0)
+            if (HasMountJoints(LocalT, "root"))
                 throw new InvalidOperationException("player proxy has other physical owners");
             step = "physical Joint children";
-            if (frame.GetComponentsInChildren<Joint>(true).Length != 0)
+            if (HasMountJoints(frame, "physical"))
                 throw new InvalidOperationException("player proxy has other physical owners");
             step = "physical body position";
             var position = Body.position;
