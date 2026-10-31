@@ -152,6 +152,13 @@ try {
   say ('interop files: ' + (ls "$bx\interop").Count + ' from ' + $gen.Replace($dl,'~'))
   if ($prt) { Copy-Item "$prt\*" "$bx\core" -Force; say ('overlay core: ' + ((ls $prt | % Name) -join ',')) }
   if ($psteps) { Set-Content "$bx\plugins\steps.txt" $psteps }
+  # The server address, when the staging folder has one, goes to the plugin as plain text beside
+  # steps.txt, so that the main menu can say what to type after F1 (SkateHud.cs). It leaves the Rust
+  # folder with the loader like everything else here; the plugin never logs it.
+  if (Test-Path -LiteralPath "$probe\server.txt" -PathType Leaf) {
+    $address = ("" + (Get-Content -LiteralPath "$probe\server.txt" -First 1)).Trim()
+    if ($address) { [IO.File]::WriteAllText("$bx\plugins\skate_server.txt", $address, (New-Object Text.UTF8Encoding($false))); say 'server address staged for the main-menu hint' }
+  }
   if ($pplug) {
     # Only declared artwork may enter the live plugin folder; unrelated PNGs/logs stay staged.
     $icons = @(Get-SkateArtworkFiles (Join-Path $pplug 'artwork.txt') $pplug)

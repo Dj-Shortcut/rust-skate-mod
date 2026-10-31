@@ -610,6 +610,11 @@ compiled, not seen in the game.
 
 The plugin reads a comma-separated list from `BepInEx\plugins\steps.txt` when it loads; without the
 file it runs `skate`. Runtime steps share one rig; the last scenario step selects the scenario.
+Beside it, `BepInEx\plugins\skate_server.txt` (written by `session` from the staging folder's
+`server.txt`, when there is one) holds the server address: the main menu's "Skate mod loaded" line
+then also says "To join the server: press F1, type connect <address> then Enter", until the rider
+has been ready in a world once. The file is read once, its first line only, and only a plain host
+name or `ip:port` is shown; the address is never logged. Not yet seen in the game.
 
 | Step | Effect |
 | --- | --- |
