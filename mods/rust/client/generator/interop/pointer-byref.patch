@@ -556,3 +556,44 @@
      public static void ReplaceBodyWithException(MethodDefinition newMethod, RuntimeAssemblyReferences imports)
      {
          newMethod.CilMethodBody = new();
+diff --git a/Il2CppInterop.Generator/Passes/Pass89GenerateMethodXrefCache.cs b/Il2CppInterop.Generator/Passes/Pass89GenerateMethodXrefCache.cs
+--- a/Il2CppInterop.Generator/Passes/Pass89GenerateMethodXrefCache.cs
++++ b/Il2CppInterop.Generator/Passes/Pass89GenerateMethodXrefCache.cs
+@@ -51,10 +51,10 @@
+                                     nameof(CachedScanResultsAttribute.XrefRangeStart),
+                                     imports.Module.Int(),
+-                                    new CustomAttributeArgument(imports.Module.Int(), attribute.RefRangeStart)),
++                                    new CustomAttributeArgument(imports.Module.Int(), attribute.XrefRangeStart)),
+                                 new CustomAttributeNamedArgument(
+                                     CustomAttributeArgumentMemberType.Field,
+                                     nameof(CachedScanResultsAttribute.XrefRangeEnd),
+                                     imports.Module.Int(),
+-                                    new CustomAttributeArgument(imports.Module.Int(), attribute.RefRangeEnd)),
++                                    new CustomAttributeArgument(imports.Module.Int(), attribute.XrefRangeEnd)),
+                                 new CustomAttributeNamedArgument(
+                                     CustomAttributeArgumentMemberType.Field,
+@@ -68,4 +68,6 @@
+                                     new CustomAttributeArgument(imports.Module.Long(), attribute.MetadataInitFlagRva))
+                                 ])));
++                        methodRewriteContext.XrefScanResults.Clear();
++                        methodRewriteContext.XrefScanResults.TrimExcess();
+                         continue;
+                     }
+@@ -77,4 +79,6 @@
+
+                     var xrefEnd = data.Count;
++                    methodRewriteContext.XrefScanResults.Clear();
++                    methodRewriteContext.XrefScanResults.TrimExcess();
+
+                     var refStart = 0;
+@@ -137,7 +141,10 @@
+                             MetadataInitTokenRva = methodRewriteContext.MetadataInitTokenRva
+                         };
++                        Pass16ScanMethodRefs.MapOfCallers.Remove(address);
+                     }
+                 }
+         }
++
++        Pass16ScanMethodRefs.MapOfCallers.Clear();
+
+     skipDataGather:
