@@ -107,6 +107,41 @@ result passes visual review on the real rig and detailed board in both stances.
 Check every composed trick's flick/scoop against its actual full board rotation,
 and retain the existing batch acceptance and separate native-game gate below.
 
+### Coverage record: the 40 shared-source slots
+
+Kept by Claude as the quality gate (owner direction of 31 October 2026, #337);
+Codex builds and merges. One row per source family, one cell per stance. A cell
+names the state and, where there is one, the clip on `main`: **native accepted**
+(seen in the game), **offline reviewed** (viewer, normal/low, both physical stances,
+30 October snapshot above), **source present** (registry kind, keyed route and
+authored controls on `main`, `reviewed=false`, not yet viewed as a whole), **kind
+only** (registry signature without a source route), **open PR** (draft, not on
+`main`), or **none**. Source video ids are the Berrics references the authoring
+docs name; the footage itself stays private. State as of `main` `a4248fa`.
+
+| Source family | Normal | Fakie | Nollie | Switch |
+| --- | --- | --- | --- | --- |
+| Ollie | none for normal riding (the CC BY-SA video ollie in `ollie-video/` is sampled by the rigging showcase only) | none | none | none |
+| Kickflip | source present: `kickflip-source-keyed-v1` (`kickflip-keyed/`, authored from reference images); held Double: open PR #662, min-charge entry #663 | **offline reviewed**: `fakie-kickflip` (`fakie-kickflip-air/`), double/triple derivatives registered | none | none |
+| Heelflip | source present: `heelflip-source-keyed-v1` (`heelflip-keyed/`, `_oRoo1x1uzM` 136–158 s) | none | **offline reviewed**: `nollie-heelflip`, double/triple registered | **offline reviewed**: `switch-heelflip` (`switch-heelflip-air/`, `PqJZcwTY1QE` t=74), double/triple registered |
+| BS pop shove-it | source present: `bs-pop-shove-it-source-keyed-v1` (`bs-pop-shove-keyed/`, Cole `YcmPDIj2BFo` t=128); BS 360: open PR #602 (`bs-360-shove-it`, genuine Kroetkov take) | none | none | none |
+| FS pop shove-it | kind only (`fs-pop-shove-it` registered, no keyed route or authored controls on `main`); FS 360: open PR #653 (authored derivation from the FS 180 reconstruction) | none | none | none |
+| 360 flip | source present: `360-flip-source-keyed-v1` (`treflip-keyed/`, `_oRoo1x1uzM` ~253 s, filmed goofy); Varial Kickflip: open PR #640 (authored Tre derivation, no filmed take) | none | **offline reviewed**: `nollie-360-flip-source-keyed-v1` (`nollie360-keyed/`, `PqJZcwTY1QE` t=153) | none |
+| Hardflip | source present: `hardflip-source-keyed-v1` (`hardflip-keyed/`, `_oRoo1x1uzM` t=192) | none | none | none |
+| Inward heelflip | none | none | none | none |
+| BS 180 | none (procedural spin only) | none | combined only: `nollie-backside-180-heelflip` (`nollie-bs180-heelflip-air/`, `PqJZcwTY1QE` t=115), **offline reviewed**; not a standalone BS 180 reference | none |
+| FS 180 | none (procedural spin only) | none | none | none |
+
+Count on `main`: 4 slots offline reviewed (plus the combined nollie BS 180
+heelflip, which is reviewed but not a standalone BS 180 reference), 5 source
+present, 1 kind only, 30 without a source. Nothing is native accepted. Outside the 40 slots, the normal Impossible has its own
+board-path adapter and controls (`impossible-keyed/`, `_oRoo1x1uzM`), source
+present. Batches 2 and 4–7 (riding, grabs, grinds, oldschool, transition) have
+procedural source and no capture record; their state is in the gate table at the
+top of this document. A merged PR changes a cell only after this record is
+updated in the same or the next Claude library PR; a cell never moves to
+"offline reviewed" or "native accepted" on the strength of a compile or an export.
+
 ## Conversion and integration
 
 Use the executable [capture pipeline](RUST-SKATE-MOTION-CAPTURE.md). Retain the
