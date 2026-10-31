@@ -78,7 +78,12 @@ source clips; the two other batch-1 sources may be declared without deriving a
 variant. The complete candidate is validated before replacing the previous pack.
 Each derived JSON retains the source frames, contacts, board keys and provenance,
 and records `sourceFamily`, `derivedFromClipId`, `requestedFlipDegrees` and
-`derivation`. Its own `id` equals its movement kind and `reviewed` starts false.
+`derivation`. Generic composed variants use their movement kind as their own
+`id`. An explicitly supported source-keyed derivative may instead use a versioned
+ID: for example, `double-kickflip-source-keyed-v1` has movement kind
+`double-kickflip`. The loader permits that exception only when
+`SkateCaptureKeyedPlayback.Accepts` matches the exact ID, movement kind and
+registered trick signature. `reviewed` starts false in either case.
 Review and approval apply to that exact variant and pack hash; approving a source
 does not approve its derived variants.
 

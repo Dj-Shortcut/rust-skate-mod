@@ -122,9 +122,9 @@ public static class SkateCapturedTricks
                 }
                 int kind = SkateCaptureVariants.IndexOf(clip.MovementKind);
                 if (kind < 0) { unsupported++; continue; }
-                if (SkateCaptureVariants.Get(kind).Derived && clip.Id != clip.MovementKind &&
-                    !(clip.Id == SkateCaptureKeyedPlayback.DoubleKickflipClipId &&
-                      SkateCaptureKeyedPlayback.Accepts(clip, SkateCaptureKeyedPlayback.DoubleKickflipSignature)))
+                var variant = SkateCaptureVariants.Get(kind);
+                if (variant.Derived && clip.Id != clip.MovementKind &&
+                    !SkateCaptureKeyedPlayback.Accepts(clip, variant.Signature))
                 { Status = "Captured riding disabled: derived trick needs its own exact approved id"; return; }
                 if (pending[kind] != null) { Status = "Captured riding disabled: ambiguous approved trick variant"; return; }
                 SkateCapturePlayback playback;

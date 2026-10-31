@@ -1,7 +1,8 @@
 # Held Double Kickflip capture
 
-This is an explicitly authored Double reconstruction. It shares the previously viewer-reviewed
-ordinary Kickflip controls and observed single-pop entry; the additional turn,
+This is an explicitly authored Double reconstruction. It shares the ordinary
+Kickflip controls and observed single-pop entry; those source controls and their
+hidden-depth reconstruction remain marked unreviewed. The additional turn,
 compact free-foot envelope, source-led forward fold and late catch are authored.
 The white-shirt Berrics Double take is a visual witness, not measured 3D or a
 known physical slow-motion clock. Original generated packs remain `Reviewed=false`.
