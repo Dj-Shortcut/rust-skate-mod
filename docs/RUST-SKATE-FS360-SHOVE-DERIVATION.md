@@ -39,3 +39,12 @@ The recovery also removes the old recipe toe-side hip bias: pelvis and upper
 body move together toward the measured sole-footprint centre with a small
 rig-scaled heelward balance. Both fixed-foot legs are re-solved under the same
 reach guard; there is no extra vertical arc or moved foot contact.
+
+The current private four-case replay uses an actual rear setup and continuous
+right-stick rim sweep, producing Ollie / flip 0 / frontside shove +360 in the
+real Pad and native Step/Land code. Lower input starts with a .12 s hold; the
+sweep contributes to the observed charge, giving a frozen flight near .560 s
+instead of the historical prescribed .528 s preview. Normal is near .600 s.
+The measured body replay retains capture in all Air rows, both stances. The
+original unreviewed source pack remains byte-identical; this is controlled
+managed evidence, with watched continuous playback and native/Shadow open.
