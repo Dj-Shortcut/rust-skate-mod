@@ -14,9 +14,11 @@
   "landSourceFrame": 275,
   "freeSoleGap": 0.01,
   "freeFeet": {"Left": [-0.055, 0.30], "Right": [0.055, -0.30]},
-  "upperFoldWindow": [265, 266, 269.5, 274.2],
+  "upperFoldWindow": [265, 266, 282, 293.5],
   "targetTorsoFoldDegrees": 70,
+  "torsoFoldKeys": [[265, 70], [269.5, 70], [274.2, 40], [275, 40], [278.2, 50], [282, 45], [293.5, 45]],
   "maximumNeckTurnDegrees": 30,
+  "minimumFoldedGazeDegrees": 40,
   "armBalance": {
     "upperDirection": [0.98, -0.15, 0.12],
     "foreDirection": [0.78, -0.60, 0.16]
@@ -32,8 +34,8 @@
     "secondGraphicFrames": [152, 154],
     "secondGripFrames": [156, 158],
     "landingFrames": [160, 165],
-    "verifiedTwoFlipsAndLanding": true,
+    "referenceInspected": true,
     "scope": "Qualitative Double motion reference, independently inspected from original native frames. Edited playback does not establish physical flight duration or calibrated 3D. Shared body controls come from a different ordinary Kickflip take."
   },
-  "provenance": "Shared reconstructed ordinary Kickflip setup, tail pressure, upper-instep release and body basis. A distinct authored extra-winding/free-foot/late-return interval and additional mid-Air upper fold follow the verified Double silhouette. Body/feet/board and original sample grid remain exact through the first original row after264. No future held input, native physics, source approval or measured Double mocap is supplied by this data."
+  "provenance": "Shared reconstructed ordinary Kickflip setup, tail pressure, upper-instep release and lower/root basis. A distinct authored extra-winding/free-foot/late-return interval and anatomical upper reconstruction follow the inspected Double silhouette: compact Air, retained forward Catch/absorption, then bounded recovery. Upper depth and occluded balance are authored; no measured 3D claim. Body/feet/board and original sample grid remain exact through the first original row after 264. No future held input, native physics or source approval is supplied by this data."
 }

@@ -44,6 +44,14 @@ def rotate_between(first, second):
     return np.eye(3) + cross * sine + cross @ cross * (1 - cosine)
 
 
+def torso_fold(control, source_frame):
+    keys = control['torsoFoldKeys']
+    for (first, a), (last, b) in zip(keys, keys[1:]):
+        if source_frame <= last:
+            return a + (b - a) * smooth((source_frame - first) / (last - first))
+    return keys[-1][1]
+
+
 def double_upper(row, control, source_frame):
     weight = window(source_frame, control['upperFoldWindow'])
     if not weight:
@@ -60,7 +68,8 @@ def double_upper(row, control, source_frame):
     old_forward = unit(old_forward - old_up * np.dot(old_forward, old_up))
     old_right = unit(np.cross(old_up, old_forward))
     forward = unit(old_forward - UP * np.dot(old_forward, UP))
-    angle = math.radians(control['targetTorsoFoldDegrees'])
+    fold = torso_fold(control, source_frame)
+    angle = math.radians(fold)
     target_up = forward * math.sin(angle) + UP * math.cos(angle)
     target_forward = forward * math.cos(angle) - UP * math.sin(angle)
     target_right = unit(np.cross(target_up, target_forward))
@@ -87,11 +96,22 @@ def double_upper(row, control, source_frame):
         joints[side + 'Hand'] = joints[side + 'Elbow'] + directions[1] * .27
     # Reconstruct the visible downward gaze without levering the head back
     # from the more folded torso. The existing neck segment stays fixed-length.
-    gaze = unit(np.array(row['board']['origin']) - joints['Head'])
+    # Preserve the source's head heading. A positional board-centre target can
+    # reverse horizontally when the folded head passes that centre at Catch.
+    source_gaze = np.array(row['dirs']['HeadForward'])
+    gaze_heading = source_gaze - UP * np.dot(source_gaze, UP)
+    gaze_heading = unit(gaze_heading) if np.linalg.norm(gaze_heading) > 1e-6 else forward
+    allowance = min(control['maximumNeckTurnDegrees'],
+                    max(0., fold - control['minimumFoldedGazeDegrees']))
+    gaze_angle = math.radians(fold - allowance)
+    gaze = gaze_heading * math.cos(gaze_angle) - UP * math.sin(gaze_angle)
     wanted_up = unit(UP - gaze * np.dot(UP, gaze))
     axis = np.cross(new_up, wanted_up)
     turn = math.atan2(float(np.linalg.norm(axis)), float(np.dot(new_up, wanted_up)))
-    limit = math.radians(control['maximumNeckTurnDegrees'])
+    # The Air's full extension allowance would level the face when the chest
+    # opens for Catch. Derive its smaller allowance from this same body fold;
+    # keep the compact Air unchanged and retain the source's downward look.
+    limit = math.radians(allowance)
     if turn > limit:
         wanted_up = rotate_between(new_up, wanted_up)
         wanted_up = qmatrix(slerp([0., 0., 0., 1.], matrix_quat(wanted_up), limit / turn)) @ new_up
@@ -99,7 +119,7 @@ def double_upper(row, control, source_frame):
     head_up = qmatrix(slerp([0., 0., 0., 1.],
                          matrix_quat(rotate_between(old_head_up, wanted_up)), weight)) @ old_head_up
     joints['Head'] = joints['Neck'] + head_up * .12
-    old_gaze = rotation @ np.array(row['dirs']['HeadForward'])
+    old_gaze = rotation @ source_gaze
     gaze = unit(old_gaze * (1 - weight) + gaze * weight)
     row['dirs']['HeadForward'] = unit(gaze - head_up * np.dot(gaze, head_up)).tolist()
     row['joints'] = {k: joints[k].tolist() for k in JOINTS}
@@ -162,8 +182,8 @@ def main():
     parser.add_argument('--output', required=True, type=Path)
     args = parser.parse_args()
     control = json.loads(args.constraints.read_text())
-    if control['targetFlipDegrees'] != 720 or not control['reference']['verifiedTwoFlipsAndLanding']:
-        raise ValueError('Only the verified-reference authored Double is supported')
+    if control['targetFlipDegrees'] != 720 or not control['reference']['referenceInspected']:
+        raise ValueError('Expected the inspected visual reference for the authored Double')
     if sha(BASE / 'captured-body.json') != control['baseBodySha256'] or sha(BASE / 'hybrid-constraints.json') != control['baseConstraintsSha256']:
         raise ValueError('Shared body/constraint source changed; review before rebaking Double')
     with tempfile.TemporaryDirectory(prefix='skate-double-base-') as temporary:
@@ -211,9 +231,9 @@ def main():
                 sharedBodySourceUrl=base['metadata']['sourceUrl'], sharedBodyInputSha256=base_sha,
                 doubleReference=control['reference'], targetFlipDegrees=720,
                 authoredDouble=control['provenance'], lateFreeReturnStartSourceFrame=control['returnStartSourceFrame'],
-                authoredCatchRecovery='Distinct authored late return/catch; ordinary273 catch is not used. Existing landing/root recovery is retained.',
+                authoredCatchRecovery='Distinct authored late foot return/catch; ordinary 273 catch is not used. Existing lower-body landing/root recovery is retained; a source-led upper fold continues through catch, absorption and bounded recovery.',
                 authoredFreeAirDepth='Dedicated board-close free interval accepts every roll phase; no root/board lift or measured Double depth claim.',
-                authoredUpperReconstruction='After265 an anatomical forward fold, source-led out/down balance arms and bounded downward gaze reconstruct the verified Double silhouette in one window; early source prefix unchanged.',
+                authoredUpperReconstruction='After 265 an anatomical forward fold, source-led out/down balance arms and bounded downward gaze reconstruct the Double through Air, Catch and absorption, then fade before the original source exit. Neck allowance follows the same torso fold, with no independent gaze clock. Early source prefix and all lower/board channels are unchanged.',
                 sourceClockMeaning='254-based shared ordinary Kick control clock. Double reference frames are qualitative, a different take; no same-take or physical edit-time mapping.')
     clip = dict(base, metadata=meta, frames=frames, events=events)
     packed = encode_pack([clip])  # Validate before replacing either prior output.
