@@ -57,17 +57,20 @@ def free_frame(source,s,sf,side):
 def sample(source,s,sf):
     b=s['_base'];j,d,soles=source_at(source,sf);original={k:v.copy()for k,v in j.items()};origin,q,R,H=board_at(s,sf);feet={}
     for side in ['Left','Right']:
+        release=s['upperRelease']if side=='Left'else s['rearRelease'];freeWeight=tre.smooth((sf-release)/(s['pressEnd']-release))
         if sf<s['pressEnd']:
             u=tre.smooth((sf-s['pop'])/(s['rearRelease']-s['pop']));z=b['authored']['pressRearZ']if side=='Right'else .275;x=b['authored']['pressRearX']if side=='Right'else -.045;yaw=85 if side=='Right'else 56
             ankle,F=tre.entry_foot(b,side,origin,R,u,x,z,yaw)
             if side=='Left':
                 roll=tre.smooth((sf-(s['pop']+.25))/(s['upperRelease']-s['pop']-.25));contactR=R if sf<=s['upperRelease']else board_at(s,s['upperRelease'])[2];upperF=tre.instep(b,contactR);upper=origin+R@np.asarray(b['flickPatch']['deckLocal'])-upperF@np.asarray(b['flickPatch']['shoeLocal']);ankle=ankle*(1-roll)+upper*roll;F=qmatrix(slerp(matrix_quat(F),matrix_quat(upperF),roll))
-            release=s['upperRelease']if side=='Left'else s['rearRelease'];weight=tre.smooth((sf-release)/(s['pressEnd']-release));target,targetF=free_frame(source,s,s['pressEnd'],side);ankle=ankle*(1-weight)+target*weight;F=qmatrix(slerp(matrix_quat(F),matrix_quat(targetF),weight))
+            target,targetF=free_frame(source,s,s['pressEnd'],side);ankle=ankle*(1-freeWeight)+target*freeWeight;F=qmatrix(slerp(matrix_quat(F),matrix_quat(targetF),freeWeight))
         else:ankle,F=free_frame(source,s,sf,side)
         caught=tre.smooth((sf-s['catchStart'])/(s['catch']-s['catchStart']))
         if caught:
             goal,goalF=catch_frame(s,side,origin,R);ankle=ankle*(1-caught)+goal*caught;F=qmatrix(slerp(matrix_quat(F),matrix_quat(goalF),caught))
-        if sf>s['upperRelease']and sf<s['catch']:ankle[1]+=tre.free_foot_clearance(b,origin,R,ankle,F)
+        # The clearance belongs to the free interval, with the same entry and
+        # return weights as that foot. A step here teleports the release/catch.
+        if freeWeight>0 and caught<1:ankle[1]+=tre.free_foot_clearance(b,origin,R,ankle,F)*freeWeight*(1-caught)
         feet[side]=ankle,F
     lo,hi=-float('inf'),float('inf');reach=.87*s['maximumReachShare']
     for side,(ankle,F)in feet.items():
@@ -94,7 +97,7 @@ def bake(raw,s):
         ankle,F=tre.deck_shoe(b,np.zeros(3),np.eye(3),-.04,z,yaw);s['_catchWorld'][side]=(ankle,F[:,2])
     phases=[(s['firstSourceFrame'],'load',['LeftFoot','RightFoot']),(s['pop'],'pop',['RightFoot']),(s['rearRelease'],'air',[]),(s['pressEnd'],'air',[]),(s['catch'],'catch',['LeftFoot','RightFoot']),(s['land'],'land',['LeftFoot','RightFoot']),(s['recovery'],'recovery',['LeftFoot','RightFoot'])]
     frames=np.unique(np.round(np.r_[np.arange(s['firstSourceFrame'],s['lastSourceFrame']+1e-7,1/6),[v[0]for v in phases],s['upperRelease'],s['rotationEnd'],s['catchStart']],9));samples=[sample(source,s,float(sf))for sf in frames];duration=(s['lastSourceFrame']-s['firstSourceFrame'])/s['_fps']
-    meta=dict(id=s['id'],label='Varial Kickflip — authored shared-Tre derivation [UNREVIEWED]',movementKind=s['movementKind'],reviewed=False,authored=True,capturedBody=True,sourceUrl=m['sourceUrl'],sourceAuthor=m['sourceAuthor'],sourceFps=s['_fps'],firstSourceFrame=s['firstSourceFrame'],lastSourceFrame=s['lastSourceFrame'],canonicalStance='regular',referenceFootageMovementKind='360-flip',filmedVarialTake=False,sharedSourceId=s['sourceId'],sharedSourceJsonSha256=s['sourceJsonSha256'],provenance=s['provenance'],referenceGroundPress=b['reference'],combinedWinding=dict(nativeFlip=360,nativeShove=-180,canonicalYaw=180,bodySpin=0),catchTransform='Anatomical world targets transformed by final deck R-transpose: full XYZ and toe heading, with measured sole/deck fitting',sourceRootMotion='Carrier-local body and board; reference ballistic carrier excluded; actual physical carrier added once by playback')
+    meta=dict(id=s['id'],label='Varial Kickflip — authored shared-Tre derivation [UNREVIEWED]',movementKind=s['movementKind'],reviewed=False,authored=True,capturedBody=True,sourceUrl=m['sourceUrl'],sourceAuthor=m['sourceAuthor'],sourceFilmedStance=m['sourceFilmedStance'],sourcePoseSha256=m['sourcePoseSha256'],sourceFps=s['_fps'],firstSourceFrame=s['firstSourceFrame'],lastSourceFrame=s['lastSourceFrame'],canonicalStance='regular',referenceFootageMovementKind='360-flip',filmedVarialTake=False,sharedSourceId=s['sourceId'],sharedSourceJsonSha256=s['sourceJsonSha256'],provenance=s['provenance'],referenceGroundPress=b['reference'],combinedWinding=dict(nativeFlip=360,nativeShove=-180,canonicalYaw=180,bodySpin=0),catchTransform='Anatomical world targets transformed by final deck R-transpose: full XYZ and toe heading, with measured sole/deck fitting',sourceRootMotion='Carrier-local body and board; reference ballistic carrier excluded; actual physical carrier added once by playback')
     clip=dict(format='skate-capture-authored-varial/1',metadata=meta,stance='regular',fps=s['_fps']*6,duration=duration,events=contact_events([dict(t=(sf-s['firstSourceFrame'])/s['_fps'],phase=p,contacts=c)for sf,p,c in phases],duration),frames=samples)
     return clip,encode_pack([clip])
 

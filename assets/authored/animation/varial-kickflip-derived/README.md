@@ -15,6 +15,11 @@ Source frames 403/404/406/420/424 retain their reference phase roles; the
 intermediate 180-degree rotation, release timing and catch are authored.
 Dense samples add no detections or measured contact confidence.
 
+Free-foot clearance enters with each foot’s existing release weight and fades
+through the existing return-to-catch interval. It does not step on at the upper
+release or disappear in one sample at Catch. The shared source’s filmed stance
+and pose hash are retained as provenance, not a claim of filmed Varial motion.
+
 Generate the shared Tre source with its existing authoring workflow, then run:
 
 ```sh
