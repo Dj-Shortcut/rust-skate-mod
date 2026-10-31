@@ -188,7 +188,7 @@ first, or goofy, they are the other way round.
 | Held at the back left or back right, flicked straight across to the opposite front | Varial kickflip, varial heelflip |
 | From the left or right rolled round to the back, then flicked to the opposite front | 360 flip, laser flip |
 | From the right or left rolled round to the back, then flicked to the same front | 360 Hardflip, 360 Inward Heelflip |
-| Held back, rolled 45 to 60 degrees to the right or left, flicked straight forward | Hardflip, inward heelflip (rolled less than 40 degrees it stays an ollie) |
+| Held back, hooked 45 to 60 degrees to the right or left, flicked straight forward or to the forward diagonal of that side | Hardflip, inward heelflip (hooked less than 40 degrees it stays an ollie or plain flip) |
 | Hold LB with a popped right-stick gesture, without triggers or a shove | Impossible |
 | Hold RB with the same gesture | Front Foot Impossible (forward setup: Nollie Back Foot Impossible) |
 | Hold LB and RB with the same gesture | Underflip |

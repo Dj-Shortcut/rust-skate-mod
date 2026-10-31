@@ -336,6 +336,9 @@ namespace Shortcut.RustMod
                 shove = -Math.Sign(state.SweepDegrees) * (mirrored ? -360 : 360);
             else if (Math.Abs(state.SweepDegrees) >= QuarterSweepDegrees || angle > FlipSpreadDegrees)
                 shove = -(angle > FlipSpreadDegrees ? -Math.Sign(x) : Math.Sign(state.SweepDegrees)) * (mirrored ? -180 : 180);
+            // skate.'s own hardflip: a short hook along the rim to one side, then the flick to the
+            // forward diagonal of that same side.
+            else if (flip != 0 && state.ShallowSide == Math.Sign(x)) shove = flip * 180;
             else if (angle <= StraightSpreadDegrees && state.ShallowSide != 0)
             { flip = (state.ShallowSide < 0) != mirrored ? 1 : -1; shove = flip * 180; }
             return new SkatePop(state.Forward ? SkatePopKind.Nollie : SkatePopKind.Ollie, flip, shove, strength);

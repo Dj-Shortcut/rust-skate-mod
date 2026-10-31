@@ -537,10 +537,9 @@ public static class SkateHud
         "hold back-left / back-right, flick across to the opposite front: #Varial Kickflip / #Varial Heelflip",
         "from the left / right, roll round to the back, flick to the opposite front: #360 Flip / #Laser Flip",
         "from the right / left, roll round to the back, flick to the same front: #360 Hardflip / #360 Inward Heelflip",
-        "back, roll 45-60 degrees to the right / left, flick straight forward: #Hardflip / #Inward Heelflip",
+        "back, hook 45-60 degrees to the right / left, flick forward to that side: #Hardflip / #Inward Heelflip",
         "LB + popped stick gesture: #Impossible   RB: #Front Foot Impossible   LB + RB: #Underflip (no triggers)",
         "part way back / forward for a moment: #Manual / #Nose Manual, flick out of it to pop",
-        "right stick flicked to the right / left: #Late Kickflip / #Late Heelflip, again for another flip",
     };
 
     // The controller tricks the cards leave out, while Back is held on the board. Sides are those
@@ -551,7 +550,7 @@ public static class SkateHud
         "flick out of a #Manual or #Nose Manual to pop",
         "@IN THE AIR",
         "keep the same rim direction after a pure pop flip: #Double / #Triple; release, grab or change direction to end the hold",
-        "a late flip flicked again: another flip",
+        "the same flick in the air: a late flip, again for another",
         "left stick held to a side: #spin, with a shove the same way a #Bigspin   left stick round a full circle: #Body Varial",
         "RT: #Backside   up #Seatbelt   down #Nose   left #Melon   right #Method        LT: #Frontside   up #Tail   down #Crail   right #Stalefish",
         "LT + RT: #Double   up #Nosebone   down #Tailbone        no flip during a grab; let the stick come back to the middle after one",
