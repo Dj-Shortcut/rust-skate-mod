@@ -64,14 +64,15 @@ def sample(body, spec, t):
     forward = unit(np.array([1., 0., 0.])*.75+forward*.25)
     hip_axis = unit(np.cross(UP, forward))
     torso = unit(captured['Neck']-captured['Pelvis'])
-    # The raw model's far-side depth is not observed. A modest source-facing
-    # lean retains the filmed fold without a camera-axis back arch.
-    lean = float(np.clip(np.dot(torso, forward), -.12, .55))
-    torso = unit(UP*math.sqrt(max(.01, 1-lean*lean))+forward*lean)
+    # Retain the own camera-axis fold too. Projecting it onto one horizontal
+    # direction made the first mesh visibly upright despite a real source tuck.
+    horizontal = torso-UP*np.dot(torso,UP)
+    lean = min(math.radians(55), math.atan2(float(np.linalg.norm(horizontal)), max(.01,torso[1])))
+    torso = UP*math.cos(lean)+unit(horizontal,forward)*math.sin(lean)
     shoulders = unit(hip_axis-torso*np.dot(hip_axis, torso))
     j = dict(Pelvis=pelvis, Chest=pelvis+torso*(.52/1.12), Neck=pelvis+torso*.52)
     gaze = unit(directions['HeadForward']*.7+forward*.3)
-    gaze[1] = float(np.clip(gaze[1], -.45, .25)); gaze = unit(gaze)
+    gaze[1] = float(np.clip(gaze[1], -.75, .25)); gaze = unit(gaze)
     head_up = unit(UP-gaze*np.dot(UP, gaze)); j['Head'] = j['Neck']+head_up*.12
     soles = {}
     for side, sign in [('Left', -1), ('Right', 1)]:
@@ -161,8 +162,16 @@ def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--body',type=Path,default=ASSET/'captured-body.json');p.add_argument('--controls',type=Path,default=ASSET/'constraints.json');p.add_argument('--output',type=Path,required=True);a=p.parse_args()
     clip,packed=bake(a.body.read_bytes(),json.loads(a.controls.read_text()))
     a.output.mkdir(parents=True,exist_ok=True)
-    (a.output/'switch-kickflip-source-keyed-v1.json').write_text(json.dumps(clip,indent=2)+'\n')
-    (a.output/'skate_captures.skmc').write_bytes(packed)
+    payloads=[('switch-kickflip-source-keyed-v1.json',(json.dumps(clip,indent=2)+'\n').encode()),('skate_captures.skmc',packed)]
+    temporary=[]
+    try:
+        for name,data in payloads:
+            path=a.output/(name+'.tmp');path.write_bytes(data);temporary.append((path,a.output/name))
+        # Publish the validated pack last; input/geometry failures never replace it.
+        for path,destination in temporary:path.replace(destination)
+    finally:
+        for path,_ in temporary:
+            if path.exists():path.unlink()
     print('OWN_SWITCH',len(clip['frames']),len(clip['events']),hashlib.sha256(packed).hexdigest(),'reviewed=false')
 
 if __name__=='__main__': main()

@@ -211,25 +211,25 @@
     [
       5491,
       0,
-      1.08,
+      1.04,
       -0.04
     ],
     [
       5494,
       0,
-      1.09,
+      1.03,
       -0.02
     ],
     [
       5496,
       0,
-      1.0,
+      0.96,
       -0.01
     ],
     [
       5498,
       0,
-      0.88,
+      0.85,
       0
     ],
     [
@@ -303,7 +303,7 @@
         [
           5494,
           -0.035,
-          0.7,
+          0.74,
           0.24
         ],
         [
@@ -347,7 +347,7 @@
         [
           5494,
           0.025,
-          0.71,
+          0.75,
           -0.24
         ],
         [
@@ -2303,5 +2303,6 @@
       ]
     }
   ],
-  "frontSoleReleaseFrame": 5484.7
+  "frontSoleReleaseFrame": 5484.7,
+  "visibleAirCorrection": "Retain the full own source torso fold rather than discarding camera-axis lean; explicitly authored compact pelvis and4cm free-foot pickup clear the rotating deck edge. These are reconstruction, not observed 3D measurements."
 }
