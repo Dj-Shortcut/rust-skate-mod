@@ -73,6 +73,9 @@ sole band turned away. Rig-only review frames and source/route hashes are in
 The frozen proxy's actual lead-foot audit is explicit: its anatomical bone-label
 map reverses the requested stance, so viewer selectors use measured physical
 stance, not the request label. This does not establish the Rust avatar mapping.
-Whole-motion viewer review, the Claude quality gate and Shadow acceptance
-remain open. Original/generated
+The A1 repair and its rig-only before/after sheets are in
+[`docs/review-media/2026-11-01-a1-nollie-head-balance/`](../../../../docs/review-media/2026-11-01-a1-nollie-head-balance/).
+The current main managed route is replayed for normal/low and both physical
+stances; all Air remains on the source, followed by ordinary Ground at4s.
+Claude's whole-motion/offline judgment and Shadow acceptance remain open. Original/generated
 source packs remain `reviewed=false`; private replay approval is test-only.

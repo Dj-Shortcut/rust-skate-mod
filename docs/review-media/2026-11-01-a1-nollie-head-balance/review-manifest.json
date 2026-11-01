@@ -1,0 +1,284 @@
+{
+  "format": "own-nollie-kickflip-rig-review/1",
+  "sourceReviewed": false,
+  "nativeGame": false,
+  "sourceCodeRevision": "96f64c9f978a7dcc453174aa15d99873d1a66c3f",
+  "runtimeRouteRevision": "8354c7f6dd82ef2453d4ac836649d474e0626ce0",
+  "sourcePackSha256": "59ea4fe81b52ae6ede06d74346a0a6656b1fe7cdbee8f5b34745ab918beafd95",
+  "items": [
+    {
+      "physical": "regular",
+      "requested": "goofy",
+      "profile": "low",
+      "sourcePackSha256": "59ea4fe81b52ae6ede06d74346a0a6656b1fe7cdbee8f5b34745ab918beafd95",
+      "glbSha256": "f065dd7d692045581c31117885a50aebe79fe5774e9ee688eac557b96679d69b",
+      "sourceCodeRevision": "96f64c9f978a7dcc453174aa15d99873d1a66c3f",
+      "runtimeRouteRevision": "8354c7f6dd82ef2453d4ac836649d474e0626ce0",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 1.0166666666666666,
+        "Flick": 1.0333333333333334,
+        "Air": 1.15,
+        "Catch": 1.35,
+        "Land": 1.4166666666666667,
+        "Rollaway": 1.7166666666666666,
+        "End": 4.0
+      },
+      "rigOnlyImage": "low-regular-phases.jpg",
+      "privateSourceComparison": "low-regular-private-source-comparison.jpg"
+    },
+    {
+      "physical": "regular",
+      "requested": "goofy",
+      "profile": "normal",
+      "sourcePackSha256": "59ea4fe81b52ae6ede06d74346a0a6656b1fe7cdbee8f5b34745ab918beafd95",
+      "glbSha256": "0f932f683871397463fabd3b10715e83d9011f7c035d298955306156a7b2dc8e",
+      "sourceCodeRevision": "96f64c9f978a7dcc453174aa15d99873d1a66c3f",
+      "runtimeRouteRevision": "8354c7f6dd82ef2453d4ac836649d474e0626ce0",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 1.0166666666666666,
+        "Flick": 1.05,
+        "Air": 1.1666666666666667,
+        "Catch": 1.3833333333333333,
+        "Land": 1.45,
+        "Rollaway": 1.7833333333333334,
+        "End": 4.0
+      },
+      "rigOnlyImage": "normal-regular-phases.jpg",
+      "privateSourceComparison": "normal-regular-private-source-comparison.jpg"
+    },
+    {
+      "physical": "goofy",
+      "requested": "regular",
+      "profile": "low",
+      "sourcePackSha256": "59ea4fe81b52ae6ede06d74346a0a6656b1fe7cdbee8f5b34745ab918beafd95",
+      "glbSha256": "bae2b97b3673e721a7c3aab76f8116db0b5d14789374a26a8cd1feb1bf85cc1d",
+      "sourceCodeRevision": "96f64c9f978a7dcc453174aa15d99873d1a66c3f",
+      "runtimeRouteRevision": "8354c7f6dd82ef2453d4ac836649d474e0626ce0",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 1.0166666666666666,
+        "Flick": 1.0333333333333334,
+        "Air": 1.15,
+        "Catch": 1.35,
+        "Land": 1.4166666666666667,
+        "Rollaway": 1.7166666666666666,
+        "End": 4.0
+      },
+      "rigOnlyImage": "low-goofy-phases.jpg",
+      "privateSourceComparison": "low-goofy-private-source-comparison.jpg"
+    },
+    {
+      "physical": "goofy",
+      "requested": "regular",
+      "profile": "normal",
+      "sourcePackSha256": "59ea4fe81b52ae6ede06d74346a0a6656b1fe7cdbee8f5b34745ab918beafd95",
+      "glbSha256": "cae20b92e789ccf44d36cd4f82d2bf65d2bf8434cacde783975ea6911a1b2377",
+      "sourceCodeRevision": "96f64c9f978a7dcc453174aa15d99873d1a66c3f",
+      "runtimeRouteRevision": "8354c7f6dd82ef2453d4ac836649d474e0626ce0",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 1.0166666666666666,
+        "Flick": 1.05,
+        "Air": 1.1666666666666667,
+        "Catch": 1.3833333333333333,
+        "Land": 1.45,
+        "Rollaway": 1.7833333333333334,
+        "End": 4.0
+      },
+      "rigOnlyImage": "normal-goofy-phases.jpg",
+      "privateSourceComparison": "normal-goofy-private-source-comparison.jpg"
+    }
+  ],
+  "limits": "Rig-only public images; source pixels and detector files stay private. Stills do not establish continuity, measured depth, approval or native acceptance.",
+  "comparison": "Before: rig output from PR679/sourcea6c6342. After: own source96f64c9/current product-main route8354c7f. Lower-body/sole/board/event paths match pre-A1 exactly; only head/gaze/lead elbow/hand differ.",
+  "authoredUpperBalance": {
+    "headWindow": [
+      5698,
+      5702
+    ],
+    "gazeKeys": [
+      [
+        5702,
+        0.7,
+        -0.5,
+        0.51
+      ],
+      [
+        5708,
+        0.75,
+        -0.46,
+        0.47
+      ],
+      [
+        5713,
+        0.7,
+        -0.45,
+        0.56
+      ],
+      [
+        5720,
+        0.65,
+        -0.38,
+        0.66
+      ],
+      [
+        5722,
+        0.6,
+        -0.32,
+        0.73
+      ],
+      [
+        5728,
+        0.45,
+        -0.18,
+        0.88
+      ],
+      [
+        5733,
+        0.35,
+        -0.08,
+        0.93
+      ],
+      [
+        5742,
+        0.32,
+        -0.04,
+        0.95
+      ]
+    ],
+    "side": "Left",
+    "armWindow": [
+      5712,
+      5718,
+      5724,
+      5733
+    ],
+    "armKeys": [
+      [
+        5718,
+        0.15,
+        -0.1,
+        0.98,
+        0.72,
+        -0.55,
+        0.42
+      ],
+      [
+        5720,
+        0.12,
+        -0.25,
+        0.96,
+        0.72,
+        -0.65,
+        0.25
+      ],
+      [
+        5722,
+        0.2,
+        -0.3,
+        0.93,
+        0.65,
+        -0.7,
+        0.3
+      ],
+      [
+        5724,
+        0.25,
+        -0.42,
+        0.87,
+        0.55,
+        -0.78,
+        0.3
+      ],
+      [
+        5733,
+        0.2,
+        -0.8,
+        0.4,
+        0.45,
+        -0.8,
+        0.25
+      ]
+    ],
+    "provenance": "Authored head/lead-arm repair under the owner visible-quality rule, not measured 3D. The normalized raw Head-minus-Neck points downward through Pop/Land; use an upright head frame and gaze toward the board/landing. Rodriguez5720..5722 really holds a high diagonal arm, but the monocular reconstruction reads as a straight overhead pole on the proxy; consciously bend and settle that balance arm through Catch/Land. No pelvis, torso, shoulders, feet, board, source clock or contact changes."
+  },
+  "images": {
+    "low-goofy-upper-before-after.jpg": "458c97472543e344e450bfbb7a8f559eaa2670ce1b0a1bd2516682280f859d5b",
+    "normal-regular-phases.jpg": "51c3e2c4a0df0cf967ddc00380d117a9a603f44f5e3bb9f96493141b9165b5f2",
+    "low-goofy-phases.jpg": "c1a6a827dd38d139c3d437ce28c32b2239b72a990baf4f7b8625ed625110837e",
+    "normal-goofy-upper-before-after.jpg": "e8509d8ffb786acc5e8430ddb5116ba1dfc70c39dc225100e5b3f5592a5cb259",
+    "low-regular-upper-before-after.jpg": "ae43e557a4c91583d52e1042a3b51cb561d481bdf12a6bade18fa1883a040436",
+    "low-regular-phases.jpg": "e0d812be81e1f0313f1782491c7f72f20aa2d6e6a6baf511497fb1f30d0f4921",
+    "normal-goofy-phases.jpg": "ba322cc6cfd7d0692c8d0e876bdf841e67ee62335acc20bb822f9a5f926ef374",
+    "normal-regular-upper-before-after.jpg": "9d05d8b11096990cbf6063502a15d4355065cdf9c1f1b8bbfefd4fcdd024c746"
+  },
+  "browserReplay": {
+    "url": "http://127.0.0.1:63761/a1-nollie-head-balance/",
+    "runtimeErrors": 0,
+    "cases": [
+      {
+        "profile": "normal",
+        "physicalStance": "regular",
+        "phasesWithMovingReference": 7,
+        "playback": [
+          {
+            "rate": 1,
+            "reachedSeconds": 4
+          },
+          {
+            "rate": 0.25,
+            "reachedSeconds": 4
+          }
+        ]
+      },
+      {
+        "profile": "normal",
+        "physicalStance": "goofy",
+        "phasesWithMovingReference": 7,
+        "playback": [
+          {
+            "rate": 1,
+            "reachedSeconds": 4
+          },
+          {
+            "rate": 0.25,
+            "reachedSeconds": 4
+          }
+        ]
+      },
+      {
+        "profile": "low",
+        "physicalStance": "regular",
+        "phasesWithMovingReference": 7,
+        "playback": [
+          {
+            "rate": 1,
+            "reachedSeconds": 4
+          },
+          {
+            "rate": 0.25,
+            "reachedSeconds": 4
+          }
+        ]
+      },
+      {
+        "profile": "low",
+        "physicalStance": "goofy",
+        "phasesWithMovingReference": 7,
+        "playback": [
+          {
+            "rate": 1,
+            "reachedSeconds": 4
+          },
+          {
+            "rate": 0.25,
+            "reachedSeconds": 4
+          }
+        ]
+      }
+    ],
+    "limits": "Actual headless Metal browser runs through the final4s at1x and quarter speed for each case; this is not a native Rust test or Claude offline approval."
+  }
+}
