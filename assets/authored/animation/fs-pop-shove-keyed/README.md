@@ -55,3 +55,7 @@ source root-entry target and fades out by216. The rear knee stays flexible
 under the existing native tail-press carrier compensation. Feet and board
 paths, contact bits and all native reach guards stay unchanged; this is
 monocular depth reconstruction, not measured motion or extra physics.
+
+## Early scoop refinement candidate
+
+The authored pressure peak is reduced from55° to40°, with a gentler early-Air taper at214/216. This targets the visibly steep end-on Air noted in #683; it is not a new source measurement or physics change. Own source, yaw, contact/timing, catch/recovery and all existing guard thresholds remain fixed. This candidate still requires actual original-rig before/after and four-case review; no offline or native approval is implied.
