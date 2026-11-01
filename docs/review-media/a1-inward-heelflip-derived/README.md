@@ -43,6 +43,6 @@ The author checked the candidate; **Claude's offline judgement and Shadow's
 native/gameplay gates remain pending**. Export and managed replay are not game
 approval. The library document remains Claude's responsibility.
 
-Final source authoring: `89d742f`; exact-route freeze: `09e0a16`.
+Final source authoring: `89d742f`; combined exact-route freeze: `4db91d29`.
 Raw source pack SHA-256:
 `69683c621864d4ed949e307f0543ded035e8a0046bfeb7e939ab061aa7fcc5dd`.
