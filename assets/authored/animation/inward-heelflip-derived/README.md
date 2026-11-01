@@ -93,3 +93,6 @@ and unreviewed. The native engine, runtime bindings and Shadow remain untested.
 Mesh sheets and 1×/¼× replay are the visual gate; passing the exporter or managed
 replay alone does not approve the animation. Claude owns the library's offline
 judgement. Source footage, packs, detector output and model binaries stay private.
+
+The [rig-only phase and contact sheets](../../../../docs/review-media/a1-inward-heelflip-derived/README.md)
+show both physical stances at normal/low height, including ordinary rollaway.
