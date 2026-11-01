@@ -4,9 +4,9 @@
   "last": 78,
   "fps": 29.97002997002997,
   "pop": 47,
-  "tailStrike": 49,
+  "tailStrike": 47.5,
   "frontSoleRelease": 47.5,
-  "tailRelease": 50,
+  "tailRelease": 48.5,
   "pressEnd": 52.5,
   "catchStart": 56.5,
   "catch": 58,
@@ -292,7 +292,7 @@
   "freeClearance": 0.02,
   "guide": {
     "start": 47.5,
-    "full": 49.5,
+    "full": 48.2,
     "release": 50.5,
     "deckKeys": [
       [
@@ -306,19 +306,24 @@
         0.15
       ],
       [
+        48.2,
+        -0.05,
+        0.18
+      ],
+      [
         49.5,
-        -0.055,
-        0.185
+        -0.05,
+        0.235
       ],
       [
         50.5,
         -0.04,
-        0.21
+        0.255
       ],
       [
         78,
         -0.04,
-        0.31
+        0.255
       ]
     ],
     "shoeLocal": [
@@ -365,7 +370,7 @@
       ]
     }
   },
-  "provenance": "Own genuine normal Goofy BS180, Wes black SK8MAFIA/cap take in official Berrics i8jPt6jHk98; raw identity61/61 with bounded PTS. Captured torso-local arm estimates with explicit uncertainty/interpolation and authored bent balance; authored body windup/heading, compact fixed-chain hips/legs, head/gaze, actual-shaped-deck sole/outer-upper guides and no-flip board pitch. Source full body+board heading is reconstructed and then removed from ALL samples once; native live NoseYaw owns exactly one real BS180 body+board turn. Not measured3D mocap. The plain BS180 retains a modest estimated nose-up carry through local54 and levels byCatch58; free shoes follow that board pitch with a small clearance rather than a flip-style empty gap. Claude #689 Pop/Guide repair: lower only the brief peak to about38 degrees, let the front outer-upper drag up progressively, and open the lead wind-up arm away from the head. All source54-and-later body, board, contacts and recovery remain unchanged. The final early guide stays around middeck/front bolts (0.185\u20130.21m) through source49.5\u201350.5, so the held ankle does not perch over the nose; the released foot then advances into the unchanged free-Air/catch path.",
+  "provenance": "Own genuine normal Goofy BS180, Wes black SK8MAFIA/cap take in official Berrics i8jPt6jHk98; raw identity61/61 with bounded PTS. Captured torso-local arm estimates with explicit uncertainty/interpolation and authored bent balance; authored body windup/heading, compact fixed-chain hips/legs, head/gaze, actual-shaped-deck sole/outer-upper guides and no-flip board pitch. Source full body+board heading is reconstructed and then removed from ALL samples once; native live NoseYaw owns exactly one real BS180 body+board turn. Not measured3D mocap. The plain BS180 retains a modest estimated nose-up carry through local54 and levels byCatch58; free shoes follow that board pitch with a small clearance rather than a flip-style empty gap. Claude #689 Pop/Guide repair: lower only the brief peak to about38 degrees, let the front outer-upper drag up progressively, and open the lead wind-up arm away from the head. All source54-and-later body, board, contacts and recovery remain unchanged. The final early guide stays around middeck/front bolts (0.185\u20130.21m) through source49.5\u201350.5, so the held ankle does not perch over the nose; the released foot then advances into the unchanged free-Air/catch path. Visible-mechanics repair: earlier snap followed by an actual levelling drag before the late body-turn Guide, leading foot advancing to the front bolts with the knee in front/down instead of perching above the nose. Original camera/native coupled heading are unchanged. The tail sole releases at48.5 after the earlier snap, so the levelled board lifts through the still-active front-upper Guide; later guide50.5/freeAir52.5 remain distinct.",
   "popBalance": {
     "window": [
       44,
@@ -396,5 +401,53 @@
     ],
     "metres": 0.045,
     "provenance": "Small authored leg-driven extension during pressure/guide, rejoining the accepted Air54 pelvis exactly. Avoids a sinking hip while the guide ankle rises; native flight and entry reach guards remain unchanged."
+  },
+  "earlyPitchKeys": [
+    [
+      18,
+      0
+    ],
+    [
+      47,
+      0
+    ],
+    [
+      47.5,
+      35
+    ],
+    [
+      48.4,
+      16
+    ],
+    [
+      49.5,
+      1
+    ],
+    [
+      50.5,
+      0
+    ],
+    [
+      52.5,
+      17.280672920545566
+    ],
+    [
+      54,
+      17.280672920545566
+    ]
+  ],
+  "frontKneeGuide": {
+    "window": [
+      47,
+      47.5,
+      50.5,
+      54
+    ],
+    "pole": [
+      1,
+      -0.25,
+      0.1
+    ],
+    "provenance": "Authored forward/down front-knee plane through snap and upper drag. Rejoins accepted Air54; no anatomy, limb lengths, sampler or native carrier modification."
   }
 }

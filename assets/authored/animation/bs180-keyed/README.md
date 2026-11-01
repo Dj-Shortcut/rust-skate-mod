@@ -80,3 +80,18 @@ then rejoins the previous balance before source54. Air, catch, land and
 roll-away retain their existing poses, contacts and timing. The original
 filmed body controls are unchanged; these corrections remain explicitly
 reconstructed presentation. Raw `reviewed=false` is retained.
+
+## Visible snap and levelling mechanics
+
+The visible review correction uses an earlier snap followed by the front
+upper dragging to the bolts while the deck levels. The front knee bends
+forward and down; the pelvis stays above the board middle. Tail-sole
+release48.5 follows snap47.5, before the upper-guide release50.5 and the
+distinct free-Air52.5, so the board rises while it levels. The original
+camera and actual native body/board turn are unchanged. The previously
+accepted Air54 onward and the open Goofy wind-up are retained.
+
+Before/after media include both the original0.933s moment and the new earlier
+snap, avoiding a phase-button substitution. Source timing, leg depth and
+contacts are authored reconstructions, not measured3D. Raw approval remains
+false; the final visible result remains subject to Claude's independent gate.

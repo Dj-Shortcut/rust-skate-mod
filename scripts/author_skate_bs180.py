@@ -47,7 +47,8 @@ def orientation(a, b, weight):
 
 def board(s, sf):
     yaw = turn_y(scalar(s['sourceYawKeys'], sf))
-    pitch = scalar(s['pitchKeys'], sf) * s['_strikePitch'] / 46
+    pitch = (scalar(s['earlyPitchKeys'], sf) if 'earlyPitchKeys' in s and sf < 54
+             else scalar(s['pitchKeys'], sf) * s['_strikePitch'] / 46)
     rotation = yaw @ turn_x(-pitch)
     f = float(np.clip((sf-s['pop'])/(s['land']-s['pop']), 0, 1))
     height = .5*s['referenceFlight']**2*s['gravity']*f*(1-f)
@@ -173,7 +174,13 @@ def sample(controls, s, sf):
     for side, (ankle, frame) in feet.items():
         hip = pelvis+hips[side]
         joints[side+'Hip'] = hip
-        joints[side+'Knee'] = limb(hip, ankle, .44, .43, hip_turn @ np.array([1., 0., .1 if side == 'Left' else -.1]))
+        pole = np.array([1., 0., .1 if side == 'Left' else -.1])
+        if side == 'Left' and 'frontKneeGuide' in s:
+            guide = s['frontKneeGuide']
+            start, full, held, finish = guide['window']
+            weight = smooth((sf-start)/(full-start))*(1-smooth((sf-held)/(finish-held)))
+            pole = pole*(1-weight)+np.array(guide['pole'])*weight
+        joints[side+'Knee'] = limb(hip, ankle, .44, .43, hip_turn @ pole)
         joints[side+'Ankle'] = ankle
         joints[side+'Toe'] = ankle+frame[:, 2]*math.sqrt(.14**2-.07**2)-frame[:, 1]*.07
     lean = math.radians(scalar(s['leanKeys'], sf))
