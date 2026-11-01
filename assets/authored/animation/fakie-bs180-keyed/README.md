@@ -67,3 +67,6 @@ native Rust/Shadow result. Claude owns the library and offline verdict.
 ## Early snap and level guide
 
 The brief snap now precedes the main body turn and drops into a level front-bolt upper-shoe guide, with the tail sole already released. The front knee bends forward/down instead of perching over the nose. A small authored pressure extension rejoins the original accepted Air exactly; the own captured body, clock, ground datum, complete native heading authority and later Air/Catch/Land/recovery are retained. This is a source-presentation correction following the reviewed normal-BS control pattern, not a shared physics or camera change. The previous steep Pop/Guide media is superseded by the corrected source checkpoint and final runtime world-gaze fix.
+
+
+Claude707 balance refinement: both arms use a bounded authored Guide–Catch correction in anatomical body axes, with bent elbows and hands at/below shoulder height. Only elbow/hand points change inside decoder339.5..355.5; shoulders, head/torso/pelvis, shoes/board, source/native turn clock, snap/guide and later Land/recovery retain their accepted source paths. Fresh current-product same-camera motion/rig evidence is pending; raw remains reviewed=false and Claude owns the offline verdict.
