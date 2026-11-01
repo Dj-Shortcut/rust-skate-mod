@@ -127,6 +127,37 @@ def foot(s, sf, side):
     return ankle, frame
 
 
+def head_arm_balance(joints, dirs, s, sf):
+    """Replace unreliable head depth and the straight Catch/Land balance arm.
+
+    This is an authored upper-body correction, not additional source tracking.
+    Applying it after the feet are solved leaves their paths and the carrier
+    untouched; fixed lengths also survive the anatomical stance reflection.
+    """
+    c = s['upperBalance']
+    start, full = c['headWindow']
+    weight = smooth((sf-start)/(full-start))
+    if weight:
+        rows = c['gazeKeys']
+        gaze = unit(curve([r[0] for r in rows], [r[1:] for r in rows], sf))
+        target = basis(gaze, unit(UP-gaze*np.dot(UP, gaze)))
+        old_up = unit(joints['Head']-joints['Neck'])
+        joints['Head'] = joints['Neck']+unit(old_up*(1-weight)+target[:, 1]*weight)*.12
+        dirs['HeadForward'] = unit(dirs['HeadForward']*(1-weight)+gaze*weight)
+    start, full, hold, end = c['armWindow']
+    weight = smooth((sf-start)/(full-start))*(1-smooth((sf-hold)/(end-hold)))
+    if weight:
+        side = c['side']
+        rows = c['armKeys']
+        upper = unit(curve([r[0] for r in rows], [r[1:4] for r in rows], sf))
+        fore = unit(curve([r[0] for r in rows], [r[4:7] for r in rows], sf))
+        shoulder = joints[side+'Shoulder']
+        old_upper = unit(joints[side+'Elbow']-shoulder)
+        old_fore = unit(joints[side+'Hand']-joints[side+'Elbow'])
+        joints[side+'Elbow'] = shoulder+unit(old_upper*(1-weight)+upper*weight)*.29
+        joints[side+'Hand'] = joints[side+'Elbow']+unit(old_fore*(1-weight)+fore*weight)*.27
+
+
 def sample(c, s, sf):
     t = (sf-s['firstSourceFrame'])/s['sourceFps']
     joints, dirs, soles = body_at(c, t)
@@ -176,6 +207,7 @@ def sample(c, s, sf):
         joints[side+'Ankle'] = ankle
         joints[side+'Toe'] = ankle+frame[:, 2]*math.sqrt(.14**2-.07**2)-frame[:, 1]*.07
         soles[side] = frame[:, 1]
+    head_arm_balance(joints, dirs, s, sf)
     origin, rotation = board_at(s, sf)
     return dict(t=t, sourceFrame=sf, sourceVideoTime=sf/s['sourceFps'],
                 joints={k: joints[k].tolist() for k in JOINTS}, dirs={k: dirs[k].tolist() for k in DIRS},
@@ -232,7 +264,7 @@ def bake(body_raw, controls):
         contactLimit='Authored nose and anatomical rear-instep contacts fitted to original shaped board/shoe; no measured contact or3D shoe confidence.',
         sourceNoseStrikeFrame=s['noseStrike'], referenceGroundPress=s['reference'],
         combinedWinding=dict(nativeFlip=360, nativeShove=0, bodySpin=0, canonicalRoll=360),
-        reconstruction=dict(pelvisKeys=s['pelvisKeys'], recoveryWindow=s['recoveryWindow'], flick=s['flick'], maximumReachShare=s['maximumReachShare']),
+        reconstruction=dict(pelvisKeys=s['pelvisKeys'], recoveryWindow=s['recoveryWindow'], flick=s['flick'], maximumReachShare=s['maximumReachShare'], upperBalance=s['upperBalance']),
         rig=dict(thigh=.44, shin=.43, upperArm=.29, forearm=.27, spine=.52, shoulderRise=.44, hipHalfWidth=.09, shoulderHalfWidth=.18, head=.12, foot=.14, toeDrop=.07))
     duration = (s['lastSourceFrame']-s['firstSourceFrame'])/s['sourceFps']
     clip = dict(format='skate-capture-source-keyed-nollie-kickflip/1', metadata=metadata, stance='regular',
