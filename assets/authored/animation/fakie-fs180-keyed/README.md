@@ -19,7 +19,7 @@ video frames/PTS are unknown after bounded transcoding.
 Canonical Regular anatomy stays in the **nose frame**: +Z nose, anatomical
 Left toward the nose, Right on the -Z tail. Actual velocity is backwards and
 the Right tail is travel-leading. The source is never rotated to the velocity
-or relabelled as a normal BS180. Exact selection is Ollie, switch=true,
+or relabelled as a normal FS180. Exact selection is Ollie, switch=true,
 tailLeads=true, flip=0, shove=0, spin=+180, body=0.
 
 The actual detector selected this actor in all 49 frames under unchanged
@@ -42,6 +42,9 @@ pressure endpoint 246, Catch 254 and Land 258 are visual phase estimates.
 The genuine footage ends before a long upright recovery. Timeline 275–302
 is explicitly **authored planted upright recovery**, not future video frames;
 the private comparison holds the last genuine source image during that suffix.
+The board-height curve includes the original 0.092 m deck-origin ground
+datum, so landed wheels remain above the riding floor through source recovery
+and the ordinary-body handoff.
 Reference pixels, raw detections and private fixtures remain untracked.
 
 ## Regenerate
