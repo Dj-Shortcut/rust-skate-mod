@@ -76,3 +76,20 @@ files. Body, geometry and source inputs remain intact. Generated packs, source
 footage, detector estimates, private test approvals and diagnostics stay in
 ignored `context/`. Raw `reviewed=false` is retained. Source/mesh comparison,
 actual four-case gameplay route, CI and native Shadow are separate gates.
+
+## Offline review candidate
+
+[Original rig media and gate limits](../../../../docs/review-media/a4-switch-bs-pop-shove/README.md)
+and [local viewer](http://127.0.0.1:63761/a4-switch-bs-pop-shove/) now include
+both physical stances and normal/low flights through actual landing and
+ordinary 4-second recovery. Actual Pad/full Step/Land/scorer cases select
+Switch Pop Shove-it, retain zero flip/body spin and complete the backside
+180-degree board scoop; the support, sole/floor and fixed-reach guards pass.
+The original 13-part board and frozen skin were exported and read back.
+
+The author inspected source/rig Load, Pop, compact Air, catch, bent landing and
+upright recovery, including side Pop and feet through scoop/catch/rollaway.
+Four 1×/¼× viewer runs, 28 actual decoded-source phase seeks and 20 focused
+contact/side captures finished without browser/runtime errors. These are
+controlled offline checks with private test approval, not native Rust/Shadow
+acceptance or a library verdict. Raw source packs remain `reviewed=false`.

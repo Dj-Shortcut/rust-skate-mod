@@ -1,0 +1,126 @@
+{
+  "format": "switch-bs-pop-shove-own-rig-review/1",
+  "sourceReviewed": false,
+  "nativeGame": false,
+  "sourceCodeRevision": "8c2ca81f98ea61a2e84426b931344d5b6bcec640",
+  "sourcePackSha256": "87046067b5df79745638db41ad94f43e7997a1dc7de3393e4fdc2a2b74b649ca",
+  "sourceBodyControlSha256": "c3f438a2792389edbea6d3ada2c8e11bf02f680704dcb92d019f28c0e82bec01",
+  "source": "Own BATB13 white actor1090, bounded657..736; filmedSwitchGoofy/manualRegular base; one anatomical reflection. Original source pixels private and unchanged.",
+  "viewer": "http://127.0.0.1:63761/a4-switch-bs-pop-shove/",
+  "replay": {
+    "physicalCases": 4,
+    "rates": [
+      1,
+      0.25
+    ],
+    "ordinaryEndSeconds": 4,
+    "decodedPhaseSeeks": 28,
+    "browserErrors": 0,
+    "contactCaptures": 20
+  },
+  "phaseSheets": [
+    {
+      "file": "switch-bs-pop-shove-low-physical-regular.jpg",
+      "physicalStance": "regular",
+      "nativeStance": "goofy",
+      "profile": "low",
+      "sha256": "c4dd6cb35d578a0b2cafa8cee895de60eb73f9dc8d5f6379624fc8d101d96766",
+      "glbSha256": "2f1256d9801d4fd61ea0301adb9e3e470a168440aa42e5fdb9aa6ee8efbc6a81",
+      "inputSha256": "202c26118d3669a56ce5ca31be7eef2ca71b97899ff8eab82762c011d8966df4",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.9166666666666666,
+        "Scoop": 0.9833333333333333,
+        "Air": 1.1166666666666667,
+        "Catch": 1.3333333333333333,
+        "Land": 1.4166666666666667,
+        "Rollaway": 2.1333333333333333,
+        "End": 4.0
+      }
+    },
+    {
+      "file": "switch-bs-pop-shove-normal-physical-regular.jpg",
+      "physicalStance": "regular",
+      "nativeStance": "goofy",
+      "profile": "normal",
+      "sha256": "a7b3b291c9c026c487fcccf01b3f884469cba4f9644f6a6408f9cf0c39cef492",
+      "glbSha256": "39c2024c369e8a516d78d4a07ef98ce54ee1277340e530bcc6ab99059e45d2f0",
+      "inputSha256": "640bf8e9b6344603e5a8fd466632f36ddb400073ee2c25214c04bfa9bc6327bd",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.9333333333333333,
+        "Scoop": 1,
+        "Air": 1.15,
+        "Catch": 1.3833333333333333,
+        "Land": 1.45,
+        "Rollaway": 2.216666666666667,
+        "End": 4.0
+      }
+    },
+    {
+      "file": "switch-bs-pop-shove-low-physical-goofy.jpg",
+      "physicalStance": "goofy",
+      "nativeStance": "regular",
+      "profile": "low",
+      "sha256": "dcd1b443f1bd5c991dfabed60d2aa3bd5bd4d6ddaa440b81a2ffae367443c226",
+      "glbSha256": "2483425acc5f7d201ea39d461e9ed0332213610945384b05a83eb643239c7fa0",
+      "inputSha256": "7be60bded709b32bb352c6663c1be554457a24e1de5289ea33eeb5549df87b82",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.9166666666666666,
+        "Scoop": 0.9833333333333333,
+        "Air": 1.1166666666666667,
+        "Catch": 1.3333333333333333,
+        "Land": 1.4166666666666667,
+        "Rollaway": 2.1333333333333333,
+        "End": 4.0
+      }
+    },
+    {
+      "file": "switch-bs-pop-shove-normal-physical-goofy.jpg",
+      "physicalStance": "goofy",
+      "nativeStance": "regular",
+      "profile": "normal",
+      "sha256": "60cda6abbff406729801043793ba81fa12ede0f0b1f6f296ed03cdc00742a228",
+      "glbSha256": "8125a12ef21e5c5c8a68bea83bc39330ab82329dd1a760e389f9b14250e5e33e",
+      "inputSha256": "9e8e433ae0ba84334f9a6c12bf638b558935f6ec62ade9b135b4f3651d2703e4",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.9333333333333333,
+        "Scoop": 1,
+        "Air": 1.15,
+        "Catch": 1.3833333333333333,
+        "Land": 1.45,
+        "Rollaway": 2.216666666666667,
+        "End": 4.0
+      }
+    }
+  ],
+  "contactSheets": [
+    {
+      "file": "switch-bs-pop-shove-normal-physical-regular-contacts.jpg",
+      "profile": "normal",
+      "physicalStance": "regular",
+      "sha256": "28d3464af6b1c1b1dc2ec413aef2faeb680063edef4d881b46e7baa5bf07710e"
+    },
+    {
+      "file": "switch-bs-pop-shove-normal-physical-goofy-contacts.jpg",
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "sha256": "0a40d7d3edd335afca757b754e30f66e1fb29ea12f61bf7797b8cdc675d1ed45"
+    },
+    {
+      "file": "switch-bs-pop-shove-low-physical-regular-contacts.jpg",
+      "profile": "low",
+      "physicalStance": "regular",
+      "sha256": "44f8b65239eb4a481025810a9d541e7e5e193dd8a9b786b6c395a72ecbb947c1"
+    },
+    {
+      "file": "switch-bs-pop-shove-low-physical-goofy-contacts.jpg",
+      "profile": "low",
+      "physicalStance": "goofy",
+      "sha256": "b705efcfb514362f482332530242a8b6ccf213919a9dc06101fcc1f7726cf832"
+    }
+  ],
+  "limits": "Own reconstruction and controlled managed/native-step fixture, not native Rust/Shadow. Root and Claude retain visual/offline gates. No approval promotion."
+}
