@@ -1,0 +1,792 @@
+{
+  "format": "own-fakie-fs180-source-controls/1",
+  "id": "fakie-fs180-source-keyed-v1",
+  "movementKind": "fakie-fs180",
+  "firstSourceFrame": 227.0,
+  "lastSourceFrame": 302.0,
+  "sourceFps": 29.97002997002997,
+  "sampleHz": 120,
+  "sourceBodySha256": "b68125d5fa5e630f37f7bf65322f7299513db7531a1aae9e2fd3ef642248a6a0",
+  "signature": {
+    "pop": "Ollie",
+    "switch": true,
+    "tailLeads": true,
+    "flip": 0,
+    "shove": 0,
+    "spin": 180,
+    "body": 0
+  },
+  "geometryReference": {
+    "path": "assets/authored/animation/treflip-keyed/constraints.json",
+    "geometryDataSha256": "21e757c6dd6e170558c6ee2f570cbdbb282f68e30f873dc3f5f0596402cd7da3",
+    "scope": "Original shared board/sole/instep mesh only; no other trick body read."
+  },
+  "popFrame": 240.0,
+  "tailStrikeFrame": 242.0,
+  "frontReleaseFrame": 240.5,
+  "rearReleaseFrame": 244.5,
+  "pressEndFrame": 246.0,
+  "catchFrame": 254.0,
+  "landFrame": 258.0,
+  "recoveryFrame": 268.0,
+  "sourceRootMotion": {
+    "popFrame": 240.0,
+    "landFrame": 258.0,
+    "referenceFlight": 0.6,
+    "gravity": 8,
+    "normalization": "Remove one reference upright carrier from the complete normalized pose/board. Native physics adds the actual carrier once."
+  },
+  "sourceBoardYaw": [
+    [
+      227,
+      0
+    ],
+    [
+      240,
+      0
+    ],
+    [
+      242,
+      12
+    ],
+    [
+      244.5,
+      45
+    ],
+    [
+      246,
+      80
+    ],
+    [
+      249,
+      130
+    ],
+    [
+      253,
+      175
+    ],
+    [
+      256,
+      180
+    ],
+    [
+      302,
+      180
+    ]
+  ],
+  "sourceYawContract": "Canonical Regular source board heading0 to -180. This estimated complete heading is removed from ALL scene points/directions/soles/board; live NoseYaw actualSpin supplies the one real turn.",
+  "boardPitch": [
+    [
+      227,
+      0
+    ],
+    [
+      239,
+      0
+    ],
+    [
+      240,
+      7
+    ],
+    [
+      242,
+      52
+    ],
+    [
+      244.5,
+      43
+    ],
+    [
+      246,
+      28
+    ],
+    [
+      249,
+      12
+    ],
+    [
+      252,
+      3
+    ],
+    [
+      254,
+      0
+    ],
+    [
+      302,
+      0
+    ]
+  ],
+  "boardHeight": [
+    [
+      227,
+      0
+    ],
+    [
+      240,
+      0.01
+    ],
+    [
+      242,
+      0.24
+    ],
+    [
+      244.5,
+      0.38
+    ],
+    [
+      246,
+      0.46
+    ],
+    [
+      249,
+      0.5
+    ],
+    [
+      254,
+      0.32
+    ],
+    [
+      257,
+      0.05
+    ],
+    [
+      258,
+      0
+    ],
+    [
+      302,
+      0
+    ]
+  ],
+  "pelvisRelativeToBoard": [
+    [
+      227,
+      0,
+      0.7,
+      0
+    ],
+    [
+      234,
+      0,
+      0.65,
+      0
+    ],
+    [
+      238,
+      0,
+      0.65,
+      0
+    ],
+    [
+      240,
+      0,
+      0.68,
+      0
+    ],
+    [
+      242,
+      0,
+      0.6,
+      0
+    ],
+    [
+      244.5,
+      0,
+      0.55,
+      0
+    ],
+    [
+      246,
+      0,
+      0.54,
+      0
+    ],
+    [
+      249,
+      0,
+      0.61,
+      0
+    ],
+    [
+      254,
+      0,
+      0.65,
+      0
+    ],
+    [
+      258,
+      0,
+      0.63,
+      0
+    ],
+    [
+      261,
+      0,
+      0.62,
+      0
+    ],
+    [
+      268,
+      0,
+      0.72,
+      0
+    ],
+    [
+      275,
+      0,
+      0.75,
+      0
+    ],
+    [
+      288,
+      0,
+      0.79,
+      0
+    ],
+    [
+      302,
+      0,
+      0.8,
+      0
+    ]
+  ],
+  "torsoFold": [
+    [
+      227,
+      30
+    ],
+    [
+      234,
+      36
+    ],
+    [
+      238,
+      31
+    ],
+    [
+      240,
+      22
+    ],
+    [
+      242,
+      12
+    ],
+    [
+      246,
+      20
+    ],
+    [
+      249,
+      22
+    ],
+    [
+      254,
+      20
+    ],
+    [
+      258,
+      22
+    ],
+    [
+      261,
+      25
+    ],
+    [
+      268,
+      23
+    ],
+    [
+      275,
+      19
+    ],
+    [
+      288,
+      11
+    ],
+    [
+      302,
+      8
+    ]
+  ],
+  "instep": {
+    "start": 240.5,
+    "full": 241.3,
+    "end": 244.5,
+    "releaseEnd": 246,
+    "yaw": 62,
+    "deckPath": [
+      [
+        240.5,
+        -0.035,
+        0.19
+      ],
+      [
+        241.625,
+        -0.025,
+        0.265
+      ],
+      [
+        244.5,
+        -0.02,
+        0.285
+      ]
+    ],
+    "contactSemantics": "Front sole-support clears at55.5; the outer-upper shoe guides the griptape through58, without a heel-side/off-edge flick or board roll."
+  },
+  "feet": {
+    "Left": {
+      "load": [
+        -0.03,
+        0.13,
+        65
+      ],
+      "catch": [
+        -0.025,
+        0.23,
+        65
+      ],
+      "free": [
+        [
+          244.5,
+          -0.025,
+          0.19,
+          0.265
+        ],
+        [
+          246.0,
+          -0.025,
+          0.16,
+          0.245
+        ],
+        [
+          249.0,
+          -0.025,
+          0.145,
+          0.235
+        ],
+        [
+          252.33333333333334,
+          -0.025,
+          0.14,
+          0.23
+        ],
+        [
+          254.0,
+          -0.025,
+          0.12,
+          0.23
+        ],
+        [
+          302.0,
+          -0.025,
+          0.12,
+          0.23
+        ]
+      ]
+    },
+    "Right": {
+      "load": [
+        0.025,
+        -0.34,
+        85
+      ],
+      "catch": [
+        0.025,
+        -0.23,
+        85
+      ],
+      "free": [
+        [
+          244.5,
+          0.025,
+          0.12,
+          -0.31
+        ],
+        [
+          246.0,
+          0.025,
+          0.145,
+          -0.25
+        ],
+        [
+          249.0,
+          0.025,
+          0.14,
+          -0.235
+        ],
+        [
+          252.33333333333334,
+          0.025,
+          0.14,
+          -0.23
+        ],
+        [
+          254.0,
+          0.025,
+          0.12,
+          -0.23
+        ],
+        [
+          302.0,
+          0.025,
+          0.12,
+          -0.23
+        ]
+      ]
+    }
+  },
+  "reachShare": {
+    "press": 0.91,
+    "free": 0.985
+  },
+  "events": [
+    {
+      "frame": 227.0,
+      "phase": "load",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 240.0,
+      "phase": "pop",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 240.5,
+      "phase": "pop",
+      "contacts": [
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 244.5,
+      "phase": "air",
+      "contacts": []
+    },
+    {
+      "frame": 246.0,
+      "phase": "air",
+      "contacts": []
+    },
+    {
+      "frame": 254.0,
+      "phase": "catch",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 258.0,
+      "phase": "land",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 268.0,
+      "phase": "recovery",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 275.0,
+      "phase": "recovery",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 302.0,
+      "phase": "recovery",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    }
+  ],
+  "provenance": "Genuine plain Frontside Halfcab / Fakie FS180 in official H4MEulcgUTc, same plaid foreground actor. Own49 selected raw body frames, nose/anatomy frame with backwards travel and Right tail pop. Complete source yaw removed once before one actual native NoseYaw turn. Camera/depth, contact/pelvis/fixed legs and low-confidence arm depth are authored. Timeline275\u2013302 is explicitly authored planted upright recovery, not future footage.",
+  "uncertainty": [
+    "Actual raw49/49 selected, no gaps or fallback; low-confidence feet/wrist lists retained.",
+    "Camera/depth, heading and contact phase estimates are not measured 3D.",
+    "Actual FS Halfcab is distinct from the adjacent pure BS Halfcab; no flipped/board-only combo source.",
+    "Filmed actor cut276 excluded; upright recovery after275 is authored and reference image held at275.",
+    "No raw approval or native Rust/Shadow verification."
+  ],
+  "lastFilmedSourceFrame": 275.0,
+  "armReconstruction": {
+    "weights": [
+      [
+        227,
+        0.35
+      ],
+      [
+        238,
+        0.35
+      ],
+      [
+        242,
+        0.35
+      ],
+      [
+        254,
+        0.4
+      ],
+      [
+        261,
+        0.5
+      ],
+      [
+        268,
+        0.65
+      ],
+      [
+        275,
+        1
+      ],
+      [
+        302,
+        1
+      ]
+    ],
+    "Left": {
+      "upper": [
+        [
+          227,
+          0.15,
+          -0.97,
+          0.15
+        ],
+        [
+          238,
+          0.15,
+          -0.97,
+          0.15
+        ],
+        [
+          242,
+          0.1,
+          0.03,
+          0.99
+        ],
+        [
+          249,
+          0.12,
+          -0.02,
+          0.99
+        ],
+        [
+          254,
+          0.25,
+          -0.18,
+          0.95
+        ],
+        [
+          258,
+          0.4,
+          -0.35,
+          0.85
+        ],
+        [
+          268,
+          0.3,
+          -0.9,
+          0.3
+        ],
+        [
+          275,
+          0.2,
+          -0.97,
+          0.1
+        ],
+        [
+          302,
+          0.05,
+          -0.99,
+          0
+        ]
+      ],
+      "fore": [
+        [
+          227,
+          0.3,
+          -0.95,
+          0
+        ],
+        [
+          238,
+          0.3,
+          -0.95,
+          0
+        ],
+        [
+          242,
+          0.2,
+          0.08,
+          0.98
+        ],
+        [
+          249,
+          0.2,
+          0.05,
+          0.98
+        ],
+        [
+          254,
+          0.4,
+          -0.2,
+          0.9
+        ],
+        [
+          258,
+          0.6,
+          -0.4,
+          0.6
+        ],
+        [
+          268,
+          0.2,
+          -0.97,
+          0.05
+        ],
+        [
+          275,
+          0.15,
+          -0.98,
+          0
+        ],
+        [
+          302,
+          0.05,
+          -0.99,
+          0
+        ]
+      ]
+    },
+    "Right": {
+      "upper": [
+        [
+          227,
+          0.15,
+          -0.97,
+          -0.15
+        ],
+        [
+          238,
+          0.15,
+          -0.97,
+          -0.15
+        ],
+        [
+          242,
+          0.1,
+          0.03,
+          -0.99
+        ],
+        [
+          249,
+          0.12,
+          -0.02,
+          -0.99
+        ],
+        [
+          254,
+          0.25,
+          -0.18,
+          -0.95
+        ],
+        [
+          258,
+          0.4,
+          -0.35,
+          -0.85
+        ],
+        [
+          268,
+          0.3,
+          -0.9,
+          -0.3
+        ],
+        [
+          275,
+          0.2,
+          -0.97,
+          -0.1
+        ],
+        [
+          302,
+          0.05,
+          -0.99,
+          0
+        ]
+      ],
+      "fore": [
+        [
+          227,
+          0.3,
+          -0.95,
+          0
+        ],
+        [
+          238,
+          0.3,
+          -0.95,
+          0
+        ],
+        [
+          242,
+          0.2,
+          0.08,
+          -0.98
+        ],
+        [
+          249,
+          0.2,
+          0.05,
+          -0.98
+        ],
+        [
+          254,
+          0.4,
+          -0.2,
+          -0.9
+        ],
+        [
+          258,
+          0.6,
+          -0.4,
+          -0.6
+        ],
+        [
+          268,
+          0.2,
+          -0.97,
+          -0.05
+        ],
+        [
+          275,
+          0.15,
+          -0.98,
+          0
+        ],
+        [
+          302,
+          0.05,
+          -0.99,
+          0
+        ]
+      ]
+    },
+    "provenance": "Own actual FS Halfcab outward balance is largely retained; far-arm depth and low-confidence wrists blend toward bent outward source-led reconstruction, then relaxed authored upright recovery. No imported body from another trick."
+  }
+}
