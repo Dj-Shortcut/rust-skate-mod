@@ -217,7 +217,7 @@
     "ankles": {
       "Left": [
         -0.04,
-        0.17,
+        0.14,
         0.22
       ],
       "Right": [
@@ -256,6 +256,6 @@
         0.808
       ]
     ],
-    "provenance": "Explicit authored Varial-specific free-foot collection, compact pelvis and bent catch, not measured Tre or Varial 3D. The existing rotating-deck shoe clearance and fixed-leg reach checks still apply. Grounded press and final shoe/deck catch targets are unchanged."
+    "provenance": "Explicit authored Varial-specific free-foot collection, compact pelvis and bent catch, not measured Tre or Varial 3D. The existing rotating-deck shoe clearance and fixed-leg reach checks still apply. Grounded press and final shoe/deck catch targets are unchanged. The higher collecting Left foot is authored 0.03 m nearer the deck during the existing Air window; the already-near rear-foot target is retained. Full rotating-shoe clearance remains unchanged and retains separation where the deck passes under a shoe. This is not a new measured source observation."
   }
 }
