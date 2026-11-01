@@ -41,3 +41,12 @@ a compact tuck and bent catch. The existing local shoe/deck-clearance and
 fixed-leg reach checks still apply. Grounded press, final catch sole targets,
 board rotation and physical carrier remain unchanged. These are authored
 Varial choices, not captured Varial observations or new source confidence.
+
+## Free-foot Air gap
+
+The existing free-foot collection now targets slightly nearer the rotating
+deck during its authored Air window. The same full-shoe clearance still lifts
+a foot where the deck passes underneath; its minimum separation and fixed-leg
+reach checks are unchanged. Board keys, carrier flight, grounded press, final
+catch and recovery stay fixed. This is a small authored refinement of the
+shared Tre derivation, with no filmed Varial claim or raw approval.
