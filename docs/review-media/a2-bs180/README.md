@@ -1,6 +1,6 @@
 # A2 normal BS180 — original rig review media
 
-[Private interactive comparison, 1× and ¼×](http://127.0.0.1:63761/a2-bs180/)
+[Private interactive comparison, 1× and ¼×](http://127.0.0.1:63761/a2-bs180-pop-arm/)
 uses the original rig, frozen skin and complete shaped thirteen-part skateboard.
 The source is the genuine plain normal Goofy BS180 by Wes Kremer in
 [The Berrics BATB6 Round1](https://www.youtube.com/watch?v=i8jPt6jHk98&t=44),
@@ -19,7 +19,9 @@ Air, Catch, actual Land, Rollaway and ordinary End.
 | Regular / anatomical Left foot leading | [Phase sheet](bs180-normal-physical-regular.jpg) | [Phase sheet](bs180-low-physical-regular.jpg) |
 | Goofy / anatomical Right foot leading | [Phase sheet](bs180-normal-physical-goofy.jpg) | [Phase sheet](bs180-low-physical-goofy.jpg) |
 
-| Physical mesh stance | Normal guide / catch / rollaway | Low guide / catch / rollaway |
+The contact sheets show a side-view Pop, then guide and rollaway foot details.
+
+| Physical mesh stance | Normal side pop / guide / rollaway | Low side pop / guide / rollaway |
 |---|---|---|
 | Regular | [Foot close-ups](bs180-normal-physical-regular-feet.jpg) | [Foot close-ups](bs180-low-physical-regular-feet.jpg) |
 | Goofy | [Foot close-ups](bs180-normal-physical-goofy-feet.jpg) | [Foot close-ups](bs180-low-physical-goofy-feet.jpg) |
@@ -41,16 +43,30 @@ in all four cases. The60Hz body retains36/36 normal-air frames and34/34 low-air
 frames, then reaches ordinary Ground at4s. The32 individual render phases
 come from those actual replay GLBs, with no render-only pose edits. Test-only
 approval and generated models remain private; raw `reviewed=false` is retained.
-The private browser review reaches4s at both1× and¼× in all four cases;
-28 phase selections use live decoded source video, and12 guide/catch/rollaway
-foot views have no browser runtime errors. Self-inspection confirms a loaded
-ground pose, an airborne rider/board half-turn with the board near the shoes,
-a bent-knee actual landing and ordinary upright recovery. These checks do
-not promote the pack or replace Claude's independent visual judgement.
+Root's independent private browser review reaches4s at both1× and¼× in all
+four cases, with28 decoded source phase selections and no browser runtime
+errors. Root also captured12 side-Pop, guide-foot and rollaway-foot views;
+these make the four contact sheets. Playback and contact-capture checks
+were performed independently by Root; the author checked the managed
+replays and visually inspected the rendered/source comparisons.
 
-Source commits: `dd98d0e` and `017dcd9`.
+The author inspected the original-rig phase sheets beside the reference and
+Root's contact captures: loaded ground pose, one airborne body-and-board
+half-turn without a flip, bent actual landing and ordinary recovery. The
+review correction opens the lead wind-up away from the head and lowers the
+held guide ankle, with a small leg-driven extension. The first four phase
+sheets retain exactly the previous fixed camera. Its Regular Pop/Guide view
+still foreshortens the deck almost end-on; the side-Pop contact panel is an
+explicit additional angle. This is a bounded candidate for Claude's visual
+gate, not a claim that nominal pitch resolves that projection or that the
+trick is offline approved. Air54 onward, catch, land and recovery retain
+their accepted source poses, board and contact timing.
+
+Source correction commits: `69b86b7` and `776487a`.
 Raw source pack SHA256:
-`30c069b18e60db6c45eeeb96399409e81f5a6d88736f3f7a88d48a2f58fe4d13`.
-Exact route freeze: `e3d34ec0436789073694b2ab6c5e03b994a15d78`.
-Claude owns the offline judgement and library status. Native Rust/Shadow
-selection, controls and gameplay remain a separate pending gate.
+`00d834725860f0d04f3f27054a10c642cb681b07ff90177b54e0962980d83391`.
+The actual managed replay binds unchanged current-main C# at
+`d0228f0f4607eb94a24622e1e427704ae19291b7`; the original exact BS180 route
+is retained. Claude owns the offline judgement and library status. Raw
+`reviewed=false` remains unchanged. Native Rust/Shadow selection, controls
+and gameplay remain a separate pending gate.
