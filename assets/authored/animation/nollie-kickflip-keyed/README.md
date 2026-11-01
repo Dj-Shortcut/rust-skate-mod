@@ -52,5 +52,15 @@ controlled real-Pad/full32Hz Step/Land replay through the proposed native route:
 normal/low × Regular/Goofy, with the source capture active for every Air frame
 and ordinary Ground recovery by4s. This is managed source execution with
 controlled geometry; it is neither a Rust client test nor visual approval.
-Rigged-mesh comparison and Shadow acceptance remain open. Original/generated
+The actual exported rigged GLBs were inspected against private own source frames
+at Load/Pop/Air/Catch/Land for both physical stances and both launch heights:
+visible nose pressure, compact free Air, bent catch/landing and upright stable
+recovery. Rear-instep close-ups show the dark upper at the tail rim with the
+sole band turned away. Rig-only review frames and source/route hashes are in
+[`docs/review-media/2026-11-01-nollie-kickflip-source-keyed/`](../../../../docs/review-media/2026-11-01-nollie-kickflip-source-keyed/).
+The frozen proxy's actual lead-foot audit is explicit: its anatomical bone-label
+map reverses the requested stance, so viewer selectors use measured physical
+stance, not the request label. This does not establish the Rust avatar mapping.
+Whole-motion viewer review, the Claude quality gate and Shadow acceptance
+remain open. Original/generated
 source packs remain `reviewed=false`; private replay approval is test-only.

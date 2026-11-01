@@ -1,0 +1,105 @@
+{
+  "format": "own-nollie-kickflip-rig-review/1",
+  "sourceReviewed": false,
+  "nativeGame": false,
+  "sourceCodeRevision": "a6c6342e0d1fcad85ed54c6cf9b2bbadc42bf1f3",
+  "runtimeRouteRevision": "1461b7da3db1f97cf7e04a10243b958b5d56f7f9",
+  "sourcePackSha256": "839c0a991aa704fd3b2d2fba9fbfbbb025f5e7e2d735dd9b05aba03ec5df95a0",
+  "items": [
+    {
+      "physical": "regular",
+      "requested": "goofy",
+      "profile": "low",
+      "sourcePackSha256": "839c0a991aa704fd3b2d2fba9fbfbbb025f5e7e2d735dd9b05aba03ec5df95a0",
+      "glbSha256": "33ff4c871f66bbafca00b3d0da34f22c97234c617f9fe2d5a8685768ab200938",
+      "sourceCodeRevision": "a6c6342e0d1fcad85ed54c6cf9b2bbadc42bf1f3",
+      "runtimeRouteRevision": "1461b7da3db1f97cf7e04a10243b958b5d56f7f9",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 1.0166666666666666,
+        "Flick": 1.0333333333333334,
+        "Air": 1.15,
+        "Catch": 1.35,
+        "Land": 1.4166666666666667,
+        "Rollaway": 1.7166666666666666,
+        "End": 4.0
+      },
+      "rigOnlyImage": "low-regular-phases.jpg",
+      "privateSourceComparison": "low-regular-private-source-comparison.jpg"
+    },
+    {
+      "physical": "regular",
+      "requested": "goofy",
+      "profile": "normal",
+      "sourcePackSha256": "839c0a991aa704fd3b2d2fba9fbfbbb025f5e7e2d735dd9b05aba03ec5df95a0",
+      "glbSha256": "aa9dbf69046c0f22ba5e5f53b3cbb15f721d6c3d6e040bcdd765c44bf73fe65b",
+      "sourceCodeRevision": "a6c6342e0d1fcad85ed54c6cf9b2bbadc42bf1f3",
+      "runtimeRouteRevision": "1461b7da3db1f97cf7e04a10243b958b5d56f7f9",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 1.0166666666666666,
+        "Flick": 1.05,
+        "Air": 1.1666666666666667,
+        "Catch": 1.3833333333333333,
+        "Land": 1.45,
+        "Rollaway": 1.7833333333333334,
+        "End": 4.0
+      },
+      "rigOnlyImage": "normal-regular-phases.jpg",
+      "privateSourceComparison": "normal-regular-private-source-comparison.jpg",
+      "instepImage": "normal-regular-instep.jpg"
+    },
+    {
+      "physical": "goofy",
+      "requested": "regular",
+      "profile": "low",
+      "sourcePackSha256": "839c0a991aa704fd3b2d2fba9fbfbbb025f5e7e2d735dd9b05aba03ec5df95a0",
+      "glbSha256": "f7f293dae11bbf51de73b0b8457d8c324d61eacc1840b58fc8d797d69f695dd6",
+      "sourceCodeRevision": "a6c6342e0d1fcad85ed54c6cf9b2bbadc42bf1f3",
+      "runtimeRouteRevision": "1461b7da3db1f97cf7e04a10243b958b5d56f7f9",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 1.0166666666666666,
+        "Flick": 1.0333333333333334,
+        "Air": 1.15,
+        "Catch": 1.35,
+        "Land": 1.4166666666666667,
+        "Rollaway": 1.7166666666666666,
+        "End": 4.0
+      },
+      "rigOnlyImage": "low-goofy-phases.jpg",
+      "privateSourceComparison": "low-goofy-private-source-comparison.jpg"
+    },
+    {
+      "physical": "goofy",
+      "requested": "regular",
+      "profile": "normal",
+      "sourcePackSha256": "839c0a991aa704fd3b2d2fba9fbfbbb025f5e7e2d735dd9b05aba03ec5df95a0",
+      "glbSha256": "741452a215464be502027aed009b1aed1e08467ebeadc20a5ee6559fbc21b7a5",
+      "sourceCodeRevision": "a6c6342e0d1fcad85ed54c6cf9b2bbadc42bf1f3",
+      "runtimeRouteRevision": "1461b7da3db1f97cf7e04a10243b958b5d56f7f9",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 1.0166666666666666,
+        "Flick": 1.05,
+        "Air": 1.1666666666666667,
+        "Catch": 1.3833333333333333,
+        "Land": 1.45,
+        "Rollaway": 1.7833333333333334,
+        "End": 4.0
+      },
+      "rigOnlyImage": "normal-goofy-phases.jpg",
+      "privateSourceComparison": "normal-goofy-private-source-comparison.jpg",
+      "instepImage": "normal-goofy-instep.jpg"
+    }
+  ],
+  "limits": "Rig-only public images; source pixels and detector files stay private. Stills do not establish continuity, measured depth, approval or native acceptance.",
+  "images": {
+    "normal-regular-phases.jpg": "b59e964416869889a576ba969ebf88659e58fc5c91dcab29eacf33b6e2407add",
+    "low-goofy-phases.jpg": "828a2b02156e2285f96996f433c995f65fc25723a7dbe28c15d6b0212e02b6df",
+    "normal-goofy-instep.jpg": "d5e0ab28535da369cf8e7d45d713c853388859761e5766f6147e0cf92755ef1a",
+    "low-regular-phases.jpg": "f450dfdb26b8f031ad1ab4a17ac2eb64ff8ee40b2d66113cd21880ca5bd70574",
+    "normal-goofy-phases.jpg": "8a06c250b9cdb78e48d2bf165583cbab3a73675dc19d95db741945ba3ee9bd6b",
+    "normal-regular-instep.jpg": "2aa4ed6e254245c451b9c7b7a5838e8d76504470e86bebe6460a843fd276800e"
+  }
+}
