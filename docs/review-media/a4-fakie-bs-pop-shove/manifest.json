@@ -1,0 +1,340 @@
+{
+  "format": "skate-rig-only-review-media/1",
+  "trick": "Fakie BS Pop Shove-it",
+  "sourceCodeRevision": "1a74a0c990075c6c774d8c79564fee20c2be79c7",
+  "runtimeRouteRevision": "1a74a0c990075c6c774d8c79564fee20c2be79c7",
+  "sourcePackSha256": "cff06b12c67212700643b6500a49808f7f3ff78e225fa267df993853e0f3a54b",
+  "rawReviewed": false,
+  "offlineReviewed": false,
+  "nativeGame": false,
+  "sourceFrameSpace": "181\u2013219s cached excerpt, bounded decoder indices923\u20131006, PTS1001*frame /30000; original full-video frames/hash unknown",
+  "sourceUrl": "https://www.youtube.com/watch?v=tL8Ey9GS0xQ&t=212",
+  "sourceFacingCamera": {
+    "canonicalOffset": [
+      -0.906,
+      0.06,
+      -0.423
+    ],
+    "radius": 4.5,
+    "scope": "Estimated fixed viewing basis only, not camera-calibrated3D or a body correction"
+  },
+  "sourceLimit": "84/84 actor detections do not certify3D depth/contacts. Camera, axes, root/feet/knees/gaze and bounded Pop/Catch correction explicitly authored.",
+  "replay": {
+    "status": "passed-controlled-browser",
+    "speeds": [
+      1,
+      0.25
+    ],
+    "cases": [
+      {
+        "profile": "normal",
+        "physicalStance": "regular",
+        "phases": 7,
+        "replay": [
+          {
+            "rate": 1,
+            "lastTime": 4,
+            "samples": 41
+          },
+          {
+            "rate": 0.25,
+            "lastTime": 4,
+            "samples": 106
+          }
+        ]
+      },
+      {
+        "profile": "normal",
+        "physicalStance": "goofy",
+        "phases": 7,
+        "replay": [
+          {
+            "rate": 1,
+            "lastTime": 4,
+            "samples": 41
+          },
+          {
+            "rate": 0.25,
+            "lastTime": 4,
+            "samples": 106
+          }
+        ]
+      },
+      {
+        "profile": "low",
+        "physicalStance": "regular",
+        "phases": 7,
+        "replay": [
+          {
+            "rate": 1,
+            "lastTime": 4,
+            "samples": 41
+          },
+          {
+            "rate": 0.25,
+            "lastTime": 4,
+            "samples": 105
+          }
+        ]
+      },
+      {
+        "profile": "low",
+        "physicalStance": "goofy",
+        "phases": 7,
+        "replay": [
+          {
+            "rate": 1,
+            "lastTime": 4,
+            "samples": 41
+          },
+          {
+            "rate": 0.25,
+            "lastTime": 4,
+            "samples": 105
+          }
+        ]
+      }
+    ],
+    "sourceDecoded": true,
+    "strictSourcePhases": 28,
+    "focusedSourceSideViews": 24,
+    "focusedFeetCloseViews": 12,
+    "consoleRuntimeErrors": 0,
+    "scope": "Actual decoded reference alongside exact exported managed-route original rig. Native Rust and Claude offline verdict remain pending."
+  },
+  "managedRoute": {
+    "cases": 4,
+    "normalAir": [
+      36,
+      36
+    ],
+    "lowAir": [
+      34,
+      34
+    ],
+    "realPadPopsPerCase": 1,
+    "signature": "Ollie,true,true, flip0,shove-180,spin0,body0",
+    "scope": "Controlled actual managed Pad/32Hz Step/Land/scorer plus60Hz body; native Rust not run"
+  },
+  "items": [
+    {
+      "id": "fakie-bs-pop-shove-it-source-keyed-v1",
+      "stance": "goofy",
+      "profile": "low",
+      "sha256": "3935869e870e75f9144b73d90481fde3a8c964e7853880a49b532a4126e255f7",
+      "inputSha256": "167d414298213b50606680b1166143174f9a63e5408d5c14be1d62d499ed4ee9",
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+      "maximumJointErrorM": 5.748583141179135e-06,
+      "physicalPreview": {
+        "profile": "low",
+        "requestedStance": "goofy",
+        "physicalPreviewStance": "regular",
+        "leadFoot": "Left",
+        "at": 0.8333333333333334,
+        "leadDistance": 0.36530531656887755,
+        "leftFoot": [
+          0.04519095098852055,
+          0.1951164828550155,
+          -3.1188113452993003
+        ],
+        "rightFoot": [
+          0.040010060453166095,
+          0.22621869996110464,
+          -3.484116661868178
+        ],
+        "deckForward": [
+          -2.4492937051703357e-16,
+          0.0,
+          1.0
+        ],
+        "toeSideDot": -0.8332834758651921,
+        "glbDeckForwardDot": 1.0,
+        "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+        "note": "Actual animated GLB foot-bone world positions against its recorded DeckForward; frozen proxy anatomy, not a global native-handedness claim"
+      },
+      "phaseMoments": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.9166666666666666,
+        "Flick": 0.95,
+        "Air": 1.0833333333333333,
+        "Catch": 1.3333333333333333,
+        "Land": 1.4166666666666667,
+        "Rollaway": 2.283333333333333,
+        "End": 4.0
+      }
+    },
+    {
+      "id": "fakie-bs-pop-shove-it-source-keyed-v1",
+      "stance": "goofy",
+      "profile": "normal",
+      "sha256": "08aa022aff16d8e4e4fd24679aa792e5a20d6b83c537ec62b21b921db9d7e532",
+      "inputSha256": "6ce4fff60d4672b91189553bf7fef522de87f95ea930a8abd239adfe095e51fb",
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+      "maximumJointErrorM": 7.2054818800640876e-06,
+      "physicalPreview": {
+        "profile": "normal",
+        "requestedStance": "goofy",
+        "physicalPreviewStance": "regular",
+        "leadFoot": "Left",
+        "at": 0.8333333333333334,
+        "leadDistance": 0.3653040866192816,
+        "leftFoot": [
+          0.04519133860100352,
+          0.19511679749739447,
+          -3.1188141441835935
+        ],
+        "rightFoot": [
+          0.04001040975102431,
+          0.2262183944813263,
+          -3.484118230802875
+        ],
+        "deckForward": [
+          -2.4492937051703357e-16,
+          0.0,
+          1.0
+        ],
+        "toeSideDot": -0.8332849205209323,
+        "glbDeckForwardDot": 1.0,
+        "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+        "note": "Actual animated GLB foot-bone world positions against its recorded DeckForward; frozen proxy anatomy, not a global native-handedness claim"
+      },
+      "phaseMoments": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.9166666666666666,
+        "Flick": 0.9666666666666667,
+        "Air": 1.1,
+        "Catch": 1.3666666666666667,
+        "Land": 1.45,
+        "Rollaway": 2.3833333333333333,
+        "End": 4.0
+      }
+    },
+    {
+      "id": "fakie-bs-pop-shove-it-source-keyed-v1",
+      "stance": "regular",
+      "profile": "low",
+      "sha256": "f37a029dc034beabd68c0dce8be1bf0b6cbc2bc8025a408ac42881285cd10006",
+      "inputSha256": "c7c7484b2a3a32422e6aa0b3f23eac2e465f2ec56ae32489fb4881c3e219f922",
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+      "maximumJointErrorM": 5.937380018956219e-06,
+      "physicalPreview": {
+        "profile": "low",
+        "requestedStance": "regular",
+        "physicalPreviewStance": "goofy",
+        "leadFoot": "Right",
+        "at": 0.8333333333333334,
+        "leadDistance": -0.36528732084142046,
+        "leftFoot": [
+          -0.03998320356205607,
+          0.22620938425473067,
+          -3.484100800626634
+        ],
+        "rightFoot": [
+          -0.045202637106024054,
+          0.19512283176826203,
+          -3.1188134797852136
+        ],
+        "deckForward": [
+          -2.4492937051703357e-16,
+          0.0,
+          1.0
+        ],
+        "toeSideDot": 0.8332832265706024,
+        "glbDeckForwardDot": 1.0,
+        "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+        "note": "Actual animated GLB foot-bone world positions against its recorded DeckForward; frozen proxy anatomy, not a global native-handedness claim"
+      },
+      "phaseMoments": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.9166666666666666,
+        "Flick": 0.95,
+        "Air": 1.0833333333333333,
+        "Catch": 1.3333333333333333,
+        "Land": 1.4166666666666667,
+        "Rollaway": 2.283333333333333,
+        "End": 4.0
+      }
+    },
+    {
+      "id": "fakie-bs-pop-shove-it-source-keyed-v1",
+      "stance": "regular",
+      "profile": "normal",
+      "sha256": "4370b2b87a5c383d1996bfa2a4931cef44bad1c7b3bcba7a1b0719bb2f75aa5e",
+      "inputSha256": "6e76290d071d35eb073b5ca3930122f7b5e2557e8d28d25aeca5a90b8bd4073c",
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+      "maximumJointErrorM": 9.410319255504184e-06,
+      "physicalPreview": {
+        "profile": "normal",
+        "requestedStance": "regular",
+        "physicalPreviewStance": "goofy",
+        "leadFoot": "Right",
+        "at": 0.8333333333333334,
+        "leadDistance": -0.36528566502652415,
+        "leftFoot": [
+          -0.039984456956499374,
+          0.2262097973682381,
+          -3.4841020015284756
+        ],
+        "rightFoot": [
+          -0.045203353698747936,
+          0.19512290912539446,
+          -3.1188163365019514
+        ],
+        "deckForward": [
+          -2.4492937051703357e-16,
+          0.0,
+          1.0
+        ],
+        "toeSideDot": 0.8332835334516422,
+        "glbDeckForwardDot": 1.0,
+        "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+        "note": "Actual animated GLB foot-bone world positions against its recorded DeckForward; frozen proxy anatomy, not a global native-handedness claim"
+      },
+      "phaseMoments": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.9166666666666666,
+        "Flick": 0.9666666666666667,
+        "Air": 1.1,
+        "Catch": 1.3666666666666667,
+        "Land": 1.45,
+        "Rollaway": 2.3833333333333333,
+        "End": 4.0
+      }
+    }
+  ],
+  "files": [
+    {
+      "file": "low-goofy-contacts.jpg",
+      "sha256": "6e13cc38f4049626cab3fbd85d775a7cec6d52c44945c0277b0168c87e3ee759"
+    },
+    {
+      "file": "low-goofy-phases.jpg",
+      "sha256": "121bb8b9330570b4b401d219849cc32720b034fd39d2170481d80208f3a65c73"
+    },
+    {
+      "file": "low-regular-contacts.jpg",
+      "sha256": "5af06feb220ac9153386b0406e391354d799b101030921d187fa72c8596792fa"
+    },
+    {
+      "file": "low-regular-phases.jpg",
+      "sha256": "e69cadd1e890ddf08c053e9839050092adfb0826243c02700e44196fb60571d1"
+    },
+    {
+      "file": "normal-goofy-contacts.jpg",
+      "sha256": "e3f3e63fe863416b3f26de9fc6a33328f71c99caca5774a347263ac9198f4427"
+    },
+    {
+      "file": "normal-goofy-phases.jpg",
+      "sha256": "c4170ebc391db10ed00ef72006919d57535791c77ef2ae6db09c717267af3b0f"
+    },
+    {
+      "file": "normal-regular-contacts.jpg",
+      "sha256": "98cc34625b968c005030d0d7b5c3f486aa9fcd9199cf76094d224219dfe6f830"
+    },
+    {
+      "file": "normal-regular-phases.jpg",
+      "sha256": "98fbd0b82a4c32299034a95f852c65f2d2e30e877fe4001901a2ef3cdb04e871"
+    }
+  ],
+  "sourceVideoSha256": "220a8f31da226010bb44afa81882f684744ab2071458279eb937cf68b95fee48"
+}
