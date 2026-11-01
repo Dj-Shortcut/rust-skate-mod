@@ -1,0 +1,977 @@
+{
+  "format": "skate-animation-visual-handoff/1",
+  "status": "Codex comparison images supplied; Claude owns offline-review decisions and library record",
+  "sourceFootageIncluded": false,
+  "sourceImagePixelsIncluded": false,
+  "productPoseChangesInThisReview": false,
+  "reviewedFlagsChanged": false,
+  "nativeGameApproved": false,
+  "viewerTransportRepair": {
+    "problem": "Chromium rejects tiny late source-clock slopes at quarter speed (observed0.046023 vs0.0625 lower limit)",
+    "solution": "Private viewer only: preserve rig time and pause/seek exact29.97fps source frames when a video rate is unsupported. No clamped video rate, source-time drift, rig retiming or physics change. Explicit source-step label shown.",
+    "allFourCurrentViewersUpdated": true
+  },
+  "inspectionLimits": "Normal and quarter-speed viewer playback sampled sequentially, not a native game run. Live readback is below60Hz and cannot by itself exclude every inter-frame defect; held Double critical window additionally inspected in cached60Hz GLB renders. Private Berrics pixels remain outside GitHub. Source present is not a finished-animation count.",
+  "entries": [
+    {
+      "family": "bs360",
+      "profile": "low",
+      "physicalStance": "goofy",
+      "requestedNativeStance": "regular",
+      "glbSha256": "6c2e4ae75697be21d7514e977bb1c55cb7b634cf54b7921b140660ac9911cf56",
+      "sourceCodeRevision": "817bfefaf59e21215c50bb452a0682f2a3c92b0d",
+      "packSha256": "78dc3008c4999aeeddf20817a8cf5b88af3c46399f0ef95fddf3b702d3c7d2ba",
+      "sourceUrl": "https://www.youtube.com/watch?v=YcmPDIj2BFo&t=150.8",
+      "sourceComposition": "Goofy original source anatomy; canonical normalization and animated proxy physical preview are separate. Source video is never mirrored.",
+      "rawPackReviewed": false,
+      "nativeGameApproved": false,
+      "image": "bs360-low-goofy.jpg",
+      "imageSha256": "52a00cd8e67e9066d14fd2a52ab7370a46f33e6d20708712bcaea4581e4ed641",
+      "phaseFrames": [
+        {
+          "phase": "Load",
+          "rigTime": 0.867,
+          "referenceCacheFrame": 84.933327,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Pop",
+          "rigTime": 0.917,
+          "referenceCacheFrame": 86.339281,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Air",
+          "rigTime": 1.117,
+          "referenceCacheFrame": 92.767852,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Catch",
+          "rigTime": 1.383,
+          "referenceCacheFrame": 101.339251,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Land",
+          "rigTime": 1.45,
+          "referenceCacheFrame": 102.99998,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Rollaway",
+          "rigTime": 1.733,
+          "referenceCacheFrame": 112.107153,
+          "sourcePresented": true
+        }
+      ],
+      "durationSeconds": 2.75,
+      "exactEndPose": "2.750 / 2.750 s",
+      "playbackCoverage": {
+        "1": 2.75,
+        "0.25": 2.721
+      },
+      "viewerErrors": []
+    },
+    {
+      "family": "bs360",
+      "profile": "low",
+      "physicalStance": "regular",
+      "requestedNativeStance": "goofy",
+      "glbSha256": "92baca8c4e5b8bb2e6f1d82d99ce96f149cd471355e84ac8f0390007bb22728b",
+      "sourceCodeRevision": "817bfefaf59e21215c50bb452a0682f2a3c92b0d",
+      "packSha256": "78dc3008c4999aeeddf20817a8cf5b88af3c46399f0ef95fddf3b702d3c7d2ba",
+      "sourceUrl": "https://www.youtube.com/watch?v=YcmPDIj2BFo&t=150.8",
+      "sourceComposition": "Goofy original source anatomy; canonical normalization and animated proxy physical preview are separate. Source video is never mirrored.",
+      "rawPackReviewed": false,
+      "nativeGameApproved": false,
+      "image": "bs360-low-regular.jpg",
+      "imageSha256": "cdd6b529128b858025b5be739910c1af3a09bbd24eaea5420e2db13c174e7aba",
+      "phaseFrames": [
+        {
+          "phase": "Load",
+          "rigTime": 0.867,
+          "referenceCacheFrame": 84.933327,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Pop",
+          "rigTime": 0.917,
+          "referenceCacheFrame": 86.339281,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Air",
+          "rigTime": 1.117,
+          "referenceCacheFrame": 92.767852,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Catch",
+          "rigTime": 1.383,
+          "referenceCacheFrame": 101.339251,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Land",
+          "rigTime": 1.45,
+          "referenceCacheFrame": 102.99998,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Rollaway",
+          "rigTime": 1.733,
+          "referenceCacheFrame": 112.107153,
+          "sourcePresented": true
+        }
+      ],
+      "durationSeconds": 2.75,
+      "exactEndPose": "2.750 / 2.750 s",
+      "playbackCoverage": {
+        "1": 2.75,
+        "0.25": 2.75
+      },
+      "viewerErrors": []
+    },
+    {
+      "family": "bs360",
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "requestedNativeStance": "regular",
+      "glbSha256": "7a2b177d15fd116e8ce85b2ce0fc3a68f415b3e0dead6cc4aba6739db0e36cef",
+      "sourceCodeRevision": "817bfefaf59e21215c50bb452a0682f2a3c92b0d",
+      "packSha256": "78dc3008c4999aeeddf20817a8cf5b88af3c46399f0ef95fddf3b702d3c7d2ba",
+      "sourceUrl": "https://www.youtube.com/watch?v=YcmPDIj2BFo&t=150.8",
+      "sourceComposition": "Goofy original source anatomy; canonical normalization and animated proxy physical preview are separate. Source video is never mirrored.",
+      "rawPackReviewed": false,
+      "nativeGameApproved": false,
+      "image": "bs360-normal-goofy.jpg",
+      "imageSha256": "e49a1bb095d4bf5563d7e0f8762249b3eafb138c5d1b5c0f63470409ef4872d8",
+      "phaseFrames": [
+        {
+          "phase": "Load",
+          "rigTime": 0.833,
+          "referenceCacheFrame": 84.666653,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Pop",
+          "rigTime": 0.917,
+          "referenceCacheFrame": 86.25,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Air",
+          "rigTime": 1.15,
+          "referenceCacheFrame": 93.24998,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Catch",
+          "rigTime": 1.417,
+          "referenceCacheFrame": 101.25,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Land",
+          "rigTime": 1.483,
+          "referenceCacheFrame": 102.99998,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Rollaway",
+          "rigTime": 1.783,
+          "referenceCacheFrame": 111.99998,
+          "sourcePresented": true
+        }
+      ],
+      "durationSeconds": 2.75,
+      "exactEndPose": "2.750 / 2.750 s",
+      "playbackCoverage": {
+        "1": 2.717,
+        "0.25": 2.746
+      },
+      "viewerErrors": []
+    },
+    {
+      "family": "bs360",
+      "profile": "normal",
+      "physicalStance": "regular",
+      "requestedNativeStance": "goofy",
+      "glbSha256": "f40b6a5d133030841b86c3b6f62a7858b1884a7a91a1d8f6e047ccd0290e5919",
+      "sourceCodeRevision": "817bfefaf59e21215c50bb452a0682f2a3c92b0d",
+      "packSha256": "78dc3008c4999aeeddf20817a8cf5b88af3c46399f0ef95fddf3b702d3c7d2ba",
+      "sourceUrl": "https://www.youtube.com/watch?v=YcmPDIj2BFo&t=150.8",
+      "sourceComposition": "Goofy original source anatomy; canonical normalization and animated proxy physical preview are separate. Source video is never mirrored.",
+      "rawPackReviewed": false,
+      "nativeGameApproved": false,
+      "image": "bs360-normal-regular.jpg",
+      "imageSha256": "a088c36acd8cb3e89600c5bcaa946d3bcfc6ba36ab9e74b2e061987532872127",
+      "phaseFrames": [
+        {
+          "phase": "Load",
+          "rigTime": 0.833,
+          "referenceCacheFrame": 84.666653,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Pop",
+          "rigTime": 0.917,
+          "referenceCacheFrame": 86.25,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Air",
+          "rigTime": 1.15,
+          "referenceCacheFrame": 93.24998,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Catch",
+          "rigTime": 1.417,
+          "referenceCacheFrame": 101.25,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Land",
+          "rigTime": 1.483,
+          "referenceCacheFrame": 102.99998,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Rollaway",
+          "rigTime": 1.783,
+          "referenceCacheFrame": 111.99998,
+          "sourcePresented": true
+        }
+      ],
+      "durationSeconds": 2.75,
+      "exactEndPose": "2.750 / 2.750 s",
+      "playbackCoverage": {
+        "1": 2.75,
+        "0.25": 2.729
+      },
+      "viewerErrors": []
+    },
+    {
+      "family": "double",
+      "profile": "low",
+      "physicalStance": "goofy",
+      "requestedNativeStance": "regular",
+      "glbSha256": "880b4d124428241ef2067337ad63cb8a8366d0106fcc740754b08e7bb3a21a02",
+      "sourceCodeRevision": "c62a1b3b1d316b63586a9bf853eac5c809b5d7d3",
+      "packSha256": "831eb4fecdf8361535df4d5c853b8140ac32ea9e85308a6bee31bdcc87c5fddd",
+      "sourceUrl": "https://www.youtube.com/watch?v=_oRoo1x1uzM&t=484",
+      "sourceComposition": "Qualitative verified White Double footage; separate ordinary Kick control basis and authored reconstruction; physical edit speed unknown",
+      "rawPackReviewed": false,
+      "nativeGameApproved": false,
+      "image": "double-low-goofy.jpg",
+      "imageSha256": "c259713dbbd18f860976369a933df02f9f0a3a3292e2af1c53cabb862b7f530a",
+      "phaseFrames": [
+        {
+          "phase": "Load",
+          "rigTime": 0.883,
+          "referenceCacheFrame": 140.721818,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Pop",
+          "rigTime": 0.933,
+          "referenceCacheFrame": 141.962937,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Air",
+          "rigTime": 1.183,
+          "referenceCacheFrame": 150.851838,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Catch",
+          "rigTime": 1.45,
+          "referenceCacheFrame": 160.333307,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Land",
+          "rigTime": 1.483,
+          "referenceCacheFrame": 161.518501,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Rollaway",
+          "rigTime": 1.917,
+          "referenceCacheFrame": 168.0,
+          "sourcePresented": true
+        }
+      ],
+      "durationSeconds": 3.0,
+      "exactEndPose": "3.000 / 3.000 s",
+      "playbackCoverage": {
+        "1": 2.967,
+        "0.25": 3.0
+      },
+      "viewerErrors": []
+    },
+    {
+      "family": "double",
+      "profile": "low",
+      "physicalStance": "regular",
+      "requestedNativeStance": "goofy",
+      "glbSha256": "94de8fb18bbde388a6bea19a47a275dcaafde88b3187ae57db97b02779b64fec",
+      "sourceCodeRevision": "c62a1b3b1d316b63586a9bf853eac5c809b5d7d3",
+      "packSha256": "831eb4fecdf8361535df4d5c853b8140ac32ea9e85308a6bee31bdcc87c5fddd",
+      "sourceUrl": "https://www.youtube.com/watch?v=_oRoo1x1uzM&t=484",
+      "sourceComposition": "Qualitative verified White Double footage; separate ordinary Kick control basis and authored reconstruction; physical edit speed unknown",
+      "rawPackReviewed": false,
+      "nativeGameApproved": false,
+      "image": "double-low-regular.jpg",
+      "imageSha256": "c4850126ddc7deb63ad5cb4126df85887e93dd6a3fa9ea019a4d931c589239fa",
+      "phaseFrames": [
+        {
+          "phase": "Load",
+          "rigTime": 0.883,
+          "referenceCacheFrame": 140.721818,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Pop",
+          "rigTime": 0.933,
+          "referenceCacheFrame": 141.962937,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Air",
+          "rigTime": 1.183,
+          "referenceCacheFrame": 150.851838,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Catch",
+          "rigTime": 1.45,
+          "referenceCacheFrame": 160.333307,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Land",
+          "rigTime": 1.483,
+          "referenceCacheFrame": 161.518501,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Rollaway",
+          "rigTime": 1.917,
+          "referenceCacheFrame": 168.0,
+          "sourcePresented": true
+        }
+      ],
+      "durationSeconds": 3.0,
+      "exactEndPose": "3.000 / 3.000 s",
+      "playbackCoverage": {
+        "1": 3.0,
+        "0.25": 3.0
+      },
+      "viewerErrors": []
+    },
+    {
+      "family": "double",
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "requestedNativeStance": "regular",
+      "glbSha256": "afe33a9a2563b2975a7dad85e6f28996588ee1915f81de10290e69d12aa1916c",
+      "sourceCodeRevision": "c62a1b3b1d316b63586a9bf853eac5c809b5d7d3",
+      "packSha256": "831eb4fecdf8361535df4d5c853b8140ac32ea9e85308a6bee31bdcc87c5fddd",
+      "sourceUrl": "https://www.youtube.com/watch?v=_oRoo1x1uzM&t=484",
+      "sourceComposition": "Qualitative verified White Double footage; separate ordinary Kick control basis and authored reconstruction; physical edit speed unknown",
+      "rawPackReviewed": false,
+      "nativeGameApproved": false,
+      "image": "double-normal-goofy.jpg",
+      "imageSha256": "9c9ed57d7c46388a5f6585f3b7fa0e04725c05dd8939e7a9446521374c4bbc12",
+      "phaseFrames": [
+        {
+          "phase": "Load",
+          "rigTime": 0.833,
+          "referenceCacheFrame": 140.114925,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Pop",
+          "rigTime": 0.95,
+          "referenceCacheFrame": 142.473656,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Air",
+          "rigTime": 1.2,
+          "referenceCacheFrame": 150.894725,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Catch",
+          "rigTime": 1.483,
+          "referenceCacheFrame": 160.438591,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Land",
+          "rigTime": 1.5,
+          "referenceCacheFrame": 160.99999,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Rollaway",
+          "rigTime": 1.95,
+          "referenceCacheFrame": 168.0,
+          "sourcePresented": true
+        }
+      ],
+      "durationSeconds": 3.0,
+      "exactEndPose": "3.000 / 3.000 s",
+      "playbackCoverage": {
+        "1": 2.983,
+        "0.25": 2.967
+      },
+      "viewerErrors": []
+    },
+    {
+      "family": "double",
+      "profile": "normal",
+      "physicalStance": "regular",
+      "requestedNativeStance": "goofy",
+      "glbSha256": "8ab05ec3f0c987e8bc84567a00218502c86eede017e2e8d6519b655209e177ea",
+      "sourceCodeRevision": "c62a1b3b1d316b63586a9bf853eac5c809b5d7d3",
+      "packSha256": "831eb4fecdf8361535df4d5c853b8140ac32ea9e85308a6bee31bdcc87c5fddd",
+      "sourceUrl": "https://www.youtube.com/watch?v=_oRoo1x1uzM&t=484",
+      "sourceComposition": "Qualitative verified White Double footage; separate ordinary Kick control basis and authored reconstruction; physical edit speed unknown",
+      "rawPackReviewed": false,
+      "nativeGameApproved": false,
+      "image": "double-normal-regular.jpg",
+      "imageSha256": "ca39f7b9ef52fbf860d6758d4519e940d71e4866c2dc43862b0818373f75fe35",
+      "phaseFrames": [
+        {
+          "phase": "Load",
+          "rigTime": 0.833,
+          "referenceCacheFrame": 140.114925,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Pop",
+          "rigTime": 0.95,
+          "referenceCacheFrame": 142.473656,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Air",
+          "rigTime": 1.2,
+          "referenceCacheFrame": 150.894725,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Catch",
+          "rigTime": 1.483,
+          "referenceCacheFrame": 160.438591,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Land",
+          "rigTime": 1.5,
+          "referenceCacheFrame": 160.99999,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Rollaway",
+          "rigTime": 1.95,
+          "referenceCacheFrame": 168.0,
+          "sourcePresented": true
+        }
+      ],
+      "durationSeconds": 3.0,
+      "exactEndPose": "3.000 / 3.000 s",
+      "playbackCoverage": {
+        "1": 3.0,
+        "0.25": 3.0
+      },
+      "viewerErrors": []
+    },
+    {
+      "family": "fs360",
+      "profile": "low",
+      "physicalStance": "goofy",
+      "requestedNativeStance": "regular",
+      "glbSha256": "c126c0d3e0a904ff15251234a8e939d8589a7a56796318ca3636a276432a2821",
+      "sourceCodeRevision": "69b28d9de8867bad6d4339b35eff5802a8de7b67",
+      "packSha256": "d3bf83b070b747e5578b253c15ecf49e971fe2650abf62cff48730f5eb13a3f4",
+      "sourceUrl": "https://www.youtube.com/watch?v=YcmPDIj2BFo",
+      "sourceComposition": "Filmed physical Goofy/right lead FS180 reference. FS360 is an authored derivation, not a filmed FS360. Counterpart is anatomically mirrored; reference pixels never mirrored.",
+      "rawPackReviewed": false,
+      "nativeGameApproved": false,
+      "image": "fs360-low-goofy.jpg",
+      "imageSha256": "10849a644ec3b70cdab79f0be0bd66fd436ed7b4a2ec04153170d4a3332398f7",
+      "phaseFrames": [
+        {
+          "phase": "Load",
+          "rigTime": 0.867,
+          "referenceCacheFrame": 210.79999,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Pop",
+          "rigTime": 0.9,
+          "referenceCacheFrame": 211.66963,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Air",
+          "rigTime": 1.067,
+          "referenceCacheFrame": 216.133906,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Catch",
+          "rigTime": 1.367,
+          "referenceCacheFrame": 224.16962,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Land",
+          "rigTime": 1.45,
+          "referenceCacheFrame": 225.99998,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Rollaway",
+          "rigTime": 2.017,
+          "referenceCacheFrame": 241.178541,
+          "sourcePresented": true
+        }
+      ],
+      "durationSeconds": 2.75,
+      "exactEndPose": "2.750 / 2.750 s",
+      "playbackCoverage": {
+        "1": 2.717,
+        "0.25": 2.75
+      },
+      "viewerErrors": []
+    },
+    {
+      "family": "fs360",
+      "profile": "low",
+      "physicalStance": "regular",
+      "requestedNativeStance": "goofy",
+      "glbSha256": "72f587436a84142c50c11d69a1c750e6326d49926c2eacfcd9d3e9a3bb2207fe",
+      "sourceCodeRevision": "69b28d9de8867bad6d4339b35eff5802a8de7b67",
+      "packSha256": "d3bf83b070b747e5578b253c15ecf49e971fe2650abf62cff48730f5eb13a3f4",
+      "sourceUrl": "https://www.youtube.com/watch?v=YcmPDIj2BFo",
+      "sourceComposition": "Filmed physical Goofy/right lead FS180 reference. FS360 is an authored derivation, not a filmed FS360. Counterpart is anatomically mirrored; reference pixels never mirrored.",
+      "rawPackReviewed": false,
+      "nativeGameApproved": false,
+      "image": "fs360-low-regular.jpg",
+      "imageSha256": "fe0b98643c3f198b4a2a4f6c2caa612aaf782ccd409cd314671f4d361b741d72",
+      "phaseFrames": [
+        {
+          "phase": "Load",
+          "rigTime": 0.867,
+          "referenceCacheFrame": 210.79999,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Pop",
+          "rigTime": 0.9,
+          "referenceCacheFrame": 211.66963,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Air",
+          "rigTime": 1.067,
+          "referenceCacheFrame": 216.133906,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Catch",
+          "rigTime": 1.367,
+          "referenceCacheFrame": 224.16962,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Land",
+          "rigTime": 1.45,
+          "referenceCacheFrame": 225.99998,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Rollaway",
+          "rigTime": 2.017,
+          "referenceCacheFrame": 241.178541,
+          "sourcePresented": true
+        }
+      ],
+      "durationSeconds": 2.75,
+      "exactEndPose": "2.750 / 2.750 s",
+      "playbackCoverage": {
+        "1": 2.75,
+        "0.25": 2.733
+      },
+      "viewerErrors": []
+    },
+    {
+      "family": "fs360",
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "requestedNativeStance": "regular",
+      "glbSha256": "34b2b2f920a2098e2043381e2ed4bb246da04a4639b9ff3b502236298e3b4fcd",
+      "sourceCodeRevision": "69b28d9de8867bad6d4339b35eff5802a8de7b67",
+      "packSha256": "d3bf83b070b747e5578b253c15ecf49e971fe2650abf62cff48730f5eb13a3f4",
+      "sourceUrl": "https://www.youtube.com/watch?v=YcmPDIj2BFo",
+      "sourceComposition": "Filmed physical Goofy/right lead FS180 reference. FS360 is an authored derivation, not a filmed FS360. Counterpart is anatomically mirrored; reference pixels never mirrored.",
+      "rawPackReviewed": false,
+      "nativeGameApproved": false,
+      "image": "fs360-normal-goofy.jpg",
+      "imageSha256": "f4de8bb09e511f12d26132329ff25113f29cac51d9b44dbbc4f9255e435e5d05",
+      "phaseFrames": [
+        {
+          "phase": "Load",
+          "rigTime": 0.833,
+          "referenceCacheFrame": 210.0,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Pop",
+          "rigTime": 0.9,
+          "referenceCacheFrame": 211.624975,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Air",
+          "rigTime": 1.083,
+          "referenceCacheFrame": 216.208322,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Catch",
+          "rigTime": 1.4,
+          "referenceCacheFrame": 224.124965,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Land",
+          "rigTime": 1.483,
+          "referenceCacheFrame": 225.99998,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Rollaway",
+          "rigTime": 2.083,
+          "referenceCacheFrame": 240.99998,
+          "sourcePresented": true
+        }
+      ],
+      "durationSeconds": 2.75,
+      "exactEndPose": "2.750 / 2.750 s",
+      "playbackCoverage": {
+        "1": 2.733,
+        "0.25": 2.729
+      },
+      "viewerErrors": []
+    },
+    {
+      "family": "fs360",
+      "profile": "normal",
+      "physicalStance": "regular",
+      "requestedNativeStance": "goofy",
+      "glbSha256": "150843e7fb846883000042ba652d6f78c5c3ea966beca526201e831df34f6009",
+      "sourceCodeRevision": "69b28d9de8867bad6d4339b35eff5802a8de7b67",
+      "packSha256": "d3bf83b070b747e5578b253c15ecf49e971fe2650abf62cff48730f5eb13a3f4",
+      "sourceUrl": "https://www.youtube.com/watch?v=YcmPDIj2BFo",
+      "sourceComposition": "Filmed physical Goofy/right lead FS180 reference. FS360 is an authored derivation, not a filmed FS360. Counterpart is anatomically mirrored; reference pixels never mirrored.",
+      "rawPackReviewed": false,
+      "nativeGameApproved": false,
+      "image": "fs360-normal-regular.jpg",
+      "imageSha256": "86f9538a4874a9a30a84386b78a0d370ff8359cf63484cbf9120f55e07acfb07",
+      "phaseFrames": [
+        {
+          "phase": "Load",
+          "rigTime": 0.833,
+          "referenceCacheFrame": 210.0,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Pop",
+          "rigTime": 0.9,
+          "referenceCacheFrame": 211.624975,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Air",
+          "rigTime": 1.083,
+          "referenceCacheFrame": 216.208322,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Catch",
+          "rigTime": 1.4,
+          "referenceCacheFrame": 224.124965,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Land",
+          "rigTime": 1.483,
+          "referenceCacheFrame": 225.99998,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Rollaway",
+          "rigTime": 2.083,
+          "referenceCacheFrame": 240.99998,
+          "sourcePresented": true
+        }
+      ],
+      "durationSeconds": 2.75,
+      "exactEndPose": "2.750 / 2.750 s",
+      "playbackCoverage": {
+        "1": 2.717,
+        "0.25": 2.729
+      },
+      "viewerErrors": []
+    },
+    {
+      "family": "varial",
+      "profile": "low",
+      "physicalStance": "goofy",
+      "requestedNativeStance": "regular",
+      "glbSha256": "c3272d84e7feac2b05c69b184c20fe785f8227f8d240c23a5c5c151a5d399c42",
+      "sourceCodeRevision": "5a2f2735c5c69ce52909df4fedc1efb6ef24e896",
+      "packSha256": "4a54b26b09168bc696bd72e7c72da25dec14526a9028969d62061d6e74c1189b",
+      "sourceUrl": "https://www.youtube.com/watch?v=_oRoo1x1uzM",
+      "sourceComposition": "Shared Tre body reference, not a filmed Varial; anatomical mirror preview is independently audited. Reference never mirrored.",
+      "rawPackReviewed": false,
+      "nativeGameApproved": false,
+      "image": "varial-low-goofy.jpg",
+      "imageSha256": "d436be29cc7cd165538a3bf241dfadc640ebd916dc6440271c5b9208b33d5edc",
+      "phaseFrames": [
+        {
+          "phase": "Load",
+          "rigTime": 0.883,
+          "referenceCacheFrame": 402.873536,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Pop",
+          "rigTime": 0.933,
+          "referenceCacheFrame": 404.022917,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Air",
+          "rigTime": 1.15,
+          "referenceCacheFrame": 412.206354,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Catch",
+          "rigTime": 1.367,
+          "referenceCacheFrame": 420.38982,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Land",
+          "rigTime": 1.483,
+          "referenceCacheFrame": 423.99998,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Rollaway",
+          "rigTime": 1.65,
+          "referenceCacheFrame": 430.294915,
+          "sourcePresented": true
+        }
+      ],
+      "durationSeconds": 2.75,
+      "exactEndPose": "2.750 / 2.750 s",
+      "playbackCoverage": {
+        "1": 2.75,
+        "0.25": 2.75
+      },
+      "viewerErrors": []
+    },
+    {
+      "family": "varial",
+      "profile": "low",
+      "physicalStance": "regular",
+      "requestedNativeStance": "goofy",
+      "glbSha256": "a2acb3a7846509452d7bf35a56b439bdf1fa21fb42506cdd111b7af65857661f",
+      "sourceCodeRevision": "5a2f2735c5c69ce52909df4fedc1efb6ef24e896",
+      "packSha256": "4a54b26b09168bc696bd72e7c72da25dec14526a9028969d62061d6e74c1189b",
+      "sourceUrl": "https://www.youtube.com/watch?v=_oRoo1x1uzM",
+      "sourceComposition": "Shared Tre body reference, not a filmed Varial; anatomical mirror preview is independently audited. Reference never mirrored.",
+      "rawPackReviewed": false,
+      "nativeGameApproved": false,
+      "image": "varial-low-regular.jpg",
+      "imageSha256": "310618881648c32111eb59ea7bafe0a0d98bec5219d491b3f1e29847765a13c4",
+      "phaseFrames": [
+        {
+          "phase": "Load",
+          "rigTime": 0.883,
+          "referenceCacheFrame": 402.873536,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Pop",
+          "rigTime": 0.933,
+          "referenceCacheFrame": 404.022917,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Air",
+          "rigTime": 1.15,
+          "referenceCacheFrame": 412.206354,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Catch",
+          "rigTime": 1.367,
+          "referenceCacheFrame": 420.38982,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Land",
+          "rigTime": 1.483,
+          "referenceCacheFrame": 423.99998,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Rollaway",
+          "rigTime": 1.65,
+          "referenceCacheFrame": 430.294915,
+          "sourcePresented": true
+        }
+      ],
+      "durationSeconds": 2.75,
+      "exactEndPose": "2.750 / 2.750 s",
+      "playbackCoverage": {
+        "1": 2.75,
+        "0.25": 2.725
+      },
+      "viewerErrors": []
+    },
+    {
+      "family": "varial",
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "requestedNativeStance": "regular",
+      "glbSha256": "1dfe9df5f9b32f09c1bf23b734330f26869d2aa22ac4f2c74791a82a2b608e5b",
+      "sourceCodeRevision": "5a2f2735c5c69ce52909df4fedc1efb6ef24e896",
+      "packSha256": "4a54b26b09168bc696bd72e7c72da25dec14526a9028969d62061d6e74c1189b",
+      "sourceUrl": "https://www.youtube.com/watch?v=_oRoo1x1uzM",
+      "sourceComposition": "Shared Tre body reference, not a filmed Varial; anatomical mirror preview is independently audited. Reference never mirrored.",
+      "rawPackReviewed": false,
+      "nativeGameApproved": false,
+      "image": "varial-normal-goofy.jpg",
+      "imageSha256": "3859f9b1732706a34d6f8e4eb9421eeb2a0fa44731888692c2a350bc3e4d0fff",
+      "phaseFrames": [
+        {
+          "phase": "Load",
+          "rigTime": 0.833,
+          "referenceCacheFrame": 402.597692,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Pop",
+          "rigTime": 0.933,
+          "referenceCacheFrame": 403.947902,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Air",
+          "rigTime": 1.167,
+          "referenceCacheFrame": 412.114585,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Catch",
+          "rigTime": 1.4,
+          "referenceCacheFrame": 420.281209,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Land",
+          "rigTime": 1.5,
+          "referenceCacheFrame": 423.99998,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Rollaway",
+          "rigTime": 1.667,
+          "referenceCacheFrame": 429.833317,
+          "sourcePresented": true
+        }
+      ],
+      "durationSeconds": 2.75,
+      "exactEndPose": "2.750 / 2.750 s",
+      "playbackCoverage": {
+        "1": 2.75,
+        "0.25": 2.75
+      },
+      "viewerErrors": []
+    },
+    {
+      "family": "varial",
+      "profile": "normal",
+      "physicalStance": "regular",
+      "requestedNativeStance": "goofy",
+      "glbSha256": "8b6548c0bedbfab9cfce40866781bf6a1f840aa54632f8da4b526a137919ea31",
+      "sourceCodeRevision": "5a2f2735c5c69ce52909df4fedc1efb6ef24e896",
+      "packSha256": "4a54b26b09168bc696bd72e7c72da25dec14526a9028969d62061d6e74c1189b",
+      "sourceUrl": "https://www.youtube.com/watch?v=_oRoo1x1uzM",
+      "sourceComposition": "Shared Tre body reference, not a filmed Varial; anatomical mirror preview is independently audited. Reference never mirrored.",
+      "rawPackReviewed": false,
+      "nativeGameApproved": false,
+      "image": "varial-normal-regular.jpg",
+      "imageSha256": "a62fe8d2eb8720b5382bd2e7484ded736bc654a03111313d01c7bbbcefa50f71",
+      "phaseFrames": [
+        {
+          "phase": "Load",
+          "rigTime": 0.833,
+          "referenceCacheFrame": 402.597692,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Pop",
+          "rigTime": 0.933,
+          "referenceCacheFrame": 403.947902,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Air",
+          "rigTime": 1.167,
+          "referenceCacheFrame": 412.114585,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Catch",
+          "rigTime": 1.4,
+          "referenceCacheFrame": 420.281209,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Land",
+          "rigTime": 1.5,
+          "referenceCacheFrame": 423.99998,
+          "sourcePresented": true
+        },
+        {
+          "phase": "Rollaway",
+          "rigTime": 1.667,
+          "referenceCacheFrame": 429.833317,
+          "sourcePresented": true
+        }
+      ],
+      "durationSeconds": 2.75,
+      "exactEndPose": "2.750 / 2.750 s",
+      "playbackCoverage": {
+        "1": 2.75,
+        "0.25": 2.75
+      },
+      "viewerErrors": []
+    }
+  ]
+}
