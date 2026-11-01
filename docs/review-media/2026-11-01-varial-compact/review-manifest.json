@@ -1,159 +1,58 @@
 {
   "format": "varial-compact-visual-handoff/1",
-  "status": "Source correction supplied for Claude visual gate; no native approval",
-  "sourceAuthoringHead": "f8ee996686bb0e15870be468fafd310cc56bc299",
-  "sourcePackSha256": "1ed91061c97a2ea5b8a4d8676e54ad661e9abb7b1ef4a28c15cc6e38b5be9bd3",
-  "baselineSourcePackSha256": "4a54b26b09168bc696bd72e7c72da25dec14526a9028969d62061d6e74c1189b",
-  "baselineReviewPr": 674,
+  "status": "Collecting-foot refinement supplied for Claude visual gate; no native approval",
+  "sourceAuthoringHead": "95b1a116a69b9325420a9e4746c709e5d01e6f72",
+  "runtimeRouteRevision": "95b1a116a69b9325420a9e4746c709e5d01e6f72",
+  "sourcePackSha256": "d849d6578b5479800375e371e050c051a4f37809a5ef23f26c228f4c51a43639",
+  "baselineSourcePackSha256": "1ed91061c97a2ea5b8a4d8676e54ad661e9abb7b1ef4a28c15cc6e38b5be9bd3",
+  "baselineSourceAuthoringHead": "f8ee996686bb0e15870be468fafd310cc56bc299",
+  "baselineReviewPr": 678,
   "sourceFootageIncluded": false,
   "sourcePixelsIncluded": false,
   "sourceVideo": "https://www.youtube.com/watch?v=_oRoo1x1uzM",
-  "reference": "Shared Tre body guide; BS180/full kickflip, compact air and relaxed upper balance authored. No filmed Varial take claimed.",
+  "reference": "Shared Tre body guide; BS180/full kickflip, compact Air and balance authored. No filmed Varial take claimed.",
+  "scope": "Only canonical Left ankle/knee/toe positions change during the existing free-foot window 406\u2013420; rear foot, pelvis, upper body, directions, sole frames, board keys and contacts remain fixed. Accepted press, final Catch, Land and recovery remain fixed. Existing clearance/reach/floor guards unchanged.",
   "rawPackReviewed": false,
   "nativeGameApproved": false,
-  "sourceTransport": "Existing corrected #640 private transport reused; unsupported rates pause/seek exact reference frames. Rig/pose/physics unchanged.",
-  "inspectionLimits": "Four phase/end sheets and eight actual Air/Catch browser crops inspected; complete normal/quarter playback sampled through browser readbacks, not every rendered frame visually inspected or a native game run.",
+  "viewer": "http://127.0.0.1:63761/varial-air-gap/",
+  "sourceTransport": "Existing corrected private source transport reused; unsupported rates pause/seek exact reference frames. Camera, source movie and actor reference unchanged.",
+  "inspectionLimits": "Eight original-rig phase/comparison sheets and private source pairs inspected. Complete normal/quarter playback sampled through browser clock readbacks, plus 20 detail captures including four changed-window feet views; not every rendered frame visually inspected and no native game run.",
+  "detailReview": {
+    "captures": 20,
+    "browserErrors": 0,
+    "changedWindowSourceFrames": [
+      410,
+      412,
+      414,
+      416
+    ]
+  },
+  "managedRouteReview": {
+    "normalAirFrames": [
+      36,
+      36
+    ],
+    "lowAirFrames": [
+      34,
+      34
+    ],
+    "scoredName": "Varial Kickflip",
+    "ordinaryRecoverySeconds": 4,
+    "bindings": "Controlled managed bindings and flat ground; actual mirrored Pad/full32Hz Step/Land/scorer and body60Hz."
+  },
   "entries": [
     {
-      "profile": "normal",
-      "physicalStance": "regular",
-      "requestedStance": "goofy",
-      "glbSha256": "0d064aba829083ab9f2ebbf46cac3e088893cb1f75ca4e907ffe248c12d4df86",
-      "inputSha256": "33410a74223310acb4421076cf25f868d7e028efacbd7a4fb4fe0ba777b5e4a6",
-      "physicalFlightSeconds": 0.59375,
-      "phaseMoments": {
-        "Load": 0.8166666666666667,
-        "Pop": 0.8666666666666667,
-        "Air": 1.1,
-        "Catch": 1.3333333333333333,
-        "Land": 1.45,
-        "Rollaway": 1.6166666666666667,
-        "End": 4.0
-      },
-      "rawPackReviewed": false,
-      "nativeGameApproved": false,
-      "playback": [
-        {
-          "rate": 1,
-          "sampledClockReadbacks": 44,
-          "exactEndSeconds": 4
-        },
-        {
-          "rate": 0.25,
-          "sampledClockReadbacks": 115,
-          "exactEndSeconds": 4
-        }
-      ],
-      "browserErrors": 0,
-      "sourcePhasePosterFallbacks": 0,
-      "images": [
-        {
-          "file": "normal-regular-air-catch-before-after.jpg",
-          "sha256": "61ddd45e31a26da05de47394e26b52281c8e88225aa810ad13474a697835096c"
-        },
-        {
-          "file": "normal-regular-phases.jpg",
-          "sha256": "a48b62f9cd56f89b672d5c907d583d0712889a4986644376e399e7426daa8793"
-        }
-      ],
-      "comparisonInputImages": [
-        {
-          "stage": "Before",
-          "phase": "Air",
-          "sourcePngSha256": "d404684ed0877903df06320e80360ffba4916f5e50e85982185200fe9fcc85f2"
-        },
-        {
-          "stage": "After",
-          "phase": "Air",
-          "sourcePngSha256": "7e5cdf397c1dfe81e16c946e975b1ee527c05f7819b8b9fda7bb640e743e704f"
-        },
-        {
-          "stage": "Before",
-          "phase": "Catch",
-          "sourcePngSha256": "7c29e02a3c890805a062437346fa2aad35f6de7dc2b80fec207500037065b0f8"
-        },
-        {
-          "stage": "After",
-          "phase": "Catch",
-          "sourcePngSha256": "5d1cdd049f5244c99a7a0d1fabde1508280a7d2a8a030775e6f4f32a109e4702"
-        }
-      ]
-    },
-    {
-      "profile": "normal",
-      "physicalStance": "goofy",
-      "requestedStance": "regular",
-      "glbSha256": "da910b26fe4f023284ee4d288379de58b6c0a8551c9e5f33e325c2fc85a14a6b",
-      "inputSha256": "aad63a0943f5c659a6b11eff73de974b2658679231669c9b6d2a9f71bf34a52b",
-      "physicalFlightSeconds": 0.59375,
-      "phaseMoments": {
-        "Load": 0.8166666666666667,
-        "Pop": 0.8666666666666667,
-        "Air": 1.1,
-        "Catch": 1.3333333333333333,
-        "Land": 1.45,
-        "Rollaway": 1.6166666666666667,
-        "End": 4.0
-      },
-      "rawPackReviewed": false,
-      "nativeGameApproved": false,
-      "playback": [
-        {
-          "rate": 1,
-          "sampledClockReadbacks": 43,
-          "exactEndSeconds": 4
-        },
-        {
-          "rate": 0.25,
-          "sampledClockReadbacks": 115,
-          "exactEndSeconds": 4
-        }
-      ],
-      "browserErrors": 0,
-      "sourcePhasePosterFallbacks": 0,
-      "images": [
-        {
-          "file": "normal-goofy-air-catch-before-after.jpg",
-          "sha256": "72192322647aaf655d2c4287bc238f1515620aaf78544ee029ea4c269a0c9965"
-        },
-        {
-          "file": "normal-goofy-phases.jpg",
-          "sha256": "17be268ea48f74a4df2aea3523f9d9e092cde7b1a3e333ef211cd93dc0cc1d0e"
-        }
-      ],
-      "comparisonInputImages": [
-        {
-          "stage": "Before",
-          "phase": "Air",
-          "sourcePngSha256": "f7e6a1e4e5465f4307924b67a3d9e9303b5cc728423bbbb6781847ffc3ecf622"
-        },
-        {
-          "stage": "After",
-          "phase": "Air",
-          "sourcePngSha256": "f51456e1306fa9224aae66e4fd111e67578ae15093041828bd4e417b24710160"
-        },
-        {
-          "stage": "Before",
-          "phase": "Catch",
-          "sourcePngSha256": "4fbe04cabd85c43fa522aa19b04139719879384a9c19f8e70ffbc90536df5338"
-        },
-        {
-          "stage": "After",
-          "phase": "Catch",
-          "sourcePngSha256": "9f9c476e52feca921681380e1d7771e15c002551d6f9cb8ae809de60812881d0"
-        }
-      ]
-    },
-    {
       "profile": "low",
       "physicalStance": "regular",
       "requestedStance": "goofy",
-      "glbSha256": "f10ac2c4d0b722b58bd4a53e611340b3a652dc974c421367ca18a0cb8e2ce287",
-      "inputSha256": "1cb3b89acec069dab747155f2fecf352786129fb4b27a48177b28429652bbe62",
+      "glbSha256": "8de942c817081dd8ea96b899afb4e16a37ce1b1471860b4434ae93958c47614b",
+      "baselineGlbSha256": "dd7e5f8566a9e3a7380579142c68bd26e95ae4b424329ae4acf0aaf91c40ddf3",
+      "inputSha256": "e20756b275aca3b3c8b6788a4ebb71f872cee76eb581d9c70f4ed7a21b0036a8",
       "physicalFlightSeconds": 0.5625,
       "phaseMoments": {
         "Load": 0.8166666666666667,
         "Pop": 0.8666666666666667,
+        "Flick": 0.9166666666666666,
         "Air": 1.0833333333333333,
         "Catch": 1.3,
         "Land": 1.4166666666666667,
@@ -165,47 +64,70 @@
       "playback": [
         {
           "rate": 1,
-          "sampledClockReadbacks": 43,
+          "sampledClockReadbacks": 42,
           "exactEndSeconds": 4
         },
         {
           "rate": 0.25,
-          "sampledClockReadbacks": 113,
+          "sampledClockReadbacks": 114,
           "exactEndSeconds": 4
         }
       ],
       "browserErrors": 0,
       "sourcePhasePosterFallbacks": 0,
       "images": [
-        {
-          "file": "low-regular-air-catch-before-after.jpg",
-          "sha256": "3a481e9144de1c326224909193233d1181453d2e034c1de1d1af95a2416cd2ba"
-        },
         {
           "file": "low-regular-phases.jpg",
-          "sha256": "3d79b14081c17ed20ed96652ef8fd6b75883d96fd67f1b68704ca3411f408f0f"
+          "sha256": "34d7200cd06d15da0b132a2d967cd5459fcdc04311dee662a6fc5b739330c2f4"
+        },
+        {
+          "file": "low-regular-air-catch-before-after.jpg",
+          "sha256": "9fbb53e8474e104cfbec35e8c7e957e9f87419bfcdaa75546148615a8cb9abd1"
+        }
+      ]
+    },
+    {
+      "profile": "normal",
+      "physicalStance": "regular",
+      "requestedStance": "goofy",
+      "glbSha256": "0788789e36a7fbc65c8ce10da623031fb23b2e7382a32fca95ab545413de4364",
+      "baselineGlbSha256": "5584b6abfebd296691640830450ae3bbd3195ecb588a23dc4175245de73e4797",
+      "inputSha256": "017db2d1434c5999d3fe15f2dbeed6b870cf88d88c3d3303e8cfba3a8950ce52",
+      "physicalFlightSeconds": 0.59375,
+      "phaseMoments": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.8666666666666667,
+        "Flick": 0.9166666666666666,
+        "Air": 1.1,
+        "Catch": 1.3333333333333333,
+        "Land": 1.45,
+        "Rollaway": 1.6166666666666667,
+        "End": 4.0
+      },
+      "rawPackReviewed": false,
+      "nativeGameApproved": false,
+      "playback": [
+        {
+          "rate": 1,
+          "sampledClockReadbacks": 43,
+          "exactEndSeconds": 4
+        },
+        {
+          "rate": 0.25,
+          "sampledClockReadbacks": 114,
+          "exactEndSeconds": 4
         }
       ],
-      "comparisonInputImages": [
+      "browserErrors": 0,
+      "sourcePhasePosterFallbacks": 0,
+      "images": [
         {
-          "stage": "Before",
-          "phase": "Air",
-          "sourcePngSha256": "68152aa6514db127ad44e2c421e33c9ef1c355d17b04583dfa72582018d8a92e"
+          "file": "normal-regular-phases.jpg",
+          "sha256": "86280a24a1216e3581adc55fc6c14c6f5de4e757eb352c83ac3e18bbe2331264"
         },
         {
-          "stage": "After",
-          "phase": "Air",
-          "sourcePngSha256": "5ef91a36ccfbf86181d5a4b6060f4898420e57e22c0afd769cd8af9e8383c3cf"
-        },
-        {
-          "stage": "Before",
-          "phase": "Catch",
-          "sourcePngSha256": "9041b8278f92a2789f03a38d5dadb682bc0f292d00b3ab97c74d1f7a027698f9"
-        },
-        {
-          "stage": "After",
-          "phase": "Catch",
-          "sourcePngSha256": "74c9fbc9da5d369fb2e03f132e4f9c5c10e9a3dd3e8c7ae5b86701b7c44ae927"
+          "file": "normal-regular-air-catch-before-after.jpg",
+          "sha256": "66b99033c8b9684d0ae34db96c94ca16b7f2635586aefa0da7de2342acc9d233"
         }
       ]
     },
@@ -213,12 +135,14 @@
       "profile": "low",
       "physicalStance": "goofy",
       "requestedStance": "regular",
-      "glbSha256": "320854d44f706acf2a481b3ebba0709d1ecd94fd13deaeb560010f1e1fec7f4f",
-      "inputSha256": "5303cf288693cfd823423315d62619b1b8ab3428e2161db6834b9c01494c1c48",
+      "glbSha256": "8b57241740a1015fabb8947b50e6b1056722d118158054210396c45e9cfa0106",
+      "baselineGlbSha256": "517290a3a9598808076d3e339a3203eb27a2e042bacc94af748556dd376f777e",
+      "inputSha256": "df16550320135b8334f75ab87030eeb96c0572dca48780d27c6d27992decb475",
       "physicalFlightSeconds": 0.5625,
       "phaseMoments": {
         "Load": 0.8166666666666667,
         "Pop": 0.8666666666666667,
+        "Flick": 0.9166666666666666,
         "Air": 1.0833333333333333,
         "Catch": 1.3,
         "Land": 1.4166666666666667,
@@ -243,34 +167,57 @@
       "sourcePhasePosterFallbacks": 0,
       "images": [
         {
-          "file": "low-goofy-air-catch-before-after.jpg",
-          "sha256": "b76c3eeccd0938519275592de9748c30380befc367a0768384a03729149ff2c9"
+          "file": "low-goofy-phases.jpg",
+          "sha256": "f5e0930fe737ed96470ca9811d2525fbbbd9687a5992839d548f2ee66436e8fa"
         },
         {
-          "file": "low-goofy-phases.jpg",
-          "sha256": "d77376ec6d515458a2f19caeb45afdbda0de5e7908b181e468e644e965967d58"
+          "file": "low-goofy-air-catch-before-after.jpg",
+          "sha256": "ffff09ec36c43135b741c470bfc54e0e18dcbd467ffbcab3b053ea2bc19e0b09"
+        }
+      ]
+    },
+    {
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "requestedStance": "regular",
+      "glbSha256": "81230bf0e62b38c013fc6e4ac0dda118b920ff968b43263d456ee7056d7a3ef2",
+      "baselineGlbSha256": "21264de694cf1c62bfa753560741e792a547b89b67c65259a7905327e202f54b",
+      "inputSha256": "cc931c12c5723eecf68c742a72c1986a46708ae69cdad495ce8cbc74227562f0",
+      "physicalFlightSeconds": 0.59375,
+      "phaseMoments": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.8666666666666667,
+        "Flick": 0.9166666666666666,
+        "Air": 1.1,
+        "Catch": 1.3333333333333333,
+        "Land": 1.45,
+        "Rollaway": 1.6166666666666667,
+        "End": 4.0
+      },
+      "rawPackReviewed": false,
+      "nativeGameApproved": false,
+      "playback": [
+        {
+          "rate": 1,
+          "sampledClockReadbacks": 43,
+          "exactEndSeconds": 4
+        },
+        {
+          "rate": 0.25,
+          "sampledClockReadbacks": 114,
+          "exactEndSeconds": 4
         }
       ],
-      "comparisonInputImages": [
+      "browserErrors": 0,
+      "sourcePhasePosterFallbacks": 0,
+      "images": [
         {
-          "stage": "Before",
-          "phase": "Air",
-          "sourcePngSha256": "2b4c5a6e54dc1fe7b71e2e3985c48a518584511d1ec7120d81e6321ef12f427a"
+          "file": "normal-goofy-phases.jpg",
+          "sha256": "11840af7599258d487a576945c161df4cbd4351288244da7f64e1709025430eb"
         },
         {
-          "stage": "After",
-          "phase": "Air",
-          "sourcePngSha256": "fed55a1b3dd4ca5a334663b9a3c4730ad8685ddb78fb889fb43501604f3f23be"
-        },
-        {
-          "stage": "Before",
-          "phase": "Catch",
-          "sourcePngSha256": "2b40119fe59aae10755100d67cd7818aa200a60659c2a196c57c8e6a0c33a047"
-        },
-        {
-          "stage": "After",
-          "phase": "Catch",
-          "sourcePngSha256": "b6d342846f1e50f725e63581db30ec0cca1b452aae998b0c6247ee5502859b7a"
+          "file": "normal-goofy-air-catch-before-after.jpg",
+          "sha256": "5c420bb0bc723060e95a440b5460d2216caca4f608c741a12694904e09945de3"
         }
       ]
     }
