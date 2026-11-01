@@ -1,0 +1,18 @@
+# A3 Fakie Ollie — original rig review
+
+Own landed [P4C reference](https://www.youtube.com/watch?v=P4CflPS6YwQ&t=73): the black-cap/gray-shorts rider rolls backwards on flat concrete, pops the leading tail with his physical Right foot, guides the nose with his Left upper shoe and lands without a flip, shove or body turn. Bounded64..78s decoder274..347,30000/1001fps, container start PTS990/timebase1/30000; approximate full-video73.142467..75.578233s. Next actor cut348 is excluded. These are local decoder indices, not claimed original full-video frames. Monocular camera/depth, canonical hip/shoulder heading, knee planes, gaze, root and contacts are authored. The preferred detector retains73/74 rows; rejected post-Land327 is explicitly reconstructed between326/328. Footage, raw detections and source-comparison pixels stay private.
+
+[Private source-comparison viewer](http://127.0.0.1:63761/a3-fakie-ollie/) · [source freeze](https://github.com/Dj-Shortcut/rust-skate-mod/commit/99508472edc0d4e9977d883b9902e6952f3768d5) · [exact managed route](https://github.com/Dj-Shortcut/rust-skate-mod/commit/5691c8cf1ba528ff6c6f17f68af4c973398007fd).
+
+| Physical preview | Normal | Low | Contact close views |
+|---|---|---|---|
+| Regular | [Load/Pop/Air/Catch/Land/End](normal-regular-phases.jpg) | [Load/Pop/Air/Catch/Land/End](low-regular-phases.jpg) | [normal](normal-regular-contacts.jpg), [low](low-regular-contacts.jpg) |
+| Goofy | [Load/Pop/Air/Catch/Land/End](normal-goofy-phases.jpg) | [Load/Pop/Air/Catch/Land/End](low-goofy-phases.jpg) | [normal](normal-goofy-contacts.jpg), [low](low-goofy-contacts.jpg) |
+
+The original animated GLB foot bones determine physical stance; the requested binding label is separately recorded in [review-manifest.json](review-manifest.json). Anatomy is reflected once. The signature is actual `Ollie,true,true,0,0,0,0`, with backwards native velocity in the board's unchanged nose frame. No extra switch/travel-axis rotation or duplicate flight is authored. Signed wheel rotation follows recorded velocity in the private renderer.
+
+Own controller inputs pass through the current32Hz physics/landing/scorer, then the measured fitter, actual charge, CapturedTricks and source sampler at60Hz. All four normal/low × physical Regular/Goofy cases selected Fakie Ollie: normal36/36, low34/34 keyed Air frames, no fallback/bail, observed Land and ordinary ground at4s. The pressure endpoint, toe release, upper guide, distinct later free Air and both-foot catch use the original support/ground/floor guards. The original skin, inverse binds and full13-part skateboard are preserved.
+
+All four decoded-reference viewer cases were run at1× and¼× through landing and ordinary recovery; all28 phase visits decoded source video, with0 browser errors. Side and Feet views additionally cover Pop, upper-guide, Air and Land in both stances. The source-side camera is one explicitly estimated fixed fit; the source is never mirrored and no camera repairs a pose. [playback-summary.json](playback-summary.json) records the bounded managed/browser gate; stills alone do not prove continuity.
+
+The author inspected the real tail pop, grip-up compact Air, source arm gesture, shoe upper guide, catch, bent landing and recovery beside the source. This is an original-rig review handoff, not Claude's independent offline verdict. The source pack remains `reviewed=false`; the private approval copy is test-only. Integrated CI, Unity/IL2CPP, native collision/loader and Shadow testing remain separate gates. No physics/scoring, F5/F9, gameplay camera or placement code changed.

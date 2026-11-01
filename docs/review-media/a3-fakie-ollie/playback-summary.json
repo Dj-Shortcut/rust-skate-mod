@@ -1,0 +1,147 @@
+{
+  "format": "a3-fakie-ollie-playback-summary/1",
+  "sourceReviewed": false,
+  "nativeGame": false,
+  "viewerUrl": "http://127.0.0.1:63761/a3-fakie-ollie/",
+  "sourcePackSha256": "c2dde0f83c504be06617865c48ee95456095f09f77f4b2c52f51f453f77f12bc",
+  "runtimeRouteRevision": "5691c8cf1ba528ff6c6f17f68af4c973398007fd",
+  "managed": [
+    {
+      "profile": "normal",
+      "requestedStance": "regular",
+      "names": [
+        "Combo",
+        "Fakie Ollie"
+      ],
+      "sourcePackSha256": "c2dde0f83c504be06617865c48ee95456095f09f77f4b2c52f51f453f77f12bc",
+      "traceSha256": "62a7fb4359602675dd102d69759ca150851b4f0683cb4d36595259d6f84c4831",
+      "jsonSha256": "210c37901662975eef5c7cc9bbe3eb3ab17cbe92138e5db1f18650710bc43fe2",
+      "activeAir": 36,
+      "airFrames": 36,
+      "flightDuration": 0.59375,
+      "terminalCapture": false,
+      "t": 4
+    },
+    {
+      "profile": "normal",
+      "requestedStance": "goofy",
+      "names": [
+        "Combo",
+        "Fakie Ollie"
+      ],
+      "sourcePackSha256": "c2dde0f83c504be06617865c48ee95456095f09f77f4b2c52f51f453f77f12bc",
+      "traceSha256": "7b0a686216c7c0e4a9cb8a25984fa7d4006fc76b6c003d5b519a2968cf237f9e",
+      "jsonSha256": "6927de6df4296f97b036ad84aad481851467503225c5f3e4a8920b78fc32dece",
+      "activeAir": 36,
+      "airFrames": 36,
+      "flightDuration": 0.59375,
+      "terminalCapture": false,
+      "t": 4
+    },
+    {
+      "profile": "low",
+      "requestedStance": "regular",
+      "names": [
+        "Combo",
+        "Fakie Ollie"
+      ],
+      "sourcePackSha256": "c2dde0f83c504be06617865c48ee95456095f09f77f4b2c52f51f453f77f12bc",
+      "traceSha256": "7c765941280c0904c599938365e8b4754c34c98a38986b0dd9b2b8418b255e65",
+      "jsonSha256": "826b71464021ad64180882cf536b408674570ec90ab17686047471eda569ac62",
+      "activeAir": 34,
+      "airFrames": 34,
+      "flightDuration": 0.5625,
+      "terminalCapture": false,
+      "t": 4
+    },
+    {
+      "profile": "low",
+      "requestedStance": "goofy",
+      "names": [
+        "Combo",
+        "Fakie Ollie"
+      ],
+      "sourcePackSha256": "c2dde0f83c504be06617865c48ee95456095f09f77f4b2c52f51f453f77f12bc",
+      "traceSha256": "14737f00f88c8879fd572994d467d5ffd33d82e21c09ba50b0b8a5c057b3fa55",
+      "jsonSha256": "80473df82d628578c99ec2d9c28d1452af9141d8852649045c26d6d566eafa3f",
+      "activeAir": 34,
+      "airFrames": 34,
+      "flightDuration": 0.5625,
+      "terminalCapture": false,
+      "t": 4
+    }
+  ],
+  "viewer": [
+    {
+      "profile": "normal",
+      "physicalStance": "regular",
+      "phaseCount": 7,
+      "rates": [
+        {
+          "rate": 1,
+          "sampleCount": 40,
+          "endSeconds": 4
+        },
+        {
+          "rate": 0.25,
+          "sampleCount": 105,
+          "endSeconds": 4
+        }
+      ]
+    },
+    {
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "phaseCount": 7,
+      "rates": [
+        {
+          "rate": 1,
+          "sampleCount": 40,
+          "endSeconds": 4
+        },
+        {
+          "rate": 0.25,
+          "sampleCount": 105,
+          "endSeconds": 4
+        }
+      ]
+    },
+    {
+      "profile": "low",
+      "physicalStance": "regular",
+      "phaseCount": 7,
+      "rates": [
+        {
+          "rate": 1,
+          "sampleCount": 40,
+          "endSeconds": 4
+        },
+        {
+          "rate": 0.25,
+          "sampleCount": 105,
+          "endSeconds": 4
+        }
+      ]
+    },
+    {
+      "profile": "low",
+      "physicalStance": "goofy",
+      "phaseCount": 7,
+      "rates": [
+        {
+          "rate": 1,
+          "sampleCount": 40,
+          "endSeconds": 4
+        },
+        {
+          "rate": 0.25,
+          "sampleCount": 105,
+          "endSeconds": 4
+        }
+      ]
+    }
+  ],
+  "sideAndFeetViews": 16,
+  "browserErrors": 0,
+  "limits": "Controlled managed execution with private test-only approval copy. Raw pack unchanged and false; decoded source/reference private. No Unity/IL2CPP, real-world collision, native loader or Shadow test; Claude offline verdict pending."
+}
