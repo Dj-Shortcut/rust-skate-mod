@@ -308,12 +308,12 @@
       [
         49.5,
         -0.055,
-        0.25
+        0.185
       ],
       [
         50.5,
         -0.04,
-        0.28
+        0.21
       ],
       [
         78,
@@ -365,7 +365,7 @@
       ]
     }
   },
-  "provenance": "Own genuine normal Goofy BS180, Wes black SK8MAFIA/cap take in official Berrics i8jPt6jHk98; raw identity61/61 with bounded PTS. Captured torso-local arm estimates with explicit uncertainty/interpolation and authored bent balance; authored body windup/heading, compact fixed-chain hips/legs, head/gaze, actual-shaped-deck sole/outer-upper guides and no-flip board pitch. Source full body+board heading is reconstructed and then removed from ALL samples once; native live NoseYaw owns exactly one real BS180 body+board turn. Not measured3D mocap. The plain BS180 retains a modest estimated nose-up carry through local54 and levels byCatch58; free shoes follow that board pitch with a small clearance rather than a flip-style empty gap. Claude #689 Pop/Guide repair: lower only the brief peak to about38 degrees, let the front outer-upper drag up progressively, and open the lead wind-up arm away from the head. All source54-and-later body, board, contacts and recovery remain unchanged.",
+  "provenance": "Own genuine normal Goofy BS180, Wes black SK8MAFIA/cap take in official Berrics i8jPt6jHk98; raw identity61/61 with bounded PTS. Captured torso-local arm estimates with explicit uncertainty/interpolation and authored bent balance; authored body windup/heading, compact fixed-chain hips/legs, head/gaze, actual-shaped-deck sole/outer-upper guides and no-flip board pitch. Source full body+board heading is reconstructed and then removed from ALL samples once; native live NoseYaw owns exactly one real BS180 body+board turn. Not measured3D mocap. The plain BS180 retains a modest estimated nose-up carry through local54 and levels byCatch58; free shoes follow that board pitch with a small clearance rather than a flip-style empty gap. Claude #689 Pop/Guide repair: lower only the brief peak to about38 degrees, let the front outer-upper drag up progressively, and open the lead wind-up arm away from the head. All source54-and-later body, board, contacts and recovery remain unchanged. The final early guide stays around middeck/front bolts (0.185\u20130.21m) through source49.5\u201350.5, so the held ankle does not perch over the nose; the released foot then advances into the unchanged free-Air/catch path.",
   "popBalance": {
     "window": [
       44,
@@ -386,5 +386,15 @@
       ]
     },
     "provenance": "Authored open wind-up for the uncertain/cropped lead hand. Only Pop/Guide; smoothly returns to the previous balance at Air54, preserving accepted later phases in both physical stances."
+  },
+  "popExtension": {
+    "window": [
+      47,
+      49,
+      50.5,
+      54
+    ],
+    "metres": 0.045,
+    "provenance": "Small authored leg-driven extension during pressure/guide, rejoining the accepted Air54 pelvis exactly. Avoids a sinking hip while the guide ankle rises; native flight and entry reach guards remain unchanged."
   }
 }

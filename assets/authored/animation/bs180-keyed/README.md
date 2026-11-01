@@ -72,7 +72,9 @@ Shadow or Claude's offline visual approval.
 
 Claude's A2 review identified an overly steep-looking Pop/Guide and a lead
 hand held beside the head. The authored pressure peak is reduced to about
-38 degrees, with a more progressive front outer-upper drag toward the nose.
+38 degrees, with the early front outer-upper drag kept around middeck/front
+bolts before advancing into the free/catch path. A small leg-driven
+extension avoids a sinking hip through pressure and guide.
 A separate short wind-up opens the lead elbow and hand away from the head,
 then rejoins the previous balance before source54. Air, catch, land and
 roll-away retain their existing poses, contacts and timing. The original

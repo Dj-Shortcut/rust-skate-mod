@@ -147,7 +147,12 @@ def sample(controls, s, sf):
     origin, rotation, height, source_yaw = board(s, sf)
     hip_turn = turn_y(scalar(s['sourceYawKeys'], sf)+scalar(s['hipWindupKeys'], sf))
     chest_turn = turn_y(scalar(s['sourceYawKeys'], sf)+scalar(s['chestWindupKeys'], sf))
-    pelvis = origin + UP*scalar(s['pelvisHeightKeys'], sf)
+    extension = s.get('popExtension')
+    lift = 0.
+    if extension:
+        start, full, held, finish = extension['window']
+        lift = extension['metres']*smooth((sf-start)/(full-start))*(1-smooth((sf-held)/(finish-held)))
+    pelvis = origin + UP*(scalar(s['pelvisHeightKeys'], sf)+lift)
     feet = {side: foot(s, sf, side) for side in ['Left', 'Right']}
     hips = {'Left': hip_turn @ np.array([0., 0., .09]),
             'Right': hip_turn @ np.array([0., 0., -.09])}
