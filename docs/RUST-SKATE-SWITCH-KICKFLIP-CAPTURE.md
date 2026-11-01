@@ -40,3 +40,25 @@ skateboard/truck hierarchy. Physical stance labels are audited from exported
 foot bones against deck forward, not assumed from a fixture's requested label.
 Reference frames and complete source footage remain private. Only original
 rig-only comparison images may be published for Claude's separate quality gate.
+
+## Original rig-only review images
+
+| Physical stance | Normal | Low |
+|---|---|---|
+| Regular | [Load → End](review-media/2026-11-01-switch-kickflip/normal-regular.jpg) | [Load → End](review-media/2026-11-01-switch-kickflip/low-regular.jpg) |
+| Goofy | [Load → End](review-media/2026-11-01-switch-kickflip/normal-goofy.jpg) | [Load → End](review-media/2026-11-01-switch-kickflip/low-goofy.jpg) |
+
+The normal charge visibly crouches; the shorter low input has a shallower
+procedural setup. It is an authored low-flight counterpart, not a second filmed
+low take. Both show the extending rear leg before strike, a compact folded air,
+bent catch/landing and ordinary riding after recovery. Named-foot lead signs
+remain constant across the baseline/capture handoff and four-second finish.
+Private source juxtaposition uses the actual sampled source cursors; it remains
+separate from these public rig images.
+
+The media freeze uses source authoring `559a8e9`, unreviewed pack `6720831f`,
+and the separately integrated shared-route source `1461b7d`. The initial mesh
+inspection exposed an overly upright air caused by discarding camera-axis lean;
+that diagnostic was retained privately and replaced by these corrected exports.
+The [media manifest](review-media/2026-11-01-switch-kickflip/review-manifest.json)
+records original-image hashes without exposing private traces or reference pixels.

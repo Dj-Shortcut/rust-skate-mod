@@ -1,0 +1,38 @@
+{
+  "sourceAuthoringHead": "559a8e9",
+  "sourceCodeRevision": "1461b7da3db1f97cf7e04a10243b958b5d56f7f9",
+  "sourcePackSha256": "6720831f870d440c8229da02ff14ec2c28f102fb9f188803012c72a95f44af87",
+  "sourceReviewed": false,
+  "publicRigOnly": [
+    {
+      "profile": "low",
+      "requestedStance": "goofy",
+      "physicalStance": "regular",
+      "file": "docs/review-media/2026-11-01-switch-kickflip/low-regular.jpg",
+      "sha256": "486c1bdb6afeb95e49c6c8d85879e00ea46eb719d04306033d7ee8f9c7eb2e73"
+    },
+    {
+      "profile": "normal",
+      "requestedStance": "goofy",
+      "physicalStance": "regular",
+      "file": "docs/review-media/2026-11-01-switch-kickflip/normal-regular.jpg",
+      "sha256": "f2daef4746a8aab2263c49a242cf57b92dce6313f7a009ed4ec4915bdc37a182"
+    },
+    {
+      "profile": "low",
+      "requestedStance": "regular",
+      "physicalStance": "goofy",
+      "file": "docs/review-media/2026-11-01-switch-kickflip/low-goofy.jpg",
+      "sha256": "5c06a3b089b9382711b178a7da975b2ece17dddbd8100bdc60fddfbc42940bfa"
+    },
+    {
+      "profile": "normal",
+      "requestedStance": "regular",
+      "physicalStance": "goofy",
+      "file": "docs/review-media/2026-11-01-switch-kickflip/normal-goofy.jpg",
+      "sha256": "c939e34352cb5a7b54cd835c57089db9069640fe314f3abdce4ac5ce90ed46f8"
+    }
+  ],
+  "status": "Original rig-only still evidence; Claude offline and native review pending",
+  "sourceFootagePublished": false
+}
