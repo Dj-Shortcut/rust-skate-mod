@@ -128,18 +128,19 @@ docs name; the footage itself stays private. State as of `main` after #681; the 
 | FS pop shove-it | `fs-pop-shove-it-source-keyed-v1` (`fs-pop-shove-keyed/`, #675, Kroetkov `YcmPDIj2BFo` 130.3–133.2 s, filmed goofy), **offline reviewed** 1 Nov (air frame 216 shows the deck end-on and steeply pitched; confirm against the source frame); FS 360: `fs-360-shove-it-source-keyed-v1` (`fs360-shove-keyed/`, #653 with the pop extension of #676, an authored derivation from the FS 180 reconstruction, no filmed FS 360 take), **offline reviewed** 1 Nov (mid-air carrier tilt shows the wheels from behind; confirm it stays under the scoop's 40°) | none | none | none |
 | 360 flip | source present: `360-flip-source-keyed-v1` (`treflip-keyed/`, `_oRoo1x1uzM` ~253 s, filmed goofy); Varial Kickflip: `varial-kickflip-derived-tre-v1` (`varial-kickflip-derived/`, #640 with the compact authored upper body of #678, a Tre derivation, no filmed take), **offline reviewed** 1 Nov after #678 (no arch, bent asymmetric arms through the catch, feet close to the deck; the normal/regular air deck gap is still the largest of the family) | none | **offline reviewed**: `nollie-360-flip-source-keyed-v1` (`nollie360-keyed/`, `PqJZcwTY1QE` t=153) | none |
 | Hardflip | source present: `hardflip-source-keyed-v1` (`hardflip-keyed/`, `_oRoo1x1uzM` t=192) | none | none | none |
-| Inward heelflip | none (no verified normal take in the cached Berrics windows, #672) | none | none (a Nollie Inward Heelflip label near 158 s of `PqJZcwTY1QE`, unverified) | none (a Switch Inward Heelflip label near 556 s, unverified) |
+| Inward heelflip | **offline reviewed** 1 Nov: authored Heel + BS 180 derivation (#687, `docs/review-media/a1-inward-heelflip-derived/`; no verified filmed take in the cached Berrics windows, #672), reversed-deck catch | none | none (a Nollie Inward Heelflip label near 158 s of `PqJZcwTY1QE`, unverified) | none (a Switch Inward Heelflip label near 556 s, unverified) |
 | BS 180 | none (procedural spin only; only BS 180 Kickflip and Bigspin labels in the caches, #672) | none | combined only: `nollie-backside-180-heelflip` (`nollie-bs180-heelflip-air/`, `PqJZcwTY1QE` t=115), **offline reviewed**; not a standalone BS 180 reference | none |
 | FS 180 | none (procedural spin only; only FS 180 Kickflip and Bigspin labels in the caches, #672) | none | none | none |
 
-Count on `main`: 8 slots offline reviewed (fakie kickflip, nollie heelflip,
+Count on `main`: 9 slots offline reviewed (fakie kickflip, nollie heelflip,
 switch heelflip, nollie 360 flip, normal FS pop shove-it, switch kickflip, nollie
-kickflip after #685, fakie heelflip from #686 as an authored derivation; the
+kickflip after #685, fakie heelflip from #686 and inward heelflip from #687 as
+authored derivations; the
 combined nollie BS 180 heelflip is reviewed but is not a standalone BS 180
 reference and is not counted; the Varial Kickflip is a reviewed derivative inside
 the 360-flip slot, as are the held Double Kickflip, BS 360 and FS 360 inside
 theirs), 5 source present (normal kickflip, heelflip, BS pop shove-it, 360 flip,
-hardflip), 27 without a source.
+hardflip), 26 without a source.
 Nothing is native accepted. Outside the 40 slots, the normal Impossible has its own
 board-path adapter and controls (`impossible-keyed/`, `_oRoo1x1uzM`), source
 present. Batches 2 and 4–7 (riding, grabs, grinds, oldschool, transition) have
@@ -167,6 +168,7 @@ here. Nothing below is native acceptance; raw packs stay `reviewed=false`.
 | Varial Kickflip (#640, then #678) | offline reviewed after #678 | #674's delivery was rejected (arms thrown up with an arched back in the air, straight T-arm catch, deck ~0.4 m below the feet). #678's before/after sheets in the same camera show a compact authored upper body: no arch, bent asymmetric arms settling through the catch, feet brought to the deck | The normal/regular air gap between feet and deck is still the largest of the family; keep an eye on it in the viewer |
 | Nollie Kickflip (#679, #681, then #685) | offline reviewed after #685 (batch A1, #684) | #685's same-camera before/after sheets: head now up and looking toward the board and landing from Pop on, the lead arm bent and low from Catch through Land in both stances and both heights; lower body, board path and nose pop unchanged | The air keeps one arm raised above the shoulder, plausible for a flip; nothing else open |
 | Fakie Heelflip (#686) | offline reviewed (batch A1, #684) | Authored from the reviewed Fakie Kickflip body with a heel-guide flick against the toe-side nose corner: deep Load, tail-end fakie pop, heel flick at 0.95 s, deck turning under the feet, bent-knee catch and land, upright roll-away to 4 s, normal/low and physical regular/goofy | The pop/flick frames throw both arms up in a wide V, inherited from the fakie kickflip body; acceptable, but a lower lead arm would read calmer |
+| Inward Heelflip (#687) | offline reviewed (batch A1, #684) | Authored from the Heelflip source with a BS 180 scoop: deep Load, pop with the heel exit off the toe-side edge, deck turning heel-wise and 180° under the feet, reversed-deck catch with both feet over the bolts, bent-knee land and upright roll-away to 4 s; normal/low, physical regular/goofy | None from the stills; the low/goofy air frame catches the deck end-on mid-rotation, which reads correctly in the replays Codex reports |
 | Nollie Kickflip, earlier gate (#679, #681) | superseded by the row above | Own Rodriguez take: genuine nose pop with the front foot, rear outer-instep flick, compact air with the deck inverted below | In both stances the lead arm stands straight above the head from Catch through Land, and the head is bowed into the chest from Pop to Land. Check source frames 5720–5742: if Rodriguez's arm is not overhead at landing this is the monocular depth artifact seen on the heelflip; either way the owner's 28 October rule applies (a believable head and arm win over an unreliable source) |
 | Switch Kickflip (#680, #681) | offline reviewed | Own Rodriguez take, physical regular body with switch signature: upright pop, compact air with the deck inverted under the feet, bent-knee catch, settled roll-away, both stances | None from the stills |
 
