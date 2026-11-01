@@ -25,3 +25,6 @@ python scripts/author_skate_fakie_bs_pop_shove.py --output context/private/fakie
 NumPy is required. The executable pins its own original body controls, read-only geometry/math and shaped-board surface. It builds the strict pack before atomically replacing each output. Generated source JSON/packs, raw detections, private test-only approval, footage and model weights remain ignored. Raw packs are always `reviewed=false`.
 
 Ordinary four-case route integration, full original-rig/13-part-board viewer and source-decoded 1×/¼× review are pending. Claude owns library/offline verdicts; native Shadow acceptance is separate. A successful bake is not an approved animation or game test.
+
+
+The first source-facing representative was rejected for a steep/seated Pop and a wrist projected across the face at Catch. The follow-up is explicitly authored: a bounded gentler pressure-pitch envelope plus brief body extension, and only the canonical Right arm opens outward/down at Catch. The original source yaw/events/native input are unchanged. From decoder 958 onward all board/foot/non-arm source geometry is exact to the first candidate; Land 967 and later recovery are unchanged. Four strict actual routes still pass; new source-facing visual review is pending. Camera orientation is solely an estimated viewing basis, never a body correction.

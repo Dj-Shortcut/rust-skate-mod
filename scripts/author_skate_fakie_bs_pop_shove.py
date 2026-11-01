@@ -28,6 +28,10 @@ SURFACE = ROOT / 'assets/authored/animation/treflip-keyed'
 def board_at(s, sf):
     yaw = scalar(s['yawKeys'], sf)
     pitch = scalar(s['pitchKeys'], sf) * s['_strikePitch'] / 46.
+    correction = s['popPresentation']
+    start, full, held, end = correction['window']
+    weight = smooth((sf - start) / (full - start)) * (1 - smooth((sf - held) / (end - held)))
+    pitch *= 1 - correction['pitchReduction'] * weight
     rotation = qmatrix(euler_quat([0., yaw, 0.])) @ qmatrix(euler_quat([-pitch, 0., 0.]))
     floor = -float((np.asarray(s['_geometry']['support']['board']) @ rotation.T)[:, 1].min())
     rise = geometry.reference_height(s, sf)
@@ -86,9 +90,29 @@ def sample(c, s, sf):
             joints[side + 'Elbow'] = joints[side + 'Shoulder'] + unit(joints[side + 'Elbow'] - joints[side + 'Shoulder']) * .29
             joints[side + 'Hand'] = joints[side + 'Elbow'] + unit(joints[side + 'Hand'] - joints[side + 'Elbow']) * .27
     pelvis = curve([r[0] for r in s['pelvisKeys']], [r[1:] for r in s['pelvisKeys']], sf)
+    extension = s['popPresentation']['extension']
+    start, full, held, end = extension['window']
+    pelvis += UP * extension['metres'] * smooth((sf - start) / (full - start)) * (1 - smooth((sf - held) / (end - held)))
     delta = pelvis - joints['Pelvis']
     for k in joints:
         joints[k] += delta
+    # A covered/depth-ambiguous wrist projects across the face at Catch.
+    # Reconstruct only that anatomical arm in body axes; the other arm and
+    # the source body/clock remain untouched.
+    balance = s['catchBalance']
+    start, full, held, end = balance['window']
+    weight = smooth((sf - start) / (full - start)) * (1 - smooth((sf - held) / (end - held)))
+    if weight > 0:
+        facing = unit(np.asarray(dirs['ChestForward']) * [1., 0., 1.])
+        left = unit((joints['LeftHip'] - joints['RightHip']) * [1., 0., 1.])
+        local = lambda v: unit(facing * v[0] + UP * v[1] + left * v[2])
+        side = balance['side']
+        shoulder = joints[side + 'Shoulder']
+        upper = unit(joints[side + 'Elbow'] - shoulder)
+        fore = unit(joints[side + 'Hand'] - joints[side + 'Elbow'])
+        elbow = shoulder + unit(upper * (1 - weight) + local(balance['upper']) * weight) * .29
+        joints[side + 'Elbow'] = elbow
+        joints[side + 'Hand'] = elbow + unit(fore * (1 - weight) + local(balance['fore']) * weight) * .27
     feet = {side: foot(s, sf, side) for side in ('Left', 'Right')}
     lo, hi = -float('inf'), float('inf')
     reach = .87 * s['maximumReachShare']

@@ -394,8 +394,47 @@
     "spin": 0,
     "body": 0
   },
-  "provenance": "Own genuine black-shirt/cap/tattooed-arm BATB13 Fakie BS Pop Shove-it, bounded923..1006 of cached181..219s excerpt. Actual tail scoop, grip-up board-only180, unchanged body heading, catch and flat-ground landing/rollaway verified visually. Source own torso/arm directions, explicit estimated camera/depth/anatomy/knee/gaze reconstruction, original shaped-deck fixed-shoe setup/release/catch and authored root/foot clearance. No Cole/Halfcab body, no front-foot flip flick, no raw/native approval.",
+  "provenance": "Own genuine black-shirt/cap/tattooed-arm BATB13 Fakie BS Pop Shove-it, bounded923..1006 of cached181..219s excerpt. Actual tail scoop, grip-up board-only180, unchanged body heading, catch and flat-ground landing/rollaway verified visually. Source own torso/arm directions, explicit estimated camera/depth/anatomy/knee/gaze reconstruction, original shaped-deck fixed-shoe setup/release/catch and authored root/foot clearance. No Cole/Halfcab body, no front-foot flip flick, no raw/native approval. Visible own Pop/Catch follow-up: bounded gentler pressure pitch plus brief body extension, and only the face-covering canonicalRight arm opens at Catch. Source yaw, contact/event clock, native physics and later landing/recovery are retained.",
   "uncertainty": "Manual Goofy-base Fakie / anatomicalLeft tail role inference from same-actor witnesses and actual backward tail-leading pop; excerpt lacks a complete independent plain-normal stance take. Monocular pan, partly hidden tail sole, small airborne feet and wrist/head depth. BS board-only180 is a visual inference corroborated by table sequence, not calibrated3D. Original full-video frames/hash unknown.",
   "sourceRootMotion": "Body is hip-relative with no carrier/jump baked. Canonical+Z remains initial nose, backwards Fakie velocity is-tailZ and independent. One board-local180 only; body heading stays unspun/native. Reference rise is removed only from the pressure board offset; actual carrier is added once by playback.",
-  "phaseClockLimit": "Own bounded decoder Pop951, front release951.8, tail strike953.1, canonicalRight tail-sole release954.2, distinct later freeAir956, firstCatch963.5/both965, sourceLand967 and same-take upright992. Contact/rotation marks are authored visual estimates; actual native input/landing/scoring remain authoritative."
+  "phaseClockLimit": "Own bounded decoder Pop951, front release951.8, tail strike953.1, canonicalRight tail-sole release954.2, distinct later freeAir956, firstCatch963.5/both965, sourceLand967 and same-take upright992. Contact/rotation marks are authored visual estimates; actual native input/landing/scoring remain authoritative.",
+  "popPresentation": {
+    "window": [
+      951,
+      952.5,
+      954.2,
+      958
+    ],
+    "pitchReduction": 0.3,
+    "extension": {
+      "window": [
+        949.5,
+        952,
+        954.2,
+        958
+      ],
+      "metres": 0.08
+    },
+    "provenance": "Bounded authored own Pop correction against the genuine source: reduce the steep/seated pressure presentation and extend the body briefly. Existing floor/full-shoe/fixed-chain guards remain unchanged; the source yaw and all Air958-and-later non-arm geometry rejoin the original paths exactly."
+  },
+  "catchBalance": {
+    "window": [
+      961.5,
+      963.5,
+      965.5,
+      967
+    ],
+    "side": "Right",
+    "upper": [
+      0.3,
+      -0.25,
+      -0.92
+    ],
+    "fore": [
+      0.75,
+      -0.2,
+      -0.25
+    ],
+    "provenance": "Own canonical Right wrist is forward/depth-ambiguous at Catch and projects across the face in the source-facing camera. Author a bent outward/down balance arm only in this window; other arm and Land967+ original source paths unchanged. This is a body-relative correction, not a camera fix or recovered3D observation."
+  }
 }
