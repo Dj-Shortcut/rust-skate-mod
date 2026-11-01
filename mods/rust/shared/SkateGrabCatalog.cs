@@ -201,6 +201,8 @@ namespace Shortcut.RustMod
                 case SkateGrabKind.TuckKnee: return new SkateGrabDefinition(back, .1, -.08, 35, 10, tuck: .005, legShift: .06, bodyShift: .12);
                 case SkateGrabKind.Stiffy: return new SkateGrabDefinition(back, .1, -.08, 12, -8, extension: .9, legShift: -.08);
                 case SkateGrabKind.BacksideTweak: return new SkateGrabDefinition(lead, -.1, .06, -38, -12, legShift: -.08, bodyShift: -.18, heelTurn: .5);
+                // Air overrides extension, legShift, chestTurn and free-arm elevation
+                // in the contact-constrained travel-frame shape in SkateRider.
                 case SkateGrabKind.Crossbone: return new SkateGrabDefinition(lead, -.1, .04, -28, 15, extension: .65, legShift: .12, chestTurn: -.4, yaw: -18,
                     freeArmElevation: 60, handOutset: .035, handRise: .02);
                 case SkateGrabKind.TailNosebone: return new SkateGrabDefinition(tail, 0, -.36, pitch: -28, end: true, extension: .85, legShift: -.22);
