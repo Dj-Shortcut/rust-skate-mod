@@ -39,3 +39,9 @@ maximum tail press at211.6. Both feet remain attached until front release211,
 then only the rear sole until212. Smooth pitch keys span that own stroke.
 The private viewer names its Pop button by the actual displayed maximum tail
 press, while physical takeoff and landing remain the native state clocks.
+
+An authored6cm pelvis/upper reserve fades in over208–212, includes the214
+source root-entry target and fades out by216. The rear knee stays flexible
+under the existing native tail-press carrier compensation. Feet and board
+paths, contact bits and all native reach guards stay unchanged; this is
+monocular depth reconstruction, not measured motion or extra physics.

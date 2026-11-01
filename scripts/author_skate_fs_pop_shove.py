@@ -92,6 +92,14 @@ def sample(source, s, sf):
     # none of the BS source body, arm or foot controls is imported.
     joints, dirs, soles = source_body(source, sf)
     rig = source['metadata']['rig']
+    reserve = s['pressRootReserve']
+    weight = min(smooth((sf-reserve['start'])/(reserve['full']-reserve['start'])),
+                 1-smooth((sf-reserve['holdUntil'])/(reserve['end']-reserve['holdUntil'])))
+    if weight > 0:
+        # Source depth is uncertain here: preserve the whole upper frame and
+        # fixed shoe targets while reserving rear-knee bend for live press.
+        for key in joints:
+            joints[key] -= UP*(reserve['dropMetres']*weight)
     repair = s['rootRepair']
     if repair['start'] <= sf <= repair['end']:
         keys = repair['keys']
@@ -178,6 +186,9 @@ def bake(raw, s):
         raise ValueError('The own FS source must end at one frontside half-turn')
     if source['metadata']['firstSourceFrame'] != 190 or source['metadata']['lastSourceFrame'] != 276:
         raise ValueError('The exact filmed FS take190..276 is required')
+    reserve = s['pressRootReserve']
+    if not (s['pop'] <= reserve['start'] < reserve['full'] <= reserve['holdUntil'] < reserve['end'] <= s['catchStart']) or not (0 < reserve['dropMetres'] <= .08):
+        raise ValueError('Expected a bounded own early-press root reserve before catch')
     geometry_raw = (GEOMETRY/'constraints.json').read_bytes()
     if sha(geometry_raw) != s['geometrySha256']:
         raise ValueError('Own shoe and entry geometry differs')
@@ -212,6 +223,7 @@ def bake(raw, s):
                     sourceVideoOffsetSeconds=s['firstSourceFrame']/s['sourceFps'],
                     capturedSourceProvenance=source['metadata'].get('provenance', {}),
                     contactRootReconstruction=s['rootRepair'],
+                    authoredEarlyPressRootReserve=s['pressRootReserve'],
                     sourceTailStrikeFrame=s['tailStrike'],
                     phaseClockLimit='Pop208 begins leg extension with both feet; maximum tail press211.6, front release211 and rear release212 are later source observations, not native gameplay callbacks.',
                     provenance=s['provenance'], combinedWinding=dict(nativeFlip=0, nativeShove=180, canonicalYaw=-180, bodySpin=0),
