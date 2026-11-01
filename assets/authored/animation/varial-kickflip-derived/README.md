@@ -32,8 +32,12 @@ The input hash is pinned. Footage, detector outputs, evaluation approvals and
 generated packs remain private. Original and generated source packs stay
 `Reviewed=false`; a local test-only approval does not approve a game pack.
 
-The Varial upper body uses an explicitly authored forward chest frame and side
-balance through Air/Catch, then settles through absorption. The shared Tre
-frame has a genuine high V; this derivation retains one modestly raised hand
-instead of copying two exaggerated wrists and a crosswise reconstructed lean.
-Pelvis, knees, shoes and board are preserved by this upper-body adjustment.
+The Varial now has its own explicitly authored compact Air and bent-elbow
+balance. A stable toe-side chest frame replaces the Tre reconstruction's
+crosswise heading; the torso folds forward rather than arching. Both hands
+settle near the sides during Catch instead of extending into a straight T.
+The free feet collect closer to the rotating deck and the pelvis follows into
+a compact tuck and bent catch. The existing local shoe/deck-clearance and
+fixed-leg reach checks still apply. Grounded press, final catch sole targets,
+board rotation and physical carrier remain unchanged. These are authored
+Varial choices, not captured Varial observations or new source confidence.

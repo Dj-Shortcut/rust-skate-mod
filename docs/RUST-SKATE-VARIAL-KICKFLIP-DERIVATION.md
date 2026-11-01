@@ -4,15 +4,19 @@
 Tre body reference. It is not a filmed Varial capture. Its exact normal
 signature is Ollie, no switch/tail-first/body turn, flip +360 and shove -180.
 
-The authoring input retains the shared lower body and landing/recovery.
-The upper frame and balance arms are explicitly authored for the 180 scoop: a
-forward fold, one raised hand in Air, and settling arms through Catch.
+The authoring input retains the shared body reference and landing/recovery.
+The Varial-specific free feet collect closer to the deck; its pelvis follows
+into a compact tuck and bent catch. Its own upper frame and bent-elbow balance
+use a stable toe-side forward fold, then relaxed hands through Catch. This
+replaces the rejected arched/high-arm Air and straight T-arm Catch. It is an
+authored adaptation, not a filmed Varial body or a shared Tre change.
 The board has its own smaller backside scoop and complete longitudinal flip.
 The rear free-foot depth is smaller, and the final anatomical foot targets
 retain their world sides while their deck-local X/Z and toe headings reverse.
 The free-foot return retains its incoming velocity instead of freezing at the
 start of the catch blend. Pelvis fitting uses the existing measured-leg reach
-share; it does not move the feet or increase the limb bounds.
+share; free-foot collection does not move grounded contacts or increase any
+limb bounds.
 
 The exact ID, movement kind and signature must all match. Other captures do
 not opt in. The route uses its own Pop/release/free-Air/Catch/Land metadata,
