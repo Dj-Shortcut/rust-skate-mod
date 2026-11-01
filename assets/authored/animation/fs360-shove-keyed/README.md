@@ -16,7 +16,9 @@ contact estimates on the pinned FS180 source window, frames 190–252 at
 
 | Event | Source frame | Contact estimate |
 | --- | ---: | --- |
-| Front release / Pop | 211 | Rear sole only |
+| Pop / leg extension begins | 208 | Both soles |
+| Front release | 211 | Rear sole only |
+| Tail strike | 211.6 | Pressure witness, not a separate contact event |
 | Rear release | 212 | Neither sole |
 | Ground press ends | 214 | Neither sole |
 | Full rotation ends | 223 | Neither sole |
@@ -30,7 +32,20 @@ relative to the board origin, and toe heading: Left `[-0.04, 0, 0.24]` m at
 The XYZ target uses Y=0 as its deck-plane datum; the pinned curved-deck/shoe
 fit determines the actual ankle height. Both the footprint and heading are
 transformed into the final −360° deck basis. The baker requires the explicit
-front release to match Pop and both foot catches to match the shared catch event.
+front release to follow Pop, rear release to follow the front release, and both
+foot catches to match the shared catch event. The source clock begins with the
+visible leg extension before the later tail strike. Starting at the strike had
+compressed that stroke into the first native frames and left the displayed Pop
+in its loaded crouch. This changes the authored source clock and pressure keys,
+not native takeoff, flight time, input or scoring.
+
+An explicitly authored early-press pelvis/upper-body reserve reaches 0.08 m
+by212, remains through214 and fades out by216. Both legs are solved again
+against the unchanged shoes. This keeps rear-knee reach during the existing
+actual-carrier pressure compensation, including the low-charge route; the
+source's uncertain depth is reconstructed rather than weakening a runtime
+contact guard. The full360 winding, later224 catch and subsequent recovery
+retain their own controls.
 
 The controls SHA-pin the original FS JSON, measured-chain helper and Tre
 geometry JSON; that geometry separately pins the shaped deck surface. Thigh,

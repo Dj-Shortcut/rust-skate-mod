@@ -92,6 +92,15 @@ def sample(source, s, sf):
     # none of the BS source body, arm or foot controls is imported.
     joints, dirs, soles = source_body(source, sf)
     rig = source['metadata']['rig']
+    reserve = s['pressRootReserve']
+    press_weight = min(smooth((sf-reserve['start'])/(reserve['full']-reserve['start'])),
+                       1-smooth((sf-reserve['holdUntil'])/(reserve['end']-reserve['holdUntil'])))
+    if press_weight > 0:
+        # Keep a small authored rear-knee bend through the actual-carrier
+        # press compensation. Both soles and the board retain their paths.
+        shift = -UP*reserve['dropMetres']*press_weight
+        for key in joints:
+            joints[key] += shift
     original = {k: value.copy() for k, value in joints.items()}
     feet = {side: foot(s, sf, side) for side in ('Left', 'Right')}
     begin, end = s['recoveryKneeWindow']
@@ -155,8 +164,19 @@ def bake(raw, s):
     source = json.loads(raw)
     if source['metadata']['id'] != s['sourceId'] or source['metadata']['reviewed'] is not False:
         raise ValueError('The exact unreviewed FS180 source is required')
-    if s['frontRelease'] != s['pop']:
-        raise ValueError('The FS360 front release must coincide with its Pop event')
+    if not s['pop'] <= s['frontRelease'] < s['rearRelease'] < s['pressEnd'] < s['catch']:
+        raise ValueError('Expected FS360 extension, front/rear release and free-Air press order')
+    if not s['pop'] < s['tailStrike'] < s['rearRelease']:
+        raise ValueError('FS360 tail strike must follow extension and precede rear release')
+    ordered = [s[k] for k in ('firstSourceFrame', 'pop', 'rearRelease', 'pressEnd',
+                             'catchStart', 'catch', 'land', 'recovery', 'lastSourceFrame')]
+    if not all(a < b for a, b in zip(ordered, ordered[1:])):
+        raise ValueError('Expected ordered FS360 source phases')
+    if s['yawKeys'][0][1] != 0 or s['yawKeys'][-1][1] != -360:
+        raise ValueError('FS360 needs its complete frontside winding')
+    reserve = s['pressRootReserve']
+    if not (s['pop'] <= reserve['start'] < reserve['full'] <= reserve['holdUntil'] < reserve['end'] <= s['catchStart']) or not (0 < reserve['dropMetres'] <= .08):
+        raise ValueError('Expected a bounded FS360 early-press root reserve before catch')
     for side in ('Left', 'Right'):
         target = s['catchFeet'][side]
         if target['sourceFrame'] != s['catch'] or target['xyz'][1] != 0:
@@ -173,11 +193,16 @@ def bake(raw, s):
     geometry['authored']['minimumAirSoleClearance'] = .025
     s['_geometry'] = geometry
     phases = [(s['firstSourceFrame'], 'load', ['LeftFoot', 'RightFoot']),
-              (s['pop'], 'pop', ['RightFoot']), (s['rearRelease'], 'air', []),
+              (s['pop'], 'pop', ['LeftFoot', 'RightFoot'])]
+    if s['frontRelease'] > s['pop']:
+        phases.append((s['frontRelease'], 'pop', ['RightFoot']))
+    else:
+        phases[-1] = (s['pop'], 'pop', ['RightFoot'])
+    phases += [(s['rearRelease'], 'air', []),
               (s['pressEnd'], 'air', []), (s['catch'], 'catch', ['LeftFoot', 'RightFoot']),
               (s['land'], 'land', ['LeftFoot', 'RightFoot']), (s['recovery'], 'recovery', ['LeftFoot', 'RightFoot'])]
     times = np.unique(np.round(np.r_[np.arange(s['firstSourceFrame'], s['lastSourceFrame']+1e-7, 1/6),
-                                      [r[0] for r in phases], s['rotationEnd'], s['catchStart']], 9))
+                                      [r[0] for r in phases], s['rotationEnd'], s['catchStart'], s['tailStrike']], 9))
     frames = [sample(source, s, float(sf)) for sf in times]
     duration = (s['lastSourceFrame']-s['firstSourceFrame'])/s['sourceFps']
     metadata = dict(id=s['id'], movementKind=s['movementKind'],
@@ -190,6 +215,9 @@ def bake(raw, s):
                     provenance=s['provenance'], combinedWinding=dict(nativeFlip=0, nativeShove=360, canonicalYaw=-360, bodySpin=0),
                     sourceRootMotion='Source carrier translation removed; actual live carrier added once',
                     referenceGroundPress=dict(flightSeconds=.6, gravity=8),
+                    earlyPressRootReconstruction=s['pressRootReserve'],
+                    sourcePhaseClock=dict(pop=s['pop'], tailStrike=s['tailStrike'],
+                        limit='Pop begins the observed leg extension; tail strike is a later pressure witness. Native flight and landing remain authoritative.'),
                     catchTransform='Complete world position and toe direction transformed by final360 deck basis')
     clip = dict(format='skate-capture-authored-fs360/1', metadata=metadata, stance='regular',
                 fps=s['sourceFps']*6, duration=duration,
