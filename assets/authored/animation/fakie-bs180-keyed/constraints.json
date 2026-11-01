@@ -521,13 +521,14 @@
       ]
     }
   ],
-  "provenance": "Genuine plain Halfcab / Fakie BS180 in official H4MEulcgUTc, plaid foreground actor. Same nose/anatomy frame while travelling backwards; Right tail pops. Own source body directions, explicitly authored monocular heading/depth, measured original geometry contacts, compact fixed-chain legs and corrected unreliable balance arms. Complete source yaw removed from every point/direction/sole/board; native NoseYaw supplies one actual turn. Timeline after filmed379 through406 is an explicitly authored planted upright recovery, never a claimed future source frame. Visible early-mechanics correction follows the normal-BS source-control pattern: early 35-degree snap, earlier tail-sole release, front-bolt outer-upper drag with a level Guide and forward/down front-knee plane. Source clock, original ground datum, own body/heading and every accepted Air-frame-and-later sample remain unchanged. Source camera is not a pose correction.",
+  "provenance": "Genuine plain Halfcab / Fakie BS180 in official H4MEulcgUTc, plaid foreground actor. Same nose/anatomy frame while travelling backwards; Right tail pops. Own source body directions, explicitly authored monocular heading/depth, measured original geometry contacts, compact fixed-chain legs and corrected unreliable balance arms. Complete source yaw removed from every point/direction/sole/board; native NoseYaw supplies one actual turn. Timeline after filmed379 through406 is an explicitly authored planted upright recovery, never a claimed future source frame. Visible early-mechanics correction follows the normal-BS source-control pattern: early 35-degree snap, earlier tail-sole release, front-bolt outer-upper drag with a level Guide and forward/down front-knee plane. Source clock, original ground datum, own body/heading and every accepted Air-frame-and-later sample remain unchanged. Source camera is not a pose correction. Claude707 Guide\u2013Catch arm gate: a bounded authored body-relative balance correction lowers both arms with bent elbows, preserving all non-arm geometry, early snap/guide, native body turn and later recovery.",
   "uncertainty": [
     "Actual raw56/56 selected with zero gaps; low-confidence point lists retained.",
     "Camera/depth, absolute board and hip heading, contact phases and pelvis are authored visual estimates.",
     "Raised arms reconstructed where raw wrists collapse.",
     "Filmed take ends before a full upright recovery; appended source-clock seconds are authored, reference video held at last genuine379.",
-    "No source approval, native game or Shadow verification."
+    "No source approval, native game or Shadow verification.",
+    "Guide\u2013Catch arm height/bend is consciously authored for believable balance; source raised-arm/wrist depth is unreliable."
   ],
   "lastFilmedSourceFrame": 379,
   "armReconstruction": {
@@ -855,5 +856,38 @@
       347
     ],
     "metres": 0.045
+  },
+  "guideBalance": {
+    "window": [
+      339.5,
+      341.5,
+      350.5,
+      355.5
+    ],
+    "Left": {
+      "upper": [
+        0.2,
+        -0.25,
+        0.95
+      ],
+      "fore": [
+        0.8,
+        -0.2,
+        -0.1
+      ]
+    },
+    "Right": {
+      "upper": [
+        0.25,
+        -0.3,
+        -0.92
+      ],
+      "fore": [
+        0.75,
+        -0.2,
+        0.14
+      ]
+    },
+    "provenance": "Explicit authored Claude707 quality correction: both arms open to the sides with bent elbows at/below shoulder height only Guide through Catch. Targets use the current anatomical facing/worldUP/hip-left basis, independent of travel/native spin. Original shoulder/body/head/pelvis/foot/board/time and earlier339.5 or later355.5+ source geometry are unchanged; unreliable raw raised wrists are not treated as mandatory motion."
   }
 }

@@ -110,6 +110,14 @@ def sample(body, spec, frame):
         upper=unit(captured[side+'Elbow']-captured[side+'Shoulder']);fore=unit(captured[side+'Hand']-captured[side+'Elbow'])
         c=spec['armReconstruction'];w=float(value(c['weights'],frame)[0]);a=c[side]
         upper=unit(upper*(1-w)+local_vector(value(a['upper'],frame))*w);fore=unit(fore*(1-w)+local_vector(value(a['fore'],frame))*w)
+        # The original raised-wrist reconstruction reads as an overhead cheer.
+        # Author only this Guide/Catch balance window in anatomical body axes;
+        # shoulders and every non-arm point retain their accepted source paths.
+        balance=spec['guideBalance'];start,full,held,finish=balance['window']
+        weight=smooth((frame-start)/(full-start))*(1-smooth((frame-held)/(finish-held)))
+        if weight>0:
+            upper=unit(upper*(1-weight)+local_vector(balance[side]['upper'])*weight)
+            fore=unit(fore*(1-weight)+local_vector(balance[side]['fore'])*weight)
         j[side+'Shoulder']=shoulder;j[side+'Elbow']=shoulder+upper*.29;j[side+'Hand']=j[side+'Elbow']+fore*.27
     dirs=dict(PelvisForward=facing,PelvisUp=UP,ChestForward=chest_forward,ChestUp=up,HeadForward=gaze)
     # Complete scene-heading removal. This includes physical toes, all limb
