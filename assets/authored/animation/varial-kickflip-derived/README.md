@@ -41,3 +41,28 @@ a compact tuck and bent catch. The existing local shoe/deck-clearance and
 fixed-leg reach checks still apply. Grounded press, final catch sole targets,
 board rotation and physical carrier remain unchanged. These are authored
 Varial choices, not captured Varial observations or new source confidence.
+
+## Free-foot Air gap
+
+The higher collecting foot now targets slightly nearer the rotating deck
+during its authored Air window. The already-near rear foot retains its
+accepted target. The same full-shoe clearance still lifts
+a foot where the deck passes underneath; its minimum separation and fixed-leg
+reach checks are unchanged. Board keys, carrier flight, grounded press, final
+catch and recovery stay fixed. This is a small authored refinement of the
+shared Tre derivation, with no filmed Varial claim or raw approval.
+
+The refreshed original-rig comparisons use the same runtime and camera for
+the prior compact source and this refinement. Air close-ups show the smaller
+collecting-foot gap; the adjacent Catch views retain the accepted pose:
+
+- [Normal Regular](../../../../docs/review-media/2026-11-01-varial-compact/normal-regular-air-catch-before-after.jpg) and [full phases](../../../../docs/review-media/2026-11-01-varial-compact/normal-regular-phases.jpg).
+- [Normal Goofy](../../../../docs/review-media/2026-11-01-varial-compact/normal-goofy-air-catch-before-after.jpg) and [full phases](../../../../docs/review-media/2026-11-01-varial-compact/normal-goofy-phases.jpg).
+- [Lower Regular](../../../../docs/review-media/2026-11-01-varial-compact/low-regular-air-catch-before-after.jpg) and [full phases](../../../../docs/review-media/2026-11-01-varial-compact/low-regular-phases.jpg).
+- [Lower Goofy](../../../../docs/review-media/2026-11-01-varial-compact/low-goofy-air-catch-before-after.jpg) and [full phases](../../../../docs/review-media/2026-11-01-varial-compact/low-goofy-phases.jpg).
+
+[Review receipt](../../../../docs/review-media/2026-11-01-varial-compact/review-manifest.json).
+Private viewer: `http://127.0.0.1:63761/varial-air-gap/`. Four actual managed
+cases reached ordinary riding at 4 s and replayed at 1×/¼× without browser
+errors. These are offline checks with controlled bindings; native Rust/Shadow
+and Claude’s independent library verdict remain separate.
