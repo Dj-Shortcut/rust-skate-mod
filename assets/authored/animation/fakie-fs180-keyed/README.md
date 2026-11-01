@@ -67,3 +67,14 @@ native Rust/Shadow result. Claude owns the library and offline verdict.
 ## Early snap and level guide
 
 The brief snap now precedes the main body turn and drops into a level front-bolt upper-shoe guide, with the tail sole already released. The front knee bends forward/down instead of perching over the nose. A small authored pressure extension rejoins the original accepted Air exactly; the own captured body, clock, ground datum, complete native heading authority and later Air/Catch/Land/recovery are retained. This is a source-presentation correction following the reviewed normal-BS control pattern, not a shared physics or camera change. The previous steep Pop/Guide media is superseded by the corrected source checkpoint and final runtime world-gaze fix.
+
+## Air elbow refinement
+
+A small authored forearm bend in bounded frames 242–254 brings the hands
+forward/down from the stiff Air T. The balance plane uses anatomical
+facing/up/hip axes, never backward Fakie travel. Only the hand endpoints
+change: source shoulders and elbows, head/torso/pelvis, feet, soles, deck,
+clock, native coupled turn and all poses outside the open window retain
+the accepted reconstruction. The bend eases into Air and returns to the
+accepted Catch pose at 254. This is a labelled visual refinement, not new
+motion measurement; raw packs stay `reviewed=false`.
