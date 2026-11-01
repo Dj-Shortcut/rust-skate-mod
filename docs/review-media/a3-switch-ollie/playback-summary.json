@@ -1,0 +1,149 @@
+{
+  "format": "a3-switch-ollie-playback-summary/1",
+  "sourceReviewed": false,
+  "nativeGame": false,
+  "publishedSourceRevision": "e9afedf6e66ec667700036f68230f8f5d9ae7442",
+  "runtimeRouteRevision": "10fbbc392d523044efed39e3efa16adcb4d43954",
+  "viewerUrl": "http://127.0.0.1:63761/a3-switch-ollie-final/",
+  "sourcePackSha256": "ab44914b04f7d72ab5b7e825eeefe19e41efc1795cbfccbd3975d7aea48b90bf",
+  "managed": [
+    {
+      "profile": "normal",
+      "requestedStance": "regular",
+      "names": [
+        "Combo",
+        "Switch Ollie"
+      ],
+      "sourcePackSha256": "ab44914b04f7d72ab5b7e825eeefe19e41efc1795cbfccbd3975d7aea48b90bf",
+      "traceSha256": "4e16bb0d948475690db0b82e3fad3701cbf05f5058e66b7ff1961b234a93a176",
+      "jsonSha256": "6395cc3c43891b87eb68bca890c16a1fd6fc9bb83dd6a0c38a3677a0b9cbde00",
+      "activeAir": 36,
+      "airFrames": 36,
+      "flightDuration": 0.59375,
+      "terminalCapture": false,
+      "t": 4
+    },
+    {
+      "profile": "normal",
+      "requestedStance": "goofy",
+      "names": [
+        "Combo",
+        "Switch Ollie"
+      ],
+      "sourcePackSha256": "ab44914b04f7d72ab5b7e825eeefe19e41efc1795cbfccbd3975d7aea48b90bf",
+      "traceSha256": "5f470ad99ce16eb804c06c98852f4fb217165205d6fde0c68349eec3ea08e4cf",
+      "jsonSha256": "28e74475c50a9ffbad37d34d1657e2c003f4eecde457ab17dd9ff79b8d9647e8",
+      "activeAir": 36,
+      "airFrames": 36,
+      "flightDuration": 0.59375,
+      "terminalCapture": false,
+      "t": 4
+    },
+    {
+      "profile": "low",
+      "requestedStance": "regular",
+      "names": [
+        "Combo",
+        "Switch Ollie"
+      ],
+      "sourcePackSha256": "ab44914b04f7d72ab5b7e825eeefe19e41efc1795cbfccbd3975d7aea48b90bf",
+      "traceSha256": "0d5ca3aba270ca852912315ced472538cb331332dcd80fbda65b2c893cdeba81",
+      "jsonSha256": "c4214cfe2401de64548113328775c2874278031c049b3b182a24b150fbec8a6a",
+      "activeAir": 34,
+      "airFrames": 34,
+      "flightDuration": 0.5625,
+      "terminalCapture": false,
+      "t": 4
+    },
+    {
+      "profile": "low",
+      "requestedStance": "goofy",
+      "names": [
+        "Combo",
+        "Switch Ollie"
+      ],
+      "sourcePackSha256": "ab44914b04f7d72ab5b7e825eeefe19e41efc1795cbfccbd3975d7aea48b90bf",
+      "traceSha256": "7be76a342611acd30e3b5a1b77922c3cade612bbd0836d03b590e56b63489268",
+      "jsonSha256": "d60e25212b373cd3f8c47e1feee799953f9566ffa041fed4053c405e47870037",
+      "activeAir": 34,
+      "airFrames": 34,
+      "flightDuration": 0.5625,
+      "terminalCapture": false,
+      "t": 4
+    }
+  ],
+  "viewer": [
+    {
+      "profile": "normal",
+      "physicalStance": "regular",
+      "phaseCount": 7,
+      "rates": [
+        {
+          "rate": 1,
+          "sampleCount": 40,
+          "endSeconds": 4
+        },
+        {
+          "rate": 0.25,
+          "sampleCount": 105,
+          "endSeconds": 4
+        }
+      ]
+    },
+    {
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "phaseCount": 7,
+      "rates": [
+        {
+          "rate": 1,
+          "sampleCount": 40,
+          "endSeconds": 4
+        },
+        {
+          "rate": 0.25,
+          "sampleCount": 105,
+          "endSeconds": 4
+        }
+      ]
+    },
+    {
+      "profile": "low",
+      "physicalStance": "regular",
+      "phaseCount": 7,
+      "rates": [
+        {
+          "rate": 1,
+          "sampleCount": 40,
+          "endSeconds": 4
+        },
+        {
+          "rate": 0.25,
+          "sampleCount": 104,
+          "endSeconds": 4
+        }
+      ]
+    },
+    {
+      "profile": "low",
+      "physicalStance": "goofy",
+      "phaseCount": 7,
+      "rates": [
+        {
+          "rate": 1,
+          "sampleCount": 40,
+          "endSeconds": 4
+        },
+        {
+          "rate": 0.25,
+          "sampleCount": 105,
+          "endSeconds": 4
+        }
+      ]
+    }
+  ],
+  "browserErrors": 0,
+  "inheritedChargePresentation": "Independent gaze and upright neck-to-head segment are real shared product behavior before future source selection.",
+  "limits": "Actual managed input/native Step/Land/scorer and original-rig/source comparisons. Controlled bindings/ground and private test-only approval copy. Raw source remains unapproved. No Unity/IL2CPP, native world/loader or Shadow acceptance; Claude owns offline/library verdict.",
+  "authoredSourcePackUnchanged": true
+}

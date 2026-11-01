@@ -2,39 +2,16 @@
   "format": "own-fakie-ollie-rig-review/1",
   "sourceReviewed": false,
   "nativeGame": false,
-  "sourceCodeRevision": "99508472edc0d4e9977d883b9902e6952f3768d5",
-  "runtimeRouteRevision": "5691c8cf1ba528ff6c6f17f68af4c973398007fd",
-  "sourcePackSha256": "c2dde0f83c504be06617865c48ee95456095f09f77f4b2c52f51f453f77f12bc",
+  "runtimeRouteRevision": "2733b2cd8b2d357c8c199e34725bb4b154738dc9",
+  "sourcePackSha256": "b7f4dda73a2f390f9f0e8c64d399b8cfe235f33986711755b38151de47bee655",
   "items": [
     {
       "physical": "regular",
       "requested": "goofy",
-      "profile": "low",
-      "sourcePackSha256": "c2dde0f83c504be06617865c48ee95456095f09f77f4b2c52f51f453f77f12bc",
-      "glbSha256": "49cbec3af4f01701e069d0a68aefffb55f360c0c4334869c498c472eb4cd6492",
-      "sourceCodeRevision": "99508472edc0d4e9977d883b9902e6952f3768d5",
-      "runtimeRouteRevision": "5691c8cf1ba528ff6c6f17f68af4c973398007fd",
-      "phases": {
-        "Load": 0.8166666666666667,
-        "Pop": 1,
-        "Flick": 1.1,
-        "Air": 1.2,
-        "Catch": 1.3333333333333333,
-        "Land": 1.4166666666666667,
-        "Rollaway": 1.9333333333333333,
-        "End": 4.0
-      },
-      "rigOnlyImage": "low-regular-phases.jpg",
-      "privateSourceComparison": "low-regular-private-source-comparison.jpg"
-    },
-    {
-      "physical": "regular",
-      "requested": "goofy",
       "profile": "normal",
-      "sourcePackSha256": "c2dde0f83c504be06617865c48ee95456095f09f77f4b2c52f51f453f77f12bc",
-      "glbSha256": "151fdc2eca930d60caedafcede2942630c3e2b1902829a42ac34f645aac015fc",
-      "sourceCodeRevision": "99508472edc0d4e9977d883b9902e6952f3768d5",
-      "runtimeRouteRevision": "5691c8cf1ba528ff6c6f17f68af4c973398007fd",
+      "sourcePackSha256": "b7f4dda73a2f390f9f0e8c64d399b8cfe235f33986711755b38151de47bee655",
+      "glbSha256": "6bc1a462c229c7b12ce57eba6fb22b01e5f73ae76b4fc04035f265e9e7559fad",
+      "runtimeRouteRevision": "2733b2cd8b2d357c8c199e34725bb4b154738dc9",
       "phases": {
         "Load": 0.8166666666666667,
         "Pop": 1.0166666666666666,
@@ -46,16 +23,51 @@
         "End": 4.0
       },
       "rigOnlyImage": "normal-regular-phases.jpg",
-      "privateSourceComparison": "normal-regular-private-source-comparison.jpg"
+      "privateSourceComparison": "normal-regular-private-source-comparison.jpg",
+      "publishedSourceRevision": "78762a18385ff2cc95f2066c1e1b444bb8f4634b",
+      "inputSha256": "55cb730b817044c749cbeb6a94ec43a2dd8b6fa7766af79b62d49c30b32432bb",
+      "runtimeSourceFilesSha256": {
+        "SkateCaptureKeyedPlayback.cs": "e2078348f1a341ba69a2f13f5c620fb9d36550f502633f338fff3a32409da66d",
+        "SkateCaptureVariants.cs": "9d3341145d8225c144b265df381f901cdbcaf51f9c1626e9218c4434df061942",
+        "SkateCapturePlayback.cs": "33d1cb57dd9e0be8d1521444ec27d69f5680d7bdfa233b758549ebcaec85b203",
+        "SkateCaptureKickflipUpper.cs": "fe4fc728907b5044b8a7ef3cbfa86031ac07ef2b81f7c07b19eee0b9cf28c206"
+      }
+    },
+    {
+      "physical": "regular",
+      "requested": "goofy",
+      "profile": "low",
+      "sourcePackSha256": "b7f4dda73a2f390f9f0e8c64d399b8cfe235f33986711755b38151de47bee655",
+      "glbSha256": "88c912e0c20641e8340ab7aa5c3e2a38bad15c6bbabee6e6979d68c7dd7bc0e9",
+      "runtimeRouteRevision": "2733b2cd8b2d357c8c199e34725bb4b154738dc9",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 1,
+        "Flick": 1.1,
+        "Air": 1.2,
+        "Catch": 1.3333333333333333,
+        "Land": 1.4166666666666667,
+        "Rollaway": 1.9333333333333333,
+        "End": 4.0
+      },
+      "rigOnlyImage": "low-regular-phases.jpg",
+      "privateSourceComparison": "low-regular-private-source-comparison.jpg",
+      "publishedSourceRevision": "78762a18385ff2cc95f2066c1e1b444bb8f4634b",
+      "inputSha256": "9a32923d8dca35dee64fc52a09daa58a312ed422ca779d84160c79bae624347d",
+      "runtimeSourceFilesSha256": {
+        "SkateCaptureKeyedPlayback.cs": "e2078348f1a341ba69a2f13f5c620fb9d36550f502633f338fff3a32409da66d",
+        "SkateCaptureVariants.cs": "9d3341145d8225c144b265df381f901cdbcaf51f9c1626e9218c4434df061942",
+        "SkateCapturePlayback.cs": "33d1cb57dd9e0be8d1521444ec27d69f5680d7bdfa233b758549ebcaec85b203",
+        "SkateCaptureKickflipUpper.cs": "fe4fc728907b5044b8a7ef3cbfa86031ac07ef2b81f7c07b19eee0b9cf28c206"
+      }
     },
     {
       "physical": "goofy",
       "requested": "regular",
       "profile": "low",
-      "sourcePackSha256": "c2dde0f83c504be06617865c48ee95456095f09f77f4b2c52f51f453f77f12bc",
-      "glbSha256": "bdfef3784b6f6d47e481b434e822da6e339f04576c77bb1ecd43d7d666c9b525",
-      "sourceCodeRevision": "99508472edc0d4e9977d883b9902e6952f3768d5",
-      "runtimeRouteRevision": "5691c8cf1ba528ff6c6f17f68af4c973398007fd",
+      "sourcePackSha256": "b7f4dda73a2f390f9f0e8c64d399b8cfe235f33986711755b38151de47bee655",
+      "glbSha256": "e7c2daa1adf6a0acfe1d46651893d8b134b5ae60ed935f7d9c7ee2f9bab92fd3",
+      "runtimeRouteRevision": "2733b2cd8b2d357c8c199e34725bb4b154738dc9",
       "phases": {
         "Load": 0.8166666666666667,
         "Pop": 1,
@@ -67,16 +79,23 @@
         "End": 4.0
       },
       "rigOnlyImage": "low-goofy-phases.jpg",
-      "privateSourceComparison": "low-goofy-private-source-comparison.jpg"
+      "privateSourceComparison": "low-goofy-private-source-comparison.jpg",
+      "publishedSourceRevision": "78762a18385ff2cc95f2066c1e1b444bb8f4634b",
+      "inputSha256": "6e160bc68abfef805f80705b419496e52a5eff92124a6ba9a5fa7eb9bd4cc13f",
+      "runtimeSourceFilesSha256": {
+        "SkateCaptureKeyedPlayback.cs": "e2078348f1a341ba69a2f13f5c620fb9d36550f502633f338fff3a32409da66d",
+        "SkateCaptureVariants.cs": "9d3341145d8225c144b265df381f901cdbcaf51f9c1626e9218c4434df061942",
+        "SkateCapturePlayback.cs": "33d1cb57dd9e0be8d1521444ec27d69f5680d7bdfa233b758549ebcaec85b203",
+        "SkateCaptureKickflipUpper.cs": "fe4fc728907b5044b8a7ef3cbfa86031ac07ef2b81f7c07b19eee0b9cf28c206"
+      }
     },
     {
       "physical": "goofy",
       "requested": "regular",
       "profile": "normal",
-      "sourcePackSha256": "c2dde0f83c504be06617865c48ee95456095f09f77f4b2c52f51f453f77f12bc",
-      "glbSha256": "afa168f3eee1f26b9bd6c11681b18b5913d033e2cb07cf2e23ec33b4ed3a221d",
-      "sourceCodeRevision": "99508472edc0d4e9977d883b9902e6952f3768d5",
-      "runtimeRouteRevision": "5691c8cf1ba528ff6c6f17f68af4c973398007fd",
+      "sourcePackSha256": "b7f4dda73a2f390f9f0e8c64d399b8cfe235f33986711755b38151de47bee655",
+      "glbSha256": "39a8ee687e6cd4a1d960ccc313c364643ff9e3f6183e40aee22a6bf259fec0f8",
+      "runtimeRouteRevision": "2733b2cd8b2d357c8c199e34725bb4b154738dc9",
       "phases": {
         "Load": 0.8166666666666667,
         "Pop": 1.0166666666666666,
@@ -88,8 +107,26 @@
         "End": 4.0
       },
       "rigOnlyImage": "normal-goofy-phases.jpg",
-      "privateSourceComparison": "normal-goofy-private-source-comparison.jpg"
+      "privateSourceComparison": "normal-goofy-private-source-comparison.jpg",
+      "publishedSourceRevision": "78762a18385ff2cc95f2066c1e1b444bb8f4634b",
+      "inputSha256": "81ba4431b8a33b7fac79c6378489a11e1694fb3b42c3141ba129fc8ecab1d758",
+      "runtimeSourceFilesSha256": {
+        "SkateCaptureKeyedPlayback.cs": "e2078348f1a341ba69a2f13f5c620fb9d36550f502633f338fff3a32409da66d",
+        "SkateCaptureVariants.cs": "9d3341145d8225c144b265df381f901cdbcaf51f9c1626e9218c4434df061942",
+        "SkateCapturePlayback.cs": "33d1cb57dd9e0be8d1521444ec27d69f5680d7bdfa233b758549ebcaec85b203",
+        "SkateCaptureKickflipUpper.cs": "fe4fc728907b5044b8a7ef3cbfa86031ac07ef2b81f7c07b19eee0b9cf28c206"
+      }
     }
   ],
-  "limits": "Rig-only public images. Original pixels/raw/model weights private. Stills do not establish continuity, measured depth, offline approval or Shadow acceptance."
+  "limits": "Rig-only public images. Original pixels/raw/model weights private. Stills do not establish continuity, measured depth, offline approval or Shadow acceptance.",
+  "publishedSourceRevision": "78762a18385ff2cc95f2066c1e1b444bb8f4634b",
+  "sourceContentSha256": {
+    "scripts/author_skate_fakie_ollie.py": "6f9318e32af1b159d63fc3cc3f4cd922e3e94a128fb8f815b7f8a064cc71ae0b",
+    "assets/authored/animation/fakie-ollie-keyed/constraints.json": "987bcf5b83fe8edccbcbab2ad6f758323bc9a4faf7e160f14fc095bc6092cf6e",
+    "assets/authored/animation/fakie-ollie-keyed/captured-body.json": "4e461986d62abf099106a8604c3a22dd0b7d8142f203f6d110df3363d74c6a2f"
+  },
+  "ownerCorrections": [
+    "Real ordinary charge preserves independent gaze and upright neck-to-head segment before future trick is selected.",
+    "Bounded authored canonical Left Pop balance stays at/below shoulder height, preserving all feet/board/torso and accepted later geometry."
+  ]
 }
