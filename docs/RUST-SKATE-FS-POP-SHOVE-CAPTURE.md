@@ -49,3 +49,24 @@ source root-entry target and fades out by216. The rear knee stays flexible
 under the existing native tail-press carrier compensation. Feet and board
 paths, contact bits and all native reach guards stay unchanged; this is
 monocular depth reconstruction, not measured motion or extra physics.
+
+## Mesh images for Claude's gate
+
+These sheets contain only the original rig and detailed skateboard. Each row
+shows Load, actual displayed tail press (Pop), Air, Catch, Land, Rollaway and the
+four-second endpoint; labels use the audited physical leading foot. Reference
+cache frame numbers identify the privately compared source without distributing
+its pixels. Load and End are ordinary procedural riding outside active capture.
+
+| Charge | Physical Regular | Physical Goofy |
+| --- | --- | --- |
+| Normal | [Seven phases](review-media/2026-11-01-fs-pop-shove/normal-regular.jpg) | [Seven phases](review-media/2026-11-01-fs-pop-shove/normal-goofy.jpg) |
+| Low | [Seven phases](review-media/2026-11-01-fs-pop-shove/low-regular.jpg) | [Seven phases](review-media/2026-11-01-fs-pop-shove/low-goofy.jpg) |
+
+![Normal charge, physical Goofy](review-media/2026-11-01-fs-pop-shove/normal-goofy.jpg)
+
+The new clock visibly extends the rear leg and raises the balance arm before
+the tail strike, followed by compact pickup, bent landing and grounded ordinary
+roll-away. Four exported GLBs retain the passing managed route, raw pack
+`738f4873…` and runtime adapter from `6137c475`. These images are a gate handoff,
+not Claude's visual approval or an every-frame/native-game claim.
