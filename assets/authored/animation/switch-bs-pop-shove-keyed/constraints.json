@@ -1,0 +1,355 @@
+{
+  "id": "switch-bs-pop-shove-it-source-keyed-v1",
+  "movementKind": "switch-bs-pop-shove-it",
+  "sourceUrl": "https://www.youtube.com/watch?v=tL8Ey9GS0xQ&t=202",
+  "sourceAuthor": "The Berrics",
+  "sourceFps": 29.97002997002997,
+  "sourceVideoSha256": "220a8f31da226010bb44afa81882f684744ab2071458279eb937cf68b95fee48",
+  "sourceBodySha256": "c3f438a2792389edbea6d3ada2c8e11bf02f680704dcb92d019f28c0e82bec01",
+  "geometrySha256": "806a59f06a0f28eb0a81550675e2cff391bf27b286f788690b65ed857794d4c5",
+  "firstSourceFrame": 657,
+  "lastSourceFrame": 736,
+  "sourceCacheOriginalOffsetSeconds": 181,
+  "nativeSignature": {
+    "pop": "Ollie",
+    "switch": true,
+    "tailLeads": false,
+    "flip": 0,
+    "shove": -180,
+    "spin": 0,
+    "body": 0
+  },
+  "phases": {
+    "pop": 683,
+    "frontRelease": 684.5,
+    "strike": 685.5,
+    "rearRelease": 687,
+    "pressEnd": 689,
+    "firstCatch": 697,
+    "bothCatch": 699,
+    "land": 701,
+    "recovery": 711
+  },
+  "reference": {
+    "gravity": 9.81,
+    "flightSeconds": 0.6006,
+    "wheelClearance": 0.012
+  },
+  "yawKeys": [
+    [
+      657,
+      0
+    ],
+    [
+      683,
+      0
+    ],
+    [
+      685.5,
+      18
+    ],
+    [
+      687,
+      45
+    ],
+    [
+      690,
+      100
+    ],
+    [
+      693,
+      151
+    ],
+    [
+      697,
+      179.5
+    ],
+    [
+      699,
+      180
+    ],
+    [
+      736,
+      180
+    ]
+  ],
+  "pitchKeys": [
+    [
+      657,
+      0
+    ],
+    [
+      683,
+      0
+    ],
+    [
+      685.5,
+      35
+    ],
+    [
+      687,
+      32
+    ],
+    [
+      690,
+      17
+    ],
+    [
+      693,
+      5
+    ],
+    [
+      697,
+      0
+    ],
+    [
+      736,
+      0
+    ]
+  ],
+  "setupFeet": {
+    "Left": {
+      "x": -0.01,
+      "z": 0.2,
+      "yaw": 65
+    },
+    "Right": {
+      "x": -0.015,
+      "z": -0.36,
+      "yaw": 85
+    }
+  },
+  "catchFeet": {
+    "Left": {
+      "x": -0.01,
+      "z": 0.22,
+      "yaw": 65
+    },
+    "Right": {
+      "x": -0.015,
+      "z": -0.24,
+      "yaw": 85
+    }
+  },
+  "rearBall": {
+    "shoeLocal": [
+      0,
+      -0.075,
+      0.08
+    ],
+    "heelLiftKeys": [
+      [
+        657,
+        0
+      ],
+      [
+        683,
+        0
+      ],
+      [
+        685.5,
+        12
+      ],
+      [
+        687,
+        12
+      ]
+    ]
+  },
+  "freeFootBlendFrames": 2.4,
+  "catchBlendFrames": 2,
+  "frontFreeKeys": [
+    [
+      684.5,
+      -0.01,
+      0.14,
+      0.22
+    ],
+    [
+      688,
+      -0.025,
+      0.23,
+      0.23
+    ],
+    [
+      691,
+      -0.02,
+      0.24,
+      0.2
+    ],
+    [
+      693,
+      -0.015,
+      0.18,
+      0.21
+    ],
+    [
+      697,
+      -0.01,
+      0.135,
+      0.22
+    ]
+  ],
+  "rearFreeKeys": [
+    [
+      687,
+      -0.1,
+      0.12,
+      -0.34
+    ],
+    [
+      689,
+      -0.09,
+      0.18,
+      -0.3
+    ],
+    [
+      692,
+      -0.045,
+      0.19,
+      -0.27
+    ],
+    [
+      695,
+      -0.015,
+      0.18,
+      -0.24
+    ],
+    [
+      699,
+      -0.015,
+      0.14,
+      -0.24
+    ]
+  ],
+  "pelvisXZ": [
+    -0.03,
+    0
+  ],
+  "pelvisHeightKeys": [
+    [
+      657,
+      0.83
+    ],
+    [
+      674,
+      0.56
+    ],
+    [
+      678,
+      0.52
+    ],
+    [
+      681,
+      0.59
+    ],
+    [
+      683,
+      0.62
+    ],
+    [
+      685.5,
+      0.55
+    ],
+    [
+      687,
+      0.48
+    ],
+    [
+      689,
+      0.44
+    ],
+    [
+      691,
+      0.6
+    ],
+    [
+      694,
+      0.68
+    ],
+    [
+      697,
+      0.75
+    ],
+    [
+      699,
+      0.77
+    ],
+    [
+      701,
+      0.68
+    ],
+    [
+      711,
+      0.76
+    ],
+    [
+      724,
+      0.85
+    ],
+    [
+      736,
+      0.85
+    ]
+  ],
+  "maximumReachShare": 0.995,
+  "minimumAirSoleClearance": 0.01,
+  "kneePlaneBlendKeys": [
+    [
+      657,
+      0.5
+    ],
+    [
+      671,
+      0.9
+    ],
+    [
+      679,
+      0.9
+    ],
+    [
+      685,
+      0.45
+    ],
+    [
+      693,
+      0.4
+    ],
+    [
+      701,
+      0.6
+    ],
+    [
+      711,
+      0.85
+    ],
+    [
+      736,
+      0.9
+    ]
+  ],
+  "recoveryWindow": [
+    711,
+    729
+  ],
+  "recoverySourceFrame": 728,
+  "hiddenArm": {
+    "side": "Left",
+    "start": 700,
+    "full": 712,
+    "upper": [
+      0.12,
+      -0.91,
+      0.25
+    ],
+    "fore": [
+      0.18,
+      -0.96,
+      0.02
+    ],
+    "provenance": "Own later lead elbow/hand becomes low-visibility behind torso after landing. A relaxed arm-down suffix is authored from this take, not copied from another clip."
+  },
+  "provenance": "Own white-shirt1090 Switch BS Pop Shove-it, BATB13 tL8Ey9GS0xQ local649\u2013736, body controls657\u2013736. All88 own foreground VIDEO selections retained; no Cole, Fakie Kickflip, Halfcab or other motion body is borrowed. Original rig/board math is reused read-only. Filmed Goofy is reflected once into canonicalRegular. Root height, sole/ball pressure, foot depth, grip-up yaw180, fixed knees and hidden-arm recovery are labelled authored monocular reconstruction. Raw stays reviewed=false.",
+  "uncertainty": "BaseRegular/filmedSwitchGoofy and physical Right-leading/Left-tail roles are manually inferred from actual source and same-actor witnesses, not a complete plain-normal stance baseline or calibrated3D truth. Camera pans, foot contact depth and phase frames are estimates; low-visibility indices remain in captured-body metadata. Background homography was rejected.",
+  "sourcePhaseLimit": "Local bounded decoder indices and PTS1001*frame at1/30000. Public seconds181+PTS are requested-cut estimates, not original global frame indices. Pressure starts683; visible strike~685.5, rear release687, distinct freeAir689; front/both catch697/699, stable landing701. Contact bits are authored candidates, not measured contact confidence."
+}
