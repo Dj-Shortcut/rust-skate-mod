@@ -47,7 +47,8 @@ namespace Shortcut.RustMod
             new SkateCaptureVariant("fs-180", "fs-180", SkatePopKind.Ollie, false, false, 0, 0, 180),
             new SkateCaptureVariant("bs-180", "bs-180", SkatePopKind.Ollie, false, false, 0, 0, -180),
             new SkateCaptureVariant("nollie-ollie", "nollie-ollie", SkatePopKind.Nollie, false, false, 0, 0, 0),
-            new SkateCaptureVariant("fakie-ollie", "fakie-ollie", SkatePopKind.Ollie, true, true, 0, 0, 0)
+            new SkateCaptureVariant("fakie-ollie", "fakie-ollie", SkatePopKind.Ollie, true, true, 0, 0, 0),
+            new SkateCaptureVariant("switch-ollie", "switch-ollie", SkatePopKind.Ollie, true, false, 0, 0, 0)
         };
         public static SkateCaptureVariant Get(int index)
         { return index >= 0 && index < Entries.Length ? Entries[index] : default(SkateCaptureVariant); }

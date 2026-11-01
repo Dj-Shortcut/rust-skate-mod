@@ -1,0 +1,128 @@
+{
+  "format": "own-switch-ollie-rig-review/1",
+  "sourceReviewed": false,
+  "nativeGame": false,
+  "runtimeRouteRevision": "10fbbc392d523044efed39e3efa16adcb4d43954",
+  "sourcePackSha256": "ab44914b04f7d72ab5b7e825eeefe19e41efc1795cbfccbd3975d7aea48b90bf",
+  "items": [
+    {
+      "physical": "regular",
+      "requested": "goofy",
+      "profile": "low",
+      "sourcePackSha256": "ab44914b04f7d72ab5b7e825eeefe19e41efc1795cbfccbd3975d7aea48b90bf",
+      "glbSha256": "e4d998b463cf6e6a019e2b979eb552574f600edc41cb5ea62aec3b1abf2523ff",
+      "runtimeRouteRevision": "10fbbc392d523044efed39e3efa16adcb4d43954",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 1.0333333333333334,
+        "Flick": 1.1166666666666667,
+        "Air": 1.25,
+        "Catch": 1.3333333333333333,
+        "Land": 1.4166666666666667,
+        "Rollaway": 2.2333333333333334,
+        "End": 4.0
+      },
+      "rigOnlyImage": "low-regular-phases.jpg",
+      "privateSourceComparison": "low-regular-private-source-comparison.jpg",
+      "publishedSourceRevision": "e9afedf6e66ec667700036f68230f8f5d9ae7442",
+      "inputSha256": "8ccc205d972c631c8cb5950fe657abb0dcf25472ec4f7e3fc59fc1819b781daf",
+      "runtimeSourceFilesSha256": {
+        "SkateCaptureKeyedPlayback.cs": "54581e1b8aa493dcd97cfeb1ca3a60fc847e325461305cea2d5e22b4d7dc0b6e",
+        "SkateCaptureVariants.cs": "90017a354468459b55eac00ee55b5c45ca9d5130f6ad979a3df8eaec5387435b",
+        "SkateCapturePlayback.cs": "33d1cb57dd9e0be8d1521444ec27d69f5680d7bdfa233b758549ebcaec85b203",
+        "SkateCaptureKickflipUpper.cs": "fe4fc728907b5044b8a7ef3cbfa86031ac07ef2b81f7c07b19eee0b9cf28c206"
+      }
+    },
+    {
+      "physical": "regular",
+      "requested": "goofy",
+      "profile": "normal",
+      "sourcePackSha256": "ab44914b04f7d72ab5b7e825eeefe19e41efc1795cbfccbd3975d7aea48b90bf",
+      "glbSha256": "74c3c0e9370cf1191bf06d1548ba524643e44c22406192c888bffef0544baa24",
+      "runtimeRouteRevision": "10fbbc392d523044efed39e3efa16adcb4d43954",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 1.05,
+        "Flick": 1.15,
+        "Air": 1.2833333333333334,
+        "Catch": 1.3666666666666667,
+        "Land": 1.45,
+        "Rollaway": 2.3333333333333335,
+        "End": 4.0
+      },
+      "rigOnlyImage": "normal-regular-phases.jpg",
+      "privateSourceComparison": "normal-regular-private-source-comparison.jpg",
+      "publishedSourceRevision": "e9afedf6e66ec667700036f68230f8f5d9ae7442",
+      "inputSha256": "f409addce662d893388ebb22c93278bdfba16e30fd9d8faa85b806ff2549acf3",
+      "runtimeSourceFilesSha256": {
+        "SkateCaptureKeyedPlayback.cs": "54581e1b8aa493dcd97cfeb1ca3a60fc847e325461305cea2d5e22b4d7dc0b6e",
+        "SkateCaptureVariants.cs": "90017a354468459b55eac00ee55b5c45ca9d5130f6ad979a3df8eaec5387435b",
+        "SkateCapturePlayback.cs": "33d1cb57dd9e0be8d1521444ec27d69f5680d7bdfa233b758549ebcaec85b203",
+        "SkateCaptureKickflipUpper.cs": "fe4fc728907b5044b8a7ef3cbfa86031ac07ef2b81f7c07b19eee0b9cf28c206"
+      }
+    },
+    {
+      "physical": "goofy",
+      "requested": "regular",
+      "profile": "low",
+      "sourcePackSha256": "ab44914b04f7d72ab5b7e825eeefe19e41efc1795cbfccbd3975d7aea48b90bf",
+      "glbSha256": "e109e9fea6960dfa01b817e7961bf9a1bedb3730d562b1119266581d5efa392c",
+      "runtimeRouteRevision": "10fbbc392d523044efed39e3efa16adcb4d43954",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 1.0333333333333334,
+        "Flick": 1.1166666666666667,
+        "Air": 1.25,
+        "Catch": 1.3333333333333333,
+        "Land": 1.4166666666666667,
+        "Rollaway": 2.2333333333333334,
+        "End": 4.0
+      },
+      "rigOnlyImage": "low-goofy-phases.jpg",
+      "privateSourceComparison": "low-goofy-private-source-comparison.jpg",
+      "publishedSourceRevision": "e9afedf6e66ec667700036f68230f8f5d9ae7442",
+      "inputSha256": "6e329bd865191029ad98954471f45c4d0d8a997c10b29e7a7f605b975084fffd",
+      "runtimeSourceFilesSha256": {
+        "SkateCaptureKeyedPlayback.cs": "54581e1b8aa493dcd97cfeb1ca3a60fc847e325461305cea2d5e22b4d7dc0b6e",
+        "SkateCaptureVariants.cs": "90017a354468459b55eac00ee55b5c45ca9d5130f6ad979a3df8eaec5387435b",
+        "SkateCapturePlayback.cs": "33d1cb57dd9e0be8d1521444ec27d69f5680d7bdfa233b758549ebcaec85b203",
+        "SkateCaptureKickflipUpper.cs": "fe4fc728907b5044b8a7ef3cbfa86031ac07ef2b81f7c07b19eee0b9cf28c206"
+      }
+    },
+    {
+      "physical": "goofy",
+      "requested": "regular",
+      "profile": "normal",
+      "sourcePackSha256": "ab44914b04f7d72ab5b7e825eeefe19e41efc1795cbfccbd3975d7aea48b90bf",
+      "glbSha256": "de4877e3ff15c3c390f1df7a03f519323e825d77579a2828e5102d84d88d6cf8",
+      "runtimeRouteRevision": "10fbbc392d523044efed39e3efa16adcb4d43954",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 1.05,
+        "Flick": 1.15,
+        "Air": 1.2833333333333334,
+        "Catch": 1.3666666666666667,
+        "Land": 1.45,
+        "Rollaway": 2.3333333333333335,
+        "End": 4.0
+      },
+      "rigOnlyImage": "normal-goofy-phases.jpg",
+      "privateSourceComparison": "normal-goofy-private-source-comparison.jpg",
+      "publishedSourceRevision": "e9afedf6e66ec667700036f68230f8f5d9ae7442",
+      "inputSha256": "911e30536d3dd05863ec8ab64a9184cf215ae100ee724f4e7c824d568cbc0e0a",
+      "runtimeSourceFilesSha256": {
+        "SkateCaptureKeyedPlayback.cs": "54581e1b8aa493dcd97cfeb1ca3a60fc847e325461305cea2d5e22b4d7dc0b6e",
+        "SkateCaptureVariants.cs": "90017a354468459b55eac00ee55b5c45ca9d5130f6ad979a3df8eaec5387435b",
+        "SkateCapturePlayback.cs": "33d1cb57dd9e0be8d1521444ec27d69f5680d7bdfa233b758549ebcaec85b203",
+        "SkateCaptureKickflipUpper.cs": "fe4fc728907b5044b8a7ef3cbfa86031ac07ef2b81f7c07b19eee0b9cf28c206"
+      }
+    }
+  ],
+  "limits": "Rig-only public images. Original pixels/raw/model weights private. Stills do not establish continuity, measured depth, offline approval or Shadow acceptance.",
+  "publishedSourceRevision": "e9afedf6e66ec667700036f68230f8f5d9ae7442",
+  "sourceContentSha256": {
+    "scripts/author_skate_switch_ollie.py": "3e59e0b8c43abf818a6efabace8169bcf6151adba2bd0b98cdac62acd575f8cc",
+    "assets/authored/animation/switch-ollie-keyed/constraints.json": "019fae3843d145f4caaeabccb482ee0c9ec608025a88f3fca1892c9e8d51fb99",
+    "assets/authored/animation/switch-ollie-keyed/captured-body.json": "a90228a4b8003caf555afb95d621cd713bcf2e43c2a2fe94e47b2702bf087623"
+  }
+}
