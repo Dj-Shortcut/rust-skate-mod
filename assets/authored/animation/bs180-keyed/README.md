@@ -67,3 +67,14 @@ and the exact source route in normal and low flights, Regular and Goofy.
 The 60Hz body replay retains every airborne frame and reaches ordinary
 Ground at four seconds. Those managed checks do not constitute native Rust,
 Shadow or Claude's offline visual approval.
+
+## Pop/Guide review correction
+
+Claude's A2 review identified an overly steep-looking Pop/Guide and a lead
+hand held beside the head. The authored pressure peak is reduced to about
+38 degrees, with a more progressive front outer-upper drag toward the nose.
+A separate short wind-up opens the lead elbow and hand away from the head,
+then rejoins the previous balance before source54. Air, catch, land and
+roll-away retain their existing poses, contacts and timing. The original
+filmed body controls are unchanged; these corrections remain explicitly
+reconstructed presentation. Raw `reviewed=false` is retained.

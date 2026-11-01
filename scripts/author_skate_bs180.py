@@ -129,7 +129,17 @@ def arms(controls, s, sf):
         for part in ['upper', 'fore']:
             observed = unit(curve(times, [r['arms'][side][part] for r in rows], sf))
             authored = unit(s['balance'][side][part])
-            result[side].append(unit(observed*(1-weight)+authored*weight))
+            direction = unit(observed*(1-weight)+authored*weight)
+            # Cropped source hands cannot define a believable pop wind-up.
+            # This authored correction ends before the accepted Air pose.
+            pop_balance = s.get('popBalance')
+            if pop_balance and side in pop_balance:
+                start, full, held, finish = pop_balance['window']
+                pop_weight = smooth((sf-start)/(full-start))*(1-smooth((sf-held)/(finish-held)))
+                target = unit(pop_balance[side][part])
+                if pop_weight > 0:
+                    direction = unit(direction*(1-pop_weight)+target*pop_weight)
+            result[side].append(direction)
     return result
 
 
