@@ -44,8 +44,9 @@ Varial choices, not captured Varial observations or new source confidence.
 
 ## Free-foot Air gap
 
-The existing free-foot collection now targets slightly nearer the rotating
-deck during its authored Air window. The same full-shoe clearance still lifts
+The higher collecting foot now targets slightly nearer the rotating deck
+during its authored Air window. The already-near rear foot retains its
+accepted target. The same full-shoe clearance still lifts
 a foot where the deck passes underneath; its minimum separation and fixed-leg
 reach checks are unchanged. Board keys, carrier flight, grounded press, final
 catch and recovery stay fixed. This is a small authored refinement of the
