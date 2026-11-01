@@ -61,11 +61,15 @@ def foot_frame(spec, frame, side):
     foot = qmatrix(slerp(matrix_quat(foot), matrix_quat(free_frame), weight))
     caught = spec['firstCatchFrame'] if side == 'Left' else spec['bothCatchFrame']
     catch = smooth((frame - (caught - spec['catchBlendFrames'])) / spec['catchBlendFrames'])
-    if weight > 0 and catch < 1:
-        ankle[1] += free_foot_clearance(spec, origin, rotation, ankle, foot) * weight
     x, z, yaw = c['catch']
     target, target_frame = deck_shoe(spec, origin, rotation, x, z, yaw, spec['soleGap'])
-    return ankle * (1 - catch) + target * catch, qmatrix(slerp(matrix_quat(foot), matrix_quat(target_frame), catch))
+    ankle = ankle * (1 - catch) + target * catch
+    foot = qmatrix(slerp(matrix_quat(foot), matrix_quat(target_frame), catch))
+    if weight > 0 and catch < 1:
+        # Check the final interpolated shoe, including catch interpolation.
+        # Fading the correction would permit a released sole through the deck.
+        ankle[1] += free_foot_clearance(spec, origin, rotation, ankle, foot)
+    return ankle, foot
 
 
 def sample(body, spec, frame):
