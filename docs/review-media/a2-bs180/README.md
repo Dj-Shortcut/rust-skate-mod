@@ -31,42 +31,44 @@ against its board heading. This frozen proxy's requested native binding is
 opposite to its physical mesh label; the viewer reports both explicitly.
 
 The exact route is `bs-180-source-keyed-v1`: normal Ollie,
-Flip0/Shove0/Spin−180/Body0. Source board heading is removed once from all
-source joints, directions, toes, sole frames and board; live `NoseYaw`
-retains the actual body-and-board turn. A modest nose-up carry persists
-through source54, then levels before Catch58. Free shoes follow that pitch
-near the grip. Tail release50 and a distinct free-Air/press-end52.5 preserve
-the existing strict reach, floor and contact guards.
+Flip 0 / Shove 0 / Spin −180 / Body 0. Source board heading is removed once
+from every joint, toe, direction, sole frame and board. Live `NoseYaw` owns
+the single native body-and-board turn.
 
-The controlled actual Pad/full32Hz Step/Land/scorer replay selects Backside180
-in all four cases. The60Hz body retains36/36 normal-air frames and34/34 low-air
-frames, then reaches ordinary Ground at4s. The32 individual render phases
-come from those actual replay GLBs, with no render-only pose edits. Test-only
-approval and generated models remain private; raw `reviewed=false` is retained.
-Root's independent private browser review reaches4s at both1× and¼× in all
-four cases, with28 decoded source phase selections and no browser runtime
-errors. Root also captured12 side-Pop, guide-foot and rollaway-foot views;
-these make the four contact sheets. Playback and contact-capture checks
-were performed independently by Root; the author checked the managed
-replays and visually inspected the rendered/source comparisons.
+The board now snaps earlier and levels as the front upper slides toward the
+front bolts. The leading knee bends forward and down, with the pelvis above
+the board middle. Tail-sole release at source 48.5 follows snap 47.5; upper
+contact continues to 50.5, with distinct free-Air/press-end 52.5. The board
+rises while levelling. The accepted open Goofy wind-up and Air 54 onward,
+catch, actual landing and roll-away remain intact. These are authored
+contact/depth/timing corrections, not measured 3D motion.
 
-The author inspected the original-rig phase sheets beside the reference and
-Root's contact captures: loaded ground pose, one airborne body-and-board
-half-turn without a flip, bent actual landing and ordinary recovery. The
-review correction opens the lead wind-up away from the head and lowers the
-held guide ankle, with a small leg-driven extension. The first four phase
-sheets retain exactly the previous fixed camera. Its Regular Pop/Guide view
-still foreshortens the deck almost end-on; the side-Pop contact panel is an
-explicit additional angle. This is a bounded candidate for Claude's visual
-gate, not a claim that nominal pitch resolves that projection or that the
-trick is offline approved. Air54 onward, catch, land and recovery retain
-their accepted source poses, board and contact timing.
+[Before/after at identical times](POP-GUIDE-REVIEW.md) shows the rejected and
+updated 0.933 s poses, the new actual snap at 0.867 s, then rejected/updated
+Guide at the same time for each height. The fixed camera is identical. The
+old rejected moment is retained explicitly; moving the phase button alone
+would not satisfy this comparison.
 
-Source correction commits: `69b86b7` and `776487a`.
+The controlled actual Pad/full 32 Hz Step/Land/scorer replay selects
+Backside 180 in all four cases. The 60 Hz body retains 36/36 normal-air frames
+and 34/34 low-air frames, then reaches ordinary Ground at 4 s. The 32 phase
+renders and four extra original-time renders come directly from those GLBs,
+with the frozen original skin and shaped thirteen-part board. No render-only
+pose edit is applied. Test-only approval and generated packs/models remain
+private; raw `reviewed=false` is retained.
+
+Root's independent browser replay reaches 4 s in all four cases at 1× and
+¼×, with 28 decoded source phase selections and no runtime errors. Contact
+views are captured independently from those final models. The author inspected the same-camera original-rig
+frames: the early snap is diagonal, the original 0.933 s pose no longer
+perches on an upright nose, the guiding board is level and rising, and the
+later body-and-board half-turn, bent landing and settled recovery remain.
+These checks do not replace Claude's independent offline judgement.
+
+[Integrated source correction](https://github.com/Dj-Shortcut/rust-skate-mod/commit/8234e862cf5ae46d53e4cb9894e6a49b4194c0c4).
 Raw source pack SHA256:
-`00d834725860f0d04f3f27054a10c642cb681b07ff90177b54e0962980d83391`.
-The actual managed replay binds unchanged current-main C# at
-`d0228f0f4607eb94a24622e1e427704ae19291b7`; the original exact BS180 route
-is retained. Claude owns the offline judgement and library status. Raw
-`reviewed=false` remains unchanged. Native Rust/Shadow selection, controls
-and gameplay remain a separate pending gate.
+`0554c74a082cfbe494a7a225a3e240c5080da598ec45ec4734f0d162121434c4`.
+The rebuilt managed replay binds the frozen integrated source at
+`3f593c859c4be6afce08fad47ff28518ed6b4746`.
+Claude owns the library status and offline judgement. Native Rust/Shadow
+selection, controls and gameplay remain a separate pending gate.

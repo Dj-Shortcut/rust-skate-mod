@@ -70,28 +70,19 @@ Shadow or Claude's offline visual approval.
 
 ## Pop/Guide review correction
 
-Claude's A2 review identified an overly steep-looking Pop/Guide and a lead
-hand held beside the head. The authored pressure peak is reduced to about
-38 degrees, with the early front outer-upper drag kept around middeck/front
-bolts before advancing into the free/catch path. A small leg-driven
-extension avoids a sinking hip through pressure and guide.
-A separate short wind-up opens the lead elbow and hand away from the head,
-then rejoins the previous balance before source54. Air, catch, land and
-roll-away retain their existing poses, contacts and timing. The original
-filmed body controls are unchanged; these corrections remain explicitly
-reconstructed presentation. Raw `reviewed=false` is retained.
+The board snaps earlier, then the front outer-upper slides toward the front
+bolts while the deck levels. The front knee bends forward and down; a short
+leg-driven extension keeps the pelvis above the board middle. The lead
+wind-up opens away from the head and rejoins the accepted balance before
+source frame 54. The original filmed body controls, camera and actual native
+body/board turn remain unchanged.
 
-## Visible snap and levelling mechanics
+Tail-sole release 48.5 follows snap 47.5, before upper-guide release 50.5 and
+distinct free-Air 52.5, so the board rises while it levels. The previously
+accepted Air 54 onward, catch, land, roll-away and open Goofy wind-up are
+retained. Source timing, leg depth and contacts are authored reconstructions,
+not measured 3D. Raw `reviewed=false` remains unchanged.
 
-The visible review correction uses an earlier snap followed by the front
-upper dragging to the bolts while the deck levels. The front knee bends
-forward and down; the pelvis stays above the board middle. Tail-sole
-release48.5 follows snap47.5, before the upper-guide release50.5 and the
-distinct free-Air52.5, so the board rises while it levels. The original
-camera and actual native body/board turn are unchanged. The previously
-accepted Air54 onward and the open Goofy wind-up are retained.
-
-Before/after media include both the original0.933s moment and the new earlier
-snap, avoiding a phase-button substitution. Source timing, leg depth and
-contacts are authored reconstructions, not measured3D. Raw approval remains
-false; the final visible result remains subject to Claude's independent gate.
+Before/after media retain both the original 0.933 s moment and the new earlier
+snap. The result remains subject to Claude's independent visual judgement
+and the separate native Rust/Shadow gate.
