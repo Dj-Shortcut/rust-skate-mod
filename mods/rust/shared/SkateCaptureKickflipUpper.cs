@@ -63,7 +63,9 @@ namespace Shortcut.RustMod
                 p.Pelvis + turn.Rotate(p.LeftShoulder - p.Pelvis), p.Pelvis + turn.Rotate(p.RightShoulder - p.Pelvis),
                 p.Pelvis + turn.Rotate(p.LeftElbow - p.Pelvis), p.Pelvis + turn.Rotate(p.RightElbow - p.Pelvis),
                 p.Pelvis + turn.Rotate(p.LeftHand - p.Pelvis), p.Pelvis + turn.Rotate(p.RightHand - p.Pelvis),
-                p.PelvisForward, p.PelvisUp, turn.Rotate(p.ChestForward), turn.Rotate(p.ChestUp), turn.Rotate(p.HeadForward));
+                // The rider keeps an independent gaze while the torso folds.
+                // Rotating it with the chest makes backward setups look skyward.
+                p.PelvisForward, p.PelvisUp, turn.Rotate(p.ChestForward), turn.Rotate(p.ChestUp), p.HeadForward);
             return true;
         }
 
