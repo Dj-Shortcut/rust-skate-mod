@@ -394,7 +394,7 @@
     "spin": 0,
     "body": 0
   },
-  "provenance": "Own genuine black-shirt/cap/tattooed-arm BATB13 Fakie BS Pop Shove-it, bounded923..1006 of cached181..219s excerpt. Actual tail scoop, grip-up board-only180, unchanged body heading, catch and flat-ground landing/rollaway verified visually. Source own torso/arm directions, explicit estimated camera/depth/anatomy/knee/gaze reconstruction, original shaped-deck fixed-shoe setup/release/catch and authored root/foot clearance. No Cole/Halfcab body, no front-foot flip flick, no raw/native approval. Visible own Pop/Catch follow-up: bounded gentler pressure pitch plus brief body extension, and only the face-covering canonicalRight arm opens at Catch. Source yaw, contact/event clock, native physics and later landing/recovery are retained.",
+  "provenance": "Own genuine black-shirt/cap/tattooed-arm BATB13 Fakie BS Pop Shove-it, bounded923..1006 of cached181..219s excerpt. Actual tail scoop, grip-up board-only180, unchanged body heading, catch and flat-ground landing/rollaway verified visually. Source own torso/arm directions, explicit estimated camera/depth/anatomy/knee/gaze reconstruction, original shaped-deck fixed-shoe setup/release/catch and authored root/foot clearance. No Cole/Halfcab body, no front-foot flip flick, no raw/native approval. Visible own Pop/Catch follow-up: bounded gentler pressure pitch plus brief body extension, and only the face-covering canonicalRight arm opens at Catch. Source yaw, contact/event clock, native physics and later landing/recovery are retained. A short authored canonical Right-only scoop balance replaces the overlay-occluded second high arm, while the genuinely raised canonical Left source arm is unchanged; frame953.1\u2013957.5 only.",
   "uncertainty": "Manual Goofy-base Fakie / anatomicalLeft tail role inference from same-actor witnesses and actual backward tail-leading pop; excerpt lacks a complete independent plain-normal stance take. Monocular pan, partly hidden tail sole, small airborne feet and wrist/head depth. BS board-only180 is a visual inference corroborated by table sequence, not calibrated3D. Original full-video frames/hash unknown.",
   "sourceRootMotion": "Body is hip-relative with no carrier/jump baked. Canonical+Z remains initial nose, backwards Fakie velocity is-tailZ and independent. One board-local180 only; body heading stays unspun/native. Reference rise is removed only from the pressure board offset; actual carrier is added once by playback.",
   "phaseClockLimit": "Own bounded decoder Pop951, front release951.8, tail strike953.1, canonicalRight tail-sole release954.2, distinct later freeAir956, firstCatch963.5/both965, sourceLand967 and same-take upright992. Contact/rotation marks are authored visual estimates; actual native input/landing/scoring remain authoritative.",
@@ -436,5 +436,25 @@
       -0.25
     ],
     "provenance": "Own canonical Right wrist is forward/depth-ambiguous at Catch and projects across the face in the source-facing camera. Author a bent outward/down balance arm only in this window; other arm and Land967+ original source paths unchanged. This is a body-relative correction, not a camera fix or recovered3D observation."
+  },
+  "scoopBalance": {
+    "window": [
+      953.1,
+      953.85,
+      956.1,
+      957.5
+    ],
+    "side": "Right",
+    "upper": [
+      0.3,
+      -0.3,
+      -0.9
+    ],
+    "fore": [
+      0.8,
+      -0.05,
+      -0.1
+    ],
+    "provenance": "Bounded authored reconstruction of the source-overlay-occluded original Left/canonical Right arm only. At actual bounded954\u2013956 one tattooed original Right/canonical Left arm is visibly overhead and is preserved exactly. The other original Left elbow/wrist lies under the autograph/QR overlay and has unreliable detector depth (954 image visibility0.067/0.385); do not turn it into a second overhead V arm. Only canonical Right elbow/hand blend into bent below-shoulder side balance953.1\u2013957.5, returning exactly before accepted Air957.83. No other joints, body heading, board/feet, clock, catch/landing/recovery or strict guards change. This is not measured3D."
   }
 }

@@ -96,13 +96,14 @@ def sample(c, s, sf):
     delta = pelvis - joints['Pelvis']
     for k in joints:
         joints[k] += delta
-    # A covered/depth-ambiguous wrist projects across the face at Catch.
-    # Reconstruct only that anatomical arm in body axes; the other arm and
-    # the source body/clock remain untouched.
-    balance = s['catchBalance']
-    start, full, held, end = balance['window']
-    weight = smooth((sf - start) / (full - start)) * (1 - smooth((sf - held) / (end - held)))
-    if weight > 0:
+    # Reconstruct only the overlay-occluded scoop arm and the later
+    # face-covering Catch wrist in body axes. Preserve the genuinely raised
+    # opposite scoop arm, body, feet, board and source clock exactly.
+    for balance in (s['scoopBalance'], s['catchBalance']):
+        start, full, held, end = balance['window']
+        weight = smooth((sf - start) / (full - start)) * (1 - smooth((sf - held) / (end - held)))
+        if weight <= 0:
+            continue
         facing = unit(np.asarray(dirs['ChestForward']) * [1., 0., 1.])
         left = unit((joints['LeftHip'] - joints['RightHip']) * [1., 0., 1.])
         local = lambda v: unit(facing * v[0] + UP * v[1] + left * v[2])
