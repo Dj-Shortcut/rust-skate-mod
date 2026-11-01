@@ -251,6 +251,7 @@ namespace Shortcut.RustMod
             switch (SkateCaptureVariants.SourceMovementKind(clip.MovementKind))
             {
                 case "heelflip": case "switch-heelflip": case "nollie-heelflip": case "fakie-heelflip": rollTurn = -360; break;
+                case "inward-heelflip": rollTurn = -360; yawTurn = 180; break;
                 case "kickflip": case "fakie-kickflip": case "nollie-kickflip": case "switch-kickflip": rollTurn = 360; break;
                 case "nollie-backside-180-heelflip": rollTurn = -360; yawTurn = 180; break;
                 case "360-flip": case "nollie-360-flip": rollTurn = 360; yawTurn = 360; break;
