@@ -22,9 +22,9 @@
     "scope": "Original shared board/sole/instep mesh only; no other trick body read."
   },
   "popFrame": 339,
-  "tailStrikeFrame": 341.5,
+  "tailStrikeFrame": 339.5,
   "frontReleaseFrame": 339.5,
-  "rearReleaseFrame": 343.5,
+  "rearReleaseFrame": 340.5,
   "pressEndFrame": 345.5,
   "catchFrame": 350,
   "landFrame": 356,
@@ -312,28 +312,33 @@
   ],
   "instep": {
     "start": 339.5,
-    "full": 340.3,
+    "full": 340.2,
     "end": 343.5,
     "releaseEnd": 345.5,
     "yaw": 62,
     "deckPath": [
       [
         339.5,
-        -0.035,
-        0.19
+        -0.04,
+        0.15
       ],
       [
-        341,
-        -0.025,
-        0.265
+        340.2,
+        -0.05,
+        0.18
+      ],
+      [
+        341.5,
+        -0.05,
+        0.235
       ],
       [
         343.5,
-        -0.02,
-        0.285
+        -0.04,
+        0.255
       ]
     ],
-    "contactSemantics": "Front sole-support clears at55.5; the outer-upper shoe guides the griptape through58, without a heel-side/off-edge flick or board roll."
+    "contactSemantics": "Front sole releases at339.5; outer-upper shoe guides progressively to front bolts through343.5. Tail sole releases at340.5; distinct later free-Air endpoint345.5 remains unchanged. No heel/off-edge flick or longitudinal roll."
   },
   "feet": {
     "Left": {
@@ -466,7 +471,7 @@
       ]
     },
     {
-      "frame": 343.5,
+      "frame": 340.5,
       "phase": "air",
       "contacts": []
     },
@@ -516,7 +521,7 @@
       ]
     }
   ],
-  "provenance": "Genuine plain Halfcab / Fakie BS180 in official H4MEulcgUTc, plaid foreground actor. Same nose/anatomy frame while travelling backwards; Right tail pops. Own source body directions, explicitly authored monocular heading/depth, measured original geometry contacts, compact fixed-chain legs and corrected unreliable balance arms. Complete source yaw removed from every point/direction/sole/board; native NoseYaw supplies one actual turn. Timeline after filmed379 through406 is an explicitly authored planted upright recovery, never a claimed future source frame.",
+  "provenance": "Genuine plain Halfcab / Fakie BS180 in official H4MEulcgUTc, plaid foreground actor. Same nose/anatomy frame while travelling backwards; Right tail pops. Own source body directions, explicitly authored monocular heading/depth, measured original geometry contacts, compact fixed-chain legs and corrected unreliable balance arms. Complete source yaw removed from every point/direction/sole/board; native NoseYaw supplies one actual turn. Timeline after filmed379 through406 is an explicitly authored planted upright recovery, never a claimed future source frame. Visible early-mechanics correction follows the normal-BS source-control pattern: early 35-degree snap, earlier tail-sole release, front-bolt outer-upper drag with a level Guide and forward/down front-knee plane. Source clock, original ground datum, own body/heading and every accepted Air-frame-and-later sample remain unchanged. Source camera is not a pose correction.",
   "uncertainty": [
     "Actual raw56/56 selected with zero gaps; low-confidence point lists retained.",
     "Camera/depth, absolute board and hip heading, contact phases and pelvis are authored visual estimates.",
@@ -789,5 +794,66 @@
       ]
     },
     "provenance": "Own filmed raised/outward balance at Pop/Air. BS LeftWrist30/56 and RightWrist13/56 raw estimates are unreliable and collapse near pelvis despite visible raised arms. Both arm directions/depth and smooth lowered recovery are explicitly reconstructed from the actual pixels, not treated as measured motion."
+  },
+  "earlyPitchKeys": [
+    [
+      324,
+      0
+    ],
+    [
+      339,
+      0
+    ],
+    [
+      339.5,
+      35
+    ],
+    [
+      340.4,
+      16
+    ],
+    [
+      341.5,
+      1
+    ],
+    [
+      342.5,
+      0
+    ],
+    [
+      343.5,
+      0
+    ],
+    [
+      345.5,
+      22
+    ],
+    [
+      347,
+      22
+    ]
+  ],
+  "earlyMechanicsEndFrame": 347,
+  "frontKneeGuide": {
+    "window": [
+      339,
+      339.5,
+      343.5,
+      347
+    ],
+    "pole": [
+      1,
+      -0.25,
+      0.1
+    ]
+  },
+  "popExtension": {
+    "window": [
+      336,
+      339,
+      343.5,
+      347
+    ],
+    "metres": 0.045
   }
 }

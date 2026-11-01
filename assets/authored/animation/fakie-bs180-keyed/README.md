@@ -37,7 +37,7 @@ from **every joint/toe, direction, sole frame and board transform**; the
 actual `NoseYaw` supplies the only real half-turn and the normal-stance landing.
 The outer upper front shoe guides the grip; there is no flip flick.
 
-Pop 339, tail strike 341.5, Right release 343.5, distinct later free-Air
+Pop 339, authored early tail strike 339.5, Right release 340.5, distinct later free-Air
 pressure endpoint 345.5, Catch 350 and Land 356 are visual phase estimates.
 The genuine footage ends before a long upright recovery. Timeline 379–406
 is explicitly **authored planted upright recovery**, not future video frames;
@@ -59,3 +59,11 @@ last. Raw output stays `reviewed=false`. Four full managed controller/body
 routes pass normal and lower profiles in both stances, with the actual
 **Fakie Backside 180** scorer. This checkpoint is not a visual verdict or a
 native Rust/Shadow result. Claude owns the library and offline verdict.
+
+## Original-rig review media
+
+[Eight rig-only phase/contact sheets](../../../../docs/review-media/a3-fakie-bs180/README.md) and the private [source-comparison viewer](http://127.0.0.1:63761/a3-fakie-bs180/) cover normal/lower × physical Regular/Goofy,1×/¼×, through actual Land and ordinary4 s recovery. Original skin, weights and board hierarchy are unchanged. Reference footage is held at the last genuine frame during the explicitly authored upright suffix. All raw output remains reviewed=false; Claude verdict and native Shadow validation remain separate.
+
+## Early snap and level guide
+
+The brief snap now precedes the main body turn and drops into a level front-bolt upper-shoe guide, with the tail sole already released. The front knee bends forward/down instead of perching over the nose. A small authored pressure extension rejoins the original accepted Air exactly; the own captured body, clock, ground datum, complete native heading authority and later Air/Catch/Land/recovery are retained. This is a source-presentation correction following the reviewed normal-BS control pattern, not a shared physics or camera change. The previous steep Pop/Guide media is superseded; final media follows the corrected source checkpoint.
