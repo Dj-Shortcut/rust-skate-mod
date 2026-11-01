@@ -1,0 +1,527 @@
+{
+  "format": "a4-nollie-bs-pop-shove-rig-only-review/1",
+  "sourceAuthoringHead": "6d401d341c2e1b0c8d69ee33399d203b1aaae839",
+  "runtimeRouteRevision": "6d401d341c2e1b0c8d69ee33399d203b1aaae839",
+  "runtimeRouteFiles": {
+    "SkateCaptureKeyedPlayback.cs": "919b7e0bd8184afefdca184e9979c21f5ae9ac1f8a03d74dc6d88d05954ef3e1",
+    "SkateCaptureVariants.cs": "e287c0b11d56fc2f64a8460bd81969ae14251c831a600c7bca9851dcad2b666c",
+    "SkateCaptureKickflipUpper.cs": "fe4fc728907b5044b8a7ef3cbfa86031ac07ef2b81f7c07b19eee0b9cf28c206",
+    "SkateCapturePlayback.cs": "33d1cb57dd9e0be8d1521444ec27d69f5680d7bdfa233b758549ebcaec85b203"
+  },
+  "sourcePackSha256": "2fe36fb66973743eff29d815f87220828bf78abca391c86d1dd5dd5c60046319",
+  "rawReviewed": false,
+  "nativeGame": false,
+  "offlineVerdict": "pending Claude",
+  "independentSource": true,
+  "sourceOriginGroundDatumM": 0.092,
+  "boardOnlyYaw": true,
+  "bodyHalfturn": false,
+  "sourceYawRemovedFromBody": false,
+  "viewer": "http://127.0.0.1:63761/a4-nollie-bs-pop-shove/",
+  "sourceUrl": "https://www.youtube.com/watch?v=tL8Ey9GS0xQ&t=195",
+  "sourceWindow": {
+    "retainedBoundedFrames": [
+      434,
+      537
+    ],
+    "animationFrames": [
+      460,
+      525
+    ],
+    "nextActorCut": 538,
+    "firstContainerPts": 0,
+    "timeBase": "1/30000",
+    "ptsStep": 1001,
+    "filmedBaseStance": "Manual Regular inference; no complete plain-normal baseline",
+    "originalGlobalFrameNumbers": null
+  },
+  "scope": "Original rig-only media. Own genuine white1088 nose scoop and board-only180; body retains a small windup. Monocular camera/depth/contact, fixed-chain feet and bounded476\u2013500 bent arms are authored. Pop retains ordinary-charge-to-capture entry, not an exact filmed backswing. No reference pixels or raw detections redistributed.",
+  "camera": {
+    "canonicalOffset": [
+      -0.906,
+      0.06,
+      -0.423
+    ],
+    "kind": "One fixed approximate world source-side comparison camera; opposite counterpart may be more end-on. Side/Feet views expose actual board pitch and support; no pose/gameplay camera edits."
+  },
+  "popReadOnly": {
+    "sourceStrikeFrame": 479.5,
+    "sourcePitchDegrees": -32,
+    "normalPhysicalRegularPanelTime": 0.8666666666666667,
+    "normalSourceFrame": 479.57291982281527
+  },
+  "files": [
+    {
+      "profile": "low",
+      "requestedStance": "goofy",
+      "physicalStance": "regular",
+      "file": "docs/review-media/a4-nollie-bs-pop-shove/low-regular-phases.jpg",
+      "sha256": "8adb75aaaf961d597ac5d5c0048ed586fe200b30d50144afdab5953e35077faa",
+      "glbSha256": "d1d3369c0c185200271aa75d4fe5f4e1c13602df74dc4ae4cb30239054d33d10",
+      "phaseMoments": {
+        "Load": 0.8333333333333334,
+        "Pop": 0.8666666666666667,
+        "Flick": 0.95,
+        "Air": 1.1,
+        "Catch": 1.3,
+        "Land": 1.4166666666666667,
+        "Rollaway": 2.05,
+        "End": 4.0
+      }
+    },
+    {
+      "profile": "normal",
+      "requestedStance": "goofy",
+      "physicalStance": "regular",
+      "file": "docs/review-media/a4-nollie-bs-pop-shove/normal-regular-phases.jpg",
+      "sha256": "4aec8bc88951d781b89866f0baff4771b7e2e1d3550abf996b977bf1c518c195",
+      "glbSha256": "d3fdc0a40505a91099c94bcbe04d0c76f117b4d23100a4234728bbabc5cf1b25",
+      "phaseMoments": {
+        "Load": 0.8333333333333334,
+        "Pop": 0.8666666666666667,
+        "Flick": 0.9666666666666667,
+        "Air": 1.1166666666666667,
+        "Catch": 1.3166666666666667,
+        "Land": 1.45,
+        "Rollaway": 2.1333333333333333,
+        "End": 4.0
+      }
+    },
+    {
+      "profile": "low",
+      "requestedStance": "regular",
+      "physicalStance": "goofy",
+      "file": "docs/review-media/a4-nollie-bs-pop-shove/low-goofy-phases.jpg",
+      "sha256": "c863df536a39c1835e5e7ff85a5640376258e7e6c9386428669ffe5fb6190ef3",
+      "glbSha256": "3567a30f5882aecfc18ef23f01f9e5c7ede90cb848d6f232befcc59a9bc59321",
+      "phaseMoments": {
+        "Load": 0.8333333333333334,
+        "Pop": 0.8666666666666667,
+        "Flick": 0.95,
+        "Air": 1.1,
+        "Catch": 1.3,
+        "Land": 1.4166666666666667,
+        "Rollaway": 2.05,
+        "End": 4.0
+      }
+    },
+    {
+      "profile": "normal",
+      "requestedStance": "regular",
+      "physicalStance": "goofy",
+      "file": "docs/review-media/a4-nollie-bs-pop-shove/normal-goofy-phases.jpg",
+      "sha256": "adf960223e5d44a1245c75f6e060dc75cb32f49dfd2e1941cee3034e14a1c420",
+      "glbSha256": "236f9b0c75ec835443ba00c1b38f2b02e02d924dc64bc2d9017762a9d29c0942",
+      "phaseMoments": {
+        "Load": 0.8333333333333334,
+        "Pop": 0.8666666666666667,
+        "Flick": 0.9666666666666667,
+        "Air": 1.1166666666666667,
+        "Catch": 1.3166666666666667,
+        "Land": 1.45,
+        "Rollaway": 2.1333333333333333,
+        "End": 4.0
+      }
+    },
+    {
+      "profile": "normal",
+      "physicalStance": "regular",
+      "file": "docs/review-media/a4-nollie-bs-pop-shove/normal-regular-contacts.jpg",
+      "sha256": "9e1071efa8ee552497a1a279342e0983844d940da6d408cffa32fd11ca5d485f",
+      "views": [
+        {
+          "phase": "Pop",
+          "view": "side",
+          "t": 0.866666666666667,
+          "sourceCacheTarget": 16.0017,
+          "videoTime": 16.001749,
+          "readyState": 4,
+          "decodedCanvasSha256": "6835a235ec999e92bf7f35fe83efe293790cfb70a00c407325bd12d383bf7411"
+        },
+        {
+          "phase": "Air",
+          "view": "side",
+          "t": 1.11666666666667,
+          "sourceCacheTarget": 16.2103,
+          "videoTime": 16.210291,
+          "readyState": 4,
+          "decodedCanvasSha256": "0f4ad6533e3cef91a9f01d98685ac611ea99f946d56d95066f61d5b5498a438f"
+        },
+        {
+          "phase": "Catch",
+          "view": "side",
+          "t": 1.31666666666667,
+          "sourceCacheTarget": 16.3771,
+          "videoTime": 16.377123,
+          "readyState": 4,
+          "decodedCanvasSha256": "b441d0a96b3eab8caf0c9ce564d648701c918338620159973a76d869086ce9bb"
+        },
+        {
+          "phase": "Pop",
+          "view": "feet",
+          "t": 0.866666666666667,
+          "sourceCacheTarget": 16.0017,
+          "videoTime": 16.001749,
+          "readyState": 4,
+          "decodedCanvasSha256": "6835a235ec999e92bf7f35fe83efe293790cfb70a00c407325bd12d383bf7411"
+        },
+        {
+          "phase": "Flick",
+          "view": "feet",
+          "t": 0.966666666666667,
+          "sourceCacheTarget": 16.0852,
+          "videoTime": 16.085165,
+          "readyState": 4,
+          "decodedCanvasSha256": "ed01b0736ebb21af565929565a4870c313bde892df550cd54354d5a351286352"
+        },
+        {
+          "phase": "Air",
+          "view": "feet",
+          "t": 1.11666666666667,
+          "sourceCacheTarget": 16.2103,
+          "videoTime": 16.210291,
+          "readyState": 4,
+          "decodedCanvasSha256": "0f4ad6533e3cef91a9f01d98685ac611ea99f946d56d95066f61d5b5498a438f"
+        },
+        {
+          "phase": "Rollaway",
+          "view": "feet",
+          "t": 2.13333333333333,
+          "sourceCacheTarget": 17.0531,
+          "videoTime": 17.053147,
+          "readyState": 4,
+          "decodedCanvasSha256": "6f1e343ba4298d6ab7e4d27c1c582c1e1915f441a40b3abec9376b0313caace9"
+        }
+      ]
+    },
+    {
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "file": "docs/review-media/a4-nollie-bs-pop-shove/normal-goofy-contacts.jpg",
+      "sha256": "e5658544b3ab7a513ee48a7a9588fa5a3ce169ef0fd5861c9517b9326867a61c",
+      "views": [
+        {
+          "phase": "Pop",
+          "view": "side",
+          "t": 0.866666666666667,
+          "sourceCacheTarget": 16.0017,
+          "videoTime": 16.001749,
+          "readyState": 4,
+          "decodedCanvasSha256": "6835a235ec999e92bf7f35fe83efe293790cfb70a00c407325bd12d383bf7411"
+        },
+        {
+          "phase": "Air",
+          "view": "side",
+          "t": 1.11666666666667,
+          "sourceCacheTarget": 16.2103,
+          "videoTime": 16.210291,
+          "readyState": 4,
+          "decodedCanvasSha256": "0f4ad6533e3cef91a9f01d98685ac611ea99f946d56d95066f61d5b5498a438f"
+        },
+        {
+          "phase": "Catch",
+          "view": "side",
+          "t": 1.31666666666667,
+          "sourceCacheTarget": 16.3771,
+          "videoTime": 16.377123,
+          "readyState": 4,
+          "decodedCanvasSha256": "b441d0a96b3eab8caf0c9ce564d648701c918338620159973a76d869086ce9bb"
+        },
+        {
+          "phase": "Pop",
+          "view": "feet",
+          "t": 0.866666666666667,
+          "sourceCacheTarget": 16.0017,
+          "videoTime": 16.001749,
+          "readyState": 4,
+          "decodedCanvasSha256": "6835a235ec999e92bf7f35fe83efe293790cfb70a00c407325bd12d383bf7411"
+        },
+        {
+          "phase": "Flick",
+          "view": "feet",
+          "t": 0.966666666666667,
+          "sourceCacheTarget": 16.0852,
+          "videoTime": 16.085165,
+          "readyState": 4,
+          "decodedCanvasSha256": "ed01b0736ebb21af565929565a4870c313bde892df550cd54354d5a351286352"
+        },
+        {
+          "phase": "Air",
+          "view": "feet",
+          "t": 1.11666666666667,
+          "sourceCacheTarget": 16.2103,
+          "videoTime": 16.210291,
+          "readyState": 4,
+          "decodedCanvasSha256": "0f4ad6533e3cef91a9f01d98685ac611ea99f946d56d95066f61d5b5498a438f"
+        },
+        {
+          "phase": "Rollaway",
+          "view": "feet",
+          "t": 2.13333333333333,
+          "sourceCacheTarget": 17.0531,
+          "videoTime": 17.053147,
+          "readyState": 4,
+          "decodedCanvasSha256": "6f1e343ba4298d6ab7e4d27c1c582c1e1915f441a40b3abec9376b0313caace9"
+        }
+      ]
+    },
+    {
+      "profile": "low",
+      "physicalStance": "regular",
+      "file": "docs/review-media/a4-nollie-bs-pop-shove/low-regular-contacts.jpg",
+      "sha256": "27df1daeb3fa0f902efa53c34bcd898f650e6fa9d6400fcf482df5e45e479605",
+      "views": [
+        {
+          "phase": "Pop",
+          "view": "side",
+          "t": 0.866666666666667,
+          "sourceCacheTarget": 16.0031,
+          "videoTime": 16.003115,
+          "readyState": 4,
+          "decodedCanvasSha256": "6835a235ec999e92bf7f35fe83efe293790cfb70a00c407325bd12d383bf7411"
+        },
+        {
+          "phase": "Air",
+          "view": "side",
+          "t": 1.1,
+          "sourceCacheTarget": 16.2117,
+          "videoTime": 16.211656,
+          "readyState": 4,
+          "decodedCanvasSha256": "0f4ad6533e3cef91a9f01d98685ac611ea99f946d56d95066f61d5b5498a438f"
+        },
+        {
+          "phase": "Catch",
+          "view": "side",
+          "t": 1.3,
+          "sourceCacheTarget": 16.3904,
+          "videoTime": 16.390405,
+          "readyState": 4,
+          "decodedCanvasSha256": "56e2490eb161e065480239cd9d425d8ace80a4ac492f848d5f93c169686192f0"
+        },
+        {
+          "phase": "Pop",
+          "view": "feet",
+          "t": 0.866666666666667,
+          "sourceCacheTarget": 16.0031,
+          "videoTime": 16.003115,
+          "readyState": 4,
+          "decodedCanvasSha256": "6835a235ec999e92bf7f35fe83efe293790cfb70a00c407325bd12d383bf7411"
+        },
+        {
+          "phase": "Flick",
+          "view": "feet",
+          "t": 0.95,
+          "sourceCacheTarget": 16.0776,
+          "videoTime": 16.077594,
+          "readyState": 4,
+          "decodedCanvasSha256": "a0565450fb1a15339e77b95432b93a9f591bae33f3fa88171d0b2be6646e635d"
+        },
+        {
+          "phase": "Air",
+          "view": "feet",
+          "t": 1.1,
+          "sourceCacheTarget": 16.2117,
+          "videoTime": 16.211656,
+          "readyState": 4,
+          "decodedCanvasSha256": "0f4ad6533e3cef91a9f01d98685ac611ea99f946d56d95066f61d5b5498a438f"
+        },
+        {
+          "phase": "Rollaway",
+          "view": "feet",
+          "t": 2.05,
+          "sourceCacheTarget": 17.0492,
+          "videoTime": 17.049174,
+          "readyState": 4,
+          "decodedCanvasSha256": "46a9a897897839b6398b5a9dd77df6e3398a1299ab211da697ebe44de0503294"
+        }
+      ]
+    },
+    {
+      "profile": "low",
+      "physicalStance": "goofy",
+      "file": "docs/review-media/a4-nollie-bs-pop-shove/low-goofy-contacts.jpg",
+      "sha256": "7543181ff4e23ce6cf775dd33a66bbec431552d53df19602854d5f34285716e5",
+      "views": [
+        {
+          "phase": "Pop",
+          "view": "side",
+          "t": 0.866666666666667,
+          "sourceCacheTarget": 16.0031,
+          "videoTime": 16.003115,
+          "readyState": 4,
+          "decodedCanvasSha256": "6835a235ec999e92bf7f35fe83efe293790cfb70a00c407325bd12d383bf7411"
+        },
+        {
+          "phase": "Air",
+          "view": "side",
+          "t": 1.1,
+          "sourceCacheTarget": 16.2117,
+          "videoTime": 16.211656,
+          "readyState": 4,
+          "decodedCanvasSha256": "0f4ad6533e3cef91a9f01d98685ac611ea99f946d56d95066f61d5b5498a438f"
+        },
+        {
+          "phase": "Catch",
+          "view": "side",
+          "t": 1.3,
+          "sourceCacheTarget": 16.3904,
+          "videoTime": 16.390405,
+          "readyState": 4,
+          "decodedCanvasSha256": "56e2490eb161e065480239cd9d425d8ace80a4ac492f848d5f93c169686192f0"
+        },
+        {
+          "phase": "Pop",
+          "view": "feet",
+          "t": 0.866666666666667,
+          "sourceCacheTarget": 16.0031,
+          "videoTime": 16.003115,
+          "readyState": 4,
+          "decodedCanvasSha256": "6835a235ec999e92bf7f35fe83efe293790cfb70a00c407325bd12d383bf7411"
+        },
+        {
+          "phase": "Flick",
+          "view": "feet",
+          "t": 0.95,
+          "sourceCacheTarget": 16.0776,
+          "videoTime": 16.077594,
+          "readyState": 4,
+          "decodedCanvasSha256": "a0565450fb1a15339e77b95432b93a9f591bae33f3fa88171d0b2be6646e635d"
+        },
+        {
+          "phase": "Air",
+          "view": "feet",
+          "t": 1.1,
+          "sourceCacheTarget": 16.2117,
+          "videoTime": 16.211656,
+          "readyState": 4,
+          "decodedCanvasSha256": "0f4ad6533e3cef91a9f01d98685ac611ea99f946d56d95066f61d5b5498a438f"
+        },
+        {
+          "phase": "Rollaway",
+          "view": "feet",
+          "t": 2.05,
+          "sourceCacheTarget": 17.0492,
+          "videoTime": 17.049174,
+          "readyState": 4,
+          "decodedCanvasSha256": "46a9a897897839b6398b5a9dd77df6e3398a1299ab211da697ebe44de0503294"
+        }
+      ]
+    }
+  ],
+  "continuousReplay": [
+    {
+      "profile": "normal",
+      "physicalStance": "regular",
+      "rates": [
+        1,
+        0.25
+      ],
+      "reachedEndSeconds": [
+        4,
+        4
+      ],
+      "browserErrors": 0
+    },
+    {
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "rates": [
+        1,
+        0.25
+      ],
+      "reachedEndSeconds": [
+        4,
+        4
+      ],
+      "browserErrors": 0
+    },
+    {
+      "profile": "low",
+      "physicalStance": "regular",
+      "rates": [
+        1,
+        0.25
+      ],
+      "reachedEndSeconds": [
+        4,
+        4
+      ],
+      "browserErrors": 0
+    },
+    {
+      "profile": "low",
+      "physicalStance": "goofy",
+      "rates": [
+        1,
+        0.25
+      ],
+      "reachedEndSeconds": [
+        4,
+        4
+      ],
+      "browserErrors": 0
+    }
+  ],
+  "managedRoutes": [
+    {
+      "profile": "normal",
+      "nativeRequestedStance": "regular",
+      "scorer": [
+        "Combo",
+        "Nollie Pop Shove-it"
+      ],
+      "activeAir": 36,
+      "airFrames": 36,
+      "flightSeconds": 0.59375,
+      "endSeconds": 4,
+      "captureActiveAtEnd": false
+    },
+    {
+      "profile": "normal",
+      "nativeRequestedStance": "goofy",
+      "scorer": [
+        "Combo",
+        "Nollie Pop Shove-it"
+      ],
+      "activeAir": 36,
+      "airFrames": 36,
+      "flightSeconds": 0.59375,
+      "endSeconds": 4,
+      "captureActiveAtEnd": false
+    },
+    {
+      "profile": "low",
+      "nativeRequestedStance": "regular",
+      "scorer": [
+        "Combo",
+        "Nollie Pop Shove-it"
+      ],
+      "activeAir": 34,
+      "airFrames": 34,
+      "flightSeconds": 0.5625,
+      "endSeconds": 4,
+      "captureActiveAtEnd": false
+    },
+    {
+      "profile": "low",
+      "nativeRequestedStance": "goofy",
+      "scorer": [
+        "Combo",
+        "Nollie Pop Shove-it"
+      ],
+      "activeAir": 34,
+      "airFrames": 34,
+      "flightSeconds": 0.5625,
+      "endSeconds": 4,
+      "captureActiveAtEnd": false
+    }
+  ],
+  "sourceSeekChecks": {
+    "phaseSeekScreenshots": 28,
+    "focusedViews": 28,
+    "method": "Completed seek/readyState/nonposter/currentTime checks plus screenshot/compositor evidence and decoded drawImage canvas fingerprints in focused views. Air/Catch reference pixels visually checked against the genuine source phase.",
+    "pausedCallbackLimit": "Paused or same-time requestVideoFrameCallback may be absent or queued from an earlier frame. That callback-only probe was not treated as a viewer/pose failure or a full-frame validation pass. Continuous playback retains the existing presented-frame transport.",
+    "captionOnlyUpdate": "Inherited tail/held-body-spin/beanie captions corrected after motion replay; original four GLBs, source/runtime hashes and data are unchanged."
+  },
+  "visualNotes": "Load bends before nose pressure; correct popping end and free shoes, one board half-turn and no body half-turn. Bent balance arms are clear of the head and settle by catch. Bent landing, preserved ground wheel datum and planted recovery into ordinary riding. Physical labels come from animated GLB foot bones, not native-requested labels. Independent Claude verdict and Shadow remain separate."
+}
