@@ -41,9 +41,11 @@ An authored pelvis/upper translation reserves0.08m of rear-knee bend during
 foot targets. That bounded depth reconstruction also leaves room for the
 existing actual-carrier press compensation in the low-charge route; the
 runtime entry/fitter and strict reach/contact guards remain unchanged.
-After Land, the rear knee gradually follows its own toe direction to avoid the
-old tailward kneeling recovery. Air and Catch, foot targets, board, upper-body
-and measured lengths are preserved. The generic Ground preparation is shared;
+The historical post-Land repair makes the rear knee gradually follow its own
+toe direction to avoid tailward kneeling. That recovery-only repair preserves
+Air and Catch, foot targets, board, upper-body motion and measured lengths. The
+new 208–216 press reserve above is a separate, explicitly authored exception to
+that upper-body preservation. The generic Ground preparation is shared;
 a source Load200 witness must be labelled as a phase reference rather than the
 Pop-aligned source210 cursor.
 
@@ -62,3 +64,25 @@ source pack remains unreviewed. The1November extension-clock candidate is a
 new pack revision, preserving the full360 winding and later224 catch; the old
 pack/media remain labelled to their own revision. Controlled managed replay,
 mesh/whole-motion review and native/Shadow acceptance remain separate gates.
+
+## 1 November extension comparison
+
+[PR #676](https://github.com/Dj-Shortcut/rust-skate-mod/pull/676) contains the
+source-clock repair. These are original rig-only images; the shared FS180
+reference remains private, and the authored 360 derivation remains unreviewed.
+Names below identify the physical leading foot, audited from the animated GLB
+foot bones, rather than the opposite native request label. Pop comparisons use
+the same tail-pressure witness near source 211.6. The phase strips include the
+full 4 s replay through ordinary grounded riding.
+
+| Profile / physical stance | Old / new Pop | Load → End |
+|---|---|---|
+| Normal / Regular | [Pop](review-media/2026-11-01-fs360-pop-extension/normal-regular-pop-before-after.jpg) | [Phases](review-media/2026-11-01-fs360-pop-extension/normal-regular-phases.jpg) |
+| Normal / Goofy | [Pop](review-media/2026-11-01-fs360-pop-extension/normal-goofy-pop-before-after.jpg) | [Phases](review-media/2026-11-01-fs360-pop-extension/normal-goofy-phases.jpg) |
+| Low / Regular | [Pop](review-media/2026-11-01-fs360-pop-extension/low-regular-pop-before-after.jpg) | [Phases](review-media/2026-11-01-fs360-pop-extension/low-regular-phases.jpg) |
+| Low / Goofy | [Pop](review-media/2026-11-01-fs360-pop-extension/low-goofy-pop-before-after.jpg) | [Phases](review-media/2026-11-01-fs360-pop-extension/low-goofy-phases.jpg) |
+
+The images demonstrate the extension change; they do not grant whole-trick or
+native approval. Each selection still needs Claude’s visual gate and the later
+Shadow test. No physics, scoring, input or capture-approval flag changes are
+included in this source repair.
