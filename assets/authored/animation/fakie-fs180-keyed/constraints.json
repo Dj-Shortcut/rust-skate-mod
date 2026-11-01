@@ -22,9 +22,9 @@
     "scope": "Original shared board/sole/instep mesh only; no other trick body read."
   },
   "popFrame": 240.0,
-  "tailStrikeFrame": 242.0,
+  "tailStrikeFrame": 240.5,
   "frontReleaseFrame": 240.5,
-  "rearReleaseFrame": 244.5,
+  "rearReleaseFrame": 241.5,
   "pressEndFrame": 246.0,
   "catchFrame": 254.0,
   "landFrame": 258.0,
@@ -312,28 +312,33 @@
   ],
   "instep": {
     "start": 240.5,
-    "full": 241.3,
+    "full": 241.2,
     "end": 244.5,
     "releaseEnd": 246,
     "yaw": 62,
     "deckPath": [
       [
         240.5,
-        -0.035,
-        0.19
+        -0.04,
+        0.15
       ],
       [
-        241.625,
-        -0.025,
-        0.265
+        241.2,
+        -0.05,
+        0.18
+      ],
+      [
+        242.5,
+        -0.05,
+        0.235
       ],
       [
         244.5,
-        -0.02,
-        0.285
+        -0.04,
+        0.255
       ]
     ],
-    "contactSemantics": "Front sole-support clears at55.5; the outer-upper shoe guides the griptape through58, without a heel-side/off-edge flick or board roll."
+    "contactSemantics": "Front sole releases at240.5; outer-upper shoe guides progressively to front bolts through244.5. Tail sole releases at241.5; distinct later free-Air endpoint246 remains unchanged. No heel/off-edge flick or longitudinal roll."
   },
   "feet": {
     "Left": {
@@ -466,7 +471,7 @@
       ]
     },
     {
-      "frame": 244.5,
+      "frame": 241.5,
       "phase": "air",
       "contacts": []
     },
@@ -516,7 +521,7 @@
       ]
     }
   ],
-  "provenance": "Genuine plain Frontside Halfcab / Fakie FS180 in official H4MEulcgUTc, same plaid foreground actor. Own49 selected raw body frames, nose/anatomy frame with backwards travel and Right tail pop. Complete source yaw removed once before one actual native NoseYaw turn. Camera/depth, contact/pelvis/fixed legs and low-confidence arm depth are authored. Timeline275\u2013302 is explicitly authored planted upright recovery, not future footage.",
+  "provenance": "Genuine plain Frontside Halfcab / Fakie FS180 in official H4MEulcgUTc, same plaid foreground actor. Own49 selected raw body frames, nose/anatomy frame with backwards travel and Right tail pop. Complete source yaw removed once before one actual native NoseYaw turn. Camera/depth, contact/pelvis/fixed legs and low-confidence arm depth are authored. Timeline275\u2013302 is explicitly authored planted upright recovery, not future footage. Visible early-mechanics correction follows the normal-BS source-control pattern: early 35-degree snap, earlier tail-sole release, front-bolt outer-upper drag with a level Guide and forward/down front-knee plane. Source clock, original ground datum, own body/heading and every accepted Air-frame-and-later sample remain unchanged. Source camera is not a pose correction.",
   "uncertainty": [
     "Actual raw49/49 selected, no gaps or fallback; low-confidence feet/wrist lists retained.",
     "Camera/depth, heading and contact phase estimates are not measured 3D.",
@@ -789,5 +794,66 @@
       ]
     },
     "provenance": "Own actual FS Halfcab outward balance is largely retained; far-arm depth and low-confidence wrists blend toward bent outward source-led reconstruction, then relaxed authored upright recovery. No imported body from another trick."
+  },
+  "earlyPitchKeys": [
+    [
+      227.0,
+      0
+    ],
+    [
+      240.0,
+      0
+    ],
+    [
+      240.5,
+      35
+    ],
+    [
+      241.4,
+      16
+    ],
+    [
+      242.5,
+      1
+    ],
+    [
+      243.5,
+      0
+    ],
+    [
+      244.5,
+      0
+    ],
+    [
+      246.0,
+      12
+    ],
+    [
+      249,
+      12
+    ]
+  ],
+  "earlyMechanicsEndFrame": 249,
+  "frontKneeGuide": {
+    "window": [
+      240.0,
+      240.5,
+      244.5,
+      249
+    ],
+    "pole": [
+      1,
+      -0.25,
+      0.1
+    ]
+  },
+  "popExtension": {
+    "window": [
+      237.0,
+      240.0,
+      244.5,
+      249
+    ],
+    "metres": 0.045
   }
 }

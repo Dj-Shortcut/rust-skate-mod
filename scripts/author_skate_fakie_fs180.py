@@ -72,13 +72,15 @@ def sample(body, spec, frame):
     t=(frame-spec['firstSourceFrame'])/spec['sourceFps']
     captured,directions,_=body_at(body,t)
     yaw=float(value(spec['sourceBoardYaw'],frame)[0]);turn=qmatrix(euler_quat([0.,yaw,0.]))
-    pitch=float(value(spec['boardPitch'],frame)[0]);rotation=turn@qmatrix(euler_quat([-pitch,0.,0.]))
+    pitch=float(value(spec['earlyPitchKeys']if frame<spec['earlyMechanicsEndFrame']else spec['boardPitch'],frame)[0]);rotation=turn@qmatrix(euler_quat([-pitch,0.,0.]))
     origin=np.array([0.,value(spec['boardHeight'],frame)[0],0.])
     if frame<=spec['pressEndFrame']:
         hull=np.asarray(spec['support']['board']+spec['support']['wheel'])
         origin[1]=max(origin[1],-float(np.min((hull@rotation.T)[:,1])))
     feet={side:foot_frame(spec,origin,rotation,frame,side)for side in ['Left','Right']}
     pelvis=origin+turn@value(spec['pelvisRelativeToBoard'],frame)
+    extension=spec['popExtension'];start,full,held,finish=extension['window']
+    pelvis+=UP*extension['metres']*smooth((frame-start)/(full-start))*(1-smooth((frame-held)/(finish-held)))
     hip_axis=unit((captured['LeftHip']-captured['RightHip'])*np.array([1.,0.,1.]))
     facing=unit(np.cross(UP,hip_axis));maxima=[]
     share=spec['reachShare']['press']+(spec['reachShare']['free']-spec['reachShare']['press'])*smooth((frame-spec['rearReleaseFrame'])/(spec['pressEndFrame']-spec['rearReleaseFrame']))
@@ -97,7 +99,12 @@ def sample(body, spec, frame):
     soles={}
     for side,sign in [('Left',1),('Right',-1)]:
         ankle,foot=feet[side];hip=pelvis+hip_axis*(sign*.09)
-        j[side+'Hip']=hip;j[side+'Knee']=limb(hip,ankle,.44,.43,unit(facing+hip_axis*(sign*.1)))
+        pole=unit(facing+hip_axis*(sign*.1))
+        if side=='Left':
+            guide=spec['frontKneeGuide'];start,full,held,finish=guide['window'];weight=smooth((frame-start)/(full-start))*(1-smooth((frame-held)/(finish-held)))
+            target=facing*guide['pole'][0]+UP*guide['pole'][1]+hip_axis*guide['pole'][2]
+            if weight>0:pole=unit(pole*(1-weight)+target*weight)
+        j[side+'Hip']=hip;j[side+'Knee']=limb(hip,ankle,.44,.43,pole)
         j[side+'Ankle']=ankle;j[side+'Toe']=ankle+foot[:,2]*math.sqrt(.14**2-.07**2)-foot[:,1]*.07;soles[side]=foot[:,1]
         shoulder=pelvis+up*.44+across*(sign*.18)
         upper=unit(captured[side+'Elbow']-captured[side+'Shoulder']);fore=unit(captured[side+'Hand']-captured[side+'Elbow'])
