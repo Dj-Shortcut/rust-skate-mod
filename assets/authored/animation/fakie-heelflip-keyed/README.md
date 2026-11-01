@@ -89,8 +89,20 @@ Original footage stays private. These are managed offline checks with controlled
 bindings and geometry; no native Rust or Shadow play is claimed. Claude still
 owns the independent visual verdict and library status.
 
-The original-rig heel-exit close-ups are also retained:
-[Regular](../../../../docs/review-media/2026-11-01-a1-fakie-heelflip/heel-flick-regular.jpg)
-and [Goofy](../../../../docs/review-media/2026-11-01-a1-fakie-heelflip/heel-flick-goofy.jpg).
-They show the authored heel guide, rather than claiming the shared kickflip
-video proves a heel flick.
+The refreshed original-rig detail sheets show the bent lead arm from the side
+and the authored heel exit, separately for each height:
+[Normal Regular](../../../../docs/review-media/2026-11-01-a1-fakie-heelflip/heel-flick-regular.jpg),
+[Normal Goofy](../../../../docs/review-media/2026-11-01-a1-fakie-heelflip/heel-flick-goofy.jpg),
+[Lower Regular](../../../../docs/review-media/2026-11-01-a1-fakie-heelflip/heel-flick-low-regular.jpg)
+and [Lower Goofy](../../../../docs/review-media/2026-11-01-a1-fakie-heelflip/heel-flick-low-goofy.jpg).
+The shared kickflip footage is a body reference; it does not prove a heel flick.
+
+## Pop/Flick lead-arm balance
+
+The canonical Left lead arm now opens lower and forward with a bent elbow
+during Pop and the heel flick, instead of joining the other arm in a high V.
+This short authored correction rejoins the shared body before source frame
+2721. Backwards travel does not change which anatomical arm is adjusted.
+The other arm, torso, feet, board, contacts, timing and accepted later poses
+are unchanged. The pinned shared body remains intact; the derivation and raw
+`reviewed=false` status remain explicit.
