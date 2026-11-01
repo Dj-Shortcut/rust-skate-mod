@@ -22,22 +22,22 @@
   "upperBalance": {
     "window": [
       406,
-      408,
+      409,
       426,
       438
     ],
     "foldKeys": [
       [
-        408,
-        45
+        409,
+        32
       ],
       [
         416,
-        45
+        32
       ],
       [
         420,
-        30
+        26
       ],
       [
         424,
@@ -56,69 +56,69 @@
       "Left": {
         "upper": [
           [
-            408,
+            409,
             [
-              -0.95,
-              0.25,
-              0.15
+              -0.75,
+              0.1,
+              0.55
             ]
           ],
           [
             416,
             [
-              -0.95,
-              0.25,
-              0.15
+              -0.75,
+              -0.15,
+              0.55
             ]
           ],
           [
             420,
             [
-              -0.85,
-              -0.35,
-              0.15
+              -0.55,
+              -0.55,
+              0.4
             ]
           ],
           [
             424,
             [
-              -0.75,
-              -0.5,
-              0.1
+              -0.45,
+              -0.6,
+              0.4
             ]
           ]
         ],
         "fore": [
           [
-            408,
+            409,
             [
-              -0.65,
-              0.65,
-              0.2
+              -0.45,
+              -0.15,
+              0.85
             ]
           ],
           [
             416,
             [
-              -0.65,
-              0.65,
-              0.2
+              -0.15,
+              -0.45,
+              0.85
             ]
           ],
           [
             420,
             [
-              -0.8,
-              -0.3,
-              0.15
+              -0.05,
+              -0.9,
+              0.35
             ]
           ],
           [
             424,
             [
-              -0.65,
-              -0.55,
-              0.1
+              -0.05,
+              -0.9,
+              0.35
             ]
           ]
         ]
@@ -126,74 +126,136 @@
       "Right": {
         "upper": [
           [
-            408,
+            409,
             [
-              0.95,
-              -0.3,
-              0.15
+              0.7,
+              -0.35,
+              0.55
             ]
           ],
           [
             416,
             [
-              0.95,
-              -0.3,
-              0.15
+              0.65,
+              -0.4,
+              0.55
             ]
           ],
           [
             420,
             [
-              0.85,
-              -0.35,
-              0.15
+              0.55,
+              -0.55,
+              0.4
             ]
           ],
           [
             424,
             [
-              0.75,
-              -0.5,
-              0.1
+              0.45,
+              -0.6,
+              0.4
             ]
           ]
         ],
         "fore": [
           [
-            408,
+            409,
             [
-              0.65,
-              -0.35,
-              0.2
+              -0.05,
+              -0.6,
+              0.7
             ]
           ],
           [
             416,
             [
-              0.65,
-              -0.35,
-              0.2
+              -0.1,
+              -0.6,
+              0.75
             ]
           ],
           [
             420,
             [
-              0.8,
-              -0.3,
-              0.15
+              0.05,
+              -0.9,
+              0.35
             ]
           ],
           [
             424,
             [
-              0.65,
-              -0.55,
-              0.1
+              0.05,
+              -0.9,
+              0.35
             ]
           ]
         ]
       }
     },
-    "provenance": "Authored Varial-specific forward chest frame and side balance for the smaller 180 scoop. Shared Tre412 has a real high V, but its crosswise reconstructed lean and two exaggerated raised wrists are not copied as a filmed Varial requirement. One source-side hand remains modestly raised in Air; both settle by Catch. Pelvis, legs, soles and board unchanged."
+    "provenance": "Authored stable toe-side chest frame and bent-elbow Varial balance. Neither Tre high-V arms nor its monocular crosswise chest yaw are treated as a filmed Varial requirement. Each hand stays near shoulder/waist level in Air and settles through Catch. Air balance is intentionally asymmetric: one forearm reaches forward near shoulder height while the other hand stays lower, then both settle toward Catch.",
+    "facing": [
+      0.94,
+      0,
+      0.342
+    ]
+  },
+  "compactAir": {
+    "window": [
+      406,
+      410,
+      416,
+      420
+    ],
+    "bodyWindow": [
+      406,
+      410,
+      424,
+      432
+    ],
+    "ankles": {
+      "Left": [
+        -0.04,
+        0.17,
+        0.22
+      ],
+      "Right": [
+        -0.04,
+        0.17,
+        -0.22
+      ]
+    },
+    "pelvisXZ": [
+      -0.08,
+      0.0
+    ],
+    "pelvisHeightKeys": [
+      [
+        410,
+        0.65
+      ],
+      [
+        414,
+        0.65
+      ],
+      [
+        416,
+        0.67
+      ],
+      [
+        420,
+        0.75
+      ],
+      [
+        424,
+        0.708
+      ],
+      [
+        430,
+        0.808
+      ]
+    ],
+    "provenance": "Explicit authored Varial-specific free-foot collection, compact pelvis and bent catch, not measured Tre or Varial 3D. The existing rotating-deck shoe clearance and fixed-leg reach checks still apply. Grounded press and final shoe/deck catch targets are unchanged."
   }
 }

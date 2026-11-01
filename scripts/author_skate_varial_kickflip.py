@@ -25,11 +25,12 @@ def varial_upper(row,s,sf):
     """Authored 180-scoop balance, not a claim of a filmed Varial body."""
     c=s['upperBalance'];a,b,h,z=c['window'];weight=tre.smooth((sf-a)/(b-a))*(1-tre.smooth((sf-h)/(z-h)))
     if not weight:return
-    j={k:np.asarray(v)for k,v in row['joints'].items()};d=row['dirs'];old_up=unit(j['Neck']-j['Pelvis']);old_forward=np.asarray(d['ChestForward']);old_forward=unit(old_forward-old_up*np.dot(old_forward,old_up));old_right=unit(np.cross(old_up,old_forward));forward=unit(old_forward-UP*np.dot(old_forward,UP));right=unit(np.cross(UP,forward));angle=math.radians(float(balance_keys(c['foldKeys'],sf)));target_up=UP*math.cos(angle)+forward*math.sin(angle);target_forward=forward*math.cos(angle)-UP*math.sin(angle)
+    j={k:np.asarray(v)for k,v in row['joints'].items()};d=row['dirs'];old_up=unit(j['Neck']-j['Pelvis']);old_forward=np.asarray(d['ChestForward']);old_forward=unit(old_forward-old_up*np.dot(old_forward,old_up));old_right=unit(np.cross(old_up,old_forward));forward=unit(np.asarray(c['facing'])*np.array([1.,0.,1.]));right=unit(np.cross(UP,forward));angle=math.radians(float(balance_keys(c['foldKeys'],sf)));target_up=UP*math.cos(angle)+forward*math.sin(angle);target_forward=forward*math.cos(angle)-UP*math.sin(angle)
     full=np.column_stack((right,target_up,target_forward))@np.column_stack((old_right,old_up,old_forward)).T;rotation=qmatrix(slerp([0.,0.,0.,1.],matrix_quat(full),weight));anchor=j['Pelvis'];old_arms={side:(unit(j[side+'Elbow']-j[side+'Shoulder']),unit(j[side+'Hand']-j[side+'Elbow']))for side in ['Left','Right']}
     for key in ['Chest','Neck','Head','LeftShoulder','RightShoulder','LeftElbow','RightElbow','LeftHand','RightHand']:j[key]=anchor+rotation@(j[key]-anchor)
     for key in ['ChestUp','ChestForward','HeadForward']:d[key]=(rotation@np.asarray(d[key])).tolist()
-    # One modestly raised source-side hand; both arms settle for Catch/Land.
+    # This smaller scoop has its own bent-elbow balance. The Tre's hidden
+    # crosswise chest heading is not a measured Varial turn or an arm target.
     # Segment lengths come from the pinned shared rig, not video measurements.
     for side in ['Left','Right']:
         vectors=[]
@@ -75,6 +76,10 @@ def free_frame(source,s,sf,side):
     j,d,soles=source_at(source,sf);ankle=j[side+'Ankle'].copy();forward=unit(j[side+'Toe']-ankle+soles[side]*.07)
     if side=='Right':
         depth=tre.smooth((sf-s['rearRelease'])/4)*(1-tre.smooth((sf-414)/6));ankle-=np.array([-.934,0.,-.356])*s['rearScoopDepthReduction']*depth
+    c=s['compactAir'];a,b,h,z=c['window'];weight=tre.smooth((sf-a)/(b-a))*(1-tre.smooth((sf-h)/(z-h)))
+    if weight:
+        origin=board_at(s,sf)[0];target=np.asarray(c['ankles'][side])+origin
+        ankle=ankle*(1-weight)+target*weight
     return ankle,tre.basis(forward,soles[side])
 
 
@@ -96,6 +101,14 @@ def sample(source,s,sf):
         # return weights as that foot. A step here teleports the release/catch.
         if freeWeight>0 and caught<1:ankle[1]+=tre.free_foot_clearance(b,origin,R,ankle,F)*freeWeight*(1-caught)
         feet[side]=ankle,F
+    # Compact Varial air/catch, explicitly authored from the smaller scoop.
+    # Move the body toward its own feet before solving the unchanged rig legs;
+    # this does not add a carrier jump or move either grounded contact.
+    c=s['compactAir'];a,b,h,z=c['bodyWindow'];weight=tre.smooth((sf-a)/(b-a))*(1-tre.smooth((sf-h)/(z-h)))
+    if weight:
+        target=np.asarray([c['pelvisXZ'][0],float(balance_keys(c['pelvisHeightKeys'],sf))+origin[1],c['pelvisXZ'][1]])
+        delta=(target-j['Pelvis'])*weight
+        for key in j:j[key]+=delta
     lo,hi=-float('inf'),float('inf');reach=.87*s['maximumReachShare']
     for side,(ankle,F)in feet.items():
         offset=j[side+'Hip']-j['Pelvis'];horizontal=float(np.sum((j[side+'Hip'][[0,2]]-ankle[[0,2]])**2))
@@ -121,7 +134,7 @@ def bake(raw,s):
         ankle,F=tre.deck_shoe(b,np.zeros(3),np.eye(3),-.04,z,yaw);s['_catchWorld'][side]=(ankle,F[:,2])
     phases=[(s['firstSourceFrame'],'load',['LeftFoot','RightFoot']),(s['pop'],'pop',['RightFoot']),(s['rearRelease'],'air',[]),(s['pressEnd'],'air',[]),(s['catch'],'catch',['LeftFoot','RightFoot']),(s['land'],'land',['LeftFoot','RightFoot']),(s['recovery'],'recovery',['LeftFoot','RightFoot'])]
     frames=np.unique(np.round(np.r_[np.arange(s['firstSourceFrame'],s['lastSourceFrame']+1e-7,1/6),[v[0]for v in phases],s['upperRelease'],s['rotationEnd'],s['catchStart']],9));samples=[sample(source,s,float(sf))for sf in frames];duration=(s['lastSourceFrame']-s['firstSourceFrame'])/s['_fps']
-    meta=dict(id=s['id'],label='Varial Kickflip — authored shared-Tre derivation [UNREVIEWED]',movementKind=s['movementKind'],reviewed=False,authored=True,capturedBody=True,sourceUrl=m['sourceUrl'],sourceAuthor=m['sourceAuthor'],sourceFilmedStance=m['sourceFilmedStance'],sourcePoseSha256=m['sourcePoseSha256'],sourceFps=s['_fps'],firstSourceFrame=s['firstSourceFrame'],lastSourceFrame=s['lastSourceFrame'],canonicalStance='regular',referenceFootageMovementKind='360-flip',filmedVarialTake=False,sharedSourceId=s['sourceId'],sharedSourceJsonSha256=s['sourceJsonSha256'],provenance=s['provenance'],authoredUpperBalance=s['upperBalance'],referenceGroundPress=b['reference'],combinedWinding=dict(nativeFlip=360,nativeShove=-180,canonicalYaw=180,bodySpin=0),catchTransform='Anatomical world targets transformed by final deck R-transpose: full XYZ and toe heading, with measured sole/deck fitting',sourceRootMotion='Carrier-local body and board; reference ballistic carrier excluded; actual physical carrier added once by playback')
+    meta=dict(id=s['id'],label='Varial Kickflip — authored shared-Tre derivation [UNREVIEWED]',movementKind=s['movementKind'],reviewed=False,authored=True,capturedBody=True,sourceUrl=m['sourceUrl'],sourceAuthor=m['sourceAuthor'],sourceFilmedStance=m['sourceFilmedStance'],sourcePoseSha256=m['sourcePoseSha256'],sourceFps=s['_fps'],firstSourceFrame=s['firstSourceFrame'],lastSourceFrame=s['lastSourceFrame'],canonicalStance='regular',referenceFootageMovementKind='360-flip',filmedVarialTake=False,sharedSourceId=s['sourceId'],sharedSourceJsonSha256=s['sourceJsonSha256'],provenance=s['provenance'],authoredUpperBalance=s['upperBalance'],authoredCompactAir=s['compactAir'],referenceGroundPress=b['reference'],combinedWinding=dict(nativeFlip=360,nativeShove=-180,canonicalYaw=180,bodySpin=0),catchTransform='Anatomical world targets transformed by final deck R-transpose: full XYZ and toe heading, with measured sole/deck fitting',sourceRootMotion='Carrier-local body and board; reference ballistic carrier excluded; actual physical carrier added once by playback')
     clip=dict(format='skate-capture-authored-varial/1',metadata=meta,stance='regular',fps=s['_fps']*6,duration=duration,events=contact_events([dict(t=(sf-s['firstSourceFrame'])/s['_fps'],phase=p,contacts=c)for sf,p,c in phases],duration),frames=samples)
     return clip,encode_pack([clip])
 
