@@ -28,6 +28,28 @@ def sample(controls, spec, source_frame):
         hip = np.asarray(frame['joints'][side+'Hip'])
         ankle = np.asarray(frame['joints'][side+'Ankle'])
         frame['joints'][side+'Knee'] = limb(hip, ankle, .44, .43, pole).tolist()
+    # Owner correction: the source's nose-side wind-up hand rises too far at
+    # Pop. Author a bent shoulder-height balance arm only in that window; the
+    # source body, other arm and accepted free Air/catch/recovery stay intact.
+    balance = spec['popBalance']
+    start, full, held, end = balance['window']
+    weight = core.smooth((source_frame-start)/(full-start)) * (1-core.smooth((source_frame-held)/(end-held)))
+    if weight > 0:
+        forward = unit(np.asarray(frame['dirs']['ChestForward']))
+        up = unit(np.asarray(frame['dirs']['ChestUp']))
+        right = unit(np.cross(up, forward))
+        body = np.column_stack((forward, up, right))
+        for side in ('Left', 'Right'):
+            if side not in balance:
+                continue
+            shoulder = np.asarray(frame['joints'][side+'Shoulder'])
+            elbow = np.asarray(frame['joints'][side+'Elbow'])
+            hand = np.asarray(frame['joints'][side+'Hand'])
+            upper = unit(unit(elbow-shoulder)*(1-weight)+unit(body @ balance[side]['upper'])*weight)
+            fore = unit(unit(hand-elbow)*(1-weight)+unit(body @ balance[side]['fore'])*weight)
+            elbow = shoulder+upper*.29
+            frame['joints'][side+'Elbow'] = elbow.tolist()
+            frame['joints'][side+'Hand'] = (elbow+fore*.27).tolist()
     return frame
 
 
@@ -62,6 +84,9 @@ def bake(body_raw, controls):
         keys = s[field]
         if not all(a[0] < b[0] for a, b in zip(keys, keys[1:])):
             raise ValueError('Own source control clock must strictly increase: '+field)
+    window = s['popBalance']['window']
+    if len(window) != 4 or not all(a < b for a, b in zip(window, window[1:])) or window[-1] > s['pressEnd']:
+        raise ValueError('Pop balance must end before the accepted free Air')
     phases = [(s['firstSourceFrame'], 'load', ['LeftFoot', 'RightFoot']),
               (s['pop'], 'pop', ['LeftFoot', 'RightFoot']),
               (s['frontRelease'], 'pop', ['RightFoot']),
@@ -89,7 +114,7 @@ def bake(body_raw, controls):
         sourceTailStrikeFrame=s['tailStrike'], referenceGroundPress=s['reference'],
         combinedWinding=dict(nativeFlip=0, nativeShove=0, bodySpin=0, canonicalRoll=0, canonicalYaw=0),
         reconstruction=dict(pelvisKeys=s['pelvisKeys'], recoveryWindow=s['recoveryWindow'], guide=s['guide'],
-                            gazeKeys=s['gazeKeys'], kneePlane=s['kneePlane'], maximumReachShare=s['maximumReachShare']),
+                            gazeKeys=s['gazeKeys'], kneePlane=s['kneePlane'], popBalance=s['popBalance'], maximumReachShare=s['maximumReachShare']),
         rig=dict(thigh=.44, shin=.43, upperArm=.29, forearm=.27, spine=.52, shoulderRise=.44, hipHalfWidth=.09, shoulderHalfWidth=.18, head=.12, foot=.14, toeDrop=.07))
     duration = (s['lastSourceFrame']-s['firstSourceFrame'])/s['sourceFps']
     clip = dict(format='skate-capture-source-keyed-fakie-ollie/1', metadata=metadata, stance='regular',

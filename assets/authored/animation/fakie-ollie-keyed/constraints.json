@@ -357,8 +357,29 @@
     "spin": 0,
     "body": 0
   },
-  "provenance": "Own actual landed fakie-ollie by the same black-cap/gray-shorts P4C rider on flat concrete, not a different trick body. Source torso/arm vectors retained with explicit camera/depth/hip-shoulder/knee/head reconstruction, own tail pressure and front outer-upper guide, compact grip-up Air, soft landing and same-take upright recovery. Raw327 is a rejected post-Land observation; interpolation between own326/328 is authored and remains declared. No raw approval or native acceptance.",
+  "provenance": "Own actual landed fakie-ollie by the same black-cap/gray-shorts P4C rider on flat concrete, not a different trick body. Source torso/arm vectors retained with explicit camera/depth/hip-shoulder/knee/head reconstruction, own tail pressure and front outer-upper guide, compact grip-up Air, soft landing and same-take upright recovery. Raw327 is a rejected post-Land observation; interpolation between own326/328 is authored and remains declared. No raw approval or native acceptance. Owner Pop-arm correction is explicitly authored in popBalance; procedural pre-Pop head is outside source selection.",
   "uncertainty": "Single panning camera, hats/legs/deck overlap and low-visibility hands/feet. Source global frames/PTS/full-video hash unknown after bounded transcode. Exact contact, source camera yaw/depth, shoe roll and canonical axes are authored, not measured3D.",
   "sourceRootMotion": "Source carrier translation/jump removed once; canonical+Z stays the board nose. Actual native NoseYaw/velocity carries the action once, including backwards Fakie. No travel-axis body rotation or second baked jump.",
-  "phaseClockLimit": "Own bounded preview extension304, front sole306, tailStrike309, canonicalRight tailrelease311.5, distinctlaterfreeAir314, catch319, sourceLand321, upright337; actual physical landing/scoring lead."
+  "phaseClockLimit": "Own bounded preview extension304, front sole306, tailStrike309, canonicalRight tailrelease311.5, distinctlaterfreeAir314, catch319, sourceLand321, upright337; actual physical landing/scoring lead.",
+  "popBalance": {
+    "window": [
+      304.5,
+      307.5,
+      310.5,
+      314
+    ],
+    "Left": {
+      "upper": [
+        0.12,
+        -0.06,
+        -0.99
+      ],
+      "fore": [
+        0.58,
+        -0.12,
+        -0.8
+      ]
+    },
+    "provenance": "Authored owner correction: canonical Left/nose-side arm winds out at shoulder height or lower during Pop, with a bent elbow. Smoothly ends at free Air314; original source torso, other arm, feet, board, catch and recovery unchanged. Torso-local [forward,up,anatomical-right]; no source stance swap."
+  }
 }
