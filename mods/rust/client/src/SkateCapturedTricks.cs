@@ -697,7 +697,7 @@ public static class SkateCapturedTricks
         if (weight <= 0) return false; // The first live pop frame keeps the exact procedural pose.
         // Keep the pop-foot target through release until entry is complete;
         // dropping its owner on the release frame would jump back to a free baseline.
-        var entryFoot = !landed && weight < 1 && active.SourceMovementKind == "bs-pop-shove-it"
+        var entryFoot = !landed && weight < 1 && (active.SourceMovementKind == "bs-pop-shove-it" || active.SourceMovementKind == "switch-bs-pop-shove-it")
             ? (activeStance == SkateStance.Goofy ? SkateCaptureContacts.LeftFoot : SkateCaptureContacts.RightFoot)
             : SkateCaptureContacts.None;
         if (!SkateCapturePlayback.TryBlend(rig, baseline, baselineLeftUp, baselineRightUp, frame, weight, out frame, out error, landed, entryFoot))
