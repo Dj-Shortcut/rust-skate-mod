@@ -434,7 +434,7 @@
       ]
     }
   },
-  "provenance": "Explicit owner-authorized authored Fakie Heelflip derived from reviewed Fakie Kickflip body and original heel contact/negative board roll. No independent filmed Fakie Heelflip is claimed.",
+  "provenance": "Explicit owner-authorized authored Fakie Heelflip derived from reviewed Fakie Kickflip body and original heel contact/negative board roll. No independent filmed Fakie Heelflip is claimed. The Pop/Flick canonical Left lead arm has an authored lower/forward bent balance; no other body/contact/board timing changes.",
   "uncertainty": "Single-camera FK upper-body estimates are reused as shared motion, not genuine heel-source observations. Lower body, heel guide, board rotation, pelvis, hidden depth, contact timing and recovery are original authored reconstruction.",
   "reachShare": {
     "press": 0.92,
@@ -444,5 +444,26 @@
     "path": "assets/authored/animation/heelflip-keyed/heel-constraints.json",
     "sha256": "0b1eabab51af98da815d523d991eea19ef8594426f2a5ede5ebb8f88d88137db",
     "field": "hybrid.support"
+  },
+  "popLeadArmBalance": {
+    "side": "Left",
+    "window": [
+      2713,
+      2714.5,
+      2717.6,
+      2721
+    ],
+    "upper": [
+      0.38,
+      0.05,
+      0.92
+    ],
+    "fore": [
+      0.92,
+      -0.36,
+      -0.12
+    ],
+    "space": "Canonical anatomical board frame: +X body-forward, +Y up, +Z front/Left side; independent of backward Fakie velocity.",
+    "provenance": "Authored short Pop/Flick lead-arm correction: bent elbow, hand lower and forward. Other arm/body/feet/board unchanged; original accepted arm resumes by source2721, before the shown Air2724."
   }
 }

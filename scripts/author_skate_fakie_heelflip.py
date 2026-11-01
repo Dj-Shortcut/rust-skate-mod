@@ -132,6 +132,13 @@ def sample(body, spec, frame):
         goal_fore=unit(np.asarray(goal[side+'Hand'])-np.asarray(goal[side+'Elbow']))
         upper=unit(upper*(1-arm_return)+goal_upper*arm_return)
         fore=unit(fore*(1-arm_return)+goal_fore*arm_return)
+        balance = spec.get('popLeadArmBalance')
+        if balance and side == balance['side']:
+            start, full, held, end = balance['window']
+            amount = smooth((frame-start)/(full-start))*(1-smooth((frame-held)/(end-held)))
+            if amount > 0:
+                upper = unit(upper*(1-amount)+unit(np.asarray(balance['upper']))*amount)
+                fore = unit(fore*(1-amount)+unit(np.asarray(balance['fore']))*amount)
         j[side+'Shoulder']=shoulder;j[side+'Elbow']=shoulder+upper*.29;j[side+'Hand']=j[side+'Elbow']+fore*.27
     reference=reference_height(spec,frame)
     for name in j:j[name]=j[name]-UP*reference
