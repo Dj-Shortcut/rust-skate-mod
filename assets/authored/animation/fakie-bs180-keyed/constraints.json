@@ -1,0 +1,859 @@
+{
+  "format": "own-fakie-bs180-source-controls/1",
+  "id": "fakie-bs180-source-keyed-v1",
+  "movementKind": "fakie-bs180",
+  "firstSourceFrame": 324,
+  "lastSourceFrame": 406,
+  "sourceFps": 29.97002997002997,
+  "sampleHz": 120,
+  "sourceBodySha256": "d8a698e0591c00c69be2cd6dc2ee8a2d74a770062cedaf2f3568d8435bc4b54b",
+  "signature": {
+    "pop": "Ollie",
+    "switch": true,
+    "tailLeads": true,
+    "flip": 0,
+    "shove": 0,
+    "spin": -180,
+    "body": 0
+  },
+  "geometryReference": {
+    "path": "assets/authored/animation/treflip-keyed/constraints.json",
+    "geometryDataSha256": "21e757c6dd6e170558c6ee2f570cbdbb282f68e30f873dc3f5f0596402cd7da3",
+    "scope": "Original shared board/sole/instep mesh only; no other trick body read."
+  },
+  "popFrame": 339,
+  "tailStrikeFrame": 339.5,
+  "frontReleaseFrame": 339.5,
+  "rearReleaseFrame": 340.5,
+  "pressEndFrame": 345.5,
+  "catchFrame": 350,
+  "landFrame": 356,
+  "recoveryFrame": 369,
+  "sourceRootMotion": {
+    "popFrame": 339,
+    "landFrame": 356,
+    "referenceFlight": 0.6,
+    "gravity": 8,
+    "normalization": "Remove one reference upright carrier from the complete normalized pose/board. Native physics adds the actual carrier once. The deck origin retains the original 0.092 m ground datum before reference-flight subtraction.",
+    "deckOriginGroundDatum": 0.092
+  },
+  "sourceBoardYaw": [
+    [
+      324,
+      0
+    ],
+    [
+      339,
+      0
+    ],
+    [
+      341.5,
+      -15
+    ],
+    [
+      343.5,
+      -50
+    ],
+    [
+      345.5,
+      -93
+    ],
+    [
+      348,
+      -145
+    ],
+    [
+      351,
+      -178
+    ],
+    [
+      354,
+      -180
+    ],
+    [
+      406,
+      -180
+    ]
+  ],
+  "sourceYawContract": "Canonical Regular source board heading0 to -180. This estimated complete heading is removed from ALL scene points/directions/soles/board; live NoseYaw actualSpin supplies the one real turn.",
+  "boardPitch": [
+    [
+      324,
+      0
+    ],
+    [
+      338,
+      0
+    ],
+    [
+      339,
+      6
+    ],
+    [
+      341.5,
+      53
+    ],
+    [
+      343.5,
+      49
+    ],
+    [
+      345.5,
+      37
+    ],
+    [
+      347,
+      22
+    ],
+    [
+      349,
+      7
+    ],
+    [
+      350,
+      2
+    ],
+    [
+      352,
+      0
+    ],
+    [
+      406,
+      0
+    ]
+  ],
+  "boardHeight": [
+    [
+      324,
+      0.092
+    ],
+    [
+      339,
+      0.102
+    ],
+    [
+      341.5,
+      0.322
+    ],
+    [
+      343.5,
+      0.442
+    ],
+    [
+      345.5,
+      0.542
+    ],
+    [
+      347,
+      0.592
+    ],
+    [
+      350,
+      0.512
+    ],
+    [
+      354,
+      0.222
+    ],
+    [
+      356,
+      0.092
+    ],
+    [
+      406,
+      0.092
+    ]
+  ],
+  "pelvisRelativeToBoard": [
+    [
+      324,
+      0,
+      0.7,
+      0
+    ],
+    [
+      331,
+      0,
+      0.68,
+      0
+    ],
+    [
+      336,
+      0,
+      0.65,
+      0
+    ],
+    [
+      339,
+      0,
+      0.67,
+      0
+    ],
+    [
+      341.5,
+      0,
+      0.6,
+      0
+    ],
+    [
+      343.5,
+      0,
+      0.55,
+      0
+    ],
+    [
+      345.5,
+      0,
+      0.54,
+      0
+    ],
+    [
+      347,
+      0,
+      0.61,
+      0
+    ],
+    [
+      350,
+      0,
+      0.65,
+      0
+    ],
+    [
+      356,
+      0,
+      0.63,
+      0
+    ],
+    [
+      359,
+      0,
+      0.62,
+      0
+    ],
+    [
+      369,
+      0,
+      0.7,
+      0
+    ],
+    [
+      379,
+      0,
+      0.73,
+      0
+    ],
+    [
+      392,
+      0,
+      0.78,
+      0
+    ],
+    [
+      406,
+      0,
+      0.8,
+      0
+    ]
+  ],
+  "torsoFold": [
+    [
+      324,
+      28
+    ],
+    [
+      331,
+      35
+    ],
+    [
+      336,
+      35
+    ],
+    [
+      339,
+      24
+    ],
+    [
+      341.5,
+      13
+    ],
+    [
+      345.5,
+      22
+    ],
+    [
+      350,
+      26
+    ],
+    [
+      356,
+      20
+    ],
+    [
+      359,
+      24
+    ],
+    [
+      369,
+      32
+    ],
+    [
+      379,
+      29
+    ],
+    [
+      392,
+      13
+    ],
+    [
+      406,
+      8
+    ]
+  ],
+  "instep": {
+    "start": 339.5,
+    "full": 340.2,
+    "end": 343.5,
+    "releaseEnd": 345.5,
+    "yaw": 62,
+    "deckPath": [
+      [
+        339.5,
+        -0.04,
+        0.15
+      ],
+      [
+        340.2,
+        -0.05,
+        0.18
+      ],
+      [
+        341.5,
+        -0.05,
+        0.235
+      ],
+      [
+        343.5,
+        -0.04,
+        0.255
+      ]
+    ],
+    "contactSemantics": "Front sole releases at339.5; outer-upper shoe guides progressively to front bolts through343.5. Tail sole releases at340.5; distinct later free-Air endpoint345.5 remains unchanged. No heel/off-edge flick or longitudinal roll."
+  },
+  "feet": {
+    "Left": {
+      "load": [
+        -0.03,
+        0.13,
+        65
+      ],
+      "catch": [
+        -0.025,
+        0.23,
+        65
+      ],
+      "free": [
+        [
+          343.5,
+          -0.025,
+          0.19,
+          0.265
+        ],
+        [
+          345.5,
+          -0.025,
+          0.16,
+          0.245
+        ],
+        [
+          347,
+          -0.025,
+          0.145,
+          0.235
+        ],
+        [
+          349,
+          -0.025,
+          0.14,
+          0.23
+        ],
+        [
+          350,
+          -0.025,
+          0.12,
+          0.23
+        ],
+        [
+          406,
+          -0.025,
+          0.12,
+          0.23
+        ]
+      ]
+    },
+    "Right": {
+      "load": [
+        0.025,
+        -0.34,
+        85
+      ],
+      "catch": [
+        0.025,
+        -0.23,
+        85
+      ],
+      "free": [
+        [
+          343.5,
+          0.025,
+          0.12,
+          -0.31
+        ],
+        [
+          345.5,
+          0.025,
+          0.145,
+          -0.25
+        ],
+        [
+          347,
+          0.025,
+          0.14,
+          -0.235
+        ],
+        [
+          349,
+          0.025,
+          0.14,
+          -0.23
+        ],
+        [
+          350,
+          0.025,
+          0.12,
+          -0.23
+        ],
+        [
+          406,
+          0.025,
+          0.12,
+          -0.23
+        ]
+      ]
+    }
+  },
+  "reachShare": {
+    "press": 0.91,
+    "free": 0.985
+  },
+  "events": [
+    {
+      "frame": 324,
+      "phase": "load",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 339,
+      "phase": "pop",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 339.5,
+      "phase": "pop",
+      "contacts": [
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 340.5,
+      "phase": "air",
+      "contacts": []
+    },
+    {
+      "frame": 345.5,
+      "phase": "air",
+      "contacts": []
+    },
+    {
+      "frame": 350,
+      "phase": "catch",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 356,
+      "phase": "land",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 369,
+      "phase": "recovery",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 379,
+      "phase": "recovery",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 406,
+      "phase": "recovery",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    }
+  ],
+  "provenance": "Genuine plain Halfcab / Fakie BS180 in official H4MEulcgUTc, plaid foreground actor. Same nose/anatomy frame while travelling backwards; Right tail pops. Own source body directions, explicitly authored monocular heading/depth, measured original geometry contacts, compact fixed-chain legs and corrected unreliable balance arms. Complete source yaw removed from every point/direction/sole/board; native NoseYaw supplies one actual turn. Timeline after filmed379 through406 is an explicitly authored planted upright recovery, never a claimed future source frame. Visible early-mechanics correction follows the normal-BS source-control pattern: early 35-degree snap, earlier tail-sole release, front-bolt outer-upper drag with a level Guide and forward/down front-knee plane. Source clock, original ground datum, own body/heading and every accepted Air-frame-and-later sample remain unchanged. Source camera is not a pose correction.",
+  "uncertainty": [
+    "Actual raw56/56 selected with zero gaps; low-confidence point lists retained.",
+    "Camera/depth, absolute board and hip heading, contact phases and pelvis are authored visual estimates.",
+    "Raised arms reconstructed where raw wrists collapse.",
+    "Filmed take ends before a full upright recovery; appended source-clock seconds are authored, reference video held at last genuine379.",
+    "No source approval, native game or Shadow verification."
+  ],
+  "lastFilmedSourceFrame": 379,
+  "armReconstruction": {
+    "weights": [
+      [
+        324,
+        0.35
+      ],
+      [
+        336,
+        0.35
+      ],
+      [
+        340,
+        0.95
+      ],
+      [
+        350,
+        0.95
+      ],
+      [
+        358,
+        0.9
+      ],
+      [
+        369,
+        0.8
+      ],
+      [
+        379,
+        1
+      ],
+      [
+        406,
+        1
+      ]
+    ],
+    "Left": {
+      "upper": [
+        [
+          324,
+          0.1,
+          -0.95,
+          0.25
+        ],
+        [
+          336,
+          0.1,
+          -0.95,
+          0.25
+        ],
+        [
+          340,
+          0.15,
+          0.2,
+          0.97
+        ],
+        [
+          346,
+          0.1,
+          0.45,
+          0.88
+        ],
+        [
+          350,
+          0.2,
+          0.25,
+          0.95
+        ],
+        [
+          356,
+          0.4,
+          -0.3,
+          0.85
+        ],
+        [
+          369,
+          0.35,
+          -0.75,
+          0.45
+        ],
+        [
+          379,
+          0.25,
+          -0.93,
+          0.12
+        ],
+        [
+          406,
+          0.05,
+          -0.99,
+          0
+        ]
+      ],
+      "fore": [
+        [
+          324,
+          0.3,
+          -0.92,
+          0.05
+        ],
+        [
+          336,
+          0.3,
+          -0.92,
+          0.05
+        ],
+        [
+          340,
+          0.1,
+          0.35,
+          0.93
+        ],
+        [
+          346,
+          0.15,
+          0.8,
+          0.58
+        ],
+        [
+          350,
+          0.2,
+          0.6,
+          0.77
+        ],
+        [
+          356,
+          0.55,
+          -0.55,
+          0.45
+        ],
+        [
+          369,
+          0.2,
+          -0.97,
+          0.08
+        ],
+        [
+          379,
+          0.15,
+          -0.98,
+          0
+        ],
+        [
+          406,
+          0.05,
+          -0.99,
+          0
+        ]
+      ]
+    },
+    "Right": {
+      "upper": [
+        [
+          324,
+          0.1,
+          -0.95,
+          -0.25
+        ],
+        [
+          336,
+          0.1,
+          -0.95,
+          -0.25
+        ],
+        [
+          340,
+          0.1,
+          0.2,
+          -0.97
+        ],
+        [
+          346,
+          0.1,
+          0.4,
+          -0.91
+        ],
+        [
+          350,
+          0.2,
+          0.3,
+          -0.93
+        ],
+        [
+          356,
+          0.4,
+          -0.3,
+          -0.85
+        ],
+        [
+          369,
+          0.4,
+          -0.8,
+          -0.35
+        ],
+        [
+          379,
+          0.25,
+          -0.93,
+          -0.12
+        ],
+        [
+          406,
+          0.05,
+          -0.99,
+          0
+        ]
+      ],
+      "fore": [
+        [
+          324,
+          0.3,
+          -0.92,
+          -0.05
+        ],
+        [
+          336,
+          0.3,
+          -0.92,
+          -0.05
+        ],
+        [
+          340,
+          0.15,
+          0.25,
+          -0.96
+        ],
+        [
+          346,
+          0.2,
+          0.65,
+          -0.73
+        ],
+        [
+          350,
+          0.25,
+          0.5,
+          -0.83
+        ],
+        [
+          356,
+          0.55,
+          -0.55,
+          -0.45
+        ],
+        [
+          369,
+          0.2,
+          -0.97,
+          -0.08
+        ],
+        [
+          379,
+          0.15,
+          -0.98,
+          0
+        ],
+        [
+          406,
+          0.05,
+          -0.99,
+          0
+        ]
+      ]
+    },
+    "provenance": "Own filmed raised/outward balance at Pop/Air. BS LeftWrist30/56 and RightWrist13/56 raw estimates are unreliable and collapse near pelvis despite visible raised arms. Both arm directions/depth and smooth lowered recovery are explicitly reconstructed from the actual pixels, not treated as measured motion."
+  },
+  "earlyPitchKeys": [
+    [
+      324,
+      0
+    ],
+    [
+      339,
+      0
+    ],
+    [
+      339.5,
+      35
+    ],
+    [
+      340.4,
+      16
+    ],
+    [
+      341.5,
+      1
+    ],
+    [
+      342.5,
+      0
+    ],
+    [
+      343.5,
+      0
+    ],
+    [
+      345.5,
+      22
+    ],
+    [
+      347,
+      22
+    ]
+  ],
+  "earlyMechanicsEndFrame": 347,
+  "frontKneeGuide": {
+    "window": [
+      339,
+      339.5,
+      343.5,
+      347
+    ],
+    "pole": [
+      1,
+      -0.25,
+      0.1
+    ]
+  },
+  "popExtension": {
+    "window": [
+      336,
+      339,
+      343.5,
+      347
+    ],
+    "metres": 0.045
+  }
+}
