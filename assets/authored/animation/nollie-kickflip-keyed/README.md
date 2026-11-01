@@ -16,6 +16,18 @@ pelvis, bent catch/landing and stable recovery. Geometry and generic math/sole
 fitting helpers are reused; the Tre or normal Kickflip body is not reused.
 Original board/shoe shapes and their hashes are unchanged.
 
+The A1 head/lead-arm correction is explicitly authored. The compact source
+head-to-neck vector points downward through Pop/Land; normalizing its length
+alone puts the head into the chest. `upperBalance` replaces that axis with an
+upright orthogonal head frame and a gaze toward the board, then the landing.
+Rodriguez really holds a high diagonal balance arm in5720–5722, but its
+monocular proxy reconstruction reads as a straight pole above the head. The
+canonical Left arm is bent and settled through Catch/Land, then blended back
+to the existing recovery; the stance reflection supplies the counterpart.
+Pelvis, torso, shoulders, legs, feet, board and all contact/event clocks are
+unchanged. This is a visible-quality reconstruction, not measured head/arm
+depth or automatic approval.
+
 The phase clock is explicit:
 
 | Source frame | Stage | Foot contacts |
@@ -61,6 +73,9 @@ sole band turned away. Rig-only review frames and source/route hashes are in
 The frozen proxy's actual lead-foot audit is explicit: its anatomical bone-label
 map reverses the requested stance, so viewer selectors use measured physical
 stance, not the request label. This does not establish the Rust avatar mapping.
-Whole-motion viewer review, the Claude quality gate and Shadow acceptance
-remain open. Original/generated
+The A1 repair and its rig-only before/after sheets are in
+[`docs/review-media/2026-11-01-a1-nollie-head-balance/`](../../../../docs/review-media/2026-11-01-a1-nollie-head-balance/).
+The current main managed route is replayed for normal/low and both physical
+stances; all Air remains on the source, followed by ordinary Ground at4s.
+Claude's whole-motion/offline judgment and Shadow acceptance remain open. Original/generated
 source packs remain `reviewed=false`; private replay approval is test-only.
