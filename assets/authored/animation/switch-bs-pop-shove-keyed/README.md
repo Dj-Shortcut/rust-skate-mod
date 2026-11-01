@@ -93,3 +93,17 @@ Four 1×/¼× viewer runs, 28 actual decoded-source phase seeks and 20 focused
 contact/side captures finished without browser/runtime errors. These are
 controlled offline checks with private test approval, not native Rust/Shadow
 acceptance or a library verdict. Raw source packs remain `reviewed=false`.
+
+
+## Post-main union identity
+
+The same four controlled Pad/full Step/Land/scorer and 60 Hz body cases were
+rebuilt and rerun against the
+[post-Nollie integration `2743b12`](https://github.com/Dj-Shortcut/rust-skate-mod/commit/2743b12acb416fb0a7d956807cb8f9fae612b3f5).
+All four complete body JSON files **and** four complete native traces are
+byte-identical to immutable snapshots of the rendered `8c2ca81` cases,
+including metadata, every frame, joints, board, source contacts and physics.
+The published GLBs/JPEGs and decoded-source browser receipts therefore retain
+their original `8c2ca81` rendered freeze; the review manifest records the
+separate current-integration identity check. Raw `reviewed=false` and native
+Shadow status remain unchanged.

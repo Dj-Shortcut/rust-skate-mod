@@ -122,5 +122,22 @@
       "sha256": "b705efcfb514362f482332530242a8b6ccf213919a9dc06101fcc1f7726cf832"
     }
   ],
-  "limits": "Own reconstruction and controlled managed/native-step fixture, not native Rust/Shadow. Root and Claude retain visual/offline gates. No approval promotion."
+  "limits": "Own reconstruction and controlled managed/native-step fixture, not native Rust/Shadow. Root and Claude retain visual/offline gates. No approval promotion.",
+  "postMainUnionVerification": {
+    "integratedRevision": "2743b12acb416fb0a7d956807cb8f9fae612b3f5",
+    "integratedRevisionUrl": "https://github.com/Dj-Shortcut/rust-skate-mod/commit/2743b12acb416fb0a7d956807cb8f9fae612b3f5",
+    "renderedMediaRevisionUnchanged": "8c2ca81f98ea61a2e84426b931344d5b6bcec640",
+    "sourcePackSha256": "87046067b5df79745638db41ad94f43e7997a1dc7de3393e4fdc2a2b74b649ca",
+    "actualCases": 4,
+    "completeBodyFilesByteIdentical": true,
+    "completeNativeTracesByteIdentical": true,
+    "metadataAlsoByteIdentical": true,
+    "scope": "Existing actual Pad/full32Hz Step/Land/scorer and60Hz body fixtures rebuilt and rerun against final integration after Nollie main merge. All four entire body JSON files and all four entire native traces match immutable8c2 snapshots byte-for-byte; includes every metadata/frame/joint/board/sourcecontact/physics field. Published GLBs, JPEGs and browser1x/quarter receipts retain their original8c2 rendered freeze. Source pack stays unreviewed; nativeShadow pending.",
+    "wholeBodySha256": {
+      "switch-bs-pop-shove-it-source-keyed-v1-goofy-low-normal60.json": "88862c0f347125ff3735dc01de3ab82e6bf770fe69db2942ac92a8d119d8b76a",
+      "switch-bs-pop-shove-it-source-keyed-v1-goofy-normal-normal60.json": "7abb3fbab01f19075871822c48e31f0f266dfd9bc68188693ea90ab5f918c0e7",
+      "switch-bs-pop-shove-it-source-keyed-v1-regular-low-normal60.json": "4ef4b2c0ff3bc1c75f0d5886b9b724de89b157b0d5730474d15ff495706325a3",
+      "switch-bs-pop-shove-it-source-keyed-v1-regular-normal-normal60.json": "cd9868a95f6247b99f2742b641a6d83eb582a200ef461bf87f7f27a9612815b5"
+    }
+  }
 }
