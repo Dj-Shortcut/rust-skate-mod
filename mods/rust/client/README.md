@@ -732,8 +732,9 @@ owner's launcher is prepared with: the pinned release (0.18.40, whose own script
 pack, icons or captures) or an installed candidate. The installer and the launcher look for Steam
 in the registry and for Rust in Steam's `libraryfolders.vdf`, so a friend's Rust may be on another
 drive; the owner's `C:` paths are tried first and stay as they were. Code present, dry-run on
-stand-in files and fixture-checked with PowerShell 7 outside the game only (the library lookup
-itself has not been run by any PowerShell yet); no pack has been made on the owner's PC or
-installed on a second PC yet.
+stand-in files and fixture-checked with PowerShell 7 outside the game; the library lookup's
+preflight ran on the owner's Windows PC on 1 November (Windows PowerShell 5.1 and 7.6, dummy
+fixtures, nothing written); no pack has been made on the owner's PC or installed on a second PC
+yet.
 
 The .41 development client fixes the native skate-wheel text failure without using the stripped `GUIStyle.wordWrap` setter. With the ordinary building plan, the preview also shows the complete required support footprint and a top view for large pieces. Amber cells describe requirements; the server still checks the site and payment. Supported ledges use their authored low/high top-to-support height, while legacy elevated plates retain their recognition path. Native wheel, placement and riding results remain separate acceptance checks in `TODO.md`.

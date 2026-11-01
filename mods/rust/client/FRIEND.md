@@ -18,7 +18,10 @@ and playing from it are still open; see the [status](#status).
   and Rust's library may be on any drive: the installer and the launcher read where Steam is from
   the registry and where Rust is from Steam's `libraryfolders.vdf` and Rust's own manifest, and try
   Steam's own library on `C:` first (a legacy pack, made from the pinned 0.18.40 release, still knows
-  only `C:\Program Files (x86)\Steam\steamapps\common\Rust`). Not yet run on any PC.
+  only `C:\Program Files (x86)\Steam\steamapps\common\Rust`). The lookup's preflight was run on
+  the owner's Windows PC on 1 November (Codex: Windows PowerShell 5.1 and PowerShell 7.6, nine dummy
+  cases each, all stopping where expected before anything is written; a legacy pack refused the
+  non-standard library, the current script found it). No real pack, no installation yet.
 - The same Rust build as the owner. The pack is made for one Steam build; after a Rust update
   the launcher refuses to start and the owner makes a new pack.
 - An Xbox controller (XInput) for the controls as in the skate. games. The keyboard works too
@@ -153,8 +156,10 @@ and the sounds follow the pack: a pack without them takes an older address or so
   the older 0.18.40 plugin. The size of a real pack, Steam Input on the friend's shortcut and two
   clients on the owner's server are all still to be seen.
 - Known limits: the lookup of Steam and of Rust's library (registry, `libraryfolders.vdf`,
-  manifest) and the main-menu `connect` line are script and client source that have not run on
-  Windows or been seen in the game; a pack made from the pinned 0.18.40
+  manifest) has only been exercised as a preflight against dummy fixtures on the owner's PC
+  (Windows PowerShell 5.1 and 7.6, 1 November, private receipt), never against a real second PC;
+  the main-menu `connect` line is client source that has not been seen in the game; a pack made
+  from the pinned 0.18.40
   release still refuses Rust outside Steam's own library on `C:`. The Steam shortcut is made by
   hand, and the owner's server must accept the second rider (its ShortcutSkate plugin, or its
   speed checks turned off; see [playing it](README.md#playing-it-the-owners-launcher)).
