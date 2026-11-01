@@ -3,8 +3,8 @@
 The existing `fs-pop-shove-it` kind gains its own source-keyed candidate,
 `fs-pop-shove-it-source-keyed-v1`. The normal controller signature remains
 Ollie, flip0, shove+180 and spin0; no input, physics, scoring or registry-count
-change is needed. The shared-selector addition is handled by the integration
-owner, separately from these source files.
+change is needed. The exact-ID adapter joins the existing flatground capture
+route and retains its observed takeoff-plane, contact and reach guards.
 
 Source: Sewa Kroetkov, [the Cole/Kroetkov BATB12 match at130 s](https://www.youtube.com/watch?v=YcmPDIj2BFo&t=130),
 private local frames190–276 of the124 s cached window. The source shows a rear
@@ -30,9 +30,13 @@ claim. The existing carrier supplies world translation and flight once.
 The controls and executable baker live in
 `assets/authored/animation/fs-pop-shove-keyed/` and
 `scripts/author_skate_fs_pop_shove.py`. Generated data stays private and
-unreviewed. This source needs actual normal/low Regular/Goofy route and mesh
-comparison from Load through roll-away before Claude can change the coverage
-record. Native controller, pack approval and Shadow remain separate gates.
+unreviewed. Four controlled Pad/full-Step/body replays pass normal/low and both
+physical stances, with one native-source pop, no flip, a +180-degree shove and
+the existing Frontside Pop Shove-it score. Capture covers every Air frame and
+hands back to ordinary Ground riding before four seconds. All 81 client sources
+compile against 356 cached diagnostic references. Phase images on the frozen
+mesh and full board are supplied for Claude's gate; these source/managed checks
+do not approve native controller behavior, the pack or Shadow.
 
 The Pop source event starts the visible leg extension at208; it is not the
 maximum tail press at211.6. Both feet remain attached until front release211,

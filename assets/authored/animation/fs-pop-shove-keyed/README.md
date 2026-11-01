@@ -35,11 +35,14 @@ original shoe/shaped-deck geometry. Output JSON and SKMC are encoded before
 replacement. The generated source stays `reviewed=false`; no footage, detector
 output, generated pack or new approval ships in this folder.
 
-Validation so far is source selection and strict managed reader/sampler checks.
-The runtime integration owner separately runs the actual Pad/Step/body route,
-normal/low and both physical stances, then exports the frozen mesh and real
-board for comparison. A bake is not a viewer approval; Claude's offline quality
-gate, original pack approval and native Shadow acceptance remain separate.
+The ordinary trick route selects this exact clip ID with the existing normal
+FS shove signature. Four controlled Pad/full-Step/body replays cover normal/low
+and both physical stances through four seconds, including ordinary roll-away;
+capture remains active throughout Air and finishes after recovery. All 81 client
+sources compile against the 356 cached diagnostic references. The frozen mesh
+and real board were exported for phase comparison. These are managed/source
+checks, not native engine execution; Claude's visual gate, exact pack approval
+and Shadow acceptance remain separate.
 
 The Pop source event starts the visible leg extension at208; it is not the
 maximum tail press at211.6. Both feet remain attached until front release211,
