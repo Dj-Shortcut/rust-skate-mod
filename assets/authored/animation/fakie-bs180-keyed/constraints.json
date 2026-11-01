@@ -34,7 +34,8 @@
     "landFrame": 356,
     "referenceFlight": 0.6,
     "gravity": 8,
-    "normalization": "Remove one reference upright carrier from the complete normalized pose/board. Native physics adds the actual carrier once."
+    "normalization": "Remove one reference upright carrier from the complete normalized pose/board. Native physics adds the actual carrier once. The deck origin retains the original 0.092 m ground datum before reference-flight subtraction.",
+    "deckOriginGroundDatum": 0.092
   },
   "sourceBoardYaw": [
     [
@@ -124,43 +125,43 @@
   "boardHeight": [
     [
       324,
-      0
+      0.092
     ],
     [
       339,
-      0.01
+      0.102
     ],
     [
       341.5,
-      0.23
+      0.322
     ],
     [
       343.5,
-      0.35
+      0.442
     ],
     [
       345.5,
-      0.45
+      0.542
     ],
     [
       347,
-      0.5
+      0.592
     ],
     [
       350,
-      0.42
+      0.512
     ],
     [
       354,
-      0.13
+      0.222
     ],
     [
       356,
-      0
+      0.092
     ],
     [
       406,
-      0
+      0.092
     ]
   ],
   "pelvisRelativeToBoard": [

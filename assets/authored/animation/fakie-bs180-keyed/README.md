@@ -42,6 +42,9 @@ pressure endpoint 345.5, Catch 350 and Land 356 are visual phase estimates.
 The genuine footage ends before a long upright recovery. Timeline 379–406
 is explicitly **authored planted upright recovery**, not future video frames;
 the private comparison holds the last genuine source image during that suffix.
+The board-height curve includes the original 0.092 m deck-origin ground
+datum, so landed wheels remain above the riding floor through source recovery
+and the ordinary-body handoff.
 Reference pixels, raw detections and private fixtures remain untracked.
 
 ## Regenerate
