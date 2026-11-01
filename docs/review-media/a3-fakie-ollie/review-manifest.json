@@ -1,0 +1,95 @@
+{
+  "format": "own-fakie-ollie-rig-review/1",
+  "sourceReviewed": false,
+  "nativeGame": false,
+  "sourceCodeRevision": "99508472edc0d4e9977d883b9902e6952f3768d5",
+  "runtimeRouteRevision": "5691c8cf1ba528ff6c6f17f68af4c973398007fd",
+  "sourcePackSha256": "c2dde0f83c504be06617865c48ee95456095f09f77f4b2c52f51f453f77f12bc",
+  "items": [
+    {
+      "physical": "regular",
+      "requested": "goofy",
+      "profile": "low",
+      "sourcePackSha256": "c2dde0f83c504be06617865c48ee95456095f09f77f4b2c52f51f453f77f12bc",
+      "glbSha256": "49cbec3af4f01701e069d0a68aefffb55f360c0c4334869c498c472eb4cd6492",
+      "sourceCodeRevision": "99508472edc0d4e9977d883b9902e6952f3768d5",
+      "runtimeRouteRevision": "5691c8cf1ba528ff6c6f17f68af4c973398007fd",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 1,
+        "Flick": 1.1,
+        "Air": 1.2,
+        "Catch": 1.3333333333333333,
+        "Land": 1.4166666666666667,
+        "Rollaway": 1.9333333333333333,
+        "End": 4.0
+      },
+      "rigOnlyImage": "low-regular-phases.jpg",
+      "privateSourceComparison": "low-regular-private-source-comparison.jpg"
+    },
+    {
+      "physical": "regular",
+      "requested": "goofy",
+      "profile": "normal",
+      "sourcePackSha256": "c2dde0f83c504be06617865c48ee95456095f09f77f4b2c52f51f453f77f12bc",
+      "glbSha256": "151fdc2eca930d60caedafcede2942630c3e2b1902829a42ac34f645aac015fc",
+      "sourceCodeRevision": "99508472edc0d4e9977d883b9902e6952f3768d5",
+      "runtimeRouteRevision": "5691c8cf1ba528ff6c6f17f68af4c973398007fd",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 1.0166666666666666,
+        "Flick": 1.1333333333333333,
+        "Air": 1.2333333333333334,
+        "Catch": 1.3666666666666667,
+        "Land": 1.45,
+        "Rollaway": 2.0166666666666666,
+        "End": 4.0
+      },
+      "rigOnlyImage": "normal-regular-phases.jpg",
+      "privateSourceComparison": "normal-regular-private-source-comparison.jpg"
+    },
+    {
+      "physical": "goofy",
+      "requested": "regular",
+      "profile": "low",
+      "sourcePackSha256": "c2dde0f83c504be06617865c48ee95456095f09f77f4b2c52f51f453f77f12bc",
+      "glbSha256": "bdfef3784b6f6d47e481b434e822da6e339f04576c77bb1ecd43d7d666c9b525",
+      "sourceCodeRevision": "99508472edc0d4e9977d883b9902e6952f3768d5",
+      "runtimeRouteRevision": "5691c8cf1ba528ff6c6f17f68af4c973398007fd",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 1,
+        "Flick": 1.1,
+        "Air": 1.2,
+        "Catch": 1.3333333333333333,
+        "Land": 1.4166666666666667,
+        "Rollaway": 1.9333333333333333,
+        "End": 4.0
+      },
+      "rigOnlyImage": "low-goofy-phases.jpg",
+      "privateSourceComparison": "low-goofy-private-source-comparison.jpg"
+    },
+    {
+      "physical": "goofy",
+      "requested": "regular",
+      "profile": "normal",
+      "sourcePackSha256": "c2dde0f83c504be06617865c48ee95456095f09f77f4b2c52f51f453f77f12bc",
+      "glbSha256": "afa168f3eee1f26b9bd6c11681b18b5913d033e2cb07cf2e23ec33b4ed3a221d",
+      "sourceCodeRevision": "99508472edc0d4e9977d883b9902e6952f3768d5",
+      "runtimeRouteRevision": "5691c8cf1ba528ff6c6f17f68af4c973398007fd",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 1.0166666666666666,
+        "Flick": 1.1333333333333333,
+        "Air": 1.2333333333333334,
+        "Catch": 1.3666666666666667,
+        "Land": 1.45,
+        "Rollaway": 2.0166666666666666,
+        "End": 4.0
+      },
+      "rigOnlyImage": "normal-goofy-phases.jpg",
+      "privateSourceComparison": "normal-goofy-private-source-comparison.jpg"
+    }
+  ],
+  "limits": "Rig-only public images. Original pixels/raw/model weights private. Stills do not establish continuity, measured depth, offline approval or Shadow acceptance."
+}
