@@ -6,7 +6,7 @@ a backside body, a body spin or a flip. Canonical yaw is negative180;
 the existing native signature is normal Ollie / flip0 / shove+180 / spin0.
 
 The immutable private source reconstruction is local frames190–276 of the
-124 s cache (130.340–133.209 s), physically Goofy/right-leading. Pop211,
+124 s cache (130.340–133.209 s), physically Goofy/right-leading. Extension-start Pop208 (both feet), front release211, maximum tail press211.6,
 rear release212, catch220, Land226 and recovery241 follow this own take.
 The actual source was inspected from setup to the landed roll-away; a panning
 three-quarter camera, blur and deck/ankle overlap leave depth uncertain.
@@ -40,3 +40,9 @@ The runtime integration owner separately runs the actual Pad/Step/body route,
 normal/low and both physical stances, then exports the frozen mesh and real
 board for comparison. A bake is not a viewer approval; Claude's offline quality
 gate, original pack approval and native Shadow acceptance remain separate.
+
+The Pop source event starts the visible leg extension at208; it is not the
+maximum tail press at211.6. Both feet remain attached until front release211,
+then only the rear sole until212. Smooth pitch keys span that own stroke.
+The private viewer names its Pop button by the actual displayed maximum tail
+press, while physical takeoff and landing remain the native state clocks.

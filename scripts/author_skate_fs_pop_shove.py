@@ -163,8 +163,8 @@ def bake(raw, s):
     source = json.loads(raw)
     if source['metadata']['id'] != s['sourceId'] or source['metadata']['reviewed'] is not False:
         raise ValueError('The exact unreviewed FS180 source is required')
-    if s['frontRelease'] != s['pop']:
-        raise ValueError('The FS pop shove front release must coincide with its Pop event')
+    if not s['pop'] <= s['frontRelease'] < s['rearRelease']:
+        raise ValueError('The own FS front release must follow extension start and precede the rear release')
     for side in ('Left', 'Right'):
         target = s['catchFeet'][side]
         if target['sourceFrame'] != s['catch'] or target['xyz'][1] != 0:
@@ -172,6 +172,8 @@ def bake(raw, s):
     ordered = [s[k] for k in ('firstSourceFrame', 'pop', 'rearRelease', 'pressEnd', 'catchStart', 'catch', 'land', 'recovery', 'lastSourceFrame')]
     if not all(a < b for a, b in zip(ordered, ordered[1:])):
         raise ValueError('Expected the own FS pop/release/catch/landing order')
+    if not s['pop'] < s['tailStrike'] <= s['rearRelease']:
+        raise ValueError('The source tail strike must follow extension and precede rear release')
     if s['yawKeys'][0][1] != 0 or s['yawKeys'][-1][1] != -180:
         raise ValueError('The own FS source must end at one frontside half-turn')
     if source['metadata']['firstSourceFrame'] != 190 or source['metadata']['lastSourceFrame'] != 276:
@@ -188,11 +190,14 @@ def bake(raw, s):
     geometry['authored']['minimumAirSoleClearance'] = .025
     s['_geometry'] = geometry
     phases = [(s['firstSourceFrame'], 'load', ['LeftFoot', 'RightFoot']),
-              (s['pop'], 'pop', ['RightFoot']), (s['rearRelease'], 'air', []),
+              (s['pop'], 'pop', ['LeftFoot', 'RightFoot'] if s['frontRelease'] > s['pop'] else ['RightFoot'])]
+    if s['frontRelease'] > s['pop']:
+        phases.append((s['frontRelease'], 'pop', ['RightFoot']))
+    phases += [(s['rearRelease'], 'air', []),
               (s['pressEnd'], 'air', []), (s['catch'], 'catch', ['LeftFoot', 'RightFoot']),
               (s['land'], 'land', ['LeftFoot', 'RightFoot']), (s['recovery'], 'recovery', ['LeftFoot', 'RightFoot'])]
     times = np.unique(np.round(np.r_[np.arange(s['firstSourceFrame'], s['lastSourceFrame']+1e-7, 1/6),
-                                      [r[0] for r in phases], s['rotationEnd'], s['catchStart']], 9))
+                                      [r[0] for r in phases], s['rotationEnd'], s['catchStart'], s['tailStrike']], 9))
     frames = [sample(source, s, float(sf)) for sf in times]
     duration = (s['lastSourceFrame']-s['firstSourceFrame'])/s['sourceFps']
     metadata = dict(id=s['id'], movementKind=s['movementKind'],
@@ -207,6 +212,8 @@ def bake(raw, s):
                     sourceVideoOffsetSeconds=s['firstSourceFrame']/s['sourceFps'],
                     capturedSourceProvenance=source['metadata'].get('provenance', {}),
                     contactRootReconstruction=s['rootRepair'],
+                    sourceTailStrikeFrame=s['tailStrike'],
+                    phaseClockLimit='Pop208 begins leg extension with both feet; maximum tail press211.6, front release211 and rear release212 are later source observations, not native gameplay callbacks.',
                     provenance=s['provenance'], combinedWinding=dict(nativeFlip=0, nativeShove=180, canonicalYaw=-180, bodySpin=0),
                     sourceRootMotion='Source carrier translation removed; actual live carrier added once',
                     referenceGroundPress=dict(flightSeconds=.6, gravity=8),
