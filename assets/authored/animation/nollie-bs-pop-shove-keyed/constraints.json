@@ -383,7 +383,139 @@
         ],
         [
           496,
-          0.75
+          0.25
+        ],
+        [
+          505,
+          0.3
+        ],
+        [
+          525,
+          1
+        ]
+      ],
+      "upper": [
+        [
+          460,
+          0.1,
+          -0.95,
+          0.25
+        ],
+        [
+          473,
+          0.1,
+          -0.95,
+          0.25
+        ],
+        [
+          480,
+          0.05,
+          0.15,
+          0.97
+        ],
+        [
+          486,
+          0.05,
+          0.3,
+          0.95
+        ],
+        [
+          492,
+          0.25,
+          -0.2,
+          0.9
+        ],
+        [
+          500,
+          0.25,
+          -0.8,
+          0.4
+        ],
+        [
+          511,
+          0.18,
+          -0.96,
+          0.1
+        ],
+        [
+          525,
+          0.1,
+          -0.99,
+          0.02
+        ]
+      ],
+      "fore": [
+        [
+          460,
+          0.4,
+          -0.9,
+          0.05
+        ],
+        [
+          473,
+          0.4,
+          -0.9,
+          0.05
+        ],
+        [
+          480,
+          0.5,
+          0.45,
+          0.7
+        ],
+        [
+          486,
+          0.45,
+          0.5,
+          0.72
+        ],
+        [
+          492,
+          0.5,
+          -0.4,
+          0.65
+        ],
+        [
+          500,
+          0.3,
+          -0.94,
+          0.1
+        ],
+        [
+          511,
+          0.18,
+          -0.98,
+          0
+        ],
+        [
+          525,
+          0.1,
+          -0.99,
+          0
+        ]
+      ]
+    },
+    "Right": {
+      "weights": [
+        [
+          460,
+          0.2
+        ],
+        [
+          473,
+          0.2
+        ],
+        [
+          478,
+          0.2
+        ],
+        [
+          489,
+          0.2
+        ],
+        [
+          496,
+          0.25
         ],
         [
           505,
@@ -394,6 +526,189 @@
           1
         ]
       ],
+      "upper": [
+        [
+          460,
+          0.1,
+          -0.95,
+          -0.25
+        ],
+        [
+          473,
+          0.1,
+          -0.95,
+          -0.25
+        ],
+        [
+          480,
+          0.05,
+          0.05,
+          -0.97
+        ],
+        [
+          486,
+          0.05,
+          0.05,
+          -0.95
+        ],
+        [
+          492,
+          0.25,
+          -0.2,
+          -0.9
+        ],
+        [
+          500,
+          0.25,
+          -0.8,
+          -0.4
+        ],
+        [
+          511,
+          0.18,
+          -0.96,
+          -0.1
+        ],
+        [
+          525,
+          0.1,
+          -0.99,
+          -0.02
+        ]
+      ],
+      "fore": [
+        [
+          460,
+          0.4,
+          -0.9,
+          -0.05
+        ],
+        [
+          473,
+          0.4,
+          -0.9,
+          -0.05
+        ],
+        [
+          480,
+          0.5,
+          0.1,
+          -0.7
+        ],
+        [
+          486,
+          0.45,
+          0.05,
+          -0.72
+        ],
+        [
+          492,
+          0.5,
+          -0.4,
+          -0.65
+        ],
+        [
+          500,
+          0.3,
+          -0.94,
+          -0.1
+        ],
+        [
+          511,
+          0.18,
+          -0.98,
+          0
+        ],
+        [
+          525,
+          0.1,
+          -0.99,
+          0
+        ]
+      ]
+    }
+  },
+  "events": [
+    {
+      "frame": 460,
+      "phase": "load",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 478.5,
+      "phase": "load",
+      "contacts": [
+        "LeftFoot"
+      ]
+    },
+    {
+      "frame": 479,
+      "phase": "pop",
+      "contacts": [
+        "LeftFoot"
+      ]
+    },
+    {
+      "frame": 480,
+      "phase": "air",
+      "contacts": []
+    },
+    {
+      "frame": 482,
+      "phase": "air",
+      "contacts": []
+    },
+    {
+      "frame": 491,
+      "phase": "catch",
+      "contacts": [
+        "LeftFoot"
+      ]
+    },
+    {
+      "frame": 493,
+      "phase": "catch",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 494,
+      "phase": "land",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 511,
+      "phase": "recovery",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    }
+  ],
+  "provenance": "Own white-shirt/dark-trousers/pink-edge-board Nollie BS Pop Shove-it, CSV1088, official The Berrics BATB13 tL8Ey9GS0xQ. Actual strict104/104 selected VIDEO source, no gaps. Librarytrim460\u2013525 retains the own complete nose-pop/board-only180/catch/landing and filmed upright recovery. Small body windup and monocular camera/depth, fixed-chain feet, nose support, board yaw/pitch/contacts and pelvis are explicitly reconstructed. No Halfcab/flip body or coupledbody180; no instep flick. LeftWrist474\u2013489 and RightWrist504\u2013529 have unreliable model depth: bent balance/settled recovery arms reconstructed from these source pixels. Original griptape/sole/whole13part support geometry is unchanged. Native input/scoring/landing remains authority; raw pack stays false. Bounded476\u2013500 own-source balance-arm depth correction: bent elbows instead of T-like reaches, hands settle by catch. Original settled recovery resumes exactly at500; no torso/feet/board/timing change.",
+  "uncertainty": [
+    "Filmed/base Regular stance and Left nose-foot role are manual cross-checked in same-actor Nollie/Switch/opposite-FS witnesses; no complete plain-normal baseline exists in this excerpt.",
+    "Absolute camera/depth/board yaw and precise sole contact/release are authored visual estimates, not calibrated motion or confidence.",
+    "Source feet overlap near486\u2013490 and hidden points have explicit low-confidence lists; symmetric filtering does not create observations.",
+    "Both soles use shaped-deck contact; free shoes keep body heading while board-only yaw reverses deck-local front/back.",
+    "No source approval, native game or Shadow verification."
+  ],
+  "balanceCorrection": {
+    "window": [
+      476,
+      480,
+      491,
+      500
+    ],
+    "Left": {
       "upper": [
         [
           460,
@@ -508,36 +823,6 @@
       ]
     },
     "Right": {
-      "weights": [
-        [
-          460,
-          0.2
-        ],
-        [
-          473,
-          0.2
-        ],
-        [
-          478,
-          0.85
-        ],
-        [
-          489,
-          0.85
-        ],
-        [
-          496,
-          0.75
-        ],
-        [
-          505,
-          0.9
-        ],
-        [
-          525,
-          1
-        ]
-      ],
       "upper": [
         [
           460,
@@ -650,79 +935,7 @@
           0
         ]
       ]
-    }
-  },
-  "events": [
-    {
-      "frame": 460,
-      "phase": "load",
-      "contacts": [
-        "LeftFoot",
-        "RightFoot"
-      ]
     },
-    {
-      "frame": 478.5,
-      "phase": "load",
-      "contacts": [
-        "LeftFoot"
-      ]
-    },
-    {
-      "frame": 479,
-      "phase": "pop",
-      "contacts": [
-        "LeftFoot"
-      ]
-    },
-    {
-      "frame": 480,
-      "phase": "air",
-      "contacts": []
-    },
-    {
-      "frame": 482,
-      "phase": "air",
-      "contacts": []
-    },
-    {
-      "frame": 491,
-      "phase": "catch",
-      "contacts": [
-        "LeftFoot"
-      ]
-    },
-    {
-      "frame": 493,
-      "phase": "catch",
-      "contacts": [
-        "LeftFoot",
-        "RightFoot"
-      ]
-    },
-    {
-      "frame": 494,
-      "phase": "land",
-      "contacts": [
-        "LeftFoot",
-        "RightFoot"
-      ]
-    },
-    {
-      "frame": 511,
-      "phase": "recovery",
-      "contacts": [
-        "LeftFoot",
-        "RightFoot"
-      ]
-    }
-  ],
-  "provenance": "Own white-shirt/dark-trousers/pink-edge-board Nollie BS Pop Shove-it, CSV1088, official The Berrics BATB13 tL8Ey9GS0xQ. Actual strict104/104 selected VIDEO source, no gaps. Librarytrim460\u2013525 retains the own complete nose-pop/board-only180/catch/landing and filmed upright recovery. Small body windup and monocular camera/depth, fixed-chain feet, nose support, board yaw/pitch/contacts and pelvis are explicitly reconstructed. No Halfcab/flip body or coupledbody180; no instep flick. LeftWrist474\u2013489 and RightWrist504\u2013529 have unreliable model depth: bent balance/settled recovery arms reconstructed from these source pixels. Original griptape/sole/whole13part support geometry is unchanged. Native input/scoring/landing remains authority; raw pack stays false. Visible own-source correction: both balance elbows bend instead of a T-like straight reach. Left hand remains near head height while the right stays lower; both settle by catch/landing. Only unreliable arm depth controls changed; original body/feet/board/timing and recovery remain unchanged.",
-  "uncertainty": [
-    "Filmed/base Regular stance and Left nose-foot role are manual cross-checked in same-actor Nollie/Switch/opposite-FS witnesses; no complete plain-normal baseline exists in this excerpt.",
-    "Absolute camera/depth/board yaw and precise sole contact/release are authored visual estimates, not calibrated motion or confidence.",
-    "Source feet overlap near486\u2013490 and hidden points have explicit low-confidence lists; symmetric filtering does not create observations.",
-    "Both soles use shaped-deck contact; free shoes keep body heading while board-only yaw reverses deck-local front/back.",
-    "No source approval, native game or Shadow verification."
-  ]
+    "provenance": "Visible source-based bent elbows/one near-head balance hand and one lower hand, both settling by catch. Monocular depth reconstruction, even for confidently detected2D wrists. Full blend480\u2013491, fade to unchanged original settled arm controls by500; no torso/feet/board/timing change."
+  }
 }

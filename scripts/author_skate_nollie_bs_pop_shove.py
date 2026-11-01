@@ -120,6 +120,12 @@ def sample(body, spec, frame):
         w = float(value(correction['weights'], frame)[0])
         upper = unit(upper * (1 - w) + local(value(correction['upper'], frame)) * w)
         fore = unit(fore * (1 - w) + local(value(correction['fore'], frame)) * w)
+        balance = spec['balanceCorrection']
+        start, full, held, end = balance['window']
+        blend = smooth((frame - start) / (full - start)) * (1 - smooth((frame - held) / (end - held)))
+        if blend > 0:
+            upper = unit(upper * (1 - blend) + local(value(balance[side]['upper'], frame)) * blend)
+            fore = unit(fore * (1 - blend) + local(value(balance[side]['fore'], frame)) * blend)
         j[side + 'Shoulder'] = shoulder
         j[side + 'Elbow'] = shoulder + upper * .29
         j[side + 'Hand'] = j[side + 'Elbow'] + fore * .27
