@@ -44,7 +44,9 @@ Flip0/Shove0/Spin−180/Body0.
 The rear shoe starts beyond the rear bolts on the tail. Front sole release47.5
 precedes the noseward outer-upper griptape guide; that guide is not a sole
 contact. Right/rear release50 is followed by a distinct free-Air/press-end52.5.
-An original curved deck and actual tapered shoe geometry supply the contact
+A modest authored nose-up carry persists through54 and levels byCatch58;
+free shoes follow that pitch with a small clearance. An original curved deck
+and actual tapered shoe geometry supply the contact
 frames. There is no off-edge flick or airborne flip. A compact, bent pressure
 endpoint preserves the strict fixed-chain reach and floor checks. Reference
 ballistic height is removed once; live physics owns flight, turning, landing

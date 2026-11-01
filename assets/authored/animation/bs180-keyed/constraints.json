@@ -93,10 +93,18 @@
     ],
     [
       52.5,
-      4
+      18
     ],
     [
       54,
+      18
+    ],
+    [
+      56,
+      8
+    ],
+    [
+      58,
       0
     ],
     [
@@ -357,5 +365,5 @@
       ]
     }
   },
-  "provenance": "Own genuine normal Goofy BS180, Wes black SK8MAFIA/cap take in official Berrics i8jPt6jHk98; raw identity61/61 with bounded PTS. Captured torso-local arm estimates with explicit uncertainty/interpolation and authored bent balance; authored body windup/heading, compact fixed-chain hips/legs, head/gaze, actual-shaped-deck sole/outer-upper guides and no-flip board pitch. Source full body+board heading is reconstructed and then removed from ALL samples once; native live NoseYaw owns exactly one real BS180 body+board turn. Not measured3D mocap."
+  "provenance": "Own genuine normal Goofy BS180, Wes black SK8MAFIA/cap take in official Berrics i8jPt6jHk98; raw identity61/61 with bounded PTS. Captured torso-local arm estimates with explicit uncertainty/interpolation and authored bent balance; authored body windup/heading, compact fixed-chain hips/legs, head/gaze, actual-shaped-deck sole/outer-upper guides and no-flip board pitch. Source full body+board heading is reconstructed and then removed from ALL samples once; native live NoseYaw owns exactly one real BS180 body+board turn. Not measured3D mocap. The plain BS180 retains a modest estimated nose-up carry through local54 and levels byCatch58; free shoes follow that board pitch with a small clearance rather than a flip-style empty gap."
 }

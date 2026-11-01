@@ -96,7 +96,7 @@ def foot(s, sf, side):
     if sf <= release:
         return guide_contact(s, sf) if side == 'Left' else planted(s, sf, side)
     start, first_frame = guide_contact(s, release) if side == 'Left' else planted(s, release, side)
-    origin, _, height, yaw = board(s, sf)
+    origin, rotation, height, yaw = board(s, sf)
     release_origin, _, release_height, release_yaw = board(s, release)
     # Carry the released foot with the body/board half-turn, not a shove. Its
     # local release remains continuous while the small free clearance develops.
@@ -104,7 +104,7 @@ def foot(s, sf, side):
     start = origin + yaw @ relative
     first_frame = yaw @ release_yaw.T @ first_frame
     target = s['catchFeet'][side]
-    free, flat = deck_shoe(s['_geometry'], origin, yaw,
+    free, flat = deck_shoe(s['_geometry'], origin, rotation,
                           target['x'], target['z'], target['yaw'])
     free += UP*s['freeClearance']
     weight = smooth((sf-release)/(s['pressEnd']-release))
