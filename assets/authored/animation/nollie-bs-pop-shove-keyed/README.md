@@ -63,3 +63,7 @@ Actual normal/low routes in physical Regular/Goofy, original-mesh phase/contact
 sheets and1×/¼× decoded-source replay evidence are delivered with the integrated
 PR. Claude owns the independent offline verdict. Shadow/native gameplay
 verification remains separate.
+
+## Mid-turn levelling candidate
+
+Claude's #706 follow-up found that the authored mid-turn pitch became steeper than the nose pop. The nose-pressure stroke through release480 stays unchanged; the released board now tapers monotonically from32° toward26° at482,20° at486 and level at catch491. These are authored visual-fit controls, not a source-camera or measured-angle correction. Board-only yaw, body, contact/event timing, native flight and strict reach/shoe/floor guards stay fixed. Updated original-rig comparison and four-case review are required; the raw pack remains reviewed=false.
