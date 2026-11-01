@@ -41,6 +41,37 @@ physics, scoring, catch or landing guard changes.
 
 Active Weddle air gathers its knee bend planes toward the torso, independently of the twisted shoe toe axes. The former toe-driven poles could send the nose-side knee above and away from the back rather than into the compact Xbox hold. This is an authored reconstruction of the visible silhouette, not measured depth. Pelvis, upper body, board and all foot/wrist endpoints retain their existing solutions and contact blend; only the two knee bend planes change. The explicit positive airborne-contact gate excludes ground grabs, other grabs and other pose owners.
 
+Crossbone air adds a separate source-led body reconstruction. The pelvis moves
+toward the trailing chain while the travel-leading leg extends, the other knee gathers
+across it and the torso folds beside the legs. A shared interval for both legs
+and the existing gripping wrist includes the requested pelvis height (0.28 times
+the combined leg length above the ankle midpoint) in its feasibility test. During
+the entering board tweak, a bounded reach solve chooses the feasible extension
+from the ankle midpoint up to the authored 0.78-leg extension without sacrificing
+that height. A bounded sixteen-step search finds a reachable bracket before eight
+bisection steps refine its upper edge; a fixed 0.42-leg minimum is not assumed
+reachable during a mirrored entry. The pelvis setback is 0.22 leg behind the
+toe-facing direction so the entering Goofy wrist also reaches at the requested
+height. It moves no sole, wrist target
+or board, stretches no bone and retains the existing strict reach limits.
+The pelvis shift, knee poles, chest and free arm all use the travel frame, including
+switch and fakie. The free arm rises toward the travel-leading end. The existing
+velocity-look route uses the same torso/neck bound as the folded FS shape.
+
+This is authored Crossbone reconstruction from the visible Xbox silhouette,
+not measured 3D, finger tracking or a world-up counterrotation. Only an active,
+positive-weight Crossbone air contact opts in; the existing complete contact
+blend owns entry and release. Ground grabs, FS, Method and other profiles keep
+their existing paths. The controlled presentation replay is separate from
+the natural-vert input/scorer activation tracked in #648, and from native
+avatar/Shadow acceptance.
+
+Crossbone's airborne release also includes the returned full-length toes when
+bounding the existing non-terrain carrier envelope. Blending toe targets can
+shorten their vectors before they are restored to foot length; switch/fakie must
+not fail the final envelope check solely because that restored toe is lower.
+Explicit support floors, terrain checks and other grab profiles are unchanged.
+
 `SkateRider.TryGrabHandFrame` exposes an optional wrist frame for the selected
 hand. `RiderRig` measures the actual avatar hand's finger direction and dorsal
 basis from its middle/index/little proximal bones, including mirrored mapping.
