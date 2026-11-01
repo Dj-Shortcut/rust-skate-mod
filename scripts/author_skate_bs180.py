@@ -47,7 +47,8 @@ def orientation(a, b, weight):
 
 def board(s, sf):
     yaw = turn_y(scalar(s['sourceYawKeys'], sf))
-    pitch = scalar(s['pitchKeys'], sf) * s['_strikePitch'] / 46
+    pitch = (scalar(s['earlyPitchKeys'], sf) if 'earlyPitchKeys' in s and sf < 54
+             else scalar(s['pitchKeys'], sf) * s['_strikePitch'] / 46)
     rotation = yaw @ turn_x(-pitch)
     f = float(np.clip((sf-s['pop'])/(s['land']-s['pop']), 0, 1))
     height = .5*s['referenceFlight']**2*s['gravity']*f*(1-f)
@@ -129,7 +130,17 @@ def arms(controls, s, sf):
         for part in ['upper', 'fore']:
             observed = unit(curve(times, [r['arms'][side][part] for r in rows], sf))
             authored = unit(s['balance'][side][part])
-            result[side].append(unit(observed*(1-weight)+authored*weight))
+            direction = unit(observed*(1-weight)+authored*weight)
+            # Cropped source hands cannot define a believable pop wind-up.
+            # This authored correction ends before the accepted Air pose.
+            pop_balance = s.get('popBalance')
+            if pop_balance and side in pop_balance:
+                start, full, held, finish = pop_balance['window']
+                pop_weight = smooth((sf-start)/(full-start))*(1-smooth((sf-held)/(finish-held)))
+                target = unit(pop_balance[side][part])
+                if pop_weight > 0:
+                    direction = unit(direction*(1-pop_weight)+target*pop_weight)
+            result[side].append(direction)
     return result
 
 
@@ -137,7 +148,12 @@ def sample(controls, s, sf):
     origin, rotation, height, source_yaw = board(s, sf)
     hip_turn = turn_y(scalar(s['sourceYawKeys'], sf)+scalar(s['hipWindupKeys'], sf))
     chest_turn = turn_y(scalar(s['sourceYawKeys'], sf)+scalar(s['chestWindupKeys'], sf))
-    pelvis = origin + UP*scalar(s['pelvisHeightKeys'], sf)
+    extension = s.get('popExtension')
+    lift = 0.
+    if extension:
+        start, full, held, finish = extension['window']
+        lift = extension['metres']*smooth((sf-start)/(full-start))*(1-smooth((sf-held)/(finish-held)))
+    pelvis = origin + UP*(scalar(s['pelvisHeightKeys'], sf)+lift)
     feet = {side: foot(s, sf, side) for side in ['Left', 'Right']}
     hips = {'Left': hip_turn @ np.array([0., 0., .09]),
             'Right': hip_turn @ np.array([0., 0., -.09])}
@@ -158,7 +174,13 @@ def sample(controls, s, sf):
     for side, (ankle, frame) in feet.items():
         hip = pelvis+hips[side]
         joints[side+'Hip'] = hip
-        joints[side+'Knee'] = limb(hip, ankle, .44, .43, hip_turn @ np.array([1., 0., .1 if side == 'Left' else -.1]))
+        pole = np.array([1., 0., .1 if side == 'Left' else -.1])
+        if side == 'Left' and 'frontKneeGuide' in s:
+            guide = s['frontKneeGuide']
+            start, full, held, finish = guide['window']
+            weight = smooth((sf-start)/(full-start))*(1-smooth((sf-held)/(finish-held)))
+            pole = pole*(1-weight)+np.array(guide['pole'])*weight
+        joints[side+'Knee'] = limb(hip, ankle, .44, .43, hip_turn @ pole)
         joints[side+'Ankle'] = ankle
         joints[side+'Toe'] = ankle+frame[:, 2]*math.sqrt(.14**2-.07**2)-frame[:, 1]*.07
     lean = math.radians(scalar(s['leanKeys'], sf))

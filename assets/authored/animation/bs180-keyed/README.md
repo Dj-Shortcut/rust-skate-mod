@@ -67,3 +67,22 @@ and the exact source route in normal and low flights, Regular and Goofy.
 The 60Hz body replay retains every airborne frame and reaches ordinary
 Ground at four seconds. Those managed checks do not constitute native Rust,
 Shadow or Claude's offline visual approval.
+
+## Pop/Guide review correction
+
+The board snaps earlier, then the front outer-upper slides toward the front
+bolts while the deck levels. The front knee bends forward and down; a short
+leg-driven extension keeps the pelvis above the board middle. The lead
+wind-up opens away from the head and rejoins the accepted balance before
+source frame 54. The original filmed body controls, camera and actual native
+body/board turn remain unchanged.
+
+Tail-sole release 48.5 follows snap 47.5, before upper-guide release 50.5 and
+distinct free-Air 52.5, so the board rises while it levels. The previously
+accepted Air 54 onward, catch, land, roll-away and open Goofy wind-up are
+retained. Source timing, leg depth and contacts are authored reconstructions,
+not measured 3D. Raw `reviewed=false` remains unchanged.
+
+Before/after media retain both the original 0.933 s moment and the new earlier
+snap. The result remains subject to Claude's independent visual judgement
+and the separate native Rust/Shadow gate.
