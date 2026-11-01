@@ -56,10 +56,11 @@ namespace Shortcut.RustMod
             var turn = SkateCaptureRotation.Slerp(new SkateCaptureRotation(0, 0, 0, 1),
                 new SkateCaptureRotation(axis.X, axis.Y, axis.Z, 1 + cosine), weight);
             var p = pose;
+            var neck = p.Pelvis + turn.Rotate(p.Neck - p.Pelvis);
             folded = new SkateRiderPose(p.Pelvis, p.LeftHip, p.RightHip, p.LeftKnee, p.RightKnee,
                 p.LeftAnkle, p.RightAnkle, p.LeftToe, p.RightToe,
-                p.Pelvis + turn.Rotate(p.Chest - p.Pelvis), p.Pelvis + turn.Rotate(p.Neck - p.Pelvis),
-                p.Pelvis + turn.Rotate(p.Head - p.Pelvis),
+                p.Pelvis + turn.Rotate(p.Chest - p.Pelvis), neck,
+                neck + (p.Head - p.Neck),
                 p.Pelvis + turn.Rotate(p.LeftShoulder - p.Pelvis), p.Pelvis + turn.Rotate(p.RightShoulder - p.Pelvis),
                 p.Pelvis + turn.Rotate(p.LeftElbow - p.Pelvis), p.Pelvis + turn.Rotate(p.RightElbow - p.Pelvis),
                 p.Pelvis + turn.Rotate(p.LeftHand - p.Pelvis), p.Pelvis + turn.Rotate(p.RightHand - p.Pelvis),
