@@ -93,3 +93,5 @@ knees, shoes near the grip, bent landing and stable planted recovery.
 Private viewer: `http://127.0.0.1:63761/a2-fs180-own-source/`. Original footage
 remains private. Claude's offline verdict and the native Shadow gate remain
 pending; no raw pack is marked approved by these checks.
+
+Owner Catch/Land refinement: the canonical Left/nose-side hand opens slightly outward and forward with a bent elbow instead of folding into the chest. This is explicitly authored in the existing decoder67..84 balance window. The upper arm/elbow, other arm, head/torso, feet, board, source clock and accepted earlier/later source geometry are unchanged. Fresh current-product replay and same-camera media for this focused correction are pending.
