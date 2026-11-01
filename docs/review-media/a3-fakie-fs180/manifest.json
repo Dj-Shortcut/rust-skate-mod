@@ -1,0 +1,334 @@
+{
+  "format": "a3-fakie-fs180-rig-only-review/1",
+  "sourceAuthoringHead": "a94919b74b20af5a3cd33cccb93d8f53900011dc",
+  "runtimeRouteRevision": "b8411f55270e99ab60da032284cf9b998d313a0f",
+  "sourcePackSha256": "8545776186b856edd4b5eebbd5bcb52f836c3472e347596a396fe895e9659960",
+  "rawReviewed": false,
+  "independentFakieFs180Source": true,
+  "nativeGame": false,
+  "sourceOriginGroundDatumM": 0.092,
+  "sourceYawRemovedFromAllFields": true,
+  "authoredRecoveryAfterCut": true,
+  "offlineVerdict": "pending Claude",
+  "viewer": "http://127.0.0.1:63761/a3-fakie-fs180-own-source/",
+  "sourceUrl": "https://www.youtube.com/watch?v=H4MEulcgUTc&t=29",
+  "sourceWindow": {
+    "boundedFrames": [
+      0,
+      389
+    ],
+    "animationFrames": [
+      227,
+      275
+    ],
+    "nextActorCut": 276,
+    "authoredRecoveryTimeline": [
+      275,
+      302
+    ],
+    "filmedStance": "regular",
+    "firstContainerPts": 990,
+    "timeBase": "1/30000",
+    "ptsStep": 1001,
+    "originalGlobalFrameNumbers": null
+  },
+  "scope": "Original rig-only frames. Own genuine pure Fakie FS180 relative gesture plus labelled authored monocular heading/depth, fixed-chain contacts and hidden-arm reconstruction; all source yaw removed before one actual native turn. Source-cut suffix is explicitly authored upright recovery with last genuine video frame held. No source pixels redistributed. Claude owns the offline quality verdict.",
+  "files": [
+    {
+      "profile": "low",
+      "requestedStance": "goofy",
+      "physicalStance": "regular",
+      "file": "docs/review-media/a3-fakie-fs180/low-regular-phases.jpg",
+      "sha256": "5bd6a5c13b48ac46a1c07fbb0df6f3827c75872f01dbcfe21f92095ef1deaf70",
+      "glbSha256": "3b95304530ddd3674fcab98abb3e7d27bc1974a3392e68010bb80cead1c25b71",
+      "phaseMoments": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.8666666666666667,
+        "Flick": 0.9333333333333333,
+        "Air": 1.1166666666666667,
+        "Catch": 1.2833333333333334,
+        "Land": 1.4166666666666667,
+        "Rollaway": 2.35,
+        "End": 4.0
+      }
+    },
+    {
+      "profile": "normal",
+      "requestedStance": "goofy",
+      "physicalStance": "regular",
+      "file": "docs/review-media/a3-fakie-fs180/normal-regular-phases.jpg",
+      "sha256": "b4dea71a09d85b9e5f90eec3d2fc26828f63d7de196b529cb6254046e3d61ab3",
+      "glbSha256": "9f173156dad51e8936c6dd37001466ec450a885c4863eb582bdadff64a78084a",
+      "phaseMoments": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.8666666666666667,
+        "Flick": 0.95,
+        "Air": 1.15,
+        "Catch": 1.3166666666666667,
+        "Land": 1.45,
+        "Rollaway": 2.45,
+        "End": 4.0
+      }
+    },
+    {
+      "profile": "low",
+      "requestedStance": "regular",
+      "physicalStance": "goofy",
+      "file": "docs/review-media/a3-fakie-fs180/low-goofy-phases.jpg",
+      "sha256": "1e6ff5096a4fa8a2fa164919996c114976b1113e872a70749227c2214d30167c",
+      "glbSha256": "b87a7298d1e86c2e9d1ff9faa875709063994327d078260ad89c3dba9a0333ac",
+      "phaseMoments": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.8666666666666667,
+        "Flick": 0.9333333333333333,
+        "Air": 1.1166666666666667,
+        "Catch": 1.2833333333333334,
+        "Land": 1.4166666666666667,
+        "Rollaway": 2.35,
+        "End": 4.0
+      }
+    },
+    {
+      "profile": "normal",
+      "requestedStance": "regular",
+      "physicalStance": "goofy",
+      "file": "docs/review-media/a3-fakie-fs180/normal-goofy-phases.jpg",
+      "sha256": "54d6efc2d4c2c1fdec0b5a5dae1b37717df64d5c5c8709f957476a9cbed27162",
+      "glbSha256": "04d637f80bbb5bdce9b8797faf9c4e9722f2691738967f45b06bdd55f76f7f9c",
+      "phaseMoments": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.8666666666666667,
+        "Flick": 0.95,
+        "Air": 1.15,
+        "Catch": 1.3166666666666667,
+        "Land": 1.45,
+        "Rollaway": 2.45,
+        "End": 4.0
+      }
+    }
+  ],
+  "continuousReplay": [
+    {
+      "profile": "normal",
+      "physicalStance": "regular",
+      "rates": [
+        1,
+        0.25
+      ],
+      "reachedEndSeconds": [
+        4,
+        4
+      ],
+      "browserErrors": 0
+    },
+    {
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "rates": [
+        1,
+        0.25
+      ],
+      "reachedEndSeconds": [
+        4,
+        4
+      ],
+      "browserErrors": 0
+    },
+    {
+      "profile": "low",
+      "physicalStance": "regular",
+      "rates": [
+        1,
+        0.25
+      ],
+      "reachedEndSeconds": [
+        4,
+        4
+      ],
+      "browserErrors": 0
+    },
+    {
+      "profile": "low",
+      "physicalStance": "goofy",
+      "rates": [
+        1,
+        0.25
+      ],
+      "reachedEndSeconds": [
+        4,
+        4
+      ],
+      "browserErrors": 0
+    }
+  ],
+  "managedRoutes": [
+    {
+      "profile": "normal",
+      "requestedStance": "regular",
+      "scorer": [
+        "Combo",
+        "Fakie Frontside 180"
+      ],
+      "activeAir": 36,
+      "airFrames": 36,
+      "flightSeconds": 0.59375,
+      "endSeconds": 4,
+      "captureActiveAtEnd": false
+    },
+    {
+      "profile": "normal",
+      "requestedStance": "goofy",
+      "scorer": [
+        "Combo",
+        "Fakie Frontside 180"
+      ],
+      "activeAir": 36,
+      "airFrames": 36,
+      "flightSeconds": 0.59375,
+      "endSeconds": 4,
+      "captureActiveAtEnd": false
+    },
+    {
+      "profile": "low",
+      "requestedStance": "regular",
+      "scorer": [
+        "Combo",
+        "Fakie Frontside 180"
+      ],
+      "activeAir": 34,
+      "airFrames": 34,
+      "flightSeconds": 0.5625,
+      "endSeconds": 4,
+      "captureActiveAtEnd": false
+    },
+    {
+      "profile": "low",
+      "requestedStance": "goofy",
+      "scorer": [
+        "Combo",
+        "Fakie Frontside 180"
+      ],
+      "activeAir": 34,
+      "airFrames": 34,
+      "flightSeconds": 0.5625,
+      "endSeconds": 4,
+      "captureActiveAtEnd": false
+    }
+  ],
+  "visualNotes": "Load bends before the tail press. Rider and board rotate together once; compact airborne knees with shoes near grip, bent landing and stable planted recovery into ordinary normal-stance riding after the real Fakie half-turn. Fixed reference camera/depth is approximate, not calibrated; native game remains untested. Landed wheels retain the original ground datum throughout recovery and ordinary handoff.",
+  "sourceCommitUrl": "https://github.com/Dj-Shortcut/rust-skate-mod/commit/a94919b74b20af5a3cd33cccb93d8f53900011dc",
+  "runtimeCommitUrl": "https://github.com/Dj-Shortcut/rust-skate-mod/commit/b8411f55270e99ab60da032284cf9b998d313a0f",
+  "worldChargeGazeFixIncluded": true,
+  "contactFiles": [
+    {
+      "profile": "normal",
+      "physicalStance": "regular",
+      "file": "docs/review-media/a3-fakie-fs180/normal-regular-contacts.jpg",
+      "sha256": "873bb0899a3b083145abf23d53dff0c24ec67e8173479a74d3bcd33d2717678f",
+      "images": [
+        {
+          "phase": "Pop",
+          "view": "side",
+          "clock": "0.867 / 4.000 s",
+          "sha256": "0c139a93f5bd96ee0217f66ccfa698c688625f1ec4ee6cf5a5fb2d3fca60ce0b"
+        },
+        {
+          "phase": "Guide",
+          "view": "feet",
+          "clock": "0.950 / 4.000 s",
+          "sha256": "3b84c1a6105fe43ec479edb4fc3a88f6670200859dcd1656a6960eae4b84e52f"
+        },
+        {
+          "phase": "Rollaway",
+          "view": "feet",
+          "clock": "2.450 / 4.000 s",
+          "sha256": "9e79e46562284363432414ae588c5058230c993bab5c7904d1b6ce528a56cc1b"
+        }
+      ]
+    },
+    {
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "file": "docs/review-media/a3-fakie-fs180/normal-goofy-contacts.jpg",
+      "sha256": "369facc3f81f1d4af0f5e910d91d5e4c5d540558ab971fb8880febba08d4ede7",
+      "images": [
+        {
+          "phase": "Pop",
+          "view": "side",
+          "clock": "0.867 / 4.000 s",
+          "sha256": "c28d1016f49efb6acb1472e46af151812e570d88e29acd00e3a6cc466db3977c"
+        },
+        {
+          "phase": "Guide",
+          "view": "feet",
+          "clock": "0.950 / 4.000 s",
+          "sha256": "d971909f30d98ab1655837933b8a51976cd78b8f3f29f204b2955011a97df266"
+        },
+        {
+          "phase": "Rollaway",
+          "view": "feet",
+          "clock": "2.450 / 4.000 s",
+          "sha256": "e2066400823a2827375b9818d13a147310351ec43f01b87135deb9f7a9306532"
+        }
+      ]
+    },
+    {
+      "profile": "low",
+      "physicalStance": "regular",
+      "file": "docs/review-media/a3-fakie-fs180/low-regular-contacts.jpg",
+      "sha256": "70d6d0b857a29f897062a58e75732f58952f2bd167ec4e5f9120f379317d64e3",
+      "images": [
+        {
+          "phase": "Pop",
+          "view": "side",
+          "clock": "0.867 / 4.000 s",
+          "sha256": "85c7b60478bbbc1144f0e4bc3f6654bcbdf65fee668e1e2770c314398bdbaf79"
+        },
+        {
+          "phase": "Guide",
+          "view": "feet",
+          "clock": "0.933 / 4.000 s",
+          "sha256": "82fafee4728f047296d3b2005fa6f183253e7996d41da8217e0e57a702513205"
+        },
+        {
+          "phase": "Rollaway",
+          "view": "feet",
+          "clock": "2.350 / 4.000 s",
+          "sha256": "9be707af39a87a2fb401af8b52cfa74f187074cd14e4bc47ff5b948f24454502"
+        }
+      ]
+    },
+    {
+      "profile": "low",
+      "physicalStance": "goofy",
+      "file": "docs/review-media/a3-fakie-fs180/low-goofy-contacts.jpg",
+      "sha256": "7f52d566e375907ec5f08919b9f3c0504356a05711678a17155b08b99e8d3c7b",
+      "images": [
+        {
+          "phase": "Pop",
+          "view": "side",
+          "clock": "0.867 / 4.000 s",
+          "sha256": "33e2212b0218a72cc3fa8b8dab5a46a1f01b6fd543a09535abcae4b5cccc7d04"
+        },
+        {
+          "phase": "Guide",
+          "view": "feet",
+          "clock": "0.933 / 4.000 s",
+          "sha256": "eb7a212ce45ca5486377a365cf3e527772c5987ad97e58420a31deb75893483c"
+        },
+        {
+          "phase": "Rollaway",
+          "view": "feet",
+          "clock": "2.350 / 4.000 s",
+          "sha256": "cbe034c6487b571fb00897a4f492a24d2b3795b32776a47357d3a32a9e6e88d4"
+        }
+      ]
+    }
+  ],
+  "allEightOriginalRigJpegs": 8,
+  "contactReceiptSha256": "8c8eaa263e2998e10ae496895f099d8c8f66d02ed528a19ac73ac73d5dfb4072",
+  "contactBrowserErrors": 0,
+  "originalSkinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+  "sourceFrameHold": "Reference holds the final genuine PTS/frame during the explicitly authored planted upright suffix; next actor is never shown.",
+  "visibleCorrections": "Earlier restrained snap followed by earlier tail-sole release, front-bolt upper-shoe drag and level Guide; the front knee bends forward/down. Original0.092m deck datum retains visible wheels at Land/rollaway; world-space charge gaze keeps Load/earlyPop head forward. Accepted later source Air/Catch/Land/recovery remain unchanged."
+}
