@@ -35,7 +35,9 @@ Private strict VIDEO extraction selected104/104 frames with no gaps or actor
 fallback. The checked-in body controls reconstruct this take's torso/arm
 directions. They preserve explicit low-confidence point lists; LeftWrist474–489
 and RightWrist504–529 are unreliable. Small body windup, bent balance arms,
-skull-up/gaze, lower-body depth, nose pressure, board yaw/pitch and shaped-deck
+Both balance elbows bend through Pop/Air and the hands settle by catch;
+monocular arm depth is reconstructed even where a2D landmark is confident.
+Skull-up/gaze, lower-body depth, nose pressure, board yaw/pitch and shaped-deck
 contacts are authored from the visible take. No other trick's body is read.
 
 Only geometry/interpolation/fixed-chain math is reused. Original shoe, curved

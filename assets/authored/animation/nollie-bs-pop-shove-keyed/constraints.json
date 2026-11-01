@@ -383,11 +383,11 @@
         ],
         [
           496,
-          0.25
+          0.75
         ],
         [
           505,
-          0.3
+          0.9
         ],
         [
           525,
@@ -409,21 +409,27 @@
         ],
         [
           480,
-          0.05,
+          0.1,
           0.15,
           0.97
         ],
         [
           486,
-          0.05,
-          0.3,
+          0.1,
+          0.25,
+          0.96
+        ],
+        [
+          491,
+          0.15,
+          -0.25,
           0.95
         ],
         [
-          492,
-          0.25,
-          -0.2,
-          0.9
+          495,
+          0.2,
+          -0.6,
+          0.75
         ],
         [
           500,
@@ -459,21 +465,27 @@
         ],
         [
           480,
-          0.5,
-          0.45,
-          0.7
+          0.6,
+          0.35,
+          0.3
         ],
         [
           486,
+          0.6,
           0.45,
-          0.5,
-          0.72
+          0.3
         ],
         [
-          492,
+          491,
           0.5,
-          -0.4,
-          0.65
+          -0.65,
+          0.2
+        ],
+        [
+          495,
+          0.4,
+          -0.8,
+          0.15
         ],
         [
           500,
@@ -507,15 +519,15 @@
         ],
         [
           478,
-          0.2
+          0.85
         ],
         [
           489,
-          0.2
+          0.85
         ],
         [
           496,
-          0.25
+          0.75
         ],
         [
           505,
@@ -541,21 +553,27 @@
         ],
         [
           480,
-          0.05,
+          0.1,
           0.05,
           -0.97
         ],
         [
           486,
+          0.1,
           0.05,
-          0.05,
+          -0.96
+        ],
+        [
+          491,
+          0.15,
+          -0.25,
           -0.95
         ],
         [
-          492,
-          0.25,
-          -0.2,
-          -0.9
+          495,
+          0.2,
+          -0.6,
+          -0.75
         ],
         [
           500,
@@ -591,21 +609,27 @@
         ],
         [
           480,
-          0.5,
-          0.1,
-          -0.7
+          0.6,
+          -0.15,
+          -0.3
         ],
         [
           486,
-          0.45,
-          0.05,
-          -0.72
+          0.6,
+          -0.25,
+          -0.3
         ],
         [
-          492,
+          491,
           0.5,
-          -0.4,
-          -0.65
+          -0.65,
+          -0.2
+        ],
+        [
+          495,
+          0.4,
+          -0.8,
+          -0.15
         ],
         [
           500,
@@ -693,7 +717,7 @@
       ]
     }
   ],
-  "provenance": "Own white-shirt/dark-trousers/pink-edge-board Nollie BS Pop Shove-it, CSV1088, official The Berrics BATB13 tL8Ey9GS0xQ. Actual strict104/104 selected VIDEO source, no gaps. Librarytrim460\u2013525 retains the own complete nose-pop/board-only180/catch/landing and filmed upright recovery. Small body windup and monocular camera/depth, fixed-chain feet, nose support, board yaw/pitch/contacts and pelvis are explicitly reconstructed. No Halfcab/flip body or coupledbody180; no instep flick. LeftWrist474\u2013489 and RightWrist504\u2013529 have unreliable model depth: bent balance/settled recovery arms reconstructed from these source pixels. Original griptape/sole/whole13part support geometry is unchanged. Native input/scoring/landing remains authority; raw pack stays false.",
+  "provenance": "Own white-shirt/dark-trousers/pink-edge-board Nollie BS Pop Shove-it, CSV1088, official The Berrics BATB13 tL8Ey9GS0xQ. Actual strict104/104 selected VIDEO source, no gaps. Librarytrim460\u2013525 retains the own complete nose-pop/board-only180/catch/landing and filmed upright recovery. Small body windup and monocular camera/depth, fixed-chain feet, nose support, board yaw/pitch/contacts and pelvis are explicitly reconstructed. No Halfcab/flip body or coupledbody180; no instep flick. LeftWrist474\u2013489 and RightWrist504\u2013529 have unreliable model depth: bent balance/settled recovery arms reconstructed from these source pixels. Original griptape/sole/whole13part support geometry is unchanged. Native input/scoring/landing remains authority; raw pack stays false. Visible own-source correction: both balance elbows bend instead of a T-like straight reach. Left hand remains near head height while the right stays lower; both settle by catch/landing. Only unreliable arm depth controls changed; original body/feet/board/timing and recovery remain unchanged.",
   "uncertainty": [
     "Filmed/base Regular stance and Left nose-foot role are manual cross-checked in same-actor Nollie/Switch/opposite-FS witnesses; no complete plain-normal baseline exists in this excerpt.",
     "Absolute camera/depth/board yaw and precise sole contact/release are authored visual estimates, not calibrated motion or confidence.",
