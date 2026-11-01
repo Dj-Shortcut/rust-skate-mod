@@ -62,3 +62,35 @@ The converter pins the body checksum and exact Fakie signature, validates the
 strict capture writer, and publishes its generated raw pack last. Generated
 JSON, packs, footage and private diagnostic approval fixtures remain in ignored
 `context/`; they are not production-approved assets.
+
+## Offline review material
+
+The complete managed input/replay uses a real mirrored Pad gesture and an
+already established Fakie state. The scorer reports **Fakie Heelflip**, with
+switch=true and tailLeads=true. All airborne frames select this exact source
+and coupled board keys: 36/36 for normal and 34/34 for lower, in both stances.
+The four-second runs include the observed landing and return to ordinary
+riding; no source approval flag is changed in the delivered raw pack.
+
+The original rig and complete 13-part board were exported and replayed at
+1× and ¼ speed, with all four cases reaching 4.0 seconds without browser
+errors. Physical labels come from the actual animated GLB anatomy, rather
+than assuming the native requested label equals the frozen proxy label.
+
+- [Normal Regular](../../../../docs/review-media/2026-11-01-a1-fakie-heelflip/normal-regular-phases.jpg)
+- [Normal Goofy](../../../../docs/review-media/2026-11-01-a1-fakie-heelflip/normal-goofy-phases.jpg)
+- [Lower Regular](../../../../docs/review-media/2026-11-01-a1-fakie-heelflip/low-regular-phases.jpg)
+- [Lower Goofy](../../../../docs/review-media/2026-11-01-a1-fakie-heelflip/low-goofy-phases.jpg)
+- [Review receipt](../../../../docs/review-media/2026-11-01-a1-fakie-heelflip/manifest.json)
+
+Private viewer: `http://127.0.0.1:63761/a1-fakie-heelflip/`. It explicitly
+labels the adjoining footage as the **shared Fakie Kickflip body reference**.
+Original footage stays private. These are managed offline checks with controlled
+bindings and geometry; no native Rust or Shadow play is claimed. Claude still
+owns the independent visual verdict and library status.
+
+The original-rig heel-exit close-ups are also retained:
+[Regular](../../../../docs/review-media/2026-11-01-a1-fakie-heelflip/heel-flick-regular.jpg)
+and [Goofy](../../../../docs/review-media/2026-11-01-a1-fakie-heelflip/heel-flick-goofy.jpg).
+They show the authored heel guide, rather than claiming the shared kickflip
+video proves a heel flick.

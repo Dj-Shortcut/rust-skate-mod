@@ -151,6 +151,11 @@ def bake(body_bytes, spec):
         raise ValueError('Wrong authored Fakie Heelflip identity')
     if spec['signature']!=dict(pop='Ollie',switch=True,tailLeads=True,flip=-360,shove=0,spin=0):
         raise ValueError('Wrong Fakie signature')
+    support_ref=spec['supportReference']; support_path=ROOT/support_ref['path']
+    support_bytes=support_path.read_bytes()
+    if hashlib.sha256(support_bytes).hexdigest()!=support_ref['sha256']:
+        raise ValueError('Original board support geometry differs from the pinned source')
+    spec=dict(spec,support=json.loads(support_bytes)['hybrid']['support'])
     body=json.loads(body_bytes)
     if body['independentFakieHeelflipSource'] is not False or body['baseMovementKind']!='fakie-kickflip':
         raise ValueError('The derivation must remain explicitly shared-body authored motion')
