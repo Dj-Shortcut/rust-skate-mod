@@ -86,10 +86,13 @@ knees, shoes near the grip, bent landing and stable planted recovery.
 - [Normal Goofy](../../../../docs/review-media/2026-11-01-a2-fs180/normal-goofy-phases.jpg)
 - [Lower Regular](../../../../docs/review-media/2026-11-01-a2-fs180/low-regular-phases.jpg)
 - [Lower Goofy](../../../../docs/review-media/2026-11-01-a2-fs180/low-goofy-phases.jpg)
-- [Front grip guide, Regular](../../../../docs/review-media/2026-11-01-a2-fs180/grip-guide-regular.jpg)
-- [Front grip guide, Goofy](../../../../docs/review-media/2026-11-01-a2-fs180/grip-guide-goofy.jpg)
+- [Normal Catch/Land hand before/after, Regular](../../../../docs/review-media/2026-11-01-a2-fs180/grip-guide-regular.jpg)
+- [Normal Catch/Land hand before/after, Goofy](../../../../docs/review-media/2026-11-01-a2-fs180/grip-guide-goofy.jpg)
 - [Replay and provenance receipt](../../../../docs/review-media/2026-11-01-a2-fs180/manifest.json)
 
-Private viewer: `http://127.0.0.1:63761/a2-fs180-own-source/`. Original footage
-remains private. Claude's offline verdict and the native Shadow gate remain
-pending; no raw pack is marked approved by these checks.
+Private viewer: `http://127.0.0.1:63761/a2-fs180-catch-balance/`. Original footage
+remains private. Claude owns the family/library verdict; this bounded follow-up
+and native Shadow acceptance remain separate. No raw pack is marked approved
+by these checks.
+
+Owner Catch/Land refinement: the canonical Left/nose-side hand opens slightly outward and forward with a bent elbow instead of folding into the chest. This is explicitly authored in the existing decoder 67..84 balance window. The upper arm/elbow, other arm, head/torso, feet, board, source clock and accepted earlier/later source geometry are unchanged. The [same-camera before/after and phase sheets](../../../../docs/review-media/2026-11-01-a2-fs180/README.md) use the current product freeze in both physical stances and heights. All four actual routes and decoded-source 1×/¼× replays reach ordinary 4 s recovery. Source controls remain unreviewed; native Shadow remains pending.

@@ -528,11 +528,11 @@
       0.85
     ],
     "fore": [
-      0.5,
-      0.3,
-      -0.8
+      0.8,
+      0.18,
+      0.1
     ],
-    "provenance": "Own source70 visible bent lead elbow and hand around shoulder/head level, not a locked arm above the head. Occluded depth is authored."
+    "provenance": "Authored owner improvement: canonical Left/nose-side hand opens outward/forward for balance at Catch/Land rather than folding against the chest. Existing window67..84 and upper-arm/elbow are unchanged; fixed forearm length and believable bend are preserved. Body-local [facing,up,anatomical-left], independent of travel/native turn. No new captured confidence."
   },
   "events": [
     {
@@ -593,6 +593,6 @@
       ]
     }
   ],
-  "provenance": "Independent filmed plain FS180: red beanie/94 jersey own P4C take. Own source torso/arm directions; declared authored scene heading, camera/depth, fixed lower body, griptape-side upper shoe guide, hidden right arm, catch balance and recovery. Source heading is removed everywhere before actual native spin yaw is applied once.",
+  "provenance": "Independent filmed plain FS180: red beanie/94 jersey own P4C take. Own source torso/arm directions; declared authored scene heading, camera/depth, fixed lower body, griptape-side upper shoe guide, hidden right arm, catch balance and recovery. Source heading is removed everywhere before actual native spin yaw is applied once. Owner-requested Catch/Land balance refinement changes only the canonical Left forearm direction inside the existing67..84 window; the other arm, head/torso, feet, board, source clock and earlier/later poses are preserved.",
   "uncertainty": "Source/model yaw is not calibrated; explicit sourceBoardYaw/hipYaw controls reconstruct complete heading. Raw four post-land ambiguous frames86,93-95 remain missing detections and are only labelled interpolations. Foot/board contact and hidden limb depth are authored, not measured."
 }
