@@ -1,0 +1,108 @@
+{
+  "format": "a1-fakie-heelflip-rig-only-review/1",
+  "sourceAuthoringHead": "0de6400",
+  "runtimeRouteRevision": "18175c6f650d5b985e9b7db52d9718b51a5f2af7",
+  "sourcePackSha256": "3e45dbb63a1fa8776d7e0f18fd19e6bbf45e75cb7d05b29d1042ce9986033f2b",
+  "rawReviewed": false,
+  "independentFakieHeelflipSource": false,
+  "nativeGame": false,
+  "viewer": "http://127.0.0.1:63761/a1-fakie-heelflip/",
+  "scope": "Original rig-only frames; authored shared FKbody/heel derivation. No referencepixels are published. OfflinequalityverdictbelongsClaude.",
+  "files": [
+    {
+      "profile": "low",
+      "requestedStance": "goofy",
+      "physicalStance": "regular",
+      "file": "docs/review-media/2026-11-01-a1-fakie-heelflip/low-regular-phases.jpg",
+      "sha256": "b671f1ee198ba7ee3b3b0cbbd8176352bed5473c576b7ee8788bef03329466e7"
+    },
+    {
+      "profile": "normal",
+      "requestedStance": "goofy",
+      "physicalStance": "regular",
+      "file": "docs/review-media/2026-11-01-a1-fakie-heelflip/normal-regular-phases.jpg",
+      "sha256": "d4912ec3b7cd1fe5846cfb02e2673a0bdd865db9df1d8864abec10f7609d3e90"
+    },
+    {
+      "profile": "low",
+      "requestedStance": "regular",
+      "physicalStance": "goofy",
+      "file": "docs/review-media/2026-11-01-a1-fakie-heelflip/low-goofy-phases.jpg",
+      "sha256": "46e7968755490228109848f676f1b5e378461b34604a77e6b443a8b740f4a402"
+    },
+    {
+      "profile": "normal",
+      "requestedStance": "regular",
+      "physicalStance": "goofy",
+      "file": "docs/review-media/2026-11-01-a1-fakie-heelflip/normal-goofy-phases.jpg",
+      "sha256": "997901aa012ca981a72c04b810b17a1ca3a189d8f17ba41e56931eb23d7ad8b8"
+    }
+  ],
+  "continuousReplay": [
+    {
+      "profile": "normal",
+      "physicalStance": "regular",
+      "rates": [
+        1,
+        0.25
+      ],
+      "reachedEndSeconds": [
+        4,
+        4
+      ],
+      "browserErrors": 0
+    },
+    {
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "rates": [
+        1,
+        0.25
+      ],
+      "reachedEndSeconds": [
+        4,
+        4
+      ],
+      "browserErrors": 0
+    },
+    {
+      "profile": "low",
+      "physicalStance": "regular",
+      "rates": [
+        1,
+        0.25
+      ],
+      "reachedEndSeconds": [
+        4,
+        4
+      ],
+      "browserErrors": 0
+    },
+    {
+      "profile": "low",
+      "physicalStance": "goofy",
+      "rates": [
+        1,
+        0.25
+      ],
+      "reachedEndSeconds": [
+        4,
+        4
+      ],
+      "browserErrors": 0
+    }
+  ],
+  "visualNotes": "Load crouches, negative heel roll with compact two-knee Air, both soles catch, bent landing, no repeated step during ordinary recovery. Shared FK source is only a body reference, not proof of filmed heel execution.",
+  "heelCloseViews": [
+    {
+      "physicalStance": "regular",
+      "file": "docs/review-media/2026-11-01-a1-fakie-heelflip/heel-flick-regular.jpg",
+      "sha256": "e458cbac23be04868f2fe6264fb0f6f70899151743c5efa5ec69a8aef407283b"
+    },
+    {
+      "physicalStance": "goofy",
+      "file": "docs/review-media/2026-11-01-a1-fakie-heelflip/heel-flick-goofy.jpg",
+      "sha256": "607f641c3a73b759e75006b3f5bd25908bd6ae6e0ff82c0ab94c0f41a0be1c7b"
+    }
+  ]
+}
