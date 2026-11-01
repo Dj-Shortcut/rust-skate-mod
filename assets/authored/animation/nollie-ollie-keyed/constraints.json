@@ -1,0 +1,357 @@
+{
+  "id": "nollie-ollie-source-keyed-v1",
+  "movementKind": "nollie-ollie",
+  "sourceBodySha256": "a67ec8fa0c3f6954be58858f1b1d695c80743c36878c2e898bef2ca810e345bb",
+  "sourceVideoSha256": "a1d1f42eedc478da3f5eee30df271052940c8569755ca6cdfb1c3b7b15dc630d",
+  "geometrySha256": "806a59f06a0f28eb0a81550675e2cff391bf27b286f788690b65ed857794d4c5",
+  "firstSourceFrame": 95,
+  "lastSourceFrame": 175,
+  "sourceFps": 29.97002997002997,
+  "pop": 131,
+  "guideSoleRelease": 133,
+  "noseStrike": 134.5,
+  "noseRelease": 137.5,
+  "pressEnd": 140,
+  "catch": 144,
+  "land": 146,
+  "recovery": 165,
+  "sourceUrl": "https://www.youtube.com/watch?v=P4CflPS6YwQ&t=68",
+  "sourceAuthor": "The Berrics",
+  "sourceCacheOriginalOffsetSeconds": 0.033,
+  "reference": {
+    "gravity": 8,
+    "flightSeconds": 0.6,
+    "wheelClearance": 0.008
+  },
+  "minimumAirSoleClearance": 0.012,
+  "maximumReachShare": 0.995,
+  "setupFeet": {
+    "Left": {
+      "x": -0.025,
+      "z": 0.335,
+      "yaw": 85
+    },
+    "Right": {
+      "x": -0.03,
+      "z": -0.16,
+      "yaw": 80
+    }
+  },
+  "catchFeet": {
+    "Left": {
+      "x": -0.025,
+      "z": 0.24,
+      "yaw": 75
+    },
+    "Right": {
+      "x": -0.025,
+      "z": -0.24,
+      "yaw": 85
+    }
+  },
+  "pitchKeys": [
+    [
+      95,
+      0
+    ],
+    [
+      131,
+      0
+    ],
+    [
+      133,
+      22
+    ],
+    [
+      134.5,
+      46
+    ],
+    [
+      136,
+      46
+    ],
+    [
+      137.5,
+      32
+    ],
+    [
+      138.5,
+      26
+    ],
+    [
+      140,
+      18
+    ],
+    [
+      142,
+      6
+    ],
+    [
+      144,
+      0
+    ],
+    [
+      175,
+      0
+    ]
+  ],
+  "pelvisKeys": [
+    [
+      95,
+      -0.08,
+      0.86,
+      0.02
+    ],
+    [
+      110,
+      -0.08,
+      0.83,
+      0.03
+    ],
+    [
+      123,
+      -0.08,
+      0.61,
+      0.05
+    ],
+    [
+      129,
+      -0.08,
+      0.61,
+      0.06
+    ],
+    [
+      131,
+      -0.075,
+      0.64,
+      0.1
+    ],
+    [
+      134.5,
+      -0.06,
+      0.7,
+      0.18
+    ],
+    [
+      137.5,
+      -0.065,
+      0.57,
+      0.12
+    ],
+    [
+      139,
+      -0.075,
+      0.55,
+      0.07
+    ],
+    [
+      140,
+      -0.075,
+      0.55,
+      0.07
+    ],
+    [
+      142,
+      -0.08,
+      0.65,
+      0.03
+    ],
+    [
+      144,
+      -0.08,
+      0.74,
+      0.01
+    ],
+    [
+      146,
+      -0.085,
+      0.69,
+      0.01
+    ],
+    [
+      150,
+      -0.085,
+      0.61,
+      0.01
+    ],
+    [
+      155,
+      -0.08,
+      0.7,
+      0.01
+    ],
+    [
+      165,
+      -0.075,
+      0.86,
+      0.01
+    ],
+    [
+      175,
+      -0.075,
+      0.86,
+      0.01
+    ]
+  ],
+  "frontFreeKeys": [
+    [
+      137.5,
+      -0.025,
+      0.18,
+      0.31
+    ],
+    [
+      139,
+      -0.025,
+      0.2,
+      0.285
+    ],
+    [
+      140,
+      -0.025,
+      0.205,
+      0.27
+    ],
+    [
+      142,
+      -0.025,
+      0.205,
+      0.25
+    ],
+    [
+      144,
+      -0.025,
+      0.205,
+      0.24
+    ]
+  ],
+  "rearFreeKeys": [
+    [
+      138.5,
+      -0.025,
+      0.24,
+      -0.29
+    ],
+    [
+      140,
+      -0.025,
+      0.205,
+      -0.27
+    ],
+    [
+      142,
+      -0.025,
+      0.205,
+      -0.25
+    ],
+    [
+      144,
+      -0.025,
+      0.205,
+      -0.24
+    ]
+  ],
+  "guide": {
+    "start": 133,
+    "full": 135.5,
+    "release": 138.5,
+    "end": 140,
+    "deckKeys": [
+      [
+        95,
+        -0.025,
+        -0.16
+      ],
+      [
+        133,
+        -0.025,
+        -0.16
+      ],
+      [
+        135.5,
+        -0.03,
+        -0.28
+      ],
+      [
+        138.5,
+        -0.025,
+        -0.31
+      ],
+      [
+        175,
+        -0.025,
+        -0.31
+      ]
+    ],
+    "toeHeadingDegrees": 80,
+    "shoeLocal": [
+      0.04219660068,
+      -0.04039648743,
+      0.08992672899
+    ],
+    "instepSurfaceNormalLocal": [
+      0.97935,
+      0.19878,
+      0.03674
+    ]
+  },
+  "recoveryWindow": [
+    150,
+    165
+  ],
+  "recoverySourceFrame": 165,
+  "gazeKeys": [
+    [
+      95,
+      0.5,
+      -0.35,
+      0.7
+    ],
+    [
+      123,
+      0.55,
+      -0.65,
+      0.45
+    ],
+    [
+      131,
+      0.55,
+      -0.65,
+      0.45
+    ],
+    [
+      140,
+      0.55,
+      -0.65,
+      0.45
+    ],
+    [
+      146,
+      0.5,
+      -0.55,
+      0.55
+    ],
+    [
+      155,
+      0.4,
+      -0.25,
+      0.9
+    ],
+    [
+      165,
+      0.3,
+      -0.08,
+      1
+    ],
+    [
+      175,
+      0.3,
+      -0.08,
+      1
+    ]
+  ],
+  "sourceRootMotion": "Own hip-relative captured gestures with explicit canonical pelvis/depth, full fixed-chain contacts and one reference ballistic carrier removed from the board. Actual live physics supplies the single flight and forward translation. No source world path or second jump arc.",
+  "provenance": "Own genuine normal Regular Nollie from the black-cap foreground rider P4CflPS6YwQ bounded64\u201378s local95\u2013175. Canonical anatomicalLeft/burgundy sock presses nose+Z, Right/striped sock guides tailward using its outer upper. Source full-frame80/81, raw142 identity gap retained; explicit authored142 control reconstruction and143 lower-body depth repair, rejected ROI never merged. Sparse camera/depth, fixed lengths, root, exact sole/upper guide, pressure/release, head/gaze and settled ordinary recovery are authored estimates, not measured3D.",
+  "uncertainty": "Raw frame142 is ambiguous actor detection, reconstructed only in controls from verified neighbors;143 narrow ankle/hip depth is not trusted. Fingers, hidden shoe depth, exact nose strike/release and source-camera3D calibration are not observable. Source labels were checked against real nose-first no-flip motion; reference videos/pixels remain private.",
+  "phaseClockLimit": "131 extension,134/135nose strike,137.5Left release,138.5Right upper release,140distinctfreeAir,144bothCatch,146Land,165recovery are visual/authored markers from one shot. Catch order is unresolved; no measured first-foot catch is invented. Container startsPTS990/30000; original global source frame indices are unknown."
+}
