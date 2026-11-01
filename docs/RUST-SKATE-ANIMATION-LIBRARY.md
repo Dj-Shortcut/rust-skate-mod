@@ -117,30 +117,58 @@ names the state and, where there is one, the clip on `main`: **native accepted**
 authored controls on `main`, `reviewed=false`, not yet viewed as a whole), **kind
 only** (registry signature without a source route), **open PR** (draft, not on
 `main`), or **none**. Source video ids are the Berrics references the authoring
-docs name; the footage itself stays private. State as of `main` `4cc6eec`.
+docs name; the footage itself stays private. State as of `main` after #676; the gate's 1 November stills review is below the table.
 
 | Source family | Normal | Fakie | Nollie | Switch |
 | --- | --- | --- | --- | --- |
 | Ollie | none for normal riding (the CC BY-SA video ollie in `ollie-video/` is sampled by the rigging showcase only) | none | none | none |
-| Kickflip | source present: `kickflip-source-keyed-v1` (`kickflip-keyed/`, authored from reference images); held Double on the same pop: `double-kickflip-source-keyed-v1` source present (#662, #663), bound to #659's native held-flip clock | **offline reviewed**: `fakie-kickflip` (`fakie-kickflip-air/`), double/triple derivatives registered | none | none |
-| Heelflip | source present: `heelflip-source-keyed-v1` (`heelflip-keyed/`, `_oRoo1x1uzM` 136–158 s) | none | **offline reviewed**: `nollie-heelflip`, double/triple registered | **offline reviewed**: `switch-heelflip` (`switch-heelflip-air/`, `PqJZcwTY1QE` t=74), double/triple registered |
-| BS pop shove-it | source present: `bs-pop-shove-it-source-keyed-v1` (`bs-pop-shove-keyed/`, Cole `YcmPDIj2BFo` t=128); BS 360: `bs-360-shove-it-source-keyed-v1` source present (#602), the genuine BATB12 Kroetkov take with authored pickup, fold and arm depth | none | none | none |
-| FS pop shove-it | kind only (`fs-pop-shove-it` registered, no keyed route or authored controls on `main`); FS 360: `fs-360-shove-it-source-keyed-v1` source present (#653), an authored derivation from the unreviewed FS 180 reconstruction, no filmed FS 360 take | none | none | none |
-| 360 flip | source present: `360-flip-source-keyed-v1` (`treflip-keyed/`, `_oRoo1x1uzM` ~253 s, filmed goofy); Varial Kickflip: `varial-kickflip-derived-tre-v1` source present (#640), an authored Tre derivation with its own 180 scoop and half-turn catch, no filmed take | none | **offline reviewed**: `nollie-360-flip-source-keyed-v1` (`nollie360-keyed/`, `PqJZcwTY1QE` t=153) | none |
+| Kickflip | source present: `kickflip-source-keyed-v1` (`kickflip-keyed/`, authored from reference images); held Double on the same pop: `double-kickflip-source-keyed-v1` (`double-kickflip-derived/`, #662, #663, bound to #659's native held-flip clock), **offline reviewed** 1 Nov (gate stills + Codex replays; side-view check of the pop lean open) | **offline reviewed**: `fakie-kickflip` (`fakie-kickflip-air/`), double/triple derivatives registered | candidate indexed (#672): Rodriguez `PqJZcwTY1QE` 189.5–191.6 s, filmed goofy, both feet visible at pop and catch; alternate Huston 192.7–194.7 s | candidate indexed (#672): Rodriguez `PqJZcwTY1QE` 182.5–184.7 s, filmed regular; Codex's private retarget fails the Load registration guard and is quarantined |
+| Heelflip | source present: `heelflip-source-keyed-v1` (`heelflip-keyed/`, `_oRoo1x1uzM` 136–158 s) | none (only Fakie Bigspin Heelflip labels in the caches, #672) | **offline reviewed**: `nollie-heelflip`, double/triple registered | **offline reviewed**: `switch-heelflip` (`switch-heelflip-air/`, `PqJZcwTY1QE` t=74), double/triple registered |
+| BS pop shove-it | source present: `bs-pop-shove-it-source-keyed-v1` (`bs-pop-shove-keyed/`, Cole `YcmPDIj2BFo` t=128); BS 360: `bs-360-shove-it-source-keyed-v1` (`bs360-shove-keyed/`, #602, the genuine BATB12 Kroetkov take with authored pickup, fold and arm depth), **offline reviewed** 1 Nov (catch and land upright and stiff, acceptable) | none | none | none |
+| FS pop shove-it | `fs-pop-shove-it-source-keyed-v1` (`fs-pop-shove-keyed/`, #675, Kroetkov `YcmPDIj2BFo` 130.3–133.2 s, filmed goofy), **offline reviewed** 1 Nov (air frame 216 shows the deck end-on and steeply pitched; confirm against the source frame); FS 360: `fs-360-shove-it-source-keyed-v1` (`fs360-shove-keyed/`, #653 with the pop extension of #676, an authored derivation from the FS 180 reconstruction, no filmed FS 360 take), **offline reviewed** 1 Nov (mid-air carrier tilt shows the wheels from behind; confirm it stays under the scoop's 40°) | none | none | none |
+| 360 flip | source present: `360-flip-source-keyed-v1` (`treflip-keyed/`, `_oRoo1x1uzM` ~253 s, filmed goofy); Varial Kickflip: `varial-kickflip-derived-tre-v1` (`varial-kickflip-derived/`, #640, an authored Tre derivation with its own 180 scoop and half-turn catch, no filmed take), source present, **not reviewed** 1 Nov: the inherited Tre arms-up, arched-back air pose and the straight T-arm catch in both stances, and the deck 0.4 m below the feet at mid-air in normal/regular | none | **offline reviewed**: `nollie-360-flip-source-keyed-v1` (`nollie360-keyed/`, `PqJZcwTY1QE` t=153) | none |
 | Hardflip | source present: `hardflip-source-keyed-v1` (`hardflip-keyed/`, `_oRoo1x1uzM` t=192) | none | none | none |
-| Inward heelflip | none | none | none | none |
-| BS 180 | none (procedural spin only) | none | combined only: `nollie-backside-180-heelflip` (`nollie-bs180-heelflip-air/`, `PqJZcwTY1QE` t=115), **offline reviewed**; not a standalone BS 180 reference | none |
-| FS 180 | none (procedural spin only) | none | none | none |
+| Inward heelflip | none (no verified normal take in the cached Berrics windows, #672) | none | none (a Nollie Inward Heelflip label near 158 s of `PqJZcwTY1QE`, unverified) | none (a Switch Inward Heelflip label near 556 s, unverified) |
+| BS 180 | none (procedural spin only; only BS 180 Kickflip and Bigspin labels in the caches, #672) | none | combined only: `nollie-backside-180-heelflip` (`nollie-bs180-heelflip-air/`, `PqJZcwTY1QE` t=115), **offline reviewed**; not a standalone BS 180 reference | none |
+| FS 180 | none (procedural spin only; only FS 180 Kickflip and Bigspin labels in the caches, #672) | none | none | none |
 
-Count on `main`: 4 slots offline reviewed (plus the combined nollie BS 180
-heelflip, which is reviewed but not a standalone BS 180 reference), 5 source
-present, 1 kind only, 30 without a source. Nothing is native accepted. Outside the 40 slots, the normal Impossible has its own
+Count on `main`: 4 slots offline reviewed as whole families (fakie kickflip,
+nollie heelflip, switch heelflip, nollie 360 flip; the combined nollie BS 180
+heelflip is reviewed but is not a standalone BS 180 reference), 1 slot newly
+offline reviewed on 1 November (normal FS pop shove-it) plus three reviewed
+derivatives inside existing slots (held Double Kickflip, BS 360, FS 360), 5
+source present (normal kickflip, heelflip, BS pop shove-it, 360 flip, hardflip),
+1 derivative source present but not reviewed (Varial Kickflip), 2 slots with an
+indexed candidate (nollie and switch kickflip), 28 without a source. Nothing is
+native accepted. Outside the 40 slots, the normal Impossible has its own
 board-path adapter and controls (`impossible-keyed/`, `_oRoo1x1uzM`), source
 present. Batches 2 and 4–7 (riding, grabs, grinds, oldschool, transition) have
 procedural source and no capture record; their state is in the gate table at the
 top of this document. A merged PR changes a cell only after this record is
 updated in the same or the next Claude library PR; a cell never moves to
 "offline reviewed" or "native accepted" on the strength of a compile or an export.
+
+### Gate review of the 1 November families
+
+Reviewed by Claude from the rig-only contact sheets Codex committed under
+`docs/review-media/2026-11-01-*` (#674, #675, #676: six phases per sheet, normal
+and low charge, physical regular and goofy, `review-manifest.json` with GLB and
+pack hashes) together with Codex's own normal- and quarter-speed replays. Stills
+cannot show contact continuity between frames; that part rests on the replays.
+No source pixels are in the repository, so source fidelity was not re-judged
+here. Nothing below is native acceptance; raw packs stay `reviewed=false`.
+
+| Family | Decision | What was seen | Open point for the next viewer pass |
+| --- | --- | --- | --- |
+| Held Double Kickflip | offline reviewed | Compact air with the deck inverted directly under the feet, bent-knee catch, both stances | The normal/regular pop frame reads as a strong sit-back from the rear camera; check from the side (the low/goofy side view is upright) |
+| BS 360 shove-it | offline reviewed | Scoop with the rear foot riding the tail, feet clear of the full turn, catch after 360° in both stances | Catch and land are upright with the arms low: stiff but plausible; a little knee and arm would read better |
+| FS 360 shove-it (after #676) | offline reviewed | Pop now extends upward with the tail strike at 211.6 instead of the earlier sit-back; catch 224 kept | At 1.150 s the rear camera sees the wheels: confirm the carrier tilt stays within the scoop's ~40° and flattens before catch |
+| Normal FS pop shove-it (#675) | offline reviewed | Extended pop, half-turn catch with the feet on the swapped ends, upright roll-away, both stances | Air frame 216 shows the deck end-on and steeply pitched; confirm against the Kroetkov frame |
+| Varial Kickflip (#640) | not reviewed | Scoop, 180 yaw and inverted deck are there | The inherited Tre body: arms thrown up with an arched back in the air (low/goofy), straight T-arm catch in both stances, and the deck ~0.4 m below the feet at mid-air (normal/regular). A varial catch is compact; this needs its own upper body before it can pass |
+
+Crossbone (#673, batch 4) is outside the 40 slots: the pelvis height is now part
+of the reach feasibility and the stance frames are consistent; Codex's six
+regular/goofy × normal/switch/fakie replays were not re-reviewed from stills.
 
 ## Conversion and integration
 
