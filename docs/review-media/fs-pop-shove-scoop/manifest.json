@@ -352,5 +352,13 @@
       "profile": "normal",
       "kind": "before-after-contacts"
     }
-  ]
+  ],
+  "postMainUnion": {
+    "revision": "d63dee80bcd9e9a987e75b70329166480ecad73e",
+    "commitUrl": "https://github.com/Dj-Shortcut/rust-skate-mod/commit/d63dee80bcd9e9a987e75b70329166480ecad73e",
+    "allFourCompleteBodyFilesByteIdentical": true,
+    "allFourCompleteNativeTracesByteIdentical": true,
+    "all95CSharpFilesMatchCompiledMain": "fc68148b5ad94b7ad02c4f9013a355143d49b3b5",
+    "motionRerenderNeeded": false
+  }
 }

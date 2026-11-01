@@ -11,3 +11,5 @@ The four current actual Pad/full 32 Hz Step/Land/scorer cases retain the normal 
 All four viewer selections reached ordinary End at 1× and ¼×, with 32 source phase seeks plus 28 focused Side/Feet checks and no console/runtime errors. Actual source decoding/seek witnesses are private; paused callback scheduling is not treated as full-frame motion validation. The visible Pop improvement is larger than the early-Air change. Claude retains the offline verdict; raw packs remain reviewed=false. Native Shadow testing and gameplay acceptance remain open.
 
 Exact source/raw/GLB hashes, phase times, physical audits, replay receipts and image checksums are in manifest.json.
+
+After integrating Nollie/Switch main, all four complete native trace JSONs and all four complete body JSONs remain byte-identical to the viewed/rendered source6d93 freeze. All95 C#files match the compiled main Switch integration; no new C#or physics edit or redundant motion render. The source/render pins above stay unchanged; the separate verified union is recorded in the manifest.
