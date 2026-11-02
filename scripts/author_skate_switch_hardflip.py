@@ -171,6 +171,19 @@ def sample(c,s,sf):
             current = unit(j[side+'Hand']-j[side+'Elbow'])
             goal = unit(axes@np.asarray(prior[side]))
             j[side+'Hand']=j[side+'Elbow']+unit(current*(1-weight)+goal*weight)*.27
+    # The owner rejects the filmed/detected overhead snap as game balance.
+    # Author only this take's elbows/hands, then rejoin its accepted free Air.
+    balance=s['snapArmBalance'];a,b,c0,d0=balance['window']
+    weight=smooth((sf-a)/(b-a))*(1-smooth((sf-c0)/(d0-c0)))
+    if weight:
+        across=unit((j['RightHip']-j['LeftHip'])*[1,0,1])
+        balance_axes=np.column_stack((unit(np.cross(across,UP)),UP,across))
+        for side in ('Left','Right'):
+            current=dict(Elbow=unit(j[side+'Elbow']-j[side+'Shoulder']),
+                         Hand=unit(j[side+'Hand']-j[side+'Elbow']))
+            for name,previous,length,key in [('Elbow','Shoulder',.29,'upper'),('Hand','Elbow',.27,'fore')]:
+                goal=unit(balance_axes@keyed(balance[side][key],sf))
+                j[side+name]=j[side+previous]+unit(current[name]*(1-weight)+goal*weight)*length
     original={k:v.copy()for k,v in j.items()}
     feet={side:foot(s,sf,side)for side in ('Left','Right')}
     lo,hi=-float('inf'),float('inf')
@@ -211,7 +224,7 @@ def bake(body_raw,controls):
         if not all(a[0]<b[0]for a,b in zip(s[name],s[name][1:])):raise ValueError('Own keys must increase: '+name)
     samples=np.unique(np.round(np.r_[np.arange(s['firstSourceFrame'],s['lastSourceFrame']+1e-7,1/6),ordered],9));frames=[sample(c,s,float(sf))for sf in samples]
     events=[(s['firstSourceFrame'],'load',['LeftFoot','RightFoot']),(p['pop'],'pop',['LeftFoot','RightFoot']),(p['frontRelease'],'pop',['RightFoot']),(p['rearRelease'],'pop',[]),(p['pressEnd'],'air',[]),(p['firstCatch'],'catch',['LeftFoot']),(p['bothCatch'],'catch',['LeftFoot','RightFoot']),(p['land'],'land',['LeftFoot','RightFoot']),(p['recovery'],'recovery',['LeftFoot','RightFoot'])]
-    meta=dict(id=s['id'],movementKind=s['movementKind'],label='Switch Hardflip — own Rodriguez source [UNREVIEWED]',reviewed=False,authored=True,capturedBody=True,canonicalStance='regular',filmedStance='regular',sourceReflectionAppliedOnce=False,nativeSignature=s['nativeSignature'],firstSourceFrame=s['firstSourceFrame'],lastSourceFrame=s['lastSourceFrame'],sourceFps=s['sourceFps'],sourceUrl=s['sourceUrl'],sourceAuthor='The Berrics',sourceVideoSha256=s['sourceVideoSha256'],sourceBodyControlSha256=s['sourceBodySha256'],sourcePoseSha256=c['sourcePoseSha256'],sourceTiming=c['sourceTiming'],sourceVideoOffsetSeconds=s['firstSourceFrame']/s['sourceFps'],sourceCacheOriginalOffsetSeconds=0,referenceGroundPress=s['reference'],combinedWinding=dict(nativeFlip=360,nativeShove=180,bodySpin=0,canonicalRoll=360,canonicalYaw=-180),sourceRootMotion='Own hip-centered capture; independent world pickup/root exclude reference carrier once; actual native carrier owns jump/travel.',contactLimit='Own source-led Right tail pressure and Left upper-outer instep flick, not a sole flick. Shoe contact/depth/3D board rotation are authored estimates.',provenance=s['provenance'],uncertainty=s['uncertainty'],sourcePhaseLimit=s['sourcePhaseLimit'],reconstruction=dict(pelvisWorldYKeys=s['pelvisWorldYKeys'],kneePlaneBlendKeys=s['kneePlaneBlendKeys'],croppedForearms=s['croppedForearms'],recoveryWindow=s['recoveryWindow']),rig=dict(thigh=.44,shin=.43,upperArm=.29,forearm=.27,spine=.52,shoulderRise=.44,hipHalfWidth=.09,shoulderHalfWidth=.18,head=.12,foot=.14,toeDrop=.07))
+    meta=dict(id=s['id'],movementKind=s['movementKind'],label='Switch Hardflip — own Rodriguez source [UNREVIEWED]',reviewed=False,authored=True,capturedBody=True,canonicalStance='regular',filmedStance='regular',sourceReflectionAppliedOnce=False,nativeSignature=s['nativeSignature'],firstSourceFrame=s['firstSourceFrame'],lastSourceFrame=s['lastSourceFrame'],sourceFps=s['sourceFps'],sourceUrl=s['sourceUrl'],sourceAuthor='The Berrics',sourceVideoSha256=s['sourceVideoSha256'],sourceBodyControlSha256=s['sourceBodySha256'],sourcePoseSha256=c['sourcePoseSha256'],sourceTiming=c['sourceTiming'],sourceVideoOffsetSeconds=s['firstSourceFrame']/s['sourceFps'],sourceCacheOriginalOffsetSeconds=0,referenceGroundPress=s['reference'],combinedWinding=dict(nativeFlip=360,nativeShove=180,bodySpin=0,canonicalRoll=360,canonicalYaw=-180),sourceRootMotion='Own hip-centered capture; independent world pickup/root exclude reference carrier once; actual native carrier owns jump/travel.',contactLimit='Own source-led Right tail pressure and Left upper-outer instep flick, not a sole flick. Shoe contact/depth/3D board rotation are authored estimates.',provenance=s['provenance'],uncertainty=s['uncertainty'],sourcePhaseLimit=s['sourcePhaseLimit'],reconstruction=dict(pelvisWorldYKeys=s['pelvisWorldYKeys'],kneePlaneBlendKeys=s['kneePlaneBlendKeys'],croppedForearms=s['croppedForearms'],snapArmBalance=s['snapArmBalance'],recoveryWindow=s['recoveryWindow']),rig=dict(thigh=.44,shin=.43,upperArm=.29,forearm=.27,spine=.52,shoulderRise=.44,hipHalfWidth=.09,shoulderHalfWidth=.18,head=.12,foot=.14,toeDrop=.07))
     duration=(s['lastSourceFrame']-s['firstSourceFrame'])/s['sourceFps'];clip=dict(format='skate-source-keyed-switch-hardflip/1',metadata=meta,stance='regular',fps=s['sourceFps']*6,duration=duration,events=contact_events([dict(t=(sf-s['firstSourceFrame'])/s['sourceFps'],phase=ph,contacts=cs)for sf,ph,cs in events],duration),frames=frames)
     return clip,encode_pack([clip])
 

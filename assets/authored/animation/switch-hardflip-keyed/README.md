@@ -36,6 +36,21 @@ Treating that already tilted rest as world-up falsely inverted the released
 sole relative to the deck. This correction preserves every phase/contact bit,
 body control and board curve; the measured support guard is unchanged.
 
+The owner no-overhead-V/T rule overrides the high filmed/detected snap arms.
+Own source-specific elbow/hand controls blend in over7850–7852, keep bent
+asymmetric forward/outward balance through7857.5 and rejoin the original
+accepted Air at7860. These are explicitly authored horizontal anatomical-axis
+targets, not travel-axis rotation or measured wrist motion. Only four arm
+joints differ; the own captured body, shoulders/head/torso/pelvis, feet/soles,
+all board curves and every source/event/contact clock are unchanged. True
+Pop7846 and every source frame7860+ (including Catch/Land/recovery) remain exact.
+
+The arm candidate raw SHA-256 is
+`a4e474fc82ce19e302b6513a1d17733c617b196989d4e6b837a049247f163097`.
+The earlier5f8c pack/08db runtime four-case and original-mesh receipts are
+preserved as the baseline; the changed arm candidate awaits its new combined
+runtime replay and original-mesh visual check.
+
 Source-only candidate: raw `reviewed=false`. Actual normal trick-route replay,
 original-skinned-mesh comparison, CI, Claude's independent offline verdict and
 native Shadow gameplay are separate gates and are not claimed by a bake.

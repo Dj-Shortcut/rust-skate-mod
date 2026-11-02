@@ -534,7 +534,124 @@
     7924
   ],
   "recoverySourceFrame": 7928,
-  "provenance": "Own Rodriguez striped-shirt landed Switch Hardflip, official matched-game row21871, Pq full-cache7804..7932. Own129-frame VIDEO detection,124 accepted plus2 missing and3 explicitly rejected complete-side reversals, reconstructed from own neighbours. PhysicalRegular Left front/instep and Right tail; zero anatomical reflection. No normalHardflip, shove or other trick body/motion/timed foot helper/client tuck borrowed. Original rig/deck/shoe/interpolation mathematics only. Raw remains false.",
-  "uncertainty": "Monocular camera yaw/pan/depth, upper-shoe overlap and cropped/blurred wrist extrema. Complete model poses7830/7853/7854 reverse anatomical sides and are rejected;7882/7895 are missing. Own-neighbour interpolation, world root/free shoes, full3D board winding, fixed knees, contact/pressure times and wrist depth are authored reconstruction, not measured3D. Frame-pixel/ground scale and exact FS scoop corner remain uncertain. Source pixels/raw arrays stay private.",
-  "sourcePhaseLimit": "Original global cached frames, PTS1001*frame/timebase1/30000/start0, hardcuts7804/7933. First visible extension7846, strike7854.3, front sole release7852.75 then instep release7854.15, Right tail release7855.3, distinct later freeAir7857.5, catches7867.5/7868.5, floor landing7870.5, upright recovery7905..7932. Phase/contact values are authored source-led estimates."
+  "provenance": "Own Rodriguez striped-shirt landed Switch Hardflip, official matched-game row21871, Pq full-cache7804..7932. Own129-frame VIDEO detection,124 accepted plus2 missing and3 explicitly rejected complete-side reversals, reconstructed from own neighbours. PhysicalRegular Left front/instep and Right tail; zero anatomical reflection. No normalHardflip, shove or other trick body/motion/timed foot helper/client tuck borrowed. Original rig/deck/shoe/interpolation mathematics only. Raw remains false. Own7850..7860 snap elbow/hand balance is explicitly authored under the owner no-overhead-V/T rule; it is not measured wrist motion or another trick body.",
+  "uncertainty": "Monocular camera yaw/pan/depth, upper-shoe overlap and cropped/blurred wrist extrema. Complete model poses7830/7853/7854 reverse anatomical sides and are rejected;7882/7895 are missing. Own-neighbour interpolation, world root/free shoes, full3D board winding, fixed knees, contact/pressure times and wrist depth are authored reconstruction, not measured3D. Frame-pixel/ground scale and exact FS scoop corner remain uncertain. Source pixels/raw arrays stay private. The snap arm trajectories intentionally depart from high source/detector arms to give believable bent shoulder-height game balance; all body/feet/board/clocks and the accepted Air7860+ remain unchanged.",
+  "sourcePhaseLimit": "Original global cached frames, PTS1001*frame/timebase1/30000/start0, hardcuts7804/7933. First visible extension7846, strike7854.3, front sole release7852.75 then instep release7854.15, Right tail release7855.3, distinct later freeAir7857.5, catches7867.5/7868.5, floor landing7870.5, upright recovery7905..7932. Phase/contact values are authored source-led estimates.",
+  "snapArmBalance": {
+    "window": [
+      7850,
+      7852,
+      7857.5,
+      7860
+    ],
+    "Left": {
+      "upper": [
+        [
+          7852,
+          0.38,
+          -0.28,
+          -0.88
+        ],
+        [
+          7854.3,
+          0.34,
+          -0.19,
+          -0.92
+        ],
+        [
+          7855.3,
+          0.41,
+          -0.22,
+          -0.885
+        ],
+        [
+          7857.5,
+          0.48,
+          -0.28,
+          -0.83
+        ]
+      ],
+      "fore": [
+        [
+          7852,
+          0.84,
+          -0.42,
+          -0.34
+        ],
+        [
+          7854.3,
+          0.86,
+          -0.41,
+          -0.31
+        ],
+        [
+          7855.3,
+          0.88,
+          -0.39,
+          -0.26
+        ],
+        [
+          7857.5,
+          0.87,
+          -0.41,
+          -0.28
+        ]
+      ]
+    },
+    "Right": {
+      "upper": [
+        [
+          7852,
+          0.23,
+          -0.35,
+          0.91
+        ],
+        [
+          7854.3,
+          0.3,
+          -0.3,
+          0.905
+        ],
+        [
+          7855.3,
+          0.28,
+          -0.36,
+          0.89
+        ],
+        [
+          7857.5,
+          0.34,
+          -0.4,
+          0.85
+        ]
+      ],
+      "fore": [
+        [
+          7852,
+          0.84,
+          -0.28,
+          0.46
+        ],
+        [
+          7854.3,
+          0.91,
+          -0.23,
+          0.34
+        ],
+        [
+          7855.3,
+          0.87,
+          -0.32,
+          0.37
+        ],
+        [
+          7857.5,
+          0.84,
+          -0.42,
+          0.34
+        ]
+      ]
+    },
+    "provenance": "Owner global balance rule after the A5 re-gate: credible bent asymmetric balance at/below shoulders, even where the filmed/detected snap raises the arms. Own source-specific elbow/hand controls only, in horizontal anatomical facing/up/right axes, never travel axes. Fade7850..7852, own snap through7857.5, rejoin the original accepted Air at7860; all7860+ and all non-arm samples unchanged."
+  }
 }
