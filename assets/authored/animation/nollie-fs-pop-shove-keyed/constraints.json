@@ -11,7 +11,7 @@
     "spin": 0,
     "body": 0
   },
-  "sourceBodySha256": "c4c9215c53060138fd14a63ceb971ea104849316231234408a17053295d4ee3b",
+  "sourceBodySha256": "c2372fa3f4f5f656877b36b600d3a15fc5777b03bcea9dbb953f7bfb9ed7522b",
   "sourceFps": 29.97002997002997,
   "firstSourceFrame": 30,
   "lastSourceFrame": 98,
@@ -604,12 +604,20 @@
       ]
     }
   ],
-  "provenance": "Own black-shirt/cap Nollie FS Pop Shove-it, BATB13 tL8Ey9GS0xQ CSV1084. Strict own82/84 VIDEO raw20..103; gaps68/69 remain raw failures and are explicitly reconstructed from67/70. Animation30..98 excludes cropped approachhead. Initial Goofy/right-nose guess superseded by own source30/54/75/90 legchains plus tattooedRight arm74: actualLeft leads/nose, Regular, so NO anatomy reflection. No A4/othertrick body read. Generic fixed-chain geometry/math only. Own nose-pressure/scoop, board-only\u2212180/no flip/bodyturn, monotonic post-release pitch, free shoes, reverse-deck catch toes and bent landing/ordinary recovery are authored from this take. CanonicalLeft wrist corresponds to unreliable rawLeft wrist and is reconstructed with bent depth/real raised prepop balance from source pixels. The other arm uses own detector directions. Native input/scoring/landing remain authoritative; rawfalse. Own source54/55 already begins the visible rise/arm swing, so Pop54 marks that leg-extension start; actual max nose pressure57.5, release59/free61, catch/land and native flight authority remain fixed. Source-relative hand/torso controls are unchanged pending correct private camera projection.",
+  "provenance": "Own black-shirt/cap Nollie FS Pop Shove-it, BATB13 tL8Ey9GS0xQ CSV1084. Strict own82/84 VIDEO raw20..103; gaps68/69 remain raw failures and are explicitly reconstructed from67/70. Animation30..98 excludes cropped approachhead. Initial Goofy/right-nose guess superseded by own source30/54/75/90 legchains plus tattooedRight arm74: actualLeft leads/nose, Regular, so NO anatomy reflection. No A4/othertrick body read. Generic fixed-chain geometry/math only. Own nose-pressure/scoop, board-only−180/no flip/bodyturn, monotonic post-release pitch, free shoes, reverse-deck catch toes and bent landing/ordinary recovery are authored from this take. CanonicalLeft wrist corresponds to unreliable rawLeft wrist and is reconstructed with bent depth/real raised prepop balance from source pixels. Outside the bounded press-balance override, the other arm uses own detector directions. Native input/scoring/landing remain authoritative; rawfalse. Own source54/55 already begins the visible rise/arm swing, so Pop54 marks that leg-extension start; actual max nose pressure57.5, release59/free61, catch/land and native flight authority remain fixed. The earlier camera-calibration pass left hand/torso controls unchanged; the later bounded balance correction is described below. A5 visual gate repair: bounded authored bent shoulder-height arms and lowered press pelvis in52–63, preserving original own body/identity, nose-foot/board/contact clocks, pitch and all source motion from Air63 onward.",
   "uncertainty": [
-    "Manual Regular/Left-nose supported by own stable30/54/75/90 leading leg chains and tattooedRight arm74; source56\u201361 overlap remains uncertain. Initial Goofy hypothesis rejected, no reflection. Raw VIDEO evidence remains intact.",
+    "Manual Regular/Left-nose supported by own stable30/54/75/90 leading leg chains and tattooedRight arm74; source56–61 overlap remains uncertain. Initial Goofy hypothesis rejected, no reflection. Raw VIDEO evidence remains intact.",
     "World depth/camera/board pitch-yaw, foot support/release, pelvis and far-wrist depth are authored visual estimates. Source hand rises around56..61; it is not a fabricated straight overheadV.",
     "Strict actor selection rejects68/69; reconstructed control rows are labelled, raw detector failures preserved. Raw20..29 head/cap crop is outside animation trim.",
     "No full-video/global frame indices: bounded source PTS1001*frame at timebase1/30000; public181s offset is approximate.",
-    "Raw reviewed=false. No Claude offline or native/Shadow approval implied."
-  ]
+    "Raw reviewed=false. No Claude offline or native/Shadow approval implied.",
+    "The balance repair intentionally reconstructs both arm depth/elevation and supporting-knee reserve during pressure; it is authored rather than a new video measurement. Original camera estimate and intrinsic nose pitch remain unchanged."
+  ],
+  "pressBalance": {
+    "weights": [[30, 0], [52, 0], [54, 1], [61, 1], [63, 0], [98, 0]],
+    "pelvisOffset": [[30, 0], [52, 0], [56, -0.1], [57.5, -0.1], [59, -0.06], [61, -0.03], [63, 0], [98, 0]],
+    "Left": {"upper": [0.25, -0.25, 0.65], "fore": [0.6, 0.1, 0.05]},
+    "Right": {"upper": [0.55, -0.35, -0.45], "fore": [0.5, 0.15, -0.15]},
+    "provenance": "Authored owner-requested press balance: both elbows bend, hands remain around/below shoulder height, and pelvis lowers during54–61 nose pressure. Unreliable/camera-overlapped arm depth does not override readable balance. Fade completely by63; original Air/Catch/Land controls remain unchanged."
+  }
 }
