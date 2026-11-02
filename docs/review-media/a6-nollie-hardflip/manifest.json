@@ -1,0 +1,414 @@
+{
+  "format": "a6-nollie-hardflip-original-rig-review/1",
+  "sourceCodeRevision": "ae088b8fd25da8f49112074c02a59cfdf24f1ac9",
+  "runtimeRouteRevision": "ae088b8fd25da8f49112074c02a59cfdf24f1ac9",
+  "runtimeRouteFiles": {
+    "SkateCaptureKeyedPlayback.cs": "ad1c808f4c5635e0175d7cdbf54321f99dad25482cf274e9873b8993b13adc45",
+    "SkateCaptureVariants.cs": "f3ff886def69b2758e6091b933ac4bc138ec32117d276e3f61099408e8513a22",
+    "SkateCaptureKickflipUpper.cs": "fe4fc728907b5044b8a7ef3cbfa86031ac07ef2b81f7c07b19eee0b9cf28c206",
+    "SkateCapturePlayback.cs": "33d1cb57dd9e0be8d1521444ec27d69f5680d7bdfa233b758549ebcaec85b203"
+  },
+  "sourcePackSha256": "e6d4064f030c442241ca766fdc6219be4b1bb85c91e3600f06e158738ff506cd",
+  "sourceBodySha256": "472ea42004e715157da77f81fad6912934411763316b424646813b6b1b470419",
+  "rawReviewed": false,
+  "nativeGame": false,
+  "offlineVerdict": "pending Claude",
+  "viewer": "http://127.0.0.1:63761/a6-nollie-hardflip/",
+  "source": {
+    "url": "https://www.youtube.com/watch?v=PqJZcwTY1QE&t=514",
+    "author": "The Berrics",
+    "sourceVideoSha256": "531eb85fd1d292c229836f6eedc4adec422aaf6dd644040c49c7480b2beadad7",
+    "sourcePoseSha256": "22c1558408b1b20a7a375d0eee7de182e0f26573d7ede232cb839f21c2e4af7a",
+    "fps": 29.97002997002997,
+    "timeBase": "1/30000",
+    "ptsStep": 1001,
+    "fullFileFirstPts": 0,
+    "window": [
+      15420,
+      15534
+    ],
+    "actor": "Own continuous striped-shirt Rodriguez attempt; no neighbouring actor/cut is used.",
+    "filmedPhysicalStance": "goofy",
+    "filmedFootRoles": "Right nose SOLE pops; Left rear OUTER-UPPER instep flicks.",
+    "canonicalReflection": "Exactly one localX reflection plus anatomical side swap gives canonicalRegular: Left nose pop, Right rear upper flick.",
+    "pixelsMirrored": false,
+    "pixelsPublished": false,
+    "strictSelectedFrames": 107,
+    "selectedWindowFrames": 115,
+    "rejectedFrames": [
+      15484,
+      15485,
+      15486,
+      15489,
+      15490,
+      15491,
+      15492,
+      15493
+    ],
+    "gapPolicy": "Raw failures retained. Only explicitly labelled own bracketed15483..15487 and15488..15494 control reconstruction; no detector/actor fallback."
+  },
+  "signature": {
+    "pop": "Nollie",
+    "switch": false,
+    "tailLeads": false,
+    "flip": 360,
+    "shove": 180,
+    "spin": 0,
+    "body": 0
+  },
+  "boardRotation": {
+    "canonicalFullRollDegrees": 360,
+    "canonicalFrontsideYawDegrees": -180,
+    "bodyHalfturn": false,
+    "sourceAuthoredEstimate": true
+  },
+  "sourcePhases": {
+    "firstRise": 15474.5,
+    "flatBoardThrough": 15478.5,
+    "nosePressure": 15481,
+    "rearSoleRelease": 15480.75,
+    "rearInstepGuide": 15482,
+    "noseSoleRelease": 15482.75,
+    "rearUpperRelease": 15483.25,
+    "distinctBothFreeAir": 15485.5,
+    "steepAir": 15488,
+    "firstCatch": 15494.5,
+    "bothCatch": 15495.5,
+    "land": 15498,
+    "recovery": 15525,
+    "end": 15534
+  },
+  "authoredReconstruction": {
+    "scope": "Monocular depth/camera, board/contact path, compact fixed-chain body, gaze/torso and soft Catch/recovery are authored estimates from this own take, not exact calibrated mocap.",
+    "armWindow": [
+      15470,
+      15512
+    ],
+    "armChanges": "Only4elbow/hand joints change in the arm refinement versus flat-hold rawafb42. All other source fields/body472ea/events and entire rows outside the window remain identical.",
+    "balance": "Phase-specific bent asymmetric forward/outward arms below shoulders through Pop/Air/Catch/Land, returning to original arm recovery by15512.",
+    "noOtherBodyBorrowed": true
+  },
+  "camera": {
+    "canonicalOffset": [
+      0.95,
+      0.06,
+      -0.31
+    ],
+    "radius": 4.5,
+    "method": "Same fixed approximate own-source-facing view retained through corrections. Additional fixed Side/Feet views expose contacts. No pose/native-heading/gameplay-camera change."
+  },
+  "presentation": {
+    "scope": "Exact own Nollie Hardflip route; canonicalLeft nose sole explicit, distinct sole release/upper contact/both-free Air. Own source phase/root entry and original support/reach/shoe/floor guards; normalHardflip timed controls do not apply.",
+    "physicsScoringChanged": false
+  },
+  "exports": {
+    "originalSkinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+    "boardParts": 13,
+    "glbs": [
+      {
+        "profile": "low",
+        "nativeRequestedStance": "goofy",
+        "physicalStance": "regular",
+        "directSource": false,
+        "sha256": "af43eb3cb6f765804c0f49e85df6011c9f72e1dc98f7c1dd784ddf5dd1c8bb26",
+        "bytes": 2229956,
+        "inputSha256": "7b01e33857e1e84f205b80d22428fe8634356f999514d4528ae950cc67ffb5b6",
+        "phaseMoments": {
+          "Load": 0.8666666666666667,
+          "Pop": 0.8833333333333333,
+          "Extension": 0.9666666666666667,
+          "NoseStrike": 1.0333333333333334,
+          "InstepExit": 1.0833333333333333,
+          "FreeAir": 1.1333333333333333,
+          "Air": 1.2,
+          "Catch": 1.35,
+          "Land": 1.45,
+          "Rollaway": 2.1,
+          "End": 4.0
+        }
+      },
+      {
+        "profile": "normal",
+        "nativeRequestedStance": "goofy",
+        "physicalStance": "regular",
+        "directSource": false,
+        "sha256": "3af50b90392effd0103fbea6eea17f36b62bc1ec2f19692e5e071ac21ae02e73",
+        "bytes": 2230048,
+        "inputSha256": "a3594a669c823015f302e32dda4da2d56b8d922699273094fd51606277c6c3b9",
+        "phaseMoments": {
+          "Load": 0.8333333333333334,
+          "Pop": 0.8833333333333333,
+          "Extension": 0.9666666666666667,
+          "NoseStrike": 1.0333333333333334,
+          "InstepExit": 1.1,
+          "FreeAir": 1.15,
+          "Air": 1.2166666666666666,
+          "Catch": 1.3833333333333333,
+          "Land": 1.4833333333333334,
+          "Rollaway": 2.1666666666666665,
+          "End": 4.0
+        }
+      },
+      {
+        "profile": "low",
+        "nativeRequestedStance": "regular",
+        "physicalStance": "goofy",
+        "directSource": true,
+        "sha256": "fabaa34dde142c5273f5c793e5eb4a1573e48f12dad0b0ef775c921efec3f9b2",
+        "bytes": 2230048,
+        "inputSha256": "3eeb58b3bece7136212dabcdb2a42c9ac06e57060e3dcb29d4f12e345464d3d3",
+        "phaseMoments": {
+          "Load": 0.8666666666666667,
+          "Pop": 0.8833333333333333,
+          "Extension": 0.9666666666666667,
+          "NoseStrike": 1.0333333333333334,
+          "InstepExit": 1.0833333333333333,
+          "FreeAir": 1.1333333333333333,
+          "Air": 1.2,
+          "Catch": 1.35,
+          "Land": 1.45,
+          "Rollaway": 2.1,
+          "End": 4.0
+        }
+      },
+      {
+        "profile": "normal",
+        "nativeRequestedStance": "regular",
+        "physicalStance": "goofy",
+        "directSource": true,
+        "sha256": "8167106a72c60c80c98d8d9ab62f39e2b4b7d98b644365e26381863d34b22a25",
+        "bytes": 2230048,
+        "inputSha256": "296d07a894cdba430cf0b4ea89ee7fd95a1bd400029164b0405c4cf6d8005c7f",
+        "phaseMoments": {
+          "Load": 0.8333333333333334,
+          "Pop": 0.8833333333333333,
+          "Extension": 0.9666666666666667,
+          "NoseStrike": 1.0333333333333334,
+          "InstepExit": 1.1,
+          "FreeAir": 1.15,
+          "Air": 1.2166666666666666,
+          "Catch": 1.3833333333333333,
+          "Land": 1.4833333333333334,
+          "Rollaway": 2.1666666666666665,
+          "End": 4.0
+        }
+      }
+    ],
+    "manifestSha256": "312d867ce079ec6a5dedd6c9ac2e2d2c960bc54d5f6cc685fcc76b666d4a20e1",
+    "labelAuthority": "Actual animated GLB foot bones: requestedRegular displays physicalGoofy DIRECT; requestedGoofy displays physicalRegular MIRROR."
+  },
+  "managedRoutes": {
+    "scope": "Actual Pad/full32Hz Step/Land/scorer, body at60Hz, controlled bindings/ground. No native runtime or visual approval.",
+    "receiptSha256": "05981809103d585f8379b3ae1710e85481bf6865e7b8f84491747c9596f633c9",
+    "cases": [
+      {
+        "profile": "normal",
+        "requestedStance": "regular",
+        "names": [
+          "Combo",
+          "Nollie Hardflip"
+        ],
+        "sourcePackSha256": "e6d4064f030c442241ca766fdc6219be4b1bb85c91e3600f06e158738ff506cd",
+        "testPackSha256": "e42f88c186a6f2b4acbf7cd883b4cd106296a47dcc1341d2a844b54562c13cde",
+        "traceSha256": "1c3799708ba2812215ef1195b6b1ff373895e7d90e3785bca37d03eec05c6e99",
+        "jsonSha256": "2ba74816d89a7ecd274346f25245822742d7a6408ac8fc453f6651fcc2064c08",
+        "activeAir": 36,
+        "airFrames": 36,
+        "flightDuration": 0.59375,
+        "terminalCapture": false,
+        "t": 4
+      },
+      {
+        "profile": "normal",
+        "requestedStance": "goofy",
+        "names": [
+          "Combo",
+          "Nollie Hardflip"
+        ],
+        "sourcePackSha256": "e6d4064f030c442241ca766fdc6219be4b1bb85c91e3600f06e158738ff506cd",
+        "testPackSha256": "e42f88c186a6f2b4acbf7cd883b4cd106296a47dcc1341d2a844b54562c13cde",
+        "traceSha256": "127ed67033ad0c3614badbca0174d52e24f223d75f587715515f9e5a4f2870c8",
+        "jsonSha256": "6019aaa6e7719a403d74d4c0ba376123877f1c3ea185b973389a78a96ea28782",
+        "activeAir": 36,
+        "airFrames": 36,
+        "flightDuration": 0.59375,
+        "terminalCapture": false,
+        "t": 4
+      },
+      {
+        "profile": "low",
+        "requestedStance": "regular",
+        "names": [
+          "Combo",
+          "Nollie Hardflip"
+        ],
+        "sourcePackSha256": "e6d4064f030c442241ca766fdc6219be4b1bb85c91e3600f06e158738ff506cd",
+        "testPackSha256": "e42f88c186a6f2b4acbf7cd883b4cd106296a47dcc1341d2a844b54562c13cde",
+        "traceSha256": "a8973300f096c8dcbc780339b6dfd699afe8ccaeecfb1ab3061ea8dc6c5b08e7",
+        "jsonSha256": "a9fdf5108a49f216d29a47b219c246e1b59c7551c8878a3f21b79a4ee5b32c17",
+        "activeAir": 34,
+        "airFrames": 34,
+        "flightDuration": 0.5625,
+        "terminalCapture": false,
+        "t": 4
+      },
+      {
+        "profile": "low",
+        "requestedStance": "goofy",
+        "names": [
+          "Combo",
+          "Nollie Hardflip"
+        ],
+        "sourcePackSha256": "e6d4064f030c442241ca766fdc6219be4b1bb85c91e3600f06e158738ff506cd",
+        "testPackSha256": "e42f88c186a6f2b4acbf7cd883b4cd106296a47dcc1341d2a844b54562c13cde",
+        "traceSha256": "0496e02df1417d1551f264d777537095dc1f57a773bcd1229b2af261ee75cf8b",
+        "jsonSha256": "935f6066429d2ad0f31647348008e172ff82a37bb12da0e66bc9f7aaf6014092",
+        "activeAir": 34,
+        "airFrames": 34,
+        "flightDuration": 0.5625,
+        "terminalCapture": false,
+        "t": 4
+      }
+    ],
+    "wholeNativeTraces": "All4 complete traces are byte-identical to originalf065 baseline; source/presentation refinements do not modify input/physics/scoring."
+  },
+  "continuousReplay": {
+    "errors": 0,
+    "cases": [
+      {
+        "profile": "normal",
+        "physicalStance": "regular",
+        "rates": [
+          1,
+          0.25
+        ],
+        "endTimes": [
+          4,
+          4
+        ],
+        "phaseSeeks": 10
+      },
+      {
+        "profile": "normal",
+        "physicalStance": "goofy",
+        "rates": [
+          1,
+          0.25
+        ],
+        "endTimes": [
+          4,
+          4
+        ],
+        "phaseSeeks": 10
+      },
+      {
+        "profile": "low",
+        "physicalStance": "regular",
+        "rates": [
+          1,
+          0.25
+        ],
+        "endTimes": [
+          4,
+          4
+        ],
+        "phaseSeeks": 10
+      },
+      {
+        "profile": "low",
+        "physicalStance": "goofy",
+        "rates": [
+          1,
+          0.25
+        ],
+        "endTimes": [
+          4,
+          4
+        ],
+        "phaseSeeks": 10
+      }
+    ],
+    "receiptSha256": "c3e9d480b04030edf3ef01a6b36df0d4660e905dbef13a66df92f25b83e63684"
+  },
+  "sourceSeekChecks": {
+    "decodedPhases": 40,
+    "actualVideoFrameCallbacks": 40,
+    "maximumDecodedMediaTimeDelta": 0.03336699999999837,
+    "tolerance": "One30000/1001 source frame plus0.1ms UI-clock rounding tolerance",
+    "focusedSourceSideFeetViews": 40,
+    "detailReceiptSha256": "7cda5e472419a5bf4530669bca20053acbaee415af9893517222b5ea59fcb48a",
+    "method": "Actual settled video/frame callbacks/canvas and own-rig screenshots; no full-frame pose reconstruction validation claim."
+  },
+  "files": [
+    {
+      "file": "low-regular-phases.jpg",
+      "sha256": "3881deb792dfc99cf0f677b5436382b4833b66e6c1de4ad781dde2d5367d19f9",
+      "profile": "low",
+      "physicalStance": "regular",
+      "kind": "phases"
+    },
+    {
+      "file": "low-regular-contacts.jpg",
+      "sha256": "393a834d042960c73a36171b84f797099407e9b0b1843ec6acfeb8a3bf6aec3e",
+      "profile": "low",
+      "physicalStance": "regular",
+      "kind": "contacts"
+    },
+    {
+      "file": "normal-regular-phases.jpg",
+      "sha256": "f5b01f03dbedd7936dada09c09f243ee06b147ba6ba5d8b3e7440c534d648ee2",
+      "profile": "normal",
+      "physicalStance": "regular",
+      "kind": "phases"
+    },
+    {
+      "file": "normal-regular-contacts.jpg",
+      "sha256": "61f06c019f216adaaf66dae18160a1d2fbc9547f225f8da2e6fb0b285f475342",
+      "profile": "normal",
+      "physicalStance": "regular",
+      "kind": "contacts"
+    },
+    {
+      "file": "low-goofy-phases.jpg",
+      "sha256": "94cba7740b613a54fe003ebb6f087d5e930ddb19f17d2cb674690d850b4f3dc2",
+      "profile": "low",
+      "physicalStance": "goofy",
+      "kind": "phases"
+    },
+    {
+      "file": "low-goofy-contacts.jpg",
+      "sha256": "881f9c7c1c16e7c00810d694c71f7632ae1cc2d5bced5eb411c6ea56bef5e7cc",
+      "profile": "low",
+      "physicalStance": "goofy",
+      "kind": "contacts"
+    },
+    {
+      "file": "normal-goofy-phases.jpg",
+      "sha256": "175ea02d5ec1c02be81f6caac6986a981e0b438df659103ce8e2e6698b7fb524",
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "kind": "phases"
+    },
+    {
+      "file": "normal-goofy-contacts.jpg",
+      "sha256": "0e009d9688ebb7f2358a051bc7ed2c691b3d25a9707f8a95ee1f727b49916973",
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "kind": "contacts"
+    }
+  ],
+  "limits": [
+    "Controlled managed bindings/ground, not native Rust/Shadow, multiplayer or real-avatar mapping.",
+    "Claude alone owns independent offline verdict/library; raw remains false.",
+    "Original source film/model arrays, test-only approvals, GLBs, logs and derived game material stay private."
+  ],
+  "postMainComposition": {
+    "main": "8da05515feeb3dd0430b577ac10f4b35ce546ab4",
+    "compositionCommit": "7f1562de0d9e2ce087f7beebb96fd0c663a4b00e",
+    "motionPresentationFilesExactToRenderedAe088": true,
+    "allClientSharedCSharpExactToProductionCompiled33ee365": true,
+    "currentBakerReproducesRenderedRaw": "e6d4064f030c442241ca766fdc6219be4b1bb85c91e3600f06e158738ff506cd",
+    "existingVariantIndices0Through38Unchanged": true,
+    "newNollieHardflipIndex": 39
+  }
+}

@@ -1,0 +1,657 @@
+{
+  "id": "switch-hardflip-source-keyed-v1",
+  "movementKind": "switch-hardflip",
+  "sourceUrl": "https://www.youtube.com/watch?v=PqJZcwTY1QE&t=260",
+  "sourceFps": 29.97002997002997,
+  "sourceVideoSha256": "531eb85fd1d292c229836f6eedc4adec422aaf6dd644040c49c7480b2beadad7",
+  "sourceBodySha256": "06b1bc7a1659a902f3b2f2ef2e9eb61c1a79af2873e6a6f11d2ae265e05113a0",
+  "geometrySha256": "806a59f06a0f28eb0a81550675e2cff391bf27b286f788690b65ed857794d4c5",
+  "firstSourceFrame": 7804,
+  "lastSourceFrame": 7932,
+  "nativeSignature": {
+    "pop": "Ollie",
+    "switch": true,
+    "tailLeads": false,
+    "flip": 360,
+    "shove": 180,
+    "spin": 0,
+    "body": 0
+  },
+  "phases": {
+    "pop": 7846,
+    "frontRelease": 7852.75,
+    "instepRelease": 7854.15,
+    "strike": 7854.3,
+    "rearRelease": 7855.3,
+    "pressEnd": 7857.5,
+    "firstCatch": 7867.5,
+    "bothCatch": 7868.5,
+    "land": 7870.5,
+    "recovery": 7890
+  },
+  "reference": {
+    "gravity": 9.81,
+    "flightSeconds": 0.6006,
+    "wheelClearance": 0.012
+  },
+  "yawKeys": [
+    [
+      7804,
+      0
+    ],
+    [
+      7852.75,
+      0
+    ],
+    [
+      7854.3,
+      -6
+    ],
+    [
+      7856,
+      -30
+    ],
+    [
+      7858,
+      -74
+    ],
+    [
+      7860,
+      -115
+    ],
+    [
+      7862,
+      -150
+    ],
+    [
+      7864,
+      -174
+    ],
+    [
+      7866,
+      -180
+    ],
+    [
+      7932,
+      -180
+    ]
+  ],
+  "pitchKeys": [
+    [
+      7804,
+      0
+    ],
+    [
+      7852,
+      0
+    ],
+    [
+      7854.3,
+      40
+    ],
+    [
+      7855,
+      58
+    ],
+    [
+      7857,
+      78
+    ],
+    [
+      7859,
+      73
+    ],
+    [
+      7861,
+      54
+    ],
+    [
+      7863,
+      22
+    ],
+    [
+      7865,
+      8
+    ],
+    [
+      7867,
+      2
+    ],
+    [
+      7868.5,
+      0
+    ],
+    [
+      7932,
+      0
+    ]
+  ],
+  "rollKeys": [
+    [
+      7804,
+      0
+    ],
+    [
+      7852.75,
+      0
+    ],
+    [
+      7854.3,
+      14
+    ],
+    [
+      7856,
+      70
+    ],
+    [
+      7858,
+      150
+    ],
+    [
+      7860,
+      210
+    ],
+    [
+      7862,
+      275
+    ],
+    [
+      7864,
+      330
+    ],
+    [
+      7866,
+      357
+    ],
+    [
+      7867.5,
+      360
+    ],
+    [
+      7932,
+      360
+    ]
+  ],
+  "setupFeet": {
+    "Left": {
+      "x": -0.015,
+      "z": 0.14,
+      "yaw": 65
+    },
+    "Right": {
+      "x": -0.035,
+      "z": -0.36,
+      "yaw": 88
+    }
+  },
+  "catchFeet": {
+    "Left": {
+      "x": -0.015,
+      "z": 0.23,
+      "yaw": 65
+    },
+    "Right": {
+      "x": -0.015,
+      "z": -0.24,
+      "yaw": 88
+    }
+  },
+  "tailBall": {
+    "shoeLocal": [
+      0,
+      -0.075,
+      0.08
+    ],
+    "heelLiftKeys": [
+      [
+        7804,
+        0
+      ],
+      [
+        7846,
+        0
+      ],
+      [
+        7852.5,
+        4
+      ],
+      [
+        7854.3,
+        12
+      ],
+      [
+        7855.3,
+        12
+      ]
+    ],
+    "boardFollowShare": 0.2,
+    "provenance": "Own low rear-foot tail-ball pressure: keep the ankle mostly world-up while the board snaps/rolls under the ball; no full-sole weld to the vertical deck."
+  },
+  "instepGuide": {
+    "deckPoint": [
+      -0.085,
+      0,
+      0.285
+    ],
+    "shoePoint": [
+      -0.04219660068,
+      -0.04039648743,
+      0.08992672899
+    ],
+    "shoeNormal": [
+      -0.97935,
+      0.19878,
+      0.03674
+    ],
+    "toeYaw": 65,
+    "gap": 0.002,
+    "provenance": "Original Left shoe upper-outer instep feature against the own nose-side griptape/rail; not a sole patch. Hidden contact depth/phase are authored."
+  },
+  "freeFootBlendFrames": {
+    "Left": 1.4,
+    "Right": 1.8
+  },
+  "catchBlendFrames": 2,
+  "frontFreeWorldKeys": [
+    [
+      7854.15,
+      -0.08,
+      0.55,
+      0.27
+    ],
+    [
+      7855,
+      -0.09,
+      0.65,
+      0.3
+    ],
+    [
+      7858,
+      -0.1,
+      0.94,
+      0.3
+    ],
+    [
+      7861,
+      -0.07,
+      0.98,
+      0.27
+    ],
+    [
+      7864,
+      -0.03,
+      0.82,
+      0.24
+    ],
+    [
+      7867,
+      -0.015,
+      0.52,
+      0.23
+    ],
+    [
+      7868.5,
+      -0.015,
+      0.3,
+      0.23
+    ]
+  ],
+  "rearFreeWorldKeys": [
+    [
+      7855.3,
+      0.14,
+      0.18,
+      -0.34
+    ],
+    [
+      7857,
+      0.17,
+      0.35,
+      -0.32
+    ],
+    [
+      7859,
+      0.14,
+      0.63,
+      -0.29
+    ],
+    [
+      7861,
+      0.1,
+      0.8,
+      -0.25
+    ],
+    [
+      7864,
+      0.045,
+      0.76,
+      -0.24
+    ],
+    [
+      7867,
+      -0.005,
+      0.5,
+      -0.24
+    ],
+    [
+      7868.5,
+      -0.015,
+      0.3,
+      -0.24
+    ]
+  ],
+  "pelvisXZKeys": [
+    [
+      7804,
+      -0.02,
+      0
+    ],
+    [
+      7842,
+      -0.06,
+      -0.04
+    ],
+    [
+      7846,
+      -0.03,
+      -0.06
+    ],
+    [
+      7854.3,
+      -0.01,
+      -0.035
+    ],
+    [
+      7858,
+      0,
+      0
+    ],
+    [
+      7867,
+      -0.015,
+      0
+    ],
+    [
+      7875,
+      -0.03,
+      0.015
+    ],
+    [
+      7905,
+      -0.01,
+      0
+    ],
+    [
+      7932,
+      -0.01,
+      0
+    ]
+  ],
+  "pelvisWorldYKeys": [
+    [
+      7804,
+      0.96
+    ],
+    [
+      7820,
+      0.91
+    ],
+    [
+      7830,
+      0.74
+    ],
+    [
+      7842,
+      0.57
+    ],
+    [
+      7845,
+      0.57
+    ],
+    [
+      7846,
+      0.6
+    ],
+    [
+      7850,
+      0.8
+    ],
+    [
+      7853,
+      0.93
+    ],
+    [
+      7854.3,
+      0.96
+    ],
+    [
+      7855.3,
+      1.01
+    ],
+    [
+      7858,
+      1.2
+    ],
+    [
+      7861,
+      1.23
+    ],
+    [
+      7864,
+      1.18
+    ],
+    [
+      7867,
+      1.05
+    ],
+    [
+      7870.5,
+      0.95
+    ],
+    [
+      7875,
+      0.7
+    ],
+    [
+      7880,
+      0.63
+    ],
+    [
+      7888,
+      0.75
+    ],
+    [
+      7905,
+      0.92
+    ],
+    [
+      7932,
+      0.96
+    ]
+  ],
+  "maximumReachShare": 0.995,
+  "minimumAirSoleClearance": 0.01,
+  "kneePlaneBlendKeys": [
+    [
+      7804,
+      0.65
+    ],
+    [
+      7842,
+      0.65
+    ],
+    [
+      7850,
+      0.45
+    ],
+    [
+      7855,
+      0.1
+    ],
+    [
+      7860,
+      0.1
+    ],
+    [
+      7865,
+      0.2
+    ],
+    [
+      7870.5,
+      0.55
+    ],
+    [
+      7880,
+      0.65
+    ],
+    [
+      7932,
+      0.75
+    ]
+  ],
+  "croppedForearms": {
+    "window": [
+      7850,
+      7854,
+      7858,
+      7863
+    ],
+    "strength": 0.45,
+    "Left": [
+      0.82,
+      -0.12,
+      -0.55
+    ],
+    "Right": [
+      0.82,
+      -0.12,
+      0.55
+    ],
+    "provenance": "Own high wrist extrema briefly clip/blur at snap. Only partial forearm depth is authored forward/down in this captured torso frame; shoulders/elbows and separate source arm phases remain source-led."
+  },
+  "recoveryWindow": [
+    7900,
+    7924
+  ],
+  "recoverySourceFrame": 7928,
+  "provenance": "Own Rodriguez striped-shirt landed Switch Hardflip, official matched-game row21871, Pq full-cache7804..7932. Own129-frame VIDEO detection,124 accepted plus2 missing and3 explicitly rejected complete-side reversals, reconstructed from own neighbours. PhysicalRegular Left front/instep and Right tail; zero anatomical reflection. No normalHardflip, shove or other trick body/motion/timed foot helper/client tuck borrowed. Original rig/deck/shoe/interpolation mathematics only. Raw remains false. Own7850..7860 snap elbow/hand balance is explicitly authored under the owner no-overhead-V/T rule; it is not measured wrist motion or another trick body.",
+  "uncertainty": "Monocular camera yaw/pan/depth, upper-shoe overlap and cropped/blurred wrist extrema. Complete model poses7830/7853/7854 reverse anatomical sides and are rejected;7882/7895 are missing. Own-neighbour interpolation, world root/free shoes, full3D board winding, fixed knees, contact/pressure times and wrist depth are authored reconstruction, not measured3D. Frame-pixel/ground scale and exact FS scoop corner remain uncertain. Source pixels/raw arrays stay private. The snap arm trajectories intentionally depart from high source/detector arms to give believable bent shoulder-height game balance; all body/feet/board/clocks and the accepted Air7860+ remain unchanged.",
+  "sourcePhaseLimit": "Original global cached frames, PTS1001*frame/timebase1/30000/start0, hardcuts7804/7933. First visible extension7846, strike7854.3, front sole release7852.75 then instep release7854.15, Right tail release7855.3, distinct later freeAir7857.5, catches7867.5/7868.5, floor landing7870.5, upright recovery7905..7932. Phase/contact values are authored source-led estimates.",
+  "snapArmBalance": {
+    "window": [
+      7850,
+      7852,
+      7857.5,
+      7860
+    ],
+    "Left": {
+      "upper": [
+        [
+          7852,
+          0.38,
+          -0.28,
+          -0.88
+        ],
+        [
+          7854.3,
+          0.34,
+          -0.19,
+          -0.92
+        ],
+        [
+          7855.3,
+          0.41,
+          -0.22,
+          -0.885
+        ],
+        [
+          7857.5,
+          0.48,
+          -0.28,
+          -0.83
+        ]
+      ],
+      "fore": [
+        [
+          7852,
+          0.84,
+          -0.42,
+          -0.34
+        ],
+        [
+          7854.3,
+          0.86,
+          -0.41,
+          -0.31
+        ],
+        [
+          7855.3,
+          0.88,
+          -0.39,
+          -0.26
+        ],
+        [
+          7857.5,
+          0.87,
+          -0.41,
+          -0.28
+        ]
+      ]
+    },
+    "Right": {
+      "upper": [
+        [
+          7852,
+          0.23,
+          -0.35,
+          0.91
+        ],
+        [
+          7854.3,
+          0.3,
+          -0.3,
+          0.905
+        ],
+        [
+          7855.3,
+          0.28,
+          -0.36,
+          0.89
+        ],
+        [
+          7857.5,
+          0.34,
+          -0.4,
+          0.85
+        ]
+      ],
+      "fore": [
+        [
+          7852,
+          0.84,
+          -0.28,
+          0.46
+        ],
+        [
+          7854.3,
+          0.91,
+          -0.23,
+          0.34
+        ],
+        [
+          7855.3,
+          0.87,
+          -0.32,
+          0.37
+        ],
+        [
+          7857.5,
+          0.84,
+          -0.42,
+          0.34
+        ]
+      ]
+    },
+    "provenance": "Owner global balance rule after the A5 re-gate: credible bent asymmetric balance at/below shoulders, even where the filmed/detected snap raises the arms. Own source-specific elbow/hand controls only, in horizontal anatomical facing/up/right axes, never travel axes. Fade7850..7852, own snap through7857.5, rejoin the original accepted Air at7860; all7860+ and all non-arm samples unchanged."
+  }
+}
