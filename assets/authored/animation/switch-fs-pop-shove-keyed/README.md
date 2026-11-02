@@ -39,6 +39,16 @@ the hidden rollout suffix are explicitly authored in torso anatomical axes,
 with a bent forward/outward balance arm (filmedRight becomes canonicalLeft). Generic board/shoe/rig math is reused
 read-only; all production guards remain intact.
 
+Claude's [A5 gate](https://github.com/Dj-Shortcut/rust-skate-mod/issues/716#issuecomment-6567110165)
+rejects the overhead V at Scoop and the sustained straight high arm at Catch/Land.
+The repair explicitly authors **both** elbow/hand targets as bent forward/outward
+balance at or below shoulder height. It blends in over source762–768, owns
+Scoop/Catch/Land through797 and rejoins the original rollout by808. This uses
+horizontal anatomical body axes, not the backward Switch travel vector.
+The own captured body, shoulders/head/torso/pelvis, feet/soles, board curves,
+contacts and all source/event times remain unchanged. This is an authored arm
+reconstruction, not new measured mocap or an independent offline approval.
+
 Bake using the repository's NumPy environment:
 
 ```sh
@@ -60,6 +70,13 @@ Four original-skin/full13-part-board exports,32 phase frames,1×/¼× playback,
 through ordinary4-second recovery, without browser errors. Source matching
 Goofy and its Regular mirror are explicitly labelled; source pixels never
 mirror. Private camera fits reflect viewing side only, never native heading.
+
+Those existing viewer/media checks describe the earlier rejected arm baseline.
+The balance-repair source pack is
+`4e0e2868db2aec3a037e1afcabcf8b3532d5be195c6e1cdf5c87c207ae55cde9`;
+its475 source samples differ only in the four elbow/hand joints. Exact-current-main
+four-case body replays and replacement original-rig media remain pending at
+this source handoff. The raw pack remains `reviewed=false`.
 
 The [render/runtime freeze](https://github.com/Dj-Shortcut/rust-skate-mod/commit/4f2b7c2be24c7a1e734d15daca1e751805bd2fe4)
 uses raw pack SHA-256
