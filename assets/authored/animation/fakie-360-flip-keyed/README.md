@@ -16,4 +16,38 @@ The baker shares only interpolation, fixed-chain, shoe/deck surface and rotation
 python3 scripts/author_skate_fakie_360_flip.py --output /tmp/skate-fakie-tre
 ```
 
-NumPy is required. Output JSON and `skate_captures.skmc` stay outside this immutable source folder. The CLI validates identity, body/geometry pins, distinct release/free-Air events and full monotonic roll/shove winding. Source/control bake passes; actual four input/body cases, original-skin/13-part-board views,1×/¼× normal/low Regular/Goofy playback, independent Claude review and Shadow gameplay remain pending. Source footage, model, detector arrays and private fixtures are not bundled or relicensed.
+NumPy is required. Output JSON and `skate_captures.skmc` stay outside this
+immutable source folder. The CLI validates identity, body/geometry pins,
+distinct release/free-Air events and full monotonic roll/shove winding.
+Source footage, model weights, detector arrays and private fixtures are not
+bundled or relicensed.
+
+Current runtime/replay/render freeze is
+`8504ed4f63328498c8a2824efe2247f713cd6304`. Four genuine Pad/full Step/Land/scorer
+and body cases pass under controlled managed bindings/ground: Fakie 360 Flip
+scores, 36/34 normal/low Air samples and ordinary Ground/capture off at 4 seconds.
+All four managed physics/scoring traces and all non-head frame fields are
+byte-identical to the privately sealed prior baseline. The ordinary charge
+helper alone fixes skyward gaze by easing a 25-degree boardward head frame,
+preserving independent look yaw, neck-to-head length and zero-charge continuity.
+Own captured body/feet/board/events are unchanged; this is not a skin/camera or
+export-only workaround. Complete production-SDK compilation passes at this pin.
+
+Four original-skin/13-part-board models and eight current phase/contact sheets
+are exported and visually inspected. Actual foot-bone audits set Goofy DIRECT/
+default and Regular mirror labels. A source-free head before/after retains the
+same rejected Load/Pop/entry moments. The bounded impact sequence has modest
+knee reserve and one timely absorption, then own upright recovery. Separate
+peer review passes all four current cases at 1×/¼× through 4 seconds, with
+36 decoded-source phase visits, 64 Source/Side/Feet detail visits and zero
+browser errors. The four actual loaded asset hashes match the current models.
+Observed head handoff, feet/contact/full winding, bent low arms and one landing
+absorption into upright rollout have no visible blocker in that bounded review.
+Claude's independent offline verdict and native Shadow gameplay remain separate
+open gates; raw remains false.
+
+Viewer: http://127.0.0.1:63761/a7-fakie-360-flip/
+
+Rig-only media: `docs/review-media/a7-fakie-360-flip/`. Raw stays
+`reviewed=false`, SHA-256
+`70d8c47d8722fec344a899849ed3d3cfada8d9ea3461f41b83939fa7b76348bf`.
