@@ -558,121 +558,133 @@
       "upperKeys": [
         [
           102.3,
-          -0.15,
-          -0.3,
-          0.94
+          0.12,
+          -0.48,
+          0.87
         ],
         [
-          104.0,
-          -0.15,
-          -0.08,
-          0.985
+          104,
+          0.18,
+          -0.5,
+          0.85
         ],
         [
           107.3,
-          -0.25,
-          0.05,
-          0.967
+          0.13,
+          -0.61,
+          0.78
         ],
         [
           108.9,
-          -0.25,
-          0.05,
-          0.967
+          0.13,
+          -0.61,
+          0.78
         ]
       ],
       "foreKeys": [
         [
           102.3,
-          0.4,
-          -0.4,
-          0.825
+          0.75,
+          0.1,
+          0.65
         ],
         [
-          104.0,
-          0.45,
-          -0.25,
-          0.86
+          104,
+          0.86,
+          0.15,
+          0.49
         ],
         [
           107.3,
-          0.5,
-          -0.3,
-          0.81
+          0.86,
+          0.16,
+          0.49
         ],
         [
           108.9,
-          0.5,
-          -0.3,
-          0.81
+          0.86,
+          0.16,
+          0.49
         ]
       ],
-      "provenance": "Own originalRight/canonicalLeft arm. Motion-blurred source104 visibly moves outward, while VIDEO wrongly holds wrist down near hip. Reconstruct a bent near-shoulder balance sweep, not a second overheadV; return exactly to own109+ Air."
+      "provenance": "Own originalRight/canonicalLeft arm. Motion-blurred source104 visibly moves outward while VIDEO lags by the hip. Explicit owner-rule authored elbow-down/forearm-return balance replaces a long lateral arm; same102.3\u2013108.9 window, original109+ samples retained for this arm."
     },
     {
       "side": "Right",
       "window": [
         102.3,
-        104.0,
-        107.3,
-        108.9
+        104,
+        110.8,
+        114.5
       ],
       "upperKeys": [
         [
           102.3,
-          0.1,
-          -0.2,
-          -0.975
+          0.14,
+          -0.5,
+          -0.85
         ],
         [
-          104.0,
-          0.1,
-          0.12,
-          -0.988
+          104,
+          0.14,
+          -0.5,
+          -0.85
         ],
         [
           107.3,
-          0.05,
-          0.42,
-          -0.906
+          0.22,
+          -0.46,
+          -0.86
         ],
         [
-          108.9,
-          0.05,
-          0.42,
-          -0.906
+          110.8,
+          0.3,
+          -0.58,
+          -0.76
+        ],
+        [
+          114.5,
+          0.3,
+          -0.58,
+          -0.76
         ]
       ],
       "foreKeys": [
         [
           102.3,
-          0.4,
-          -0.2,
-          -0.894
+          0.82,
+          0.33,
+          -0.47
         ],
         [
-          104.0,
-          0.4,
-          0.08,
-          -0.913
+          104,
+          0.82,
+          0.33,
+          -0.47
         ],
         [
           107.3,
-          0.35,
-          0.55,
-          -0.758
+          0.78,
+          0.28,
+          -0.55
         ],
         [
-          108.9,
-          0.35,
-          0.55,
-          -0.758
+          110.8,
+          0.8,
+          0.08,
+          -0.59
+        ],
+        [
+          114.5,
+          0.8,
+          0.08,
+          -0.59
         ]
       ],
-      "provenance": "Own originalLeft/canonicalRight visible rising diagonal: outward around104 then higher at107, believable bent elbow. Own raw world direction underestimates the blurred rise; explicit reconstruction only, exact original109+ Air/Catch/recovery retained."
+      "provenance": "Own originalLeft/canonicalRight source-real high diagonal is deliberately replaced under the owner no-overhead/V/T rule. Bounded bent asymmetric shoulder-level balance102.3\u2013114.5 also covers the original high/near-straight109\u2013112 return, then rejoins the own114.5+ Air/Catch/Land/recovery exactly. Only elbow/hand targets change; not measured motion."
     }
   ],
-  "provenance": "Own white-shirt/cap actor genuine BATB12 Fakie Hardflip. One final continuous requested293\u2013301s excerpt, own decoder20\u2013183: tail-leading setup, vertical flip/halfturn between opened legs, catch, flat landing and genuine upright rollaway. 164/164 own strict same-actor VIDEO selections; crossed-leg anatomical association106 manually rejected, yielding163 accepted own poses. OriginalRight nose/front instep and originalLeft tail => exactly one reflection plus all anatomical swaps into canonicalRegular. No other take body or normal Hardflip timings. Original generic rig/shaped-deck/shoe math only; pelvis/freefoot/board angles/depth/gaze are explicitly authored from this take. Recovery stabilization150\u2013175 uses own actual175 body, no fabricated source suffix. Short arm sweep102.3\u2013108.9 is explicitly authored from this take: detector lag put source104 wrists at hips and underplayed107; shoulder-level outward balance rises into the genuine one higher diagonal, then original109+ pose data resumes exactly.",
+  "provenance": "Own white-shirt/cap actor genuine BATB12 Fakie Hardflip. One final continuous requested293\u2013301s excerpt, own decoder20\u2013183: tail-leading setup, vertical flip/halfturn between opened legs, catch, flat landing and genuine upright rollaway. 164/164 own strict same-actor VIDEO selections; crossed-leg anatomical association106 manually rejected, yielding163 accepted own poses. OriginalRight nose/front instep and originalLeft tail => exactly one reflection plus all anatomical swaps into canonicalRegular. No other take body or normal Hardflip timings. Original generic rig/shaped-deck/shoe math only; pelvis/freefoot/board angles/depth/gaze are explicitly authored from this take. Recovery stabilization150\u2013175 uses own actual175 body, no fabricated source suffix. Own bounded arm balance is explicitly authored under the owner rule, rather than reproducing the genuine higher diagonal: originalRight/canonicalLeft keeps its102.3\u2013108.9 window, and originalLeft/canonicalRight uses102.3\u2013114.5 to return from the high/near-straight109\u2013112 source arm with bent shoulder-level asymmetry. All non-arm fields, original114.5+ Air/Catch/Land and recovery remain exact.",
   "uncertainty": "PhysicalGoofy Rightnose/Lefttail and tail-leading travel manually crosschecked on original102/110 chains and continuous source. Single moving fisheye camera cannot measure full board3D, hidden shoe upper contact, depth, exact tail strike or cap gaze. Source106 is rejected/interpolated from own105/107 despite detector selecting the actor. The source has no calibrated full-video frame origin/hash; exact local PTS990+1001*frame and final excerpt hash are authoritative. Initial296\u2013308 scout is a separate private clock and never stitched into this take.",
   "sourceRootMotion": "Own hip-relative body has no source carrier translation or jump; canonical initialnose+Z is independent from backwardFakie velocity. Exactly one Goofy anatomy reflection. Body remains unspun; source board has +360longitudinalroll/-180yaw once. Reference rise is removed only from own board pressure offset; actual native carrier remains authoritative and is applied once.",
   "phaseClockLimit": "Own authored visual estimates in final decoder clock: first-rise Pop100.5, Leftsole release105.6, full outer-upper contact106.4, tail strike106.8, Righttailsole release107.2, Leftinstep release108.2, distinct laterfreeAir109, firstLeftcatch117.2/both118.2, Land121.8, upright recovery150\u2013175. Actual native pop/landing/scoring remain authoritative. Source original pixels stay unmirrored and private."

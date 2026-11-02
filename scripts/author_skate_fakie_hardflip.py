@@ -130,8 +130,8 @@ def sample(c, s, sf):
         upper = unit(joints[side + 'Elbow'] - shoulder)
         fore = unit(joints[side + 'Hand'] - joints[side + 'Elbow'])
         # This take's fast arm sweep is blurred and lagged in the detector.
-        # Own source-specific directions reconstruct only this bounded rise;
-        # the accepted later Air/Catch/recovery return to the original samples.
+        # Own source-specific directions reconstruct bounded bent balance under
+        # the owner rule; each declared window returns to its own samples.
         upper_rows, fore_rows = balance['upperKeys'], balance['foreKeys']
         upper_target = curve([r[0] for r in upper_rows], [r[1:] for r in upper_rows], sf)
         fore_target = curve([r[0] for r in fore_rows], [r[1:] for r in fore_rows], sf)
