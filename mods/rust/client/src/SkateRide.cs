@@ -106,6 +106,12 @@ public static class SkateRide
     private static int groundedRampStep = -2;
     private static float groundedRampAt;
     private static Vector3 groundedRampUp;
+    private static GameObject groundedPipe, flightPipe;
+    private static int groundedPipeStep = -2, groundedPipeColliderId;
+    private static Vector3 groundedPipeAt, groundedPipeOrigin;
+    private static Quaternion groundedPipeRotation;
+    private static GameObject pipeEnergyOwner;
+    private static double pipeEnergyCeiling;
     public static readonly int GroundMask = ~((1 << 12) | (1 << 17) | (1 << 18) | (1 << 4) | (1 << 10) | (1 << 9) | (1 << 2));
 
     public static RideMode Mode = RideMode.Off;
@@ -384,6 +390,7 @@ public static class SkateRide
     public static void Mount(Rigidbody b, float yaw)
     {
         observedSupportValid = false;
+        groundedPipe = flightPipe = pipeEnergyOwner = null; groundedPipeStep = -2; groundedPipeColliderId = 0;
         airViewVertDeparture = false; groundedRampStep = -2;
         body = b; Yaw = yaw; flatgroundFlight = initialFlipFlick = false; flightGravity = AirGravity; ResetHeldFlipProfile();
         try
@@ -426,6 +433,7 @@ public static class SkateRide
 
     public static void Dismount(string reason)
     {
+        groundedPipe = flightPipe = pipeEnergyOwner = null; groundedPipeStep = -2; groundedPipeColliderId = 0;
         observedSupportValid = false;
         airViewVertDeparture = false; groundedRampStep = -2;
         SkateRig.ReleaseRootProxy();
@@ -438,6 +446,8 @@ public static class SkateRide
 
     private static void Enter(RideMode m)
     {
+        if (m != RideMode.Ground && m != RideMode.Air) pipeEnergyOwner = null;
+        if (m != RideMode.Air) flightPipe = null;
         if (m != RideMode.Ground) ResetKickturn();
         if (m != RideMode.Air) airViewVertDeparture = false;
         if (m != RideMode.Ground) groundedRampStep = -2;
@@ -490,6 +500,7 @@ public static class SkateRide
                 jumpWanted = Grounded && SkateKeys.GroundGrab == SkateGroundGrabKind.None && jumpInputEpoch == SkateKeys.InputEpoch &&
                     (SkateKeys.Scripted || SkateKeys.ControlsActive) ? now : -99f;
             GroundGrabTick(dt);
+            BoundPipeEnergy(pos);
             if (Mode == RideMode.Ground) GroundStep(dt);
             else if (Mode == RideMode.Air) AirStep(pos, dt);
             else if (Mode == RideMode.Grind) GrindStep(pos, dt);
@@ -512,7 +523,9 @@ public static class SkateRide
             }
             if (Mode == RideMode.Ground || Mode == RideMode.Air)
             {
+                var beforeWall = velocity;
                 velocity = WallAhead(pos, velocity, dt);
+                if (velocity != beforeWall) pipeEnergyOwner = null;
                 flat = Flat(velocity); pace = flat.magnitude;
             }
             float boundedX, boundedZ;
@@ -776,6 +789,11 @@ public static class SkateRide
         observedSupport = hit; observedSupportAt = pos; observedSupportStep = Steps; observedSupportValid = hit.m_Normal.y > .001f;
         if (Mode == RideMode.Ground && Grounded)
         {
+            if (!SkateParks.TryPipeRidingFace(hit, out groundedPipe)) groundedPipe = null;
+            groundedPipeStep = groundedPipe != null ? Steps : -2; groundedPipeAt = pos;
+            groundedPipeColliderId = groundedPipe != null ? hit.collider.GetInstanceID() : 0;
+            if (groundedPipe != null)
+            { groundedPipeOrigin = groundedPipe.transform.position; groundedPipeRotation = groundedPipe.transform.rotation; }
             // Only the immediately preceding, actually supported ramp face can
             // classify a natural lip departure when the next ray misses it.
             groundedRampStep = OnRamp && SkateParks.IsRamp(hit) && !SkateParks.IsCoping(hit) ? Steps : -2;
@@ -826,6 +844,18 @@ public static class SkateRide
         if (!SkateParks.Ray(pos + Vector3.up * CapsuleRadius, along, out hit, CapsuleRadius + FeetProbe + RampReach, GroundMask)) return false;
         // The coping on the lip is not the face: met by this ray, the face has ended there.
         if (!SkateParks.IsRamp(hit) || SkateParks.IsCoping(hit) || hit.m_Normal.y < -0.05f) return false;
+        if (Mode == RideMode.Ground && Normal.y <= SharedNormalLeast && Tangent.y * Speed > .5f &&
+            groundedPipe != null && groundedPipe.activeInHierarchy && groundedPipeStep >= 0 &&
+            groundedPipeStep <= Steps && Steps - groundedPipeStep <= 1 && hit.m_Normal.y > .9995f)
+        {
+            var root = groundedPipe.transform; var collider = hit.collider;
+            // This near-horizontal face probe can graze the deck above the lip. The down ray still decides deck support.
+            if (root.parent == null && root.position == groundedPipeOrigin && root.rotation == groundedPipeRotation &&
+                root.localScale == Vector3.one && collider != null && collider.GetInstanceID() == groundedPipeColliderId &&
+                collider.gameObject.name == "COLLISION__transition" && collider.transform.parent == root &&
+                collider.transform.localPosition == Vector3.zero && collider.transform.localScale == Vector3.one &&
+                collider.transform.localRotation == Quaternion.identity) return false;
+        }
         Clearance = hit.m_Distance - CapsuleRadius;
         Grounded = Clearance <= FeetProbe;
         OnRamp = true;
@@ -843,6 +873,34 @@ public static class SkateRide
         Speed += -AirGravity * tangent.y * dt;
         var horizontal = Flat(tangent).magnitude;
         SlopeDegrees = Speed == 0f ? 0f : (float)(Math.Atan2(tangent.y, horizontal) * 180.0 / Math.PI) * Math.Sign(Speed);
+    }
+
+    private static void BoundPipeEnergy(Vector3 pos)
+    {
+        var owner = Mode == RideMode.Air ? flightPipe : Mode == RideMode.Ground && groundedPipe != null &&
+            groundedPipeStep >= 0 && groundedPipeStep <= Steps && Steps - groundedPipeStep <= 1 &&
+            (Position - groundedPipeAt).sqrMagnitude <= 4f ? groundedPipe : null;
+        if (owner == null || !owner.activeInHierarchy || Jumped || SkateKeys.JumpPressed || SkateKeys.Push ||
+            SkateKeys.Brake || PushPhase > 0f || Powerslide > .01f ||
+            GroundGrab.Active || Handplant || Kickturning || Manual || NoseManual || RevertLeft != 0f ||
+            Math.Abs(SkateKeys.Steer) > .001f || SkateKeys.Left || SkateKeys.Right ||
+            SkateActions.Owns || SkateOldschoolRide.Active || SkateSurfaceRide.Active ||
+            SkateSurfaceRide.DisplayWall || Held || heldSteps > 0 || Math.Abs(HorizontalSpeed) >= Cap - .001f)
+        { pipeEnergyOwner = null; return; }
+        var root = owner.transform;
+        if (root.parent != null || root.localScale != Vector3.one || root.position != groundedPipeOrigin || root.rotation != groundedPipeRotation)
+        { pipeEnergyOwner = null; if (Mode == RideMode.Air) flightPipe = null; return; }
+        var squared = (double)Speed * Speed + (Mode == RideMode.Air ? (double)VSpeed * VSpeed : 0);
+        var energy = .5 * squared + AirGravity * (double)pos.y;
+        if (double.IsNaN(energy) || double.IsInfinity(energy)) { pipeEnergyOwner = null; return; }
+        if (pipeEnergyOwner != owner) { pipeEnergyOwner = owner; pipeEnergyCeiling = energy; return; }
+        // Cap discretization gain; hard or sideways landing losses lower this ceiling.
+        var noise = .002 + Math.Abs(pos.y) * AirGravity * .000001;
+        if (energy <= pipeEnergyCeiling + noise || squared <= .000001) return;
+        var allowed = Math.Max(0, 2 * (pipeEnergyCeiling - AirGravity * (double)pos.y));
+        var scale = (float)Math.Sqrt(Math.Min(1, allowed / squared));
+        Speed *= scale;
+        if (Mode == RideMode.Air) VSpeed *= scale;
     }
 
     private static void GroundGrabTick(float dt)
@@ -975,7 +1033,8 @@ public static class SkateRide
         else if (pushing) Speed = Math.Min(pushLimit, Speed + PushAccel * PushSteady * dt);
         if (Powerslide > 0.01f) Speed = Toward(Speed, 0f, (BrakeDecel * (1f - Powerslide) + PowerslideDecel * Powerslide) * dt);
         else if (SkateKeys.Brake) Speed = Toward(Speed, 0f, BrakeDecel * dt);
-        Speed = Toward(Speed, 0f, RollDecel * dt);
+        if (groundedPipe == null || groundedPipeStep != Steps || SkateKeys.Brake || Powerslide > .01f)
+            Speed = Toward(Speed, 0f, RollDecel * dt);
         // Rolling back down a transition keeps its pace both ways (#409): only friction, the brake,
         // a powerslide and the server's horizontal cap slow it, never which end leads.
         LimitSpeed(Cap, Cap);
@@ -1215,6 +1274,7 @@ public static class SkateRide
         if (!SkateRidePhysics.TryPump(Pump, input, dt, out r, out error)) { Physics_(error); return; }
         Pump = r.State;
         if (!r.Awarded) return;
+        pipeEnergyOwner = null;
         Speed += Math.Sign(Speed) * (float)r.SpeedGain; Pumps++;
         Out.Say("SKATE pump +" + r.SpeedGain.ToString("F1") + " m/s (" + r.EnergyGain.ToString("F1") + " J/kg) through the bottom at " + SlopeDegrees.ToString("F0") + " degrees");
     }
@@ -1334,6 +1394,9 @@ public static class SkateRide
 
     private static void TakeOff(bool jumped, float vertical, bool flatground = false, float? departureRise = null)
     {
+        flightPipe = Mode == RideMode.Ground && groundedPipe != null && groundedPipe.activeInHierarchy &&
+            groundedPipeStep >= 0 && groundedPipeStep <= Steps && Steps - groundedPipeStep <= 1 &&
+            (Position - groundedPipeAt).sqrMagnitude <= 4f ? groundedPipe : null;
         // Capture before resetting any action/wall owner. Speed was just set
         // from Flat(outgoing) by Launch, so it is the real horizontal departure.
         airViewVertDeparture = PreserveVertDeparture(departureRise ?? vertical);
@@ -1678,6 +1741,12 @@ public static class SkateRide
         if (!SkateActions.LandingReady || !SkateOldschoolRide.LandingReady || !SkateSurfaceRide.LandingReady) { Bail(); return; }
         landRoll = Vector3.zero; hasLandRoll = false;
         var normal = OnRamp ? BelowNormal : Grounded ? Normal : ContactNormal;
+        GameObject landingPipe = null;
+        var pipeReturn = !recovery && flightPipe != null && observedSupportValid && observedSupportStep == Steps &&
+            (Position - observedSupportAt).sqrMagnitude <= .00000001f &&
+            SkateParks.TryPipeRidingFace(observedSupport, out landingPipe) && landingPipe == flightPipe;
+        if (!pipeReturn) pipeEnergyOwner = null;
+        var naturalPipeReturn = pipeReturn && !Jumped && airViewVertDeparture && pipeEnergyOwner == landingPipe;
         if (recovery) incoming.y = 0f;
         // Back down onto a transition's face past the shared landing's 72 degrees (only ever a
         // ramp's, from Sense): the fall's part into the face is the impact, the rest rolls along it.
@@ -1718,8 +1787,16 @@ public static class SkateRide
             else { Physics_(error); Speed = Flat(incoming).magnitude * (Speed < 0f ? -1f : 1f); Bail(); return; }
             Tangent = SurfaceTangent(normal, Dir(Yaw)); Normal = normal;
             Speed = Vector3.Dot(roll, Tangent);
+            var along = Vector3.Dot(incoming, Tangent);
+            var lateral = incoming - normal * Vector3.Dot(incoming, normal) - Tangent * along;
+            var gentlePipeReturn = naturalPipeReturn && incoming.y < -.5f && impact <= 2f &&
+                Math.Abs(along) > 1f && Math.Abs(along) >= incoming.magnitude * .98f && lateral.sqrMagnitude <= .0625f;
+            // A near-tangent unpopped vert return keeps its incoming pace through the sampled curve/capsule join.
+            if (gentlePipeReturn) Speed = Math.Sign(along) * incoming.magnitude;
             LimitSpeed(Cap, Cap);
             landRoll = Tangent * Speed; hasLandRoll = true;
+            if (pipeReturn && pipeEnergyOwner == landingPipe && !gentlePipeReturn)
+                pipeEnergyCeiling -= .5 * Math.Max(0, (double)incoming.sqrMagnitude - landRoll.sqrMagnitude);
             SkateSurfaceRide.Landed();
         }
         flipLeft = shoveLeft = 0f; BoardPath = default(SkateBoardPathSample); spinning = false; TrickAir = Jumped = false; Grab = SkateGrabKind.None; AirTime = 0f;
