@@ -1,0 +1,49 @@
+# Switch FS Pop Shove-it: own BATB13 source
+
+This source reconstructs the black-shirt/black-cap Switch Frontside Shuvit
+attempt in [The Berrics video](https://www.youtube.com/watch?v=tL8Ey9GS0xQ&t=205),
+exact attempt-table row1091. The existing bounded38-second cache is used;
+no new video is downloaded. Source frames738–817 at30000/1001 fps cover setup,
+pop, grip-up board-only FS180, catch, landing and upright rollaway. The next
+actor cut827 is excluded. Bounded PTS is1001×frame at timebase1/30000; the
+original video's global frame/PTS is unknown. The requested-cut181s offset is
+an estimate for public seconds, not an original frame index.
+
+The execution is manually identified as Switch Regular from a Goofy-base
+rider: anatomical Left leads, Right pops the tail. Filmed and canonical stance
+are both Regular, so no stance reflection is applied. This is a manual role
+estimate, not calibrated truth. The board turns; the torso and foot headings
+do not turn180 with it. At catch, anatomical feet retain their world-side
+roles while deck-local nose/tail positions are reversed.
+
+`captured-body.json` contains this attempt's own80 foreground VIDEO selections,
+retargeted into the original fixed rig. No BS, normal FS, Halfcab or other
+trick's body motion is borrowed. The detector incorrectly reverses the whole
+anatomical shoulder/hip chain on774 alone; that model pose is explicitly
+rejected and reconstructed only from this take's neighbouring773/775 before
+smoothing. Original confidence limits and low-visibility frames are retained.
+Camera pan/depth is authored; no rotating-board de-yaw or travel-axis rotation
+is used. Source video/audio/pixels and raw model arrays remain private.
+
+`constraints.json` specifies authored tail-ball pressure, heel-side tail pocket,
+front-foot pickup without a flick, signed board yaw−180, grip-up pitch,
+free-foot clearance, reversed-end catch, fixed-chain knees, root height and
+recovery. Pop770, front sole release771.5, strike773.5, tail sole release775.5,
+and distinct later freeAir778 are separate markers. Catch782/784 and Land787
+retain both anatomical feet. Partly cropped rear-arm depth at the snap/Air and
+the hidden rollout suffix are explicitly authored in torso anatomical axes,
+with a bent forward/outward balance arm. Generic board/shoe/rig math is reused
+read-only; all production guards remain intact.
+
+Bake using the repository's NumPy environment:
+
+```sh
+python scripts/author_skate_switch_fs_pop_shove.py --output context/switch-fs-shove
+```
+
+The exact intended route is Ollie, Switch=true, TailLeads=false, flip0,
+shove+180, spin0 and body0. Source preparation is complete; actual native-input,
+managed route, original-skinned-mesh/viewer and Shadow checks are separate
+steps. Raw packs stay `reviewed=false`; no offline or in-game approval is
+claimed by this source commit. Claude owns library/offline status, and the
+owner tests the native Rust client later on Shadow.
