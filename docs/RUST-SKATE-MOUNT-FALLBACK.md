@@ -33,7 +33,7 @@ binding, game startup or release-pin change.
 
 The repaired overlay's full 81-source C# 7.3 compile passed against all 191
 corrected production game/Unity references from the 28 October client (Rust
-build 26140533, Unity 6000.3.15), retaining only the 165 existing framework,
+client, Unity 6000.3.15), retaining only the 165 existing framework,
 BepInEx and Interop dependencies. No older game/Unity references remain.
 A temporary controlled probe passed 20 helper/error paths, including partial
 ancestry failure followed by a real Joint, explicit skip, bounded diagnostics
