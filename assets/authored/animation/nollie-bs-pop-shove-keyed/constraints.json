@@ -97,15 +97,15 @@
     ],
     [
       482,
-      -35
+      -26
     ],
     [
       486,
-      -37
+      -20
     ],
     [
       489,
-      -18
+      -9
     ],
     [
       491,
@@ -693,7 +693,7 @@
       ]
     }
   ],
-  "provenance": "Own white-shirt/dark-trousers/pink-edge-board Nollie BS Pop Shove-it, CSV1088, official The Berrics BATB13 tL8Ey9GS0xQ. Actual strict104/104 selected VIDEO source, no gaps. Librarytrim460\u2013525 retains the own complete nose-pop/board-only180/catch/landing and filmed upright recovery. Small body windup and monocular camera/depth, fixed-chain feet, nose support, board yaw/pitch/contacts and pelvis are explicitly reconstructed. No Halfcab/flip body or coupledbody180; no instep flick. LeftWrist474\u2013489 and RightWrist504\u2013529 have unreliable model depth: bent balance/settled recovery arms reconstructed from these source pixels. Original griptape/sole/whole13part support geometry is unchanged. Native input/scoring/landing remains authority; raw pack stays false. Bounded476\u2013500 own-source balance-arm depth correction: bent elbows instead of T-like reaches, hands settle by catch. Original settled recovery resumes exactly at500; no torso/feet/board/timing change.",
+  "provenance": "Own white-shirt/dark-trousers/pink-edge-board Nollie BS Pop Shove-it, CSV1088, official The Berrics BATB13 tL8Ey9GS0xQ. Actual strict104/104 selected VIDEO source, no gaps. Librarytrim460\u2013525 retains the own complete nose-pop/board-only180/catch/landing and filmed upright recovery. Small body windup and monocular camera/depth, fixed-chain feet, nose support, board yaw/pitch/contacts and pelvis are explicitly reconstructed. No Halfcab/flip body or coupledbody180; no instep flick. LeftWrist474\u2013489 and RightWrist504\u2013529 have unreliable model depth: bent balance/settled recovery arms reconstructed from these source pixels. Original griptape/sole/whole13part support geometry is unchanged. Native input/scoring/landing remains authority; raw pack stays false. Bounded476\u2013500 own-source balance-arm depth correction: bent elbows instead of T-like reaches, hands settle by catch. Original settled recovery resumes exactly at500; no torso/feet/board/timing change. Authored mid-turn levelling refinement requested in #706: retain the nose-pressure stroke through release480, then taper pitch monotonically toward level by catch491 (482:-26,486:-20,489:-9). This is a visible-fit control choice, not a new camera or measured source angle. Yaw, contact/event clocks, native flight and own body controls stay unchanged.",
   "uncertainty": [
     "Filmed/base Regular stance and Left nose-foot role are manual cross-checked in same-actor Nollie/Switch/opposite-FS witnesses; no complete plain-normal baseline exists in this excerpt.",
     "Absolute camera/depth/board yaw and precise sole contact/release are authored visual estimates, not calibrated motion or confidence.",
