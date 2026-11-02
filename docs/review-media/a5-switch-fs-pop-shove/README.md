@@ -60,3 +60,5 @@ managed checks; Claude owns the independent offline verdict and library
 status. Native Rust/Shadow, multiplayer and installed-package acceptance are
 separate and unverified here. Source video/audio/pixels and raw model arrays
 remain private; committed images show only the original rig.
+
+After main gained Nollie FS (#722), integration `2676f9c8` retained its index36 and appended Switch FS at37. All four complete body files and four native traces are byte-identical to the rendered `4f2b7c2b` freeze, including metadata. The original GLBs/replays stay explicitly pinned to4f2; no new render or broader runtime claim is made. The complete81-source client compile passes against356 cached references.

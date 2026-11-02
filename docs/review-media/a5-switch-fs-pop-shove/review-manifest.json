@@ -261,5 +261,14 @@
       "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
       "boardParts": 13
     }
-  ]
+  ],
+  "postMainUnion": {
+    "revision": "2676f9c8c21925738cfce1f3938dd85a7c321546",
+    "scope": "Preserves main Nollie FS index36 and appends Switch FS index37; original rendered runtime4f2 is unchanged evidence.",
+    "completeBodyFilesByteIdentical": 4,
+    "completeNativeTraceFilesByteIdentical": 4,
+    "privateReceiptSha256": "787e2af03f24387fc787c167204d808c74793415252d5f8486ddc7f2b61a4186",
+    "rawReviewed": false,
+    "nativeGame": false
+  }
 }
