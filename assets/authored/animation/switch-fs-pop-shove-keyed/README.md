@@ -46,8 +46,25 @@ python scripts/author_skate_switch_fs_pop_shove.py --output context/switch-fs-sh
 ```
 
 The exact intended route is Ollie, Switch=true, TailLeads=false, flip0,
-shove+180, spin0 and body0. Source preparation is complete; actual native-input,
-managed route, original-skinned-mesh/viewer and Shadow checks are separate
-steps. Raw packs stay `reviewed=false`; no offline or in-game approval is
-claimed by this source commit. Claude owns library/offline status, and the
-owner tests the native Rust client later on Shadow.
+shove+180, spin0 and body0. The new clip alone uses a0.125flight presentation
+root entry so its first rise is visible before the tail strike; source feet,
+pelvis/board curves, physics/scoring and all existing guards remain intact.
+
+[Viewer](http://127.0.0.1:63761/a5-switch-fs-pop-shove/) ·
+[Original-rig phase/contact sheets](../../../../docs/review-media/a5-switch-fs-pop-shove/README.md).
+Four actual Pad/production Step/Land/scorer cases select Switch Frontside
+Pop Shove-it, normal/low and both requested bindings. All36normal/34low Air
+samples per stance retain the capture; native traces remain byte-identical.
+Four original-skin/full13-part-board exports,32 phase frames,1×/¼× playback,
+28 decoded-source seeks and24source774/side/foot details were self-checked
+through ordinary4-second recovery, without browser errors. Source matching
+Goofy and its Regular mirror are explicitly labelled; source pixels never
+mirror. Private camera fits reflect viewing side only, never native heading.
+
+The [render/runtime freeze](https://github.com/Dj-Shortcut/rust-skate-mod/commit/4f2b7c2be24c7a1e734d15daca1e751805bd2fe4)
+uses raw pack SHA-256
+`3803675fdaf0fc0752e9cd01903838efc62c83099bf705c6b32c55283e3c1b4f`.
+Raw packs stay `reviewed=false`. These are managed/graphical author checks,
+not native Rust/Shadow or installed-package approval. Claude owns the
+independent offline verdict and library status; the owner tests the native
+client later on Shadow.

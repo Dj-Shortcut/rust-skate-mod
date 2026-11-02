@@ -1,0 +1,265 @@
+{
+  "format": "switch-fs-pop-shove-own-rig-review/1",
+  "sourceReviewed": false,
+  "nativeGame": false,
+  "sourceCodeRevision": "4f2b7c2be24c7a1e734d15daca1e751805bd2fe4",
+  "sourcePackSha256": "3803675fdaf0fc0752e9cd01903838efc62c83099bf705c6b32c55283e3c1b4f",
+  "sourceBodyControlSha256": "b0b0fff054e1ee70ff35f37b7f5935091efda841573fd80bbc20a57e97c656a4",
+  "source": "Own BATB13 black actor1091, bounded738..817; filmedSwitchGoofy Rightnose/Lefttail, normalbase uncertain; one initial-nose/anatomical reflection. Original source pixels private and unchanged.",
+  "viewer": "http://127.0.0.1:63761/a5-switch-fs-pop-shove/",
+  "replay": {
+    "physicalCases": 4,
+    "rates": [
+      1,
+      0.25
+    ],
+    "ordinaryEndSeconds": 4,
+    "decodedPhaseSeeks": 28,
+    "browserErrors": 0,
+    "contactCaptures": 24
+  },
+  "phaseSheets": [
+    {
+      "file": "switch-fs-pop-shove-low-physical-regular.jpg",
+      "physicalStance": "regular",
+      "nativeStance": "goofy",
+      "profile": "low",
+      "sha256": "ccfb9ea9108567b12d5bc2e5bbf7aff8eebea89748bdb317d5ac90df0bd27638",
+      "glbSha256": "f5966d52790e56a35d26536c4c6f145ae40b65402970104e07cd02497fe6cc77",
+      "inputSha256": "eab1669027b112b544ea753755c3f114198724f4a002c4ceaec98cded5d3fdfa",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 1,
+        "Scoop": 1.0833333333333333,
+        "Repair774": 1.0166666666666666,
+        "Air": 1.2,
+        "Catch": 1.3166666666666667,
+        "Land": 1.4166666666666667,
+        "Rollaway": 2.0833333333333335,
+        "End": 4.0
+      }
+    },
+    {
+      "file": "switch-fs-pop-shove-normal-physical-regular.jpg",
+      "physicalStance": "regular",
+      "nativeStance": "goofy",
+      "profile": "normal",
+      "sha256": "cf5166278934fcd9103c711fc3e2a271d08c3e52aa14d671f256bd5e000c9562",
+      "glbSha256": "0621ac122a76d80ca85afe8ba61a646649b4ce9467573278a0b3f24881b9a2e9",
+      "inputSha256": "041e9ab6853a376872f29a4723d20a211365bbca4f0fe56f61b04f3510544d99",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 1.0166666666666666,
+        "Scoop": 1.1,
+        "Repair774": 1.0333333333333334,
+        "Air": 1.2166666666666666,
+        "Catch": 1.35,
+        "Land": 1.45,
+        "Rollaway": 2.183333333333333,
+        "End": 4.0
+      }
+    },
+    {
+      "file": "switch-fs-pop-shove-low-physical-goofy.jpg",
+      "physicalStance": "goofy",
+      "nativeStance": "regular",
+      "profile": "low",
+      "sha256": "b91af3979591e76d4c03729151e4d3fcb6e949f717e01c81fa30be2faa76a117",
+      "glbSha256": "825dce8727f537004d72443939813313967447d70adb8cc338821e09ba2e18bf",
+      "inputSha256": "cfc1208c007481c414e021d5f94608d18d85e9d798c895f755d16c2acf8c105c",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 1,
+        "Scoop": 1.0833333333333333,
+        "Repair774": 1.0166666666666666,
+        "Air": 1.2,
+        "Catch": 1.3166666666666667,
+        "Land": 1.4166666666666667,
+        "Rollaway": 2.0833333333333335,
+        "End": 4.0
+      }
+    },
+    {
+      "file": "switch-fs-pop-shove-normal-physical-goofy.jpg",
+      "physicalStance": "goofy",
+      "nativeStance": "regular",
+      "profile": "normal",
+      "sha256": "8afc49836202c57d3775efba1a019f12868a3a625bb087de6451a0b988028675",
+      "glbSha256": "0e64782c664f53b82ef2897a3f325def461f0adcc92245a2b6ed01a18dc33df7",
+      "inputSha256": "8a1d31fc69082c372059d9b6dfaca05ef11b2f5ac7eb24da7a8a41830cad877e",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 1.0166666666666666,
+        "Scoop": 1.1,
+        "Repair774": 1.0333333333333334,
+        "Air": 1.2166666666666666,
+        "Catch": 1.35,
+        "Land": 1.45,
+        "Rollaway": 2.183333333333333,
+        "End": 4.0
+      }
+    }
+  ],
+  "contactSheets": [
+    {
+      "file": "switch-fs-pop-shove-normal-physical-regular-contacts.jpg",
+      "profile": "normal",
+      "physicalStance": "regular",
+      "sha256": "6c482c1be59a5c37488c5f1ff3d53fed3e5c20e80ed7910d6ecb2b1223293ffd"
+    },
+    {
+      "file": "switch-fs-pop-shove-normal-physical-goofy-contacts.jpg",
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "sha256": "4025e35bba6f18f84005dc5f7e048d608174a0de473706933fef184f56ba6007"
+    },
+    {
+      "file": "switch-fs-pop-shove-low-physical-regular-contacts.jpg",
+      "profile": "low",
+      "physicalStance": "regular",
+      "sha256": "e1659f9815c77e5bc632d220d90770725ffc3fbbd4d49b3e80fa85eb8385ee93"
+    },
+    {
+      "file": "switch-fs-pop-shove-low-physical-goofy-contacts.jpg",
+      "profile": "low",
+      "physicalStance": "goofy",
+      "sha256": "8a2dc9ffe33667cdca8a910b1d778f0af4ee02497046d8d4a3b645db30562a6c"
+    }
+  ],
+  "limits": "Own reconstruction and managed actual Pad/Step/Land/scorer fixture, not native Rust/Shadow. Root and Claude retain visual/offline gates. No approval promotion.",
+  "signature": {
+    "pop": "Ollie",
+    "switch": true,
+    "tailLeads": false,
+    "flip": 0,
+    "shove": 180,
+    "spin": 0,
+    "body": 0
+  },
+  "sourceContext": {
+    "videoUrl": "https://www.youtube.com/watch?v=tL8Ey9GS0xQ&t=205",
+    "videoSha256": "220a8f31da226010bb44afa81882f684744ab2071458279eb937cf68b95fee48",
+    "bodyControlSha256": "b0b0fff054e1ee70ff35f37b7f5935091efda841573fd80bbc20a57e97c656a4",
+    "frames": [
+      738,
+      817
+    ],
+    "nextActorCut": 827,
+    "fps": "30000/1001",
+    "pts": "1001*localFrame",
+    "timeBase": "1/30000",
+    "firstPts": 0,
+    "originalGlobalFramesKnown": false,
+    "filmedExecution": "Goofy Rightnose/Lefttail; baseRegular only inferred from Switch label",
+    "canonicalRegularReflectionCount": 1,
+    "rejectedOwnModelFrames": [
+      774
+    ],
+    "reconstruction": "Own773/775 only; no other take/body borrowed",
+    "sourcePixelMirror": false
+  },
+  "firstRiseEntry": {
+    "sourcePop": 768,
+    "sourceStrike": 773.5,
+    "entryFraction": 0.125,
+    "entryScope": "Only this newly added Switch FS exact clip; older reviewed clips unchanged",
+    "pelvisFeetBoardCurvesUnchanged": true,
+    "nativeTracesByteIdentical": true
+  },
+  "camera": {
+    "sourceMatchingGoofy": [
+      0.966,
+      0.06,
+      0.259
+    ],
+    "regularMirrorView": [
+      -0.966,
+      0.06,
+      0.259
+    ],
+    "radius": 4.5,
+    "scope": "Private fixed source-facing estimates; mirrored viewing side for opposite execution; no native heading, pose, gameplay camera or source pixels changed"
+  },
+  "selfReview": "Author viewed all four original-mesh phase/source sequences, normal/quarter playback, source774 and side/foot details. Claude retains independent offline judgement; no raw/native promotion.",
+  "checks": {
+    "actualNativeSourceCases": 4,
+    "normalCaptureSamples": [
+      36,
+      36
+    ],
+    "lowCaptureSamples": [
+      34,
+      34
+    ],
+    "bodySeconds": 4,
+    "originalGLBs": 4,
+    "phaseFrames": 32,
+    "decodedPhaseSeeks": 28,
+    "detailCaptures": 24,
+    "captionChecks": 2,
+    "browserErrors": 0,
+    "strictGuardsUnchanged": true
+  },
+  "beforeAfter": [
+    {
+      "file": "entry-before-after-goofy.jpg",
+      "sha256": "e2c0a4d04b5acf44eac44a0e4e41ab7f4b870faae0bece4c01630af26ac5746a",
+      "physicalStance": "goofy",
+      "profile": "normal",
+      "baselineRaw": "6c2069768cfaf735a292a45e62cb3505093d2dde7ca149378155e72794a0f6c9",
+      "baselineRuntime": "f575295d0f5f5ff87e9fda7bce78d596be919f37",
+      "sameCameraAndRig": true,
+      "sourceAndNativeTimesLabelled": true,
+      "rigOnly": true
+    },
+    {
+      "file": "entry-before-after-regular.jpg",
+      "sha256": "c5ce0506b5347652e431e151d0f6b894af989cff0fce3d663fb8440ae0450167",
+      "physicalStance": "regular",
+      "profile": "normal",
+      "baselineRaw": "6c2069768cfaf735a292a45e62cb3505093d2dde7ca149378155e72794a0f6c9",
+      "baselineRuntime": "f575295d0f5f5ff87e9fda7bce78d596be919f37",
+      "sameCameraAndRig": true,
+      "sourceAndNativeTimesLabelled": true,
+      "rigOnly": true
+    }
+  ],
+  "models": [
+    {
+      "profile": "low",
+      "requestedStance": "goofy",
+      "physicalStance": "regular",
+      "glbSha256": "f5966d52790e56a35d26536c4c6f145ae40b65402970104e07cd02497fe6cc77",
+      "inputSha256": "eab1669027b112b544ea753755c3f114198724f4a002c4ceaec98cded5d3fdfa",
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+      "boardParts": 13
+    },
+    {
+      "profile": "normal",
+      "requestedStance": "goofy",
+      "physicalStance": "regular",
+      "glbSha256": "0621ac122a76d80ca85afe8ba61a646649b4ce9467573278a0b3f24881b9a2e9",
+      "inputSha256": "041e9ab6853a376872f29a4723d20a211365bbca4f0fe56f61b04f3510544d99",
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+      "boardParts": 13
+    },
+    {
+      "profile": "low",
+      "requestedStance": "regular",
+      "physicalStance": "goofy",
+      "glbSha256": "825dce8727f537004d72443939813313967447d70adb8cc338821e09ba2e18bf",
+      "inputSha256": "cfc1208c007481c414e021d5f94608d18d85e9d798c895f755d16c2acf8c105c",
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+      "boardParts": 13
+    },
+    {
+      "profile": "normal",
+      "requestedStance": "regular",
+      "physicalStance": "goofy",
+      "glbSha256": "0e64782c664f53b82ef2897a3f325def461f0adcc92245a2b6ed01a18dc33df7",
+      "inputSha256": "8a1d31fc69082c372059d9b6dfaca05ef11b2f5ac7eb24da7a8a41830cad877e",
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+      "boardParts": 13
+    }
+  ]
+}
