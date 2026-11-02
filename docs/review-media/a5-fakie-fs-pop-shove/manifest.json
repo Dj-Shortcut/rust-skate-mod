@@ -395,5 +395,15 @@
       "file": "normal-regular-rise-before-after.jpg",
       "sha256": "e866cdf87268140a25f3c0faf82f8cab2e4625562d64b9265f44760fc0b1ea75"
     }
-  ]
+  ],
+  "postMainUnion": {
+    "revision": "6c24fba279d333fb1f8725590940d32fee60116c",
+    "mainBase": "bf5d23014ccaeb8e3e127e6aca929f77c0e48ffa",
+    "previousIndicesRetained": "0\u201337",
+    "newVariantIndex": 38,
+    "fullCurrentSourceCompile": "81 source units, C#7.3, 356 verified cached references; separate from corrected production/native validation",
+    "allFourCompleteBodyJsonAndAllFourCompleteNativeTraceBytesIdenticalIncludingMetadata": true,
+    "privateReceiptSha256": "1be3d561f18ca47184e5e9a71fef2be2b2c1fd66ff028c4d6351bc7b0b8f9324",
+    "mediaStillFrozenAt": "6b0426af293c502ec4e0badbdfe6f7097fb1df42"
+  }
 }

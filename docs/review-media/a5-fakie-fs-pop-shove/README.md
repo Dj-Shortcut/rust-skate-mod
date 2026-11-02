@@ -25,3 +25,5 @@ Raw source remains `reviewed=false`. Claude owns the library/offline verdict. Na
 | Low / Goofy | [phases](low-goofy-phases.jpg) | [contacts](low-goofy-contacts.jpg) | — |
 
 The adjacent manifest pins the actual source/runtime freeze, raw pack, original skin, four input/GLB hashes, physical-stance audits, source clocks, declared authored suffix and10 image hashes. Generated models/packs and the genuine-source comparison stay private; the own source controls and baker provide regeneration.
+
+After composing main `bf5d230` (Nollie36 and Switch37 retained), union `6c24fba` appends Fakie38. All81 current source units compile against356 verified cached references. The same four actual native/body cases pass again: all four complete body files and all four complete native traces, including metadata, are byte-identical to the rendered `6b0426` freeze. No rerender was needed; original GLBs/viewer/media remain explicitly pinned to that freeze. The adjacent manifest records the private identity-receipt hash. This is separate from corrected production SDK and native Shadow validation.
