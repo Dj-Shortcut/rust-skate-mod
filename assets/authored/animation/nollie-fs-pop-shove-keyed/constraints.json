@@ -11,7 +11,7 @@
     "spin": 0,
     "body": 0
   },
-  "sourceBodySha256": "16a9deaab25c20bd5c737a789e448e81e87e75886da032f7ba4f50a17fa075c6",
+  "sourceBodySha256": "c4c9215c53060138fd14a63ceb971ea104849316231234408a17053295d4ee3b",
   "sourceFps": 29.97002997002997,
   "firstSourceFrame": 30,
   "lastSourceFrame": 98,
@@ -377,46 +377,6 @@
       "weights": [
         [
           30,
-          0
-        ],
-        [
-          98,
-          0
-        ]
-      ],
-      "upper": [
-        [
-          30,
-          0.2,
-          -0.8,
-          0.3
-        ],
-        [
-          98,
-          0.2,
-          -0.8,
-          0.3
-        ]
-      ],
-      "fore": [
-        [
-          30,
-          0.6,
-          -0.5,
-          0
-        ],
-        [
-          98,
-          0.6,
-          -0.5,
-          0
-        ]
-      ]
-    },
-    "Right": {
-      "weights": [
-        [
-          30,
           1
         ],
         [
@@ -429,55 +389,55 @@
           30,
           0.15,
           -0.8,
-          -0.35
+          0.35
         ],
         [
           49,
           0.25,
           -0.65,
-          -0.65
+          0.65
         ],
         [
           56,
           0.1,
           0.65,
-          -0.45
+          0.45
         ],
         [
           61,
           0.1,
           0.5,
-          -0.65
+          0.65
         ],
         [
           64,
           0.15,
           0.05,
-          -0.7
+          0.7
         ],
         [
           68,
           -0.05,
           -0.55,
-          -0.7
+          0.7
         ],
         [
           73,
           -0.1,
           -0.65,
-          -0.55
+          0.55
         ],
         [
           90,
           0.1,
           -0.95,
-          -0.1
+          0.1
         ],
         [
           98,
           0.1,
           -0.98,
-          -0.05
+          0.05
         ]
       ],
       "fore": [
@@ -491,25 +451,25 @@
           49,
           0.6,
           -0.5,
-          -0.1
+          0.1
         ],
         [
           56,
           0.5,
           0.45,
-          0.2
+          -0.2
         ],
         [
           61,
           0.55,
           0.35,
-          0.2
+          -0.2
         ],
         [
           64,
           0.8,
           0.15,
-          0.05
+          -0.05
         ],
         [
           68,
@@ -521,7 +481,7 @@
           73,
           0.35,
           -0.75,
-          -0.1
+          0.1
         ],
         [
           90,
@@ -533,6 +493,46 @@
           98,
           0.1,
           -0.99,
+          0
+        ]
+      ]
+    },
+    "Right": {
+      "weights": [
+        [
+          30,
+          0
+        ],
+        [
+          98,
+          0
+        ]
+      ],
+      "upper": [
+        [
+          30,
+          0.2,
+          -0.8,
+          0.3
+        ],
+        [
+          98,
+          0.2,
+          -0.8,
+          0.3
+        ]
+      ],
+      "fore": [
+        [
+          30,
+          0.6,
+          -0.5,
+          0
+        ],
+        [
+          98,
+          0.6,
+          -0.5,
           0
         ]
       ]
@@ -604,9 +604,9 @@
       ]
     }
   ],
-  "provenance": "Own black-shirt/cap Nollie FS Pop Shove-it, BATB13 tL8Ey9GS0xQ CSV1084. Strict own82/84 VIDEO raw20..103; gaps68/69 remain raw failures and are explicitly reconstructed from67/70. Animation30..98 excludes cropped approachhead. Manual Goofy/right-nose source is anatomically reflected once into canonicalRegular/Leftnose, all joints/directions consistently. No A4/othertrick body read. Generic fixed-chain geometry/math only. Own nose-pressure/scoop, board-only\u2212180/no flip/bodyturn, monotonic post-release pitch, free shoes, reverse-deck catch toes and bent landing/ordinary recovery are authored from this take. CanonicalRight wrist corresponds to unreliable rawLeft wrist and is reconstructed with bent depth/real raised prepop balance from source pixels. The other arm uses own detector directions. Native input/scoring/landing remain authoritative; rawfalse.",
+  "provenance": "Own black-shirt/cap Nollie FS Pop Shove-it, BATB13 tL8Ey9GS0xQ CSV1084. Strict own82/84 VIDEO raw20..103; gaps68/69 remain raw failures and are explicitly reconstructed from67/70. Animation30..98 excludes cropped approachhead. Initial Goofy/right-nose guess superseded by own source30/54/75/90 legchains plus tattooedRight arm74: actualLeft leads/nose, Regular, so NO anatomy reflection. No A4/othertrick body read. Generic fixed-chain geometry/math only. Own nose-pressure/scoop, board-only\u2212180/no flip/bodyturn, monotonic post-release pitch, free shoes, reverse-deck catch toes and bent landing/ordinary recovery are authored from this take. CanonicalLeft wrist corresponds to unreliable rawLeft wrist and is reconstructed with bent depth/real raised prepop balance from source pixels. The other arm uses own detector directions. Native input/scoring/landing remain authoritative; rawfalse.",
   "uncertainty": [
-    "Manual Goofy base and Right/nose role checked against same actor A4 Fakie witnesses; not calibrated3D stance.",
+    "Manual Regular/Left-nose supported by own stable30/54/75/90 leading leg chains and tattooedRight arm74; source56\u201361 overlap remains uncertain. Initial Goofy hypothesis rejected, no reflection. Raw VIDEO evidence remains intact.",
     "World depth/camera/board pitch-yaw, foot support/release, pelvis and far-wrist depth are authored visual estimates. Source hand rises around56..61; it is not a fabricated straight overheadV.",
     "Strict actor selection rejects68/69; reconstructed control rows are labelled, raw detector failures preserved. Raw20..29 head/cap crop is outside animation trim.",
     "No full-video/global frame indices: bounded source PTS1001*frame at timebase1/30000; public181s offset is approximate.",
