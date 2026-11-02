@@ -1612,6 +1612,49 @@ public static class SkateParks
         if (CopingIds.Count == 0) return false;
         try { var c = hit.collider; return c != null && CopingIds.Contains(c.GetInstanceID()); } catch (Exception) { return false; }
     }
+    private static readonly List<Vector2> halfpipeRideProfile = TransitionProfile(Kind.Halfpipe);
+    public static bool TryPipeRidingFace(RaycastHit hit, out GameObject owner)
+    {
+        owner = null;
+        try
+        {
+            var collider = hit.collider;
+            if (collider == null) return false;
+            var id = collider.GetInstanceID();
+            if (!RampIds.Contains(id) || CopingIds.Contains(id) || collider.gameObject.name != "COLLISION__transition") return false;
+            foreach (var p in placed)
+            {
+                if ((p.Kind != Kind.Halfpipe && p.Kind != Kind.MegaHalfpipe) || !p.Ramp.Contains(id) ||
+                    p.Root == null || !p.Root.activeInHierarchy) continue;
+                var root = p.Root.transform; var face = collider.transform;
+                if (root.parent != null || root.position != p.Origin || root.localScale != Vector3.one ||
+                    root.rotation != Quaternion.Euler(0f, p.Yaw, 0f) || face.parent != root ||
+                    face.localPosition != Vector3.zero || face.localScale != Vector3.one || face.localRotation != Quaternion.identity) return false;
+                var sin = (float)Math.Sin(p.Yaw * Degrees); var cos = (float)Math.Cos(p.Yaw * Degrees);
+                var point = hit.m_Point - p.Origin; var normal = hit.m_Normal;
+                point = new Vector3(point.x * cos - point.z * sin, point.y, point.x * sin + point.z * cos);
+                normal = new Vector3(normal.x * cos - normal.z * sin, normal.y, normal.x * sin + normal.z * cos);
+                var profile = p.Kind == Kind.MegaHalfpipe ? megaLipProfile : halfpipeRideProfile;
+                var halfWidth = p.Kind == Kind.MegaHalfpipe ? 6f : (float)(2 * HalfLength);
+                // The same collider includes both decks; only its interior riding face owns a pass.
+                if (!(Math.Abs(point.x) < halfWidth - .001f && point.z >= profile[1].x - .001f &&
+                      point.z <= profile[profile.Count - 2].x + .001f && normal.y > 0f &&
+                      Math.Abs(normal.sqrMagnitude - 1f) < .01f)) return false;
+                for (var i = 1; i < profile.Count - 2; i++)
+                {
+                    var a = profile[i]; var b = profile[i + 1]; var run = b.x - a.x;
+                    if (!(run > 0f && point.z >= a.x - .001f && point.z <= b.x + .001f)) continue;
+                    var expected = new Vector3(0f, run, a.y - b.y).normalized;
+                    var height = a.y + (b.y - a.y) * (point.z - a.x) / run;
+                    if (Math.Abs(point.y - height) > .02f || Vector3.Dot(normal, expected) < .995f) continue;
+                    owner = p.Root; return true;
+                }
+                return false;
+            }
+        }
+        catch (Exception) { }
+        return false;
+    }
     private static readonly List<Vector2> megaLipProfile = MegaProfile();
     // Only the two internal curve/deck creases of our generated, open MEGA surface. A sphere's
     // edge normal can agree with the curve while the ray to that same point selects the deck.
