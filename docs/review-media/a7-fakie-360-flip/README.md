@@ -1,52 +1,49 @@
-# Fakie 360 Flip: original-rig review candidate
+# Fakie360Flip: catch and landing repair
 
-Viewer: http://127.0.0.1:63761/a7-fakie-360-flip/
+Viewer: http://127.0.0.1:63761/a7-fakie-360-flip-catch-repair/
 
-Eight rig-only phase/contact sheets cover normal/low × physical Goofy/Regular.
-The filmed source is Rodriguez's genuine landed Fakie Tre, PqJZcwTY1QE frames
-9780–9875: physical Goofy, Right front/nose instep and Left tail scoop. One
-source reflection and anatomical side swap create canonical Regular controls.
-Goofy is DIRECT/default; Regular is a labelled mirror. Reference pixels stay
-private and unmirrored. Labels follow actual animated foot-bone audits.
+Current source/render freeze:
+`b57bec1d2ba59d1c5d57deafc4b655259b04fc90`.
+Raw pack remains `reviewed=false`:
+`c964912fef8af2ee38f037d41c33ab2292ccb7525cc830d29c4548313e00da5f`.
 
-First rise is 9816, tail scoop 9821, tail release 9822 and later free Air 9824.5.
-The full kickflip/backside 360 board shove has no body turn and returns to a
-same-ended catch, landing and the own take's upright recovery. Monocular
-camera/depth/root/board/contacts and clipped joint reconstruction are authored;
-raw VIDEO misses remain misses. No other trick's motion is borrowed. Original
-skin/inverse binds, full 13-part board and contact/reach/floor guards remain.
-The bounded impact sequence shows modest knee reserve and one timely dip,
-followed by recovery, consistent with this source rather than an imposed A6 pose.
+Sixteen current rig-only sheets cover normal/low × physical Goofy/Regular:
+eight phase/contact sheets, four rejected8504/currentb57 before/after sheets,
+and four landing-sequence strips. The same original skin, inverse binds and
+full13-part board are used throughout. Actor-relative studio lighting, camera,
+root/board path and timing are identical across before/after views. Original
+video pixels and GLBs stay private.
 
-The ordinary charge pose previously paired a backward head ray with horizontal
-gaze. The shared helper now eases a modest 25-degree boardward look, preserving
-independent look yaw, neck-to-head length and the exact zero-charge boundary.
-The extra before/after sheet retains the rejected 99b posture at the same
-Source/Side Load/Pop/entry times. Source body/feet/board/events are unchanged;
-this is a product pose correction, with no camera, skin or exporter workaround.
+The source is Rodriguez's genuine landed Fakie Tre, PqJZcwTY1QE frames9780–9875:
+physical Goofy, Right front/nose instep and Left tail scoop. One anatomical
+reflection creates canonical Regular controls. Goofy is DIRECT/default and
+Regular is a labelled mirror; physical labels come from actual animated
+foot-bone audits. Original reference pixels remain unmirrored.
 
-Current runtime/replay/render freeze:
-`8504ed4f63328498c8a2824efe2247f713cd6304`.
-Raw remains `reviewed=false`:
-`70d8c47d8722fec344a899849ed3d3cfada8d9ea3461f41b83939fa7b76348bf`.
-All four genuine Pad/full Step/Land/scorer and body cases passed through 4 seconds
-under controlled managed bindings/ground, scoring Fakie 360 Flip and keeping
-36/34 normal/low Air samples. Only Head/HeadForward frame fields changed; every
-other frame field and all four managed physics/scoring traces are byte-identical
-to the privately sealed prior baseline. The complete production-SDK compile
-passed: 81 source units, 191 corrected game/Unity references and 165 retained
-framework/BepInEx/Interop references. This is compile/managed evidence, not
-native gameplay. All four original-mesh exports and eight sheets are current8504.
+Claude rejected the prior8504 candidate for extended Catch/Land, unclear
+absorption and Air feet too far above the board. The current authored controls
+lower the pelvis before Catch and keep both knees bent through Land into one
+continuous absorption trough, then recover upright. Free-Air shoes approach the
+rotating deck earlier; bent asymmetric catch/landing arms remain low and open.
+The baker, captured body, board keys, release/catch clocks, contacted shoes/toes
+and shared C# remain unchanged. No skin, camera or export-only pose workaround
+is applied. Monocular depth, full board winding, contacts and obscured joints
+remain explicitly authored reconstruction.
 
-All eight sheets and the gaze before/after were visually inspected. A separate
-peer reviewed all four current cases at 1× and ¼× through 4 seconds: eight full
-plays, 36 decoded-source phase visits and 64 Source/Side/Feet detail visits,
-with zero browser errors and all four actual loaded GLB hashes checked.
-Observed Load/first-rise gaze stays forward/down through source handoff, caught
-soles stay planted, low bent arm balance remains, and one landing absorption
-leads to stable upright rollout without renewed bob or leg swing. Actual live
-witnesses and explicitly paused interpolation checks are distinguished in the
-private receipt; counts alone are not the visual verdict.
+Four fresh genuine Pad/full Step/Land/scorer/body cases pass under controlled
+managed bindings and ground: Fakie360Flip scores,36/34 normal/low Air samples,
+and ordinary Ground/capture off at4seconds. Their four complete physics/scoring
+traces remain exact8504, together with board paths, source clocks, contact masks
+and contacted ankle/toe pairs. These are route-preservation checks, not visual
+or native trick approval. All sixteen current sheets have been inspected. Root also inspected actual
+1×/¼× UI playback with Source/Side/Feet, critical Catch/Land views and the
+landing/recovery sequence. Both knees are visibly bent before touchdown, the
+wrists stay low/open, and the closer Air shoes reach the unchanged board path.
+This is sampled motion inspection, not an every-frame playback claim. Claude's independent offline verdict and native trick acceptance stay
+open. No source pack is promoted by these images or a successful export.
 
-Claude's independent offline verdict and native Shadow gameplay remain separate
-open gates; neither is implied by these images, fixtures or compilation.
+The unchanged `fakie-360-flip-charge-gaze-before-after.jpg` is an older common
+head-helper witness: rejected99b versus8504 at Load/Pop/entry only. The helper
+and those phases remain unchanged; that image is not evidence for the current
+catch/landing repair. All other sheets and all four current model pins refer
+to b57/rawc964.

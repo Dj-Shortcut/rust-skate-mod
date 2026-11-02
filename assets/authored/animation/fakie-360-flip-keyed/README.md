@@ -45,8 +45,15 @@ managed bindings and ground: Fakie 360 Flip scores, 36/34 normal/low Air samples
 and ordinary Ground/capture off at 4 seconds. All four physics/scoring traces,
 source clocks, source contact masks, board paths and contacted ankle/toe pairs
 remain exact against the rejected baseline. These checks establish preservation
-of the route, not visual or native trick approval. New original-rig exports,
-full 1×/¼× replay and Claude's independent verdict are still required.
+of the route, not visual or native trick approval. Four new original-rig/13-part-
+board exports and sixteen rig-only comparison
+sheets are now available. Root inspected sampled1×/¼× UI playback and critical
+source/side/feet and landing-sequence views; the independent Claude verdict and
+native execution remain open.
 
-The existing viewer and `docs/review-media/a7-fakie-360-flip/` still describe the
-rejected baseline until the new frozen source has been exported and reviewed.
+Current viewer: http://127.0.0.1:63761/a7-fakie-360-flip-catch-repair/
+
+`docs/review-media/a7-fakie-360-flip/` now contains the current sheets and explicit
+rejected8504/currentb57 before/after views. The older common-head witness retains
+its original Load/Pop scope. Raw stays false; these checks do not approve a game
+installation.
