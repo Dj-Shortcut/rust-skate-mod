@@ -76,10 +76,14 @@ def tail_ball(s, sf):
     ball = np.asarray(s['tailBall']['shoeLocal'])
     point = ankle+rest@ball
     lift = float(keyed(s['tailBall']['heelLiftKeys'],sf)[0])
-    # The rear ball presses the tail while the ankle stays mostly world-up;
-    # gluing the entire shoe to the rapidly flipping deck rolls it through
-    # the floor. The board patch, rather than a false full-sole weld, anchors it.
-    frame = blend_frame(rest,rotation@rest,s['tailBall']['boardFollowShare'])@qmatrix(euler_quat([lift,0,0]))
+    # The curved tail rest already has a kick-normal tilt. Unwind that rest
+    # toward genuine world-up as the ball presses, before adding the small
+    # observed deck follow; retaining the old kick-normal in world space
+    # would oppose the snap and falsely invert the sole at its release.
+    upright = basis(unit(rest[:,2]*[1,0,1]),UP)
+    pressure = smooth((sf-s['phases']['pop'])/(s['phases']['strike']-s['phases']['pop']))
+    base = blend_frame(rest,upright,pressure)
+    frame = blend_frame(base,rotation@rest,s['tailBall']['boardFollowShare'])@qmatrix(euler_quat([lift,0,0]))
     return origin+rotation@point-frame@ball, frame
 
 

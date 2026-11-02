@@ -30,6 +30,12 @@ and pelvis follow this take's independent world paths, excluding the reference
 ballistic carrier once. The normal Hardflip's timed150–155 restore and extra
 client tuck are not used.
 
+The Right tail-ball patch stays anchored while its curved-tail rest normal
+unwinds toward actual world-up before the snap, with a small deck follow.
+Treating that already tilted rest as world-up falsely inverted the released
+sole relative to the deck. This correction preserves every phase/contact bit,
+body control and board curve; the measured support guard is unchanged.
+
 Source-only candidate: raw `reviewed=false`. Actual normal trick-route replay,
 original-skinned-mesh comparison, CI, Claude's independent offline verdict and
 native Shadow gameplay are separate gates and are not claimed by a bake.
