@@ -653,5 +653,156 @@
       ]
     },
     "provenance": "Owner global balance rule after the A5 re-gate: credible bent asymmetric balance at/below shoulders, even where the filmed/detected snap raises the arms. Own source-specific elbow/hand controls only, in horizontal anatomical facing/up/right axes, never travel axes. Fade7850..7852, own snap through7857.5, rejoin the original accepted Air at7860; all7860+ and all non-arm samples unchanged."
+  },
+  "landingBalance": {
+    "window": [
+      7864.5,
+      7867.5,
+      7880,
+      7890
+    ],
+    "pelvisWorldYKeys": [
+      [
+        7864.5,
+        1.16
+      ],
+      [
+        7867.5,
+        0.86
+      ],
+      [
+        7868.5,
+        0.83
+      ],
+      [
+        7870.5,
+        0.78
+      ],
+      [
+        7875,
+        0.66
+      ],
+      [
+        7880,
+        0.63
+      ],
+      [
+        7888,
+        0.75
+      ],
+      [
+        7890,
+        0.78
+      ]
+    ],
+    "Left": {
+      "upper": [
+        [
+          7867.5,
+          0.36,
+          -0.44,
+          -0.82
+        ],
+        [
+          7870.5,
+          0.28,
+          -0.55,
+          -0.79
+        ],
+        [
+          7875,
+          0.32,
+          -0.58,
+          -0.75
+        ],
+        [
+          7880,
+          0.3,
+          -0.62,
+          -0.72
+        ]
+      ],
+      "fore": [
+        [
+          7867.5,
+          0.86,
+          -0.4,
+          0.32
+        ],
+        [
+          7870.5,
+          0.83,
+          -0.47,
+          0.3
+        ],
+        [
+          7875,
+          0.8,
+          -0.52,
+          0.3
+        ],
+        [
+          7880,
+          0.8,
+          -0.52,
+          0.3
+        ]
+      ]
+    },
+    "Right": {
+      "upper": [
+        [
+          7867.5,
+          0.25,
+          -0.55,
+          0.8
+        ],
+        [
+          7870.5,
+          0.32,
+          -0.52,
+          0.79
+        ],
+        [
+          7875,
+          0.3,
+          -0.6,
+          0.74
+        ],
+        [
+          7880,
+          0.28,
+          -0.64,
+          0.72
+        ]
+      ],
+      "fore": [
+        [
+          7867.5,
+          0.75,
+          -0.52,
+          -0.4
+        ],
+        [
+          7870.5,
+          0.73,
+          -0.57,
+          -0.38
+        ],
+        [
+          7875,
+          0.76,
+          -0.52,
+          -0.39
+        ],
+        [
+          7880,
+          0.76,
+          -0.52,
+          -0.39
+        ]
+      ]
+    },
+    "provenance": "Claude A6 gate6575418317 rejected the tall catch/landing and chin/belly tuck. Own source7865..7885 shows folded catch knees and later low/separate hands. Authored visual correction brings the existing one absorption forward into firstCatch/bothCatch/Land, then rejoins the same recovery. Pelvis targets remain world heights before the existing single reference-carrier subtraction. Low outward asymmetric bent arms are owner-directed balance, not measured replacement detections or another trick motion. Feet/soles, board curves, events, body06b1 and accepted source<=7864.5 or>=7890 stay unchanged."
   }
 }

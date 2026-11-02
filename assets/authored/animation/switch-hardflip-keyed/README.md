@@ -43,7 +43,7 @@ accepted Air at 7860. These are explicitly authored horizontal anatomical-axis
 targets, not travel-axis rotation or measured wrist motion. Only four arm
 joints differ; the own captured body, shoulders/head/torso/pelvis, feet/soles,
 all board curves and every source/event/contact clock are unchanged. True
-Pop 7846 and every source frame 7860+ (including Catch/Land/recovery) remain exact.
+Pop 7846 and every source frame 7860+ were exact in that earlier snap-only candidate. The focused catch/landing repair below supersedes that scope.
 
 The arm candidate raw SHA-256 is
 `a4e474fc82ce19e302b6513a1d17733c617b196989d4e6b837a049247f163097`.
@@ -64,11 +64,34 @@ The separate unchanged strike 7854.3 detail remains available.
 
 Viewer: http://127.0.0.1:63761/a6-switch-hardflip-balanced/
 Review media: `docs/review-media/a6-switch-hardflip/`.
-The Catch lead hand remains near the face/chest, like the tucked source:
-this is a retained approximation/minor for Claude rather than hand-contact
-certification. No broader body change was made for that observation.
+Claude rejected that candidate at Catch/Land in [the A6 gate](https://github.com/Dj-Shortcut/rust-skate-mod/issues/725#issuecomment-6575418317): knees were too straight and the source-like chin/belly hand tuck was not acceptable game balance. That verdict supersedes the earlier retained-approximation note.
 
 Integrated review candidate: raw `reviewed=false`. Managed trick-route and
 original-mesh playback evidence is separate from CI, Claude's independent
 offline verdict and native Shadow gameplay approval. No native-game claim
 is made.
+
+## Focused Catch/Land repair candidate
+
+The same own take, frames 7865–7885, shows folded catch knees and a later
+low/separate hand position. An explicitly authored window 7864.5–7890 brings
+the existing absorption forward through first catch 7867.5, both-feet catch
+7868.5 and Land 7870.5. It continues into the existing dip and smoothly rejoins
+the original recovery; it does not add a second late dip. Both pelvis curves
+are world heights before the existing single reference-carrier subtraction.
+Actual physics, native flight and landing time are unchanged.
+
+Both arms open low and outward with asymmetric bent elbows, away from the chin
+and belly. This deliberately overrides the filmed tucked-arm posture; it is
+a labelled owner-directed balance reconstruction, not new detection data.
+The immutable captured body, all feet/toes/sole frames, every board sample and
+event/contact clock remain exact. All source samples at or before 7864.5 and
+at or after 7890 are unchanged, retaining accepted Load/Pop/Flick/early Air and
+recovery. Existing reach, floor, source-pressure and fixed-bone guards remain.
+
+Candidate raw SHA-256:
+`a2defc4543efadb0492a8db18a932d0bdfb49bda51054485bffbccc8213a406b`.
+The 773-sample bake and exact scope comparison pass. Root's integrated four
+actual input/body cases and the same original-mesh sheets/full replays are
+pending; this is not a visually approved repair yet. Raw remains
+`reviewed=false`; Claude and native Shadow acceptance stay separate.
