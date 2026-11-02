@@ -11,11 +11,25 @@ skinned rider and complete13-part skateboard are used throughout.
 | Normal | [Phases](switch-fs-pop-shove-normal-physical-regular.jpg) · [Contacts](switch-fs-pop-shove-normal-physical-regular-contacts.jpg) | [Phases](switch-fs-pop-shove-normal-physical-goofy.jpg) · [Contacts](switch-fs-pop-shove-normal-physical-goofy-contacts.jpg) |
 | Low | [Phases](switch-fs-pop-shove-low-physical-regular.jpg) · [Contacts](switch-fs-pop-shove-low-physical-regular-contacts.jpg) | [Phases](switch-fs-pop-shove-low-physical-goofy.jpg) · [Contacts](switch-fs-pop-shove-low-physical-goofy-contacts.jpg) |
 
-The phase sheets show Load, Pop, Scoop, Air, Catch, Land, Rollaway and the
-ordinary4-second endpoint. Contact sheets add the side view, tail pressure,
-release, reversed-end catch and planted rollout. Physical captions come from
-the animated GLB foot bones against its initial nose; requested/native binding
-is retained separately in the manifest.
+The phase sheets show eight moments: Load, **Pop / first rise768**, Scoop, Air, Catch,
+Land, Rollaway and the ordinary4-second endpoint. The main Pop button now
+selects that genuine event at0.850s. The old rejected strike773.5 is retained
+at the exact same1.017s normal-flight instant as **TailStrike**, separately
+from Pop. Contact sheets show that instant, Scoop from two angles, Catch and
+Land; the associated foot-detail checks remain in the private receipt.
+Physical captions/default/dropdowns come from the actual animated GLB foot
+bones; requested/native bindings are retained separately in the manifest.
+
+The [Regular](arms-before-after-regular.jpg) and
+[Goofy](arms-before-after-goofy.jpg) arm comparisons preserve the original
+camera, strike/Scoop/Catch/Land times and original skinned model. Both arms
+are explicitly reconstructed into bent forward/outward balance at or below
+the shoulders through those moments. The prior overhead V and sustained
+straight high hand are removed; this is an authored correction for
+[Claude's A5 gate](https://github.com/Dj-Shortcut/rust-skate-mod/issues/716#issuecomment-6567110165).
+Source762–768 blends into the new arm controls;797–808 settles back into the
+original accepted rollout. Shoulders/head/torso/pelvis, feet/soles, board,
+contacts and all source/event clocks remain unchanged.
 
 This is the genuine black-shirt/cap attempt in
 [The Berrics video](https://www.youtube.com/watch?v=tL8Ey9GS0xQ&t=205),
@@ -43,22 +57,30 @@ rig-only comparisons show the earlier rise and less perched front knee; both
 source and native times are labelled.
 
 The exact
-[render/runtime freeze](https://github.com/Dj-Shortcut/rust-skate-mod/commit/4f2b7c2be24c7a1e734d15daca1e751805bd2fe4)
-selects Ollie, Switch=true, TailLeads=false, flip0, shove+180, spin0 and body0.
+[render/runtime freeze](https://github.com/Dj-Shortcut/rust-skate-mod/commit/05745de05687ec43e61a782bf075539288679c93)
+uses the existing Ollie, Switch=true, TailLeads=false, flip0, shove+180,
+spin0/body0 route. This repair changes no C# or gameplay code.
 Four actual Pad→production Step/Land/scorer cases produce
 `Switch Frontside Pop Shove-it`, with36/36 normal and34/34 low Air samples
-using the capture. Native trace bytes match the pre-entry-change baseline.
-All four cases were exported and checked at1×/¼× through ordinary recovery;
-28 decoded-source phase seeks and24 source774/side/feet views reported no
-browser errors. The actual model and source comparisons were viewed in both
-stances/heights, including the labelled mirror.
+using the capture. All four complete native traces are byte-identical to
+the prior4f2 baseline. Each241-frame body replay differs only in the four
+elbow/hand positions: all other motion/physics/contact fields are exact.
+
+Four original-skin/full13-part GLBs and32 phase frames were checked at1×/¼×
+through4-second ordinary recovery. All32 decoded-source phase visits and
+24 Source/Side/Feet arm/contact details completed without browser errors.
+The author inspected both stances/heights, arm-window transitions and
+Catch/Land through rollout; no high-hand rebound was observed. Root also
+inspected the same-time before/after originals. These are controlled
+managed/graphical self-review results; Claude retains the independent
+offline verdict and library status.
 
 Raw pack SHA-256:
-`3803675fdaf0fc0752e9cd01903838efc62c83099bf705c6b32c55283e3c1b4f`.
-It remains `reviewed=false`. These are author self-review and controlled
-managed checks; Claude owns the independent offline verdict and library
-status. Native Rust/Shadow, multiplayer and installed-package acceptance are
-separate and unverified here. Source video/audio/pixels and raw model arrays
-remain private; committed images show only the original rig.
+`4e0e2868db2aec3a037e1afcabcf8b3532d5be195c6e1cdf5c87c207ae55cde9`.
+It stays `reviewed=false`. Native Rust/Shadow, multiplayer and installed
+package acceptance remain separate and unverified. Source video/audio/pixels
+and raw model arrays remain private; committed images show only the
+original rig. The earlier root-entry comparisons above are historical;
+the new arm comparisons and eight current sheets use the freeze linked here.
 
-After main gained Nollie FS (#722), integration `2676f9c8` retained its index36 and appended Switch FS at37. All four complete body files and four native traces are byte-identical to the rendered `4f2b7c2b` freeze, including metadata. The original GLBs/replays stay explicitly pinned to4f2; no new render or broader runtime claim is made. The complete81-source client compile passes against356 cached references.
+After composing Nollie balance#727 from main, integration `a4232184d4f52edc4c5cb983fe4e55ac617ea2ed` retains every C# byte from the rendered freeze. The current baker also reproduces the exact same raw4e0e pack. Existing actual-case/GLB/replay evidence therefore retains its explicit original freeze; no rerender or additional native claim is made.
