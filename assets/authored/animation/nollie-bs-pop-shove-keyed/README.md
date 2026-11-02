@@ -63,3 +63,7 @@ Actual normal/low routes in physical Regular/Goofy, original-mesh phase/contact
 sheets and1×/¼× decoded-source replay evidence are delivered with the integrated
 PR. Claude owns the independent offline verdict. Shadow/native gameplay
 verification remains separate.
+
+## Mid-turn levelling candidate
+
+Claude's #706 follow-up found that the authored mid-turn pitch became steeper than the nose pop. The nose-pressure stroke through release 480 stays unchanged; the released board now tapers monotonically from 32° toward 26° at 482, 20° at 486 and level at catch 491. These are authored visual-fit controls, not a source-camera or measured-angle correction. Board-only yaw, body, contact/event timing, native flight and strict reach/shoe/floor guards stay fixed. Updated paired Source/Side before/after, eight phase/contact sheets and four actual managed/viewer replays are in `docs/review-media/a4-nollie-bs-pop-shove/`. The preceding source-bearing #711 was Claude-offline-reviewed; this requested levelling follow-up awaits his verdict. The raw pack remains reviewed=false and native Shadow testing remains open.

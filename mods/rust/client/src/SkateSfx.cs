@@ -48,9 +48,14 @@ public static class SkateSfx
     private static AudioSource Source(GameObject go, AudioClip clip, bool loop)
     {
         var s = go.AddComponent<AudioSource>();
+        var native = s.GetCachedPtr();
+        if (native == IntPtr.Zero) throw new InvalidOperationException("audio source has no native object");
         s.spatialBlend = 1f; s.dopplerLevel = 0f;
-        s.rolloffMode = AudioRolloffMode.Linear; s.minDistance = 1f; s.maxDistance = 25f;
-        if (s.spatialBlend != 1f || s.dopplerLevel != 0f || s.rolloffMode != AudioRolloffMode.Linear ||
+        // The rolloff property accessors are unstripping stubs; their engine bindings
+        // take the native Unity object, as with the collision binding in SkateRig.
+        AudioSource.set_rolloffMode_Injected(native, AudioRolloffMode.Linear);
+        s.minDistance = 1f; s.maxDistance = 25f;
+        if (s.spatialBlend != 1f || s.dopplerLevel != 0f || AudioSource.get_rolloffMode_Injected(native) != AudioRolloffMode.Linear ||
             s.minDistance != 1f || s.maxDistance != 25f)
             throw new InvalidOperationException("Native skateboard audio source rejected its 3D configuration");
         s.loop = loop; s.volume = loop ? 0f : 1f;
