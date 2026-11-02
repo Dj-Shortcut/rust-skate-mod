@@ -358,5 +358,18 @@
       "physicalStance": "goofy",
       "kind": "contacts"
     }
-  ]
+  ],
+  "sourceIdentityCorrection": {
+    "scope": "Only captured-body.sourceIdentity and its dependent constraints sourceBodySha256; no motion or code changes",
+    "originalRenderedBodySha256": "c4c9215c53060138fd14a63ceb971ea104849316231234408a17053295d4ee3b",
+    "correctedBodySha256": "c2372fa3f4f5f656877b36b600d3a15fc5777b03bcea9dbb953f7bfb9ed7522b",
+    "originalRenderedSourceRuntimeFreezeUnchanged": "89f796fbf5367005aef9a2e66c375129ad8eb3b4",
+    "rawBinaryBytesIdentical": true,
+    "rawSha256": "b1d994cbb0278de2ab9421bbf7de96ac96a80e5aaac9eee84f78cdccb75182be",
+    "allOtherBodyBytesExact": true,
+    "all419FramesAnd9EventsExact": true,
+    "privateReceiptSha256": "c6eb64553e25de2acf6ed610c70eac0c3fa083795864c249464494866a0cc769",
+    "rawReviewed": false,
+    "offlineOrNativePromotion": false
+  }
 }
