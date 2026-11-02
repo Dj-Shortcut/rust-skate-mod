@@ -1,0 +1,159 @@
+{
+  "format": "switch-hardflip-own-rig-review/1",
+  "sourceReviewed": false,
+  "nativeGame": false,
+  "sourceCodeRevision": "43d1af06c3321321d2555b0ebf032c6065aa927d",
+  "sourcePackSha256": "a4e474fc82ce19e302b6513a1d17733c617b196989d4e6b837a049247f163097",
+  "sourceBodyControlSha256": "06b1bc7a1659a902f3b2f2ef2e9eb61c1a79af2873e6a6f11d2ae265e05113a0",
+  "sourceConstraintsSha256": "614947a916c37285df3598dfab881ea8cf15d47b8e5cda24362c811d089f1bf5",
+  "sourceBakerSha256": "b805050de5920ecbf579e98c69fdb3ae1bf2e4199c1d888ca4f1f5b5d37d4297",
+  "source": "Own genuine Rodriguez striped-shirt landed PqJZcwTY1QE take7804\u20137932. Filmed physical Regular, Left nose/outer-upper instep and Right tail. Zero source anatomical reflection. Original footage private/unmirrored; opposite physical Goofy is a labelled mirror.",
+  "authoredReconstruction": "Camera/depth/root/contact/board estimates; missing7882/7895 and rejected whole-side reversals7830/7853/7854 reconstructed only from own neighbours. Own7850\u20137860 bent asymmetric snap-arm targets override high source arms; all non-arms and7860+ remain unchanged.",
+  "viewer": "http://127.0.0.1:63761/a6-switch-hardflip-balanced/",
+  "defaultPhysicalStance": "regular",
+  "replay": {
+    "physicalCases": 4,
+    "rates": [
+      1,
+      0.25
+    ],
+    "ordinaryEndSeconds": 4,
+    "decodedPhaseSeeks": 36,
+    "browserErrors": 0,
+    "detailCaptures": 24,
+    "detailScope": "Actual decoded source with TailStrike Side, instep Feet, Air Side, Catch Feet, Land Side/Feet in all four cases.",
+    "toolScope": "Private managed-route playback/source comparison on original mesh; not Rust native gameplay."
+  },
+  "phaseSheets": [
+    {
+      "file": "switch-hardflip-low-physical-regular.jpg",
+      "physicalStance": "regular",
+      "requestedNativeStance": "goofy",
+      "sourceRole": "direct filmed Regular",
+      "profile": "low",
+      "sha256": "7506486067d3282fca5d7caa6681460ccc3a02092344c099d09b43a0d8487e38",
+      "glbSha256": "d404b2bb3dcce4bc3746051b5eee2188202d78c025931b776222dd27f1f44c25",
+      "inputSha256": "23410c874bde0578a75f19fd5f2e4ba2f4c4c62f4a772bdf8428d3a1b3e7a0f9",
+      "phaseMoments": {
+        "Load": 0.8666666666666667,
+        "Pop": 0.8833333333333333,
+        "TailStrike": 1.0666666666666667,
+        "Flick": 1.0666666666666667,
+        "Air": 1.2,
+        "Catch": 1.3833333333333333,
+        "Land": 1.45,
+        "Rollaway": 2.35,
+        "End": 4.0
+      },
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+    },
+    {
+      "file": "switch-hardflip-normal-physical-regular.jpg",
+      "physicalStance": "regular",
+      "requestedNativeStance": "goofy",
+      "sourceRole": "direct filmed Regular",
+      "profile": "normal",
+      "sha256": "912d41de7187b0b970173f65fc770a2976435207900e5b3dc750260b8845dd3c",
+      "glbSha256": "e6d4c0217ac51bc59e7747b14ac821a79efe4a55261ebf2ede461a4b1bc5298a",
+      "inputSha256": "5a6b562f49949899496e3c247069fe168a35db059c4cf261360f6fe03a005c67",
+      "phaseMoments": {
+        "Load": 0.8333333333333334,
+        "Pop": 0.8833333333333333,
+        "TailStrike": 1.0833333333333333,
+        "Flick": 1.0666666666666667,
+        "Air": 1.2166666666666666,
+        "Catch": 1.4333333333333333,
+        "Land": 1.4833333333333334,
+        "Rollaway": 2.45,
+        "End": 4.0
+      },
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+    },
+    {
+      "file": "switch-hardflip-low-physical-goofy.jpg",
+      "physicalStance": "goofy",
+      "requestedNativeStance": "regular",
+      "sourceRole": "Goofy mirror; source remains unmirrored",
+      "profile": "low",
+      "sha256": "3e9fe08257d851963b89148e49cd2c4b261c7784b88f9d7d900210bf7d69d3be",
+      "glbSha256": "1dc1a75af62620f2fd0eac16a8e44f15d23cc5d3f70d129d8001284b2642840b",
+      "inputSha256": "29ffd8e0ea6ccfb48fa284adc7a5796a94330d0c7bc253a17b3a26ab12efe706",
+      "phaseMoments": {
+        "Load": 0.8666666666666667,
+        "Pop": 0.8833333333333333,
+        "TailStrike": 1.0666666666666667,
+        "Flick": 1.0666666666666667,
+        "Air": 1.2,
+        "Catch": 1.3833333333333333,
+        "Land": 1.45,
+        "Rollaway": 2.35,
+        "End": 4.0
+      },
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+    },
+    {
+      "file": "switch-hardflip-normal-physical-goofy.jpg",
+      "physicalStance": "goofy",
+      "requestedNativeStance": "regular",
+      "sourceRole": "Goofy mirror; source remains unmirrored",
+      "profile": "normal",
+      "sha256": "b0edc5295751754b928c0a70c740f09ed50c397415e039fe89832c39cf685086",
+      "glbSha256": "b9a2974a3ea37461c7d3302c615425635511de6a157327b213026df9b60cb7e0",
+      "inputSha256": "d215411b19a492b3bd61c82767af7760daed654ecdb445dae3ae72e48ed6695e",
+      "phaseMoments": {
+        "Load": 0.8333333333333334,
+        "Pop": 0.8833333333333333,
+        "TailStrike": 1.0833333333333333,
+        "Flick": 1.0666666666666667,
+        "Air": 1.2166666666666666,
+        "Catch": 1.4333333333333333,
+        "Land": 1.4833333333333334,
+        "Rollaway": 2.45,
+        "End": 4.0
+      },
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+    }
+  ],
+  "contactSheets": [
+    {
+      "file": "switch-hardflip-low-physical-regular-contacts.jpg",
+      "physicalStance": "regular",
+      "profile": "low",
+      "sha256": "a43bb92813b138b8d142fdb7ce17ff6671194cb34e219b17cd83cd975616a991",
+      "scope": "Original-rig first rise, outer-upper instep, full-flip clearance, swapped-end catch, landing and ordinary recovery; no reference video pixels."
+    },
+    {
+      "file": "switch-hardflip-normal-physical-regular-contacts.jpg",
+      "physicalStance": "regular",
+      "profile": "normal",
+      "sha256": "3ef4b922001c599aab2b4fe09b11026c9240986c04ef3c2e0b084353ec36b3be",
+      "scope": "Original-rig first rise, outer-upper instep, full-flip clearance, swapped-end catch, landing and ordinary recovery; no reference video pixels."
+    },
+    {
+      "file": "switch-hardflip-low-physical-goofy-contacts.jpg",
+      "physicalStance": "goofy",
+      "profile": "low",
+      "sha256": "e70814c199c6b6e458cdbc0a9c4b4d63b396fe8031cfccaf86963ae4fbfdd4ba",
+      "scope": "Original-rig first rise, outer-upper instep, full-flip clearance, swapped-end catch, landing and ordinary recovery; no reference video pixels."
+    },
+    {
+      "file": "switch-hardflip-normal-physical-goofy-contacts.jpg",
+      "physicalStance": "goofy",
+      "profile": "normal",
+      "sha256": "4f8be1f84348cf676dbb65adeb1b4382a28c2fd048b3d8174c4a31e2ddd018c6",
+      "scope": "Original-rig first rise, outer-upper instep, full-flip clearance, swapped-end catch, landing and ordinary recovery; no reference video pixels."
+    }
+  ],
+  "phaseSemantics": {
+    "Pop": "Genuine first rise7846, not strike",
+    "Flick": "Outer-upper instep guide/release7854.15, not a sole flick",
+    "TailStrike": "Separate unchanged7854.3 detail retained; nearest actual60Hz row and nearest real video frame shown",
+    "Air": "Own7860 full-flip phase",
+    "Recovery": "Filmed rollaway plus ordinary Ground through4s"
+  },
+  "visibleLimitations": [
+    "Catch lead hand near face/chest is retained as a source-like approximation/minor for Claude, not hand-contact certification.",
+    "Monocular depth/camera/full board3D/contact reconstruction is authored, not measured3D.",
+    "Raw remains false; Claude offline verdict, CI and native Shadow admission remain separate."
+  ]
+}
