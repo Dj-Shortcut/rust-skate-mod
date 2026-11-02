@@ -481,7 +481,7 @@
     "referenceWorldKeys": [
       [
         1111.0,
-        0.0009123229701504809
+        0.7464222834588286
       ],
       [
         1112.375,
@@ -501,7 +501,7 @@
       ],
       [
         1118.0,
-        0.2910249307479224
+        0.9310249307479224
       ]
     ],
     "provenance": "Authored source-reference pose envelope, not physics or a second jump. The original last Rise was too tall for bent pressure knees after runtime feet-only compensation; this one lower extension crosses into the feasible pressure domain instead of saturating its cap. Preserve a clear upward body extension, no new hip dip; exact freeAir1118+ lower body and mainAir1122+ whole pose. Same foot/board/source/event targets and guards."

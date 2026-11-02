@@ -87,7 +87,7 @@ def pressure_knee_offset(s, sf):
             world = a[1] * (1 - weight) + b[1] * weight
             break
     desired = world - geometry.reference_height(s, sf)
-    original = scalar(s['pelvisKeys'], sf)
+    original = float(curve([r[0] for r in s['pelvisKeys']], [r[1:] for r in s['pelvisKeys']], sf)[1])
     blend = smooth((sf - start) / (full - start)) * (1 - smooth((sf - held) / (end - held)))
     return (desired - original) * blend
 
