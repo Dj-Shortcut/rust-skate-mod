@@ -1,0 +1,11 @@
+# Nollie Hardflip — own Rodriguez source reconstruction
+
+Reference: [The Berrics, Rodriguez attack](https://www.youtube.com/watch?v=PqJZcwTY1QE&t=514), existing full-file frames 15420–15534. Actual PTS is frame index ×1001 in timebase 1/30000. The continuous take shows a nose pop, full hardflip under an unspun body, catch, bent landing and uninterrupted rollaway. The chapter label at 517 seconds starts after the actual load/pop; it is not the animation clock.
+
+The filmed rider is physical Goofy: anatomical **Right front/nose pops, Left rear gives the instep flick**. One local X reflection plus complete anatomical side relabelling makes the canonical Regular controls: **Left nose sole pop, Right rear outer-upper/instep flick**. The source-matching runtime view is physical Goofy; the other stance must be labelled mirrored. Reference pixels remain unmirrored.
+
+Own strict VIDEO detection accepts 107/115 frames. Raw frames 15484–15486 and 15489–15493 remain rejected. Only bracketed control rows bridge these gaps, explicitly as authored reconstruction, followed by two symmetric smoothing passes. Camera-axis depth, sole/instep contact, full combined board rotation, pelvis and compact lower chains are authored against this take. Late source Right-wrist uncertainty maps to canonical Left and has a bounded soft-arm recovery. No other trick body is read.
+
+Run `scripts/author_skate_nollie_hardflip.py --output <private-directory>`. It verifies its own body and the pinned original geometry/surface hashes, then atomically writes the JSON and raw `reviewed=false` pack. Generic rotation, shaped-shoe fit, interpolation, fixed-chain and whole-shoe clearance mathematics are shared. Normal Hardflip foot roles or source-specific timing/root/tuck overrides are not imported.
+
+First rise 15478, nose pressure 15481, Left nose-sole release 15482.75, Right instep exit 15483.25, distinct free Air 15485.5, catch 15494.5/15495.5 and Land 15498 are authored visual estimates. Board winding is full +360 roll with −180 local FS yaw; the body has no halfturn. Actual native input/flight/landing/scoring remain authoritative. Source presence and a successful bake do not establish route, original-rig, offline or native acceptance; those gates remain separate.
