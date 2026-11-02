@@ -223,49 +223,55 @@
     [
       9824.5,
       0,
-      0.78,
+      0.66,
       -0.02
     ],
     [
       9827,
       0,
-      0.81,
+      0.68,
       -0.015
     ],
     [
       9830,
       0,
-      0.83,
+      0.66,
       -0.01
     ],
     [
       9833,
       0,
-      0.82,
+      0.63,
       -0.02
     ],
     [
       9835,
       0,
-      0.82,
+      0.61,
       -0.02
     ],
     [
       9837,
       0,
-      0.77,
+      0.58,
       -0.02
     ],
     [
       9840,
       0,
-      0.69,
+      0.56,
+      -0.02
+    ],
+    [
+      9843,
+      0,
+      0.6,
       -0.02
     ],
     [
       9848,
       0,
-      0.8,
+      0.73,
       -0.02
     ],
     [
@@ -363,31 +369,31 @@
         [
           9824.5,
           -0.035,
-          0.42,
+          0.3,
           0.24
         ],
         [
           9827,
           0.02,
-          0.52,
+          0.34,
           0.25
         ],
         [
           9829,
           0.02,
-          0.55,
+          0.34,
           0.25
         ],
         [
           9831,
           0,
-          0.41,
+          0.29,
           0.24
         ],
         [
           9833,
           -0.025,
-          0.24,
+          0.2,
           0.24
         ],
         [
@@ -457,31 +463,31 @@
         [
           9824.5,
           -0.015,
-          0.29,
+          0.24,
           -0.27
         ],
         [
           9827,
           -0.03,
-          0.46,
+          0.31,
           -0.25
         ],
         [
           9829,
           -0.03,
-          0.49,
+          0.32,
           -0.24
         ],
         [
           9831,
           0,
-          0.41,
+          0.28,
           -0.22
         ],
         [
           9833,
           -0.025,
-          0.24,
+          0.2,
           -0.24
         ],
         [
@@ -617,21 +623,21 @@
         ],
         [
           9831,
-          0.15,
-          -0.26,
-          0.85
+          0.28,
+          -0.4,
+          0.87
         ],
         [
           9835,
-          0.15,
+          0.3,
           -0.5,
-          0.75
+          0.81
         ],
         [
           9842,
-          0.18,
-          -0.78,
-          0.48
+          0.3,
+          -0.62,
+          0.72
         ],
         [
           9855,
@@ -673,21 +679,21 @@
         ],
         [
           9831,
-          0.45,
-          -0.55,
-          0.4
+          0.84,
+          -0.42,
+          -0.34
         ],
         [
           9835,
-          0.65,
-          -0.65,
-          0.1
+          0.83,
+          -0.46,
+          -0.31
         ],
         [
           9842,
-          0.55,
-          -0.78,
-          0.08
+          0.78,
+          -0.54,
+          -0.32
         ],
         [
           9855,
@@ -741,21 +747,21 @@
         ],
         [
           9831,
-          0.15,
-          -0.4,
-          -0.85
+          0.2,
+          -0.53,
+          -0.82
         ],
         [
           9835,
-          0.15,
-          -0.75,
-          -0.75
+          0.2,
+          -0.6,
+          -0.78
         ],
         [
           9842,
-          0.18,
-          -0.78,
-          -0.48
+          0.24,
+          -0.66,
+          -0.71
         ],
         [
           9855,
@@ -797,21 +803,21 @@
         ],
         [
           9831,
-          0.45,
-          -0.55,
-          -0.4
+          0.79,
+          -0.45,
+          0.42
         ],
         [
           9835,
-          0.65,
-          -0.65,
-          -0.1
+          0.78,
+          -0.48,
+          0.4
         ],
         [
           9842,
-          0.55,
-          -0.78,
-          -0.08
+          0.76,
+          -0.56,
+          0.34
         ],
         [
           9855,
@@ -899,6 +905,6 @@
       ]
     }
   ],
-  "provenance": "Own landed Rodriguez Fakie360Flip sourcePq9780..9875: body-rise9816 precedes tail scoop9821, one full360 kickflip+BS360 board turn with no bodyspin, same-ended catch and own continuous upright rollaway. Raw VIDEO87/96; nine gaps remain explicitly reconstructed, not new detections. CanonicalRight tail sole pops; canonicalLeft front outer-upper flicks after ONE source reflection. Generic interpolation, geometry and fixed-chain math only; no other trick body/clock/foot targets read.",
-  "uncertainty": "Monocular yaw/pitch/roll, source carrier/depth, front instep patch and lower chains are authored own-source estimates. Full-frame raised hands and some crown are clipped9827..9831, so bent asymmetric at/below-shoulder arms and believable gaze are authored for owner rule. Nine VIDEO misses9824\u201325 and9829\u201335 remain raw misses; interpolated body controls do not prove measured Air. Actual input/scorer, original mesh,1x/quarter playback, Claude and native gates remain pending."
+  "provenance": "Own landed Rodriguez Fakie360Flip sourcePq9780..9875: body-rise9816 precedes tail scoop9821, one full360 kickflip+BS360 board turn with no bodyspin, same-ended catch and own continuous upright rollaway. Raw VIDEO87/96; nine gaps remain explicitly reconstructed, not new detections. CanonicalRight tail sole pops; canonicalLeft front outer-upper flicks after ONE source reflection. Generic interpolation, geometry and fixed-chain math only; no other trick body/clock/foot targets read. Authored catch/landing repair after Claude gate6580795069: carrier-local pelvis lowers before9834.5 catch, remains bent through9837 touchdown and reaches one9840 absorption trough before rising; free-Air ankles approach the board earlier and low asymmetric bent arms stay open. This changes only own reconstructed pose controls, not measured source body, board/contact clocks or native physics.",
+  "uncertainty": "Monocular yaw/pitch/roll, source carrier/depth, front instep patch and lower chains are authored own-source estimates. Full-frame raised hands and some crown are clipped9827..9831, so bent asymmetric at/below-shoulder arms and believable gaze are authored for owner rule. Nine VIDEO misses9824\u201325 and9829\u201335 remain raw misses; interpolated body controls do not prove measured Air. Actual input/scorer, original mesh,1x/quarter playback, Claude and native gates remain pending. The visibly deeper catch/landing and closer free-Air feet are authored under the owner visual-quality rule, not newly measured motion; no offline approval is inferred from the bake."
 }

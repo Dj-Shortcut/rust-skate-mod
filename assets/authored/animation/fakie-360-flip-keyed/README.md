@@ -22,32 +22,38 @@ distinct release/free-Air events and full monotonic roll/shove winding.
 Source footage, model weights, detector arrays and private fixtures are not
 bundled or relicensed.
 
-Current runtime/replay/render freeze is
-`8504ed4f63328498c8a2824efe2247f713cd6304`. Four genuine Pad/full Step/Land/scorer
-and body cases pass under controlled managed bindings/ground: Fakie 360 Flip
-scores, 36/34 normal/low Air samples and ordinary Ground/capture off at 4 seconds.
-All four managed physics/scoring traces and all non-head frame fields are
-byte-identical to the privately sealed prior baseline. The ordinary charge
-helper alone fixes skyward gaze by easing a 25-degree boardward head frame,
-preserving independent look yaw, neck-to-head length and zero-charge continuity.
-Own captured body/feet/board/events are unchanged; this is not a skin/camera or
-export-only workaround. Complete production-SDK compilation passes at this pin.
+Claude rejected the prior `8504ed4f63328498c8a2824efe2247f713cd6304`
+viewer in [the A7 follow-up](https://github.com/Dj-Shortcut/rust-skate-mod/issues/736#issuecomment-6580795069): Catch and Land were too extended, the absorption did
+not read clearly, and the free-Air feet stayed too far above the board. The
+previous export/managed checks do not override that visual rejection.
 
-Four original-skin/13-part-board models and eight current phase/contact sheets
-are exported and visually inspected. Actual foot-bone audits set Goofy DIRECT/
-default and Regular mirror labels. A source-free head before/after retains the
-same rejected Load/Pop/entry moments. The bounded impact sequence has modest
-knee reserve and one timely absorption, then own upright recovery. Separate
-peer review passes all four current cases at 1×/¼× through 4 seconds, with
-36 decoded-source phase visits, 64 Source/Side/Feet detail visits and zero
-browser errors. The four actual loaded asset hashes match the current models.
-Observed head handoff, feet/contact/full winding, bent low arms and one landing
-absorption into upright rollout have no visible blocker in that bounded review.
-Claude's independent offline verdict and native Shadow gameplay remain separate
-open gates; raw remains false.
+This control candidate lowers the carrier-local pelvis before the first catch,
+keeps both knees bent through touchdown, and uses one continuous absorption
+trough before the upright recovery. Free-Air ankle heights approach the board
+earlier; contacted shoe targets, toes, release/catch clocks and every board
+key remain unchanged. The own asymmetric arms stay open and below the shoulders
+through catch and landing. These are labelled authored pose corrections under
+the owner visual-quality rule, not newly detected motion or borrowed trick data.
+The baker and captured-body controls remain unchanged; no reference rise is
+subtracted from the already carrier-local pelvis a second time.
 
-Viewer: http://127.0.0.1:63761/a7-fakie-360-flip/
-
-Rig-only media: `docs/review-media/a7-fakie-360-flip/`. Raw stays
+The repaired raw pack has 582 samples and 10 events and remains
 `reviewed=false`, SHA-256
-`70d8c47d8722fec344a899849ed3d3cfada8d9ea3461f41b83939fa7b76348bf`.
+`c964912fef8af2ee38f037d41c33ab2292ccb7525cc830d29c4548313e00da5f`.
+Four fresh genuine Pad/full Step/Land/scorer/body cases pass under controlled
+managed bindings and ground: Fakie 360 Flip scores, 36/34 normal/low Air samples,
+and ordinary Ground/capture off at 4 seconds. All four physics/scoring traces,
+source clocks, source contact masks, board paths and contacted ankle/toe pairs
+remain exact against the rejected baseline. These checks establish preservation
+of the route, not visual or native trick approval. Four new original-rig/13-part-
+board exports and sixteen rig-only comparison
+sheets are now available. Root inspected sampled1×/¼× UI playback and critical
+source/side/feet and landing-sequence views; the independent Claude verdict and
+native execution remain open.
+
+Current viewer: http://127.0.0.1:63761/a7-fakie-360-flip-catch-repair/
+
+`docs/review-media/a7-fakie-360-flip/` now contains the current sheets and explicit
+rejected8504/currentb57 before/after views. The older common-head witness retains
+its original Load/Pop scope. Raw stays false; these checks do not approve a game
+installation.
