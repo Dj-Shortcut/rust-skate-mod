@@ -401,5 +401,14 @@
     "Controlled managed bindings/ground, not native Rust/Shadow, multiplayer or real-avatar mapping.",
     "Claude alone owns independent offline verdict/library; raw remains false.",
     "Original source film/model arrays, test-only approvals, GLBs, logs and derived game material stay private."
-  ]
+  ],
+  "postMainComposition": {
+    "main": "8da05515feeb3dd0430b577ac10f4b35ce546ab4",
+    "compositionCommit": "7f1562de0d9e2ce087f7beebb96fd0c663a4b00e",
+    "motionPresentationFilesExactToRenderedAe088": true,
+    "allClientSharedCSharpExactToProductionCompiled33ee365": true,
+    "currentBakerReproducesRenderedRaw": "e6d4064f030c442241ca766fdc6219be4b1bb85c91e3600f06e158738ff506cd",
+    "existingVariantIndices0Through38Unchanged": true,
+    "newNollieHardflipIndex": 39
+  }
 }
