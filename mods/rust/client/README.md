@@ -733,7 +733,7 @@ pack, icons or captures) or an installed candidate. The installer and the launch
 in the registry and for Rust in Steam's `libraryfolders.vdf`, so a friend's Rust may be on another
 drive; the owner's `C:` paths are tried first and stay as they were. Code present, dry-run on
 stand-in files and fixture-checked with PowerShell 7 outside the game; the library lookup's
-preflight ran on the owner's Windows PC on 1 November (Windows PowerShell 5.1 and 7.6, dummy
+preflight ran on the owner's Windows PC on 31 October, reported on 1 November (Windows PowerShell 5.1 and 7.6, dummy
 fixtures, nothing written); no pack has been made on the owner's PC or installed on a second PC
 yet.
 

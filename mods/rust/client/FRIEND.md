@@ -19,7 +19,7 @@ and playing from it are still open; see the [status](#status).
   the registry and where Rust is from Steam's `libraryfolders.vdf` and Rust's own manifest, and try
   Steam's own library on `C:` first (a legacy pack, made from the pinned 0.18.40 release, still knows
   only `C:\Program Files (x86)\Steam\steamapps\common\Rust`). The lookup's preflight was run on
-  the owner's Windows PC on 1 November (Codex: Windows PowerShell 5.1 and PowerShell 7.6, nine dummy
+  the owner's Windows PC on 31 October (reported on 1 November; Codex: Windows PowerShell 5.1 and PowerShell 7.6, nine dummy
   cases each, all stopping where expected before anything is written; a legacy pack refused the
   non-standard library, the current script found it). No real pack, no installation yet.
 - The same Rust build as the owner. The pack is made for one Steam build; after a Rust update
@@ -157,7 +157,7 @@ and the sounds follow the pack: a pack without them takes an older address or so
   clients on the owner's server are all still to be seen.
 - Known limits: the lookup of Steam and of Rust's library (registry, `libraryfolders.vdf`,
   manifest) has only been exercised as a preflight against dummy fixtures on the owner's PC
-  (Windows PowerShell 5.1 and 7.6, 1 November, private receipt), never against a real second PC;
+  (Windows PowerShell 5.1 and 7.6, 31 October, reported on 1 November, private receipt), never against a real second PC;
   the main-menu `connect` line is client source that has not been seen in the game; a pack made
   from the pinned 0.18.40
   release still refuses Rust outside Steam's own library on `C:`. The Steam shortcut is made by
