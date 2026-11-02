@@ -25,7 +25,7 @@
     "path": "assets/authored/animation/treflip-keyed/own-board-surface.json",
     "sha256": "8873121f728af49a9af90c2ee4ba723b7f56259d60913155f578d3a88e976acd"
   },
-  "popFrame": 56,
+  "popFrame": 54,
   "noseStrikeFrame": 57.5,
   "rearReleaseFrame": 57,
   "noseReleaseFrame": 59,
@@ -37,7 +37,7 @@
   "freeFootBlendFrames": 1.5,
   "catchBlendFrames": 1.5,
   "sourceRootMotion": {
-    "popFrame": 56,
+    "popFrame": 54,
     "landFrame": 73,
     "referenceFlight": 0.6,
     "gravity": 8,
@@ -548,7 +548,7 @@
       ]
     },
     {
-      "frame": 56,
+      "frame": 54,
       "phase": "pop",
       "contacts": [
         "LeftFoot",
@@ -604,7 +604,7 @@
       ]
     }
   ],
-  "provenance": "Own black-shirt/cap Nollie FS Pop Shove-it, BATB13 tL8Ey9GS0xQ CSV1084. Strict own82/84 VIDEO raw20..103; gaps68/69 remain raw failures and are explicitly reconstructed from67/70. Animation30..98 excludes cropped approachhead. Initial Goofy/right-nose guess superseded by own source30/54/75/90 legchains plus tattooedRight arm74: actualLeft leads/nose, Regular, so NO anatomy reflection. No A4/othertrick body read. Generic fixed-chain geometry/math only. Own nose-pressure/scoop, board-only\u2212180/no flip/bodyturn, monotonic post-release pitch, free shoes, reverse-deck catch toes and bent landing/ordinary recovery are authored from this take. CanonicalLeft wrist corresponds to unreliable rawLeft wrist and is reconstructed with bent depth/real raised prepop balance from source pixels. The other arm uses own detector directions. Native input/scoring/landing remain authoritative; rawfalse.",
+  "provenance": "Own black-shirt/cap Nollie FS Pop Shove-it, BATB13 tL8Ey9GS0xQ CSV1084. Strict own82/84 VIDEO raw20..103; gaps68/69 remain raw failures and are explicitly reconstructed from67/70. Animation30..98 excludes cropped approachhead. Initial Goofy/right-nose guess superseded by own source30/54/75/90 legchains plus tattooedRight arm74: actualLeft leads/nose, Regular, so NO anatomy reflection. No A4/othertrick body read. Generic fixed-chain geometry/math only. Own nose-pressure/scoop, board-only\u2212180/no flip/bodyturn, monotonic post-release pitch, free shoes, reverse-deck catch toes and bent landing/ordinary recovery are authored from this take. CanonicalLeft wrist corresponds to unreliable rawLeft wrist and is reconstructed with bent depth/real raised prepop balance from source pixels. The other arm uses own detector directions. Native input/scoring/landing remain authoritative; rawfalse. Own source54/55 already begins the visible rise/arm swing, so Pop54 marks that leg-extension start; actual max nose pressure57.5, release59/free61, catch/land and native flight authority remain fixed. Source-relative hand/torso controls are unchanged pending correct private camera projection.",
   "uncertainty": [
     "Manual Regular/Left-nose supported by own stable30/54/75/90 leading leg chains and tattooedRight arm74; source56\u201361 overlap remains uncertain. Initial Goofy hypothesis rejected, no reflection. Raw VIDEO evidence remains intact.",
     "World depth/camera/board pitch-yaw, foot support/release, pelvis and far-wrist depth are authored visual estimates. Source hand rises around56..61; it is not a fabricated straight overheadV.",
