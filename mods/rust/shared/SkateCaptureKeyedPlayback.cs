@@ -563,10 +563,10 @@ namespace Shortcut.RustMod
                     var left = boardShift * (goofy ? rear : front);
                     var right = boardShift * (goofy ? front : rear);
                     var beforePress = pose;
-                    // This backward shove keeps its grounded feet through the short root entry.
+                    // These exact contacts keep grounded feet through their short root entries.
                     // Fit the pelvis to those measured targets continuously during the press,
                     // using the same closest reachable fit as shaped-deck support.
-                    bool fitPressPelvis = Clip.Id == FakieFsPopShoveClipId;
+                    bool fitPressPelvis = Clip.Id == FakieFsPopShoveClipId || Clip.Id == SwitchHardflipClipId;
                     if (!SkateCaptureFootSupport.TryShiftFeet(rig, pose, left, right, fitPressPelvis, out pose, out error))
                     {
                         // A shallow observed charge can reach the source feet but
