@@ -1,0 +1,441 @@
+{
+  "format": "switch-tre-catch-repair-own-rig-review/1",
+  "sourceCodeRevision": "d38bdbf48f6b281bbac77b75a057bc68ad8e733d",
+  "sourcePackSha256": "5315f7d1f33d4407f588a1cb9d8e91f6320123505d4d1e6def518b3a11d380c6",
+  "sourceReviewed": false,
+  "nativeGame": false,
+  "viewer": "http://127.0.0.1:63761/a7-switch-360-flip-catch-repair/",
+  "sourcePhysical": "Original Regular: Left front instep, Right tail; zero reflection. Opposite Goofy is labelled mirror. Physical labels audited from actual animated GLB bones.",
+  "genuineSourceWindow": [
+    6060,
+    6117
+  ],
+  "sourceVideoHoldFrame": 6117,
+  "authoredRecoveryEnd": 6135,
+  "sourceConstraintsSha256": "f7c5a35d687b2dbd726191a5bad262fc69e4e7841907a0ffd314c7fe90b60062",
+  "sourceBodySha256": "87df569b69f4c0c0c7d3ff3c498e5fd12bac0d5ef4d028c7daf2f6ab2c672f3c",
+  "sourceBakerSha256": "77c657cb65723c3c101574697e5d46cd9fde76923521f1dc4ce9bde0f9bf92f2",
+  "authoredRepair": "Lower pelvis before Catch and through Land into one6106 trough; low open bent asymmetric balance arms; gradual upright recovery. All shoe targets, source clocks/events/board, physics and scoring unchanged.",
+  "baseline": "HELD1fdf is rejected for Catch/Land stiffness and used solely as explicit before panels. Currentd38/raw5315 remains a candidate.",
+  "uncertainty": "Single moving fisheye camera cannot measure full3D winding, depth, upper-shoe contact or exact strike. CanonicalRegular and anatomicalLeftfront/Righttail are independently checked on source pixels.6097/6098 are rejected whole poses; occludedLeft forearm/wrist and hidden toe/sole depth are reconstructed. Exact PTS1001*globalframe/timebase30000 and cached full-source hash are authoritative. Dataset/on-screen names support identification but are not the sole proof. The earlier1fdf Catch/Land presentation is a rejected baseline for landing stiffness. The corrected landing depth and accompanying low balance arms are explicitly authored and still require original-mesh playback and Claude review.",
+  "files": [
+    {
+      "file": "switch-360-flip-low-physical-regular.jpg",
+      "type": "phases",
+      "profile": "low",
+      "physicalStance": "regular",
+      "requestedEnumStance": "goofy",
+      "sourceRole": "DIRECT filmed Regular",
+      "sha256": "5268cb70ae0d60a9330477e6407465a17f103ce10bb8869dc187beff44e054db",
+      "glbSha256": "76bef2151a4870c2dab72047da8cf15034c28c7c37729abb4501c832f22fa0eb",
+      "inputSha256": "058afe9b8471e88ea4c27855ccaf3229b4e6b3282705ab4f2faac9c4a6bd4162",
+      "phaseMoments": {
+        "Pop": 0.85,
+        "Rise": 0.9,
+        "Guide": 0.9833333333333333,
+        "Instep": 1,
+        "Strike": 1,
+        "FreeAir": 1.05,
+        "Air": 1.1333333333333333,
+        "FirstCatch": 1.3,
+        "Catch": 1.3333333333333333,
+        "Land": 1.4166666666666667,
+        "GenuineEnd": 1.8,
+        "Rollaway": 2.15,
+        "Load": 0.8,
+        "SourcePop": 0.85,
+        "End": 4,
+        "Absorb": 1.5,
+        "Recover": 1.7,
+        "Flick": 1,
+        "TailStrike": 1
+      },
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+    },
+    {
+      "file": "switch-360-flip-low-physical-regular-contacts.jpg",
+      "type": "contacts",
+      "profile": "low",
+      "physicalStance": "regular",
+      "requestedEnumStance": "goofy",
+      "sha256": "fc8960c867c346492138d794ec2efb7d0b9838bddba3772ef4a4bb9867f3d956",
+      "glbSha256": "76bef2151a4870c2dab72047da8cf15034c28c7c37729abb4501c832f22fa0eb"
+    },
+    {
+      "file": "switch-360-flip-low-physical-regular-before-after.jpg",
+      "type": "catch-land-before-after",
+      "profile": "low",
+      "physicalStance": "regular",
+      "requestedEnumStance": "goofy",
+      "sha256": "a1a3103194ac5468d27306b2849e6ec1af5d8383b49bf86dfb5eecafd205b107",
+      "afterGlbSha256": "76bef2151a4870c2dab72047da8cf15034c28c7c37729abb4501c832f22fa0eb",
+      "beforeRevision": "1fdfa862060d7689dff533bd2305c49f57dfe1ad",
+      "afterRevision": "d38bdbf48f6b281bbac77b75a057bc68ad8e733d",
+      "scope": "Immutable HELD1fdf GLB versus currentd38 GLB at identical cameras, times and actor-relative lights. No original source pixels."
+    },
+    {
+      "file": "switch-360-flip-normal-physical-regular.jpg",
+      "type": "phases",
+      "profile": "normal",
+      "physicalStance": "regular",
+      "requestedEnumStance": "goofy",
+      "sourceRole": "DIRECT filmed Regular",
+      "sha256": "b36925f9b40f0c061564c1f5adfbfbd6155aa94b0456e76b1bc3becf182cb881",
+      "glbSha256": "e0c65b388661d1309edb95c44072bba8cbd929daba3172a5d2284ceed73798dc",
+      "inputSha256": "28189be81453b5fb6c9ef586b353e76d1efe82df993238e7d7337bd67dba0b25",
+      "phaseMoments": {
+        "Pop": 0.85,
+        "Rise": 0.9,
+        "Guide": 1,
+        "Instep": 1.0166666666666666,
+        "Strike": 1.0166666666666666,
+        "FreeAir": 1.05,
+        "Air": 1.1666666666666667,
+        "FirstCatch": 1.3333333333333333,
+        "Catch": 1.3666666666666667,
+        "Land": 1.45,
+        "GenuineEnd": 1.8666666666666667,
+        "Rollaway": 2.2333333333333334,
+        "Load": 0.8,
+        "SourcePop": 0.85,
+        "End": 4,
+        "Absorb": 1.55,
+        "Recover": 1.75,
+        "Flick": 1.0166666666666666,
+        "TailStrike": 1.0166666666666666
+      },
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+    },
+    {
+      "file": "switch-360-flip-normal-physical-regular-contacts.jpg",
+      "type": "contacts",
+      "profile": "normal",
+      "physicalStance": "regular",
+      "requestedEnumStance": "goofy",
+      "sha256": "7558dff53a89e3b40c68e97ad42b1a5b34347228167301ac3069eb0709998e8c",
+      "glbSha256": "e0c65b388661d1309edb95c44072bba8cbd929daba3172a5d2284ceed73798dc"
+    },
+    {
+      "file": "switch-360-flip-normal-physical-regular-before-after.jpg",
+      "type": "catch-land-before-after",
+      "profile": "normal",
+      "physicalStance": "regular",
+      "requestedEnumStance": "goofy",
+      "sha256": "d6c9bad2b2f657f31b9f9ae79e4dcf6ce7b169d2de91bc307b7ccf1a0979e46d",
+      "afterGlbSha256": "e0c65b388661d1309edb95c44072bba8cbd929daba3172a5d2284ceed73798dc",
+      "beforeRevision": "1fdfa862060d7689dff533bd2305c49f57dfe1ad",
+      "afterRevision": "d38bdbf48f6b281bbac77b75a057bc68ad8e733d",
+      "scope": "Immutable HELD1fdf GLB versus currentd38 GLB at identical cameras, times and actor-relative lights. No original source pixels."
+    },
+    {
+      "file": "switch-360-flip-low-physical-goofy.jpg",
+      "type": "phases",
+      "profile": "low",
+      "physicalStance": "goofy",
+      "requestedEnumStance": "regular",
+      "sourceRole": "GOOFY mirror / source pixels unmirrored",
+      "sha256": "fde33d43f65681ffaf4ee041eb60757e39dc90a19495b5a73a54c2523654aa65",
+      "glbSha256": "1059ac9ef2612400c5130c57da44d727c4fc4854b2216f26016f93a30634f25a",
+      "inputSha256": "462fbeff50d1d12f3ec4da97e6c723e5b2c6fd58c2820bf50b2de697b108615e",
+      "phaseMoments": {
+        "Pop": 0.85,
+        "Rise": 0.9,
+        "Guide": 0.9833333333333333,
+        "Instep": 1,
+        "Strike": 1,
+        "FreeAir": 1.05,
+        "Air": 1.1333333333333333,
+        "FirstCatch": 1.3,
+        "Catch": 1.3333333333333333,
+        "Land": 1.4166666666666667,
+        "GenuineEnd": 1.8,
+        "Rollaway": 2.15,
+        "Load": 0.8,
+        "SourcePop": 0.85,
+        "End": 4,
+        "Absorb": 1.5,
+        "Recover": 1.7,
+        "Flick": 1,
+        "TailStrike": 1
+      },
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+    },
+    {
+      "file": "switch-360-flip-low-physical-goofy-contacts.jpg",
+      "type": "contacts",
+      "profile": "low",
+      "physicalStance": "goofy",
+      "requestedEnumStance": "regular",
+      "sha256": "713eb3225dd5e22296d4b404f8628b87d7d51ef23d3ab8307e94f68e2e8df090",
+      "glbSha256": "1059ac9ef2612400c5130c57da44d727c4fc4854b2216f26016f93a30634f25a"
+    },
+    {
+      "file": "switch-360-flip-low-physical-goofy-before-after.jpg",
+      "type": "catch-land-before-after",
+      "profile": "low",
+      "physicalStance": "goofy",
+      "requestedEnumStance": "regular",
+      "sha256": "5e11ef4660602966cb02b10da4cbe0bca56a0d17a7ff1fef8d662b77eb4bc018",
+      "afterGlbSha256": "1059ac9ef2612400c5130c57da44d727c4fc4854b2216f26016f93a30634f25a",
+      "beforeRevision": "1fdfa862060d7689dff533bd2305c49f57dfe1ad",
+      "afterRevision": "d38bdbf48f6b281bbac77b75a057bc68ad8e733d",
+      "scope": "Immutable HELD1fdf GLB versus currentd38 GLB at identical cameras, times and actor-relative lights. No original source pixels."
+    },
+    {
+      "file": "switch-360-flip-normal-physical-goofy.jpg",
+      "type": "phases",
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "requestedEnumStance": "regular",
+      "sourceRole": "GOOFY mirror / source pixels unmirrored",
+      "sha256": "d16ffdd913fdc3522bad836c8243178c12c82a1ca80040990ed7f9e3eb3a7e64",
+      "glbSha256": "2dfbdca58cebe3c900e9b109d6712356258fe476546b34bd735fc1aee7c83170",
+      "inputSha256": "4853450868b463be6b5988d6933c4a499f6698c7c91d00d23de2c8fd7a2dc915",
+      "phaseMoments": {
+        "Pop": 0.85,
+        "Rise": 0.9,
+        "Guide": 1,
+        "Instep": 1.0166666666666666,
+        "Strike": 1.0166666666666666,
+        "FreeAir": 1.05,
+        "Air": 1.1666666666666667,
+        "FirstCatch": 1.3333333333333333,
+        "Catch": 1.3666666666666667,
+        "Land": 1.45,
+        "GenuineEnd": 1.8666666666666667,
+        "Rollaway": 2.2333333333333334,
+        "Load": 0.8,
+        "SourcePop": 0.85,
+        "End": 4,
+        "Absorb": 1.55,
+        "Recover": 1.75,
+        "Flick": 1.0166666666666666,
+        "TailStrike": 1.0166666666666666
+      },
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+    },
+    {
+      "file": "switch-360-flip-normal-physical-goofy-contacts.jpg",
+      "type": "contacts",
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "requestedEnumStance": "regular",
+      "sha256": "c2a14ed7fa3a49488a10d451fb0adb0e3bf3c05bd2dcf0e512e9df0985c37338",
+      "glbSha256": "2dfbdca58cebe3c900e9b109d6712356258fe476546b34bd735fc1aee7c83170"
+    },
+    {
+      "file": "switch-360-flip-normal-physical-goofy-before-after.jpg",
+      "type": "catch-land-before-after",
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "requestedEnumStance": "regular",
+      "sha256": "b7daf0fe1941b05e8b2ccd20683d2ac13d95828579cd3016137b72523b876a2b",
+      "afterGlbSha256": "2dfbdca58cebe3c900e9b109d6712356258fe476546b34bd735fc1aee7c83170",
+      "beforeRevision": "1fdfa862060d7689dff533bd2305c49f57dfe1ad",
+      "afterRevision": "d38bdbf48f6b281bbac77b75a057bc68ad8e733d",
+      "scope": "Immutable HELD1fdf GLB versus currentd38 GLB at identical cameras, times and actor-relative lights. No original source pixels."
+    },
+    {
+      "file": "switch-360-flip-normal-physical-regular-landing.jpg",
+      "type": "landing-sequence",
+      "profile": "normal",
+      "physicalStance": "regular",
+      "sha256": "2c7f0ffd2ec9babe6ffdfb8822412000520686f8795799f52eb9113bfc6fa062",
+      "scope": "Actual current original GLB at Land\u2212.05,0,+.05,+.10,+.15,+.25,+.40s; actor-relative lights."
+    },
+    {
+      "file": "switch-360-flip-normal-physical-goofy-landing.jpg",
+      "type": "landing-sequence",
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "sha256": "d8bdec720a2abb04a20f7ac8d7708038667cebd52286fd9a5205d9d23f326b75",
+      "scope": "Actual current original GLB at Land\u2212.05,0,+.05,+.10,+.15,+.25,+.40s; actor-relative lights."
+    },
+    {
+      "file": "switch-360-flip-low-physical-regular-landing.jpg",
+      "type": "landing-sequence",
+      "profile": "low",
+      "physicalStance": "regular",
+      "sha256": "c9a0067bf1b13b58f68b1adcbf217ed138e04c452f80147384854e9b71bd9e59",
+      "scope": "Actual current original GLB at Land\u2212.05,0,+.05,+.10,+.15,+.25,+.40s; actor-relative lights."
+    },
+    {
+      "file": "switch-360-flip-low-physical-goofy-landing.jpg",
+      "type": "landing-sequence",
+      "profile": "low",
+      "physicalStance": "goofy",
+      "sha256": "75c6fa5b4b5cd53f33653cb76f67084a0431db73184e62901a94e8fe6301ee3d",
+      "scope": "Actual current original GLB at Land\u2212.05,0,+.05,+.10,+.15,+.25,+.40s; actor-relative lights."
+    }
+  ],
+  "models": [
+    {
+      "profile": "low",
+      "requestedEnumStance": "goofy",
+      "physicalPreview": {
+        "profile": "low",
+        "requestedStance": "goofy",
+        "physicalPreviewStance": "regular",
+        "leadFoot": "Left",
+        "at": 0.8333333333333334,
+        "leadDistance": 0.36576486030266775,
+        "leftFoot": [
+          0.03998365994794989,
+          0.19539490435020515,
+          3.2240996941500457
+        ],
+        "rightFoot": [
+          0.04520248339449067,
+          0.21759284211873361,
+          2.858334833847378
+        ],
+        "deckForward": [
+          -2.4492937051703357e-16,
+          0.0,
+          1.0
+        ],
+        "toeSideDot": -0.8332840420323248,
+        "glbDeckForwardDot": 1.0,
+        "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+        "note": "Actual animated GLB foot-bone world positions against its recorded DeckForward; frozen proxy anatomy, not a global native-handedness claim"
+      },
+      "glbSha256": "76bef2151a4870c2dab72047da8cf15034c28c7c37729abb4501c832f22fa0eb",
+      "inputSha256": "058afe9b8471e88ea4c27855ccaf3229b4e6b3282705ab4f2faac9c4a6bd4162",
+      "renderedRuntimeRevision": "d38bdbf48f6b281bbac77b75a057bc68ad8e733d",
+      "actualManagedReplayRevision": "d38bdbf48f6b281bbac77b75a057bc68ad8e733d"
+    },
+    {
+      "profile": "normal",
+      "requestedEnumStance": "goofy",
+      "physicalPreview": {
+        "profile": "normal",
+        "requestedStance": "goofy",
+        "physicalPreviewStance": "regular",
+        "leadFoot": "Left",
+        "at": 0.8333333333333334,
+        "leadDistance": 0.3657643076747301,
+        "leftFoot": [
+          0.039983368832317415,
+          0.1953947337720616,
+          3.2241011077616575
+        ],
+        "rightFoot": [
+          0.04520206267669554,
+          0.21759233307044096,
+          2.8583368000869274
+        ],
+        "deckForward": [
+          -2.4492937051703357e-16,
+          0.0,
+          1.0
+        ],
+        "toeSideDot": -0.8332844396239882,
+        "glbDeckForwardDot": 1.0,
+        "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+        "note": "Actual animated GLB foot-bone world positions against its recorded DeckForward; frozen proxy anatomy, not a global native-handedness claim"
+      },
+      "glbSha256": "e0c65b388661d1309edb95c44072bba8cbd929daba3172a5d2284ceed73798dc",
+      "inputSha256": "28189be81453b5fb6c9ef586b353e76d1efe82df993238e7d7337bd67dba0b25",
+      "renderedRuntimeRevision": "d38bdbf48f6b281bbac77b75a057bc68ad8e733d",
+      "actualManagedReplayRevision": "d38bdbf48f6b281bbac77b75a057bc68ad8e733d"
+    },
+    {
+      "profile": "low",
+      "requestedEnumStance": "regular",
+      "physicalPreview": {
+        "profile": "low",
+        "requestedStance": "regular",
+        "physicalPreviewStance": "goofy",
+        "leadFoot": "Right",
+        "at": 0.8333333333333334,
+        "leadDistance": -0.3657804542387124,
+        "leftFoot": [
+          -0.04518977651470777,
+          0.21763892243152952,
+          2.8583352403369777
+        ],
+        "rightFoot": [
+          -0.04000955261780304,
+          0.19539313157589433,
+          3.22411569457569
+        ],
+        "deckForward": [
+          -2.4492937051703357e-16,
+          0.0,
+          1.0
+        ],
+        "toeSideDot": 0.8332841305646027,
+        "glbDeckForwardDot": 1.0,
+        "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+        "note": "Actual animated GLB foot-bone world positions against its recorded DeckForward; frozen proxy anatomy, not a global native-handedness claim"
+      },
+      "glbSha256": "1059ac9ef2612400c5130c57da44d727c4fc4854b2216f26016f93a30634f25a",
+      "inputSha256": "462fbeff50d1d12f3ec4da97e6c723e5b2c6fd58c2820bf50b2de697b108615e",
+      "renderedRuntimeRevision": "d38bdbf48f6b281bbac77b75a057bc68ad8e733d",
+      "actualManagedReplayRevision": "d38bdbf48f6b281bbac77b75a057bc68ad8e733d"
+    },
+    {
+      "profile": "normal",
+      "requestedEnumStance": "regular",
+      "physicalPreview": {
+        "profile": "normal",
+        "requestedStance": "regular",
+        "physicalPreviewStance": "goofy",
+        "leadFoot": "Right",
+        "at": 0.8333333333333334,
+        "leadDistance": -0.36578006471834357,
+        "leftFoot": [
+          -0.04519041719456686,
+          0.21763871624540862,
+          2.858337393407035
+        ],
+        "rightFoot": [
+          -0.040009563408411095,
+          0.19539341586761644,
+          3.2241174581253786
+        ],
+        "deckForward": [
+          -2.4492937051703357e-16,
+          0.0,
+          1.0
+        ],
+        "toeSideDot": 0.8332844098086019,
+        "glbDeckForwardDot": 1.0,
+        "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+        "note": "Actual animated GLB foot-bone world positions against its recorded DeckForward; frozen proxy anatomy, not a global native-handedness claim"
+      },
+      "glbSha256": "2dfbdca58cebe3c900e9b109d6712356258fe476546b34bd735fc1aee7c83170",
+      "inputSha256": "4853450868b463be6b5988d6933c4a499f6698c7c91d00d23de2c8fd7a2dc915",
+      "renderedRuntimeRevision": "d38bdbf48f6b281bbac77b75a057bc68ad8e733d",
+      "actualManagedReplayRevision": "d38bdbf48f6b281bbac77b75a057bc68ad8e733d"
+    }
+  ],
+  "managedRoute": {
+    "scope": "Four actual controlled managed Pad/full32Hz Step/Land/scorer/body routes: normal36/36 and low34/34 Air frames, Switch360Flip, ordinaryGround/captureoff4s. All4 physics/scoring traces exact2520.",
+    "sourceFreezeSha256": "328addbc70cb030a35c236599f13c6fb3935a73559727065cf118f1a1f94aa99",
+    "sourceChecksSha256": "12679244fe8e789db36af15666cb2abc49040397a590f0791711b612de50dacb"
+  },
+  "replay": {
+    "status": "Root sampled Source/Side/Feet UI at1x/quarter across4executions and phase/landing images; not every-frame continuous-video review.",
+    "receiptSha256": "71493ab17644a35d350366b1dd248964ef136255aebbb3ff349af3844200f842",
+    "nativeGame": false
+  },
+  "status": "Root+independent source/data and Root sampled current mesh review passed; Claude offline and native gates pending.",
+  "stillLighting": "Actor-relative studio lights, same for baseline and current; no pose/model export workaround.",
+  "stillInspection": {
+    "receiptSha256": "cd016ca88170268a596642beaa63e06bf6000db673e3db93b5fc532462c38454",
+    "scope": "Author personally inspected four8-phase sheets, four contact sheets, four exact held/current Catch/Land comparisons, four7-step landing strips, four private original-source comparison sheets and extra original-GLB tail-axis Catch/Land stills. Sampled images, not actual real-time playback.",
+    "rootCuaReplayPending": false
+  },
+  "productionSdkCompile": {
+    "sourceRevision": "d38bdbf48f6b281bbac77b75a057bc68ad8e733d",
+    "sourceCount": 81,
+    "referenceCount": 356,
+    "actualGameUnityRefs": 191,
+    "actualBepRuntimeRefs": 5,
+    "frameworkRefs": 160,
+    "exitCode": 0,
+    "receiptSha256": "647b024676a5f6d4e0a2bab5e2ef4a20fb87b5f3abc4be3491d20e0db9d67135",
+    "scope": "Offline frozen d38 source compile; no native execution."
+  }
+}
