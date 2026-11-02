@@ -64,24 +64,25 @@ pelvis/board curves, physics/scoring and all existing guards remain intact.
 [Original-rig phase/contact sheets](../../../../docs/review-media/a5-switch-fs-pop-shove/README.md).
 Four actual Pad/production Step/Land/scorer cases select Switch Frontside
 Pop Shove-it, normal/low and both requested bindings. All36normal/34low Air
-samples per stance retain the capture; native traces remain byte-identical.
-Four original-skin/full13-part-board exports,32 phase frames,1×/¼× playback,
-28 decoded-source seeks and24source774/side/foot details were self-checked
-through ordinary4-second recovery, without browser errors. Source matching
-Goofy and its Regular mirror are explicitly labelled; source pixels never
-mirror. Private camera fits reflect viewing side only, never native heading.
+samples per stance retain the capture. All four complete native traces
+match the earlier4f2 baseline byte-for-byte. The475 source samples and each
+241-frame actual body replay differ only in the four elbow/hand positions;
+all non-arm body/foot/board/sole/time/contact/physics fields are exact.
 
-Those existing viewer/media checks describe the earlier rejected arm baseline.
-The balance-repair source pack is
-`4e0e2868db2aec3a037e1afcabcf8b3532d5be195c6e1cdf5c87c207ae55cde9`;
-its475 source samples differ only in the four elbow/hand joints. Exact-current-main
-four-case body replays and replacement original-rig media remain pending at
-this source handoff. The raw pack remains `reviewed=false`.
+Four original-skin/full13-part-board exports and32 phase frames were
+self-checked at1×/¼× through4-second ordinary recovery, with32 decoded-source
+phase visits and24 Source/Side/Feet arm/contact details, without browser
+errors. The new arm transitions settle through Catch/Land into the original
+rollout without a high-hand rebound. The true first-rise768 is the main Pop
+button; the exact old rejected strike773.5 remains explicit as TailStrike
+and in same-camera before/after figures. Source-matching Goofy and its
+Regular mirror follow the actual GLB bone audit, including default/dropdowns;
+source pixels remain unchanged.
 
-The [render/runtime freeze](https://github.com/Dj-Shortcut/rust-skate-mod/commit/4f2b7c2be24c7a1e734d15daca1e751805bd2fe4)
+The [render/runtime freeze](https://github.com/Dj-Shortcut/rust-skate-mod/commit/05745de05687ec43e61a782bf075539288679c93)
 uses raw pack SHA-256
-`3803675fdaf0fc0752e9cd01903838efc62c83099bf705c6b32c55283e3c1b4f`.
-Raw packs stay `reviewed=false`. These are managed/graphical author checks,
-not native Rust/Shadow or installed-package approval. Claude owns the
-independent offline verdict and library status; the owner tests the native
-client later on Shadow.
+`4e0e2868db2aec3a037e1afcabcf8b3532d5be195c6e1cdf5c87c207ae55cde9`. All C# remains unchanged from main at
+this data-only repair. Raw packs stay `reviewed=false`. These are controlled
+managed/graphical author checks; Claude owns the independent offline
+verdict and library status. Native Rust/Shadow and installed-package
+acceptance remain separate and pending.

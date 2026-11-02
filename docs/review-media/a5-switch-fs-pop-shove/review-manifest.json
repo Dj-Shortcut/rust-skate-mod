@@ -2,8 +2,8 @@
   "format": "switch-fs-pop-shove-own-rig-review/1",
   "sourceReviewed": false,
   "nativeGame": false,
-  "sourceCodeRevision": "4f2b7c2be24c7a1e734d15daca1e751805bd2fe4",
-  "sourcePackSha256": "3803675fdaf0fc0752e9cd01903838efc62c83099bf705c6b32c55283e3c1b4f",
+  "sourceCodeRevision": "05745de05687ec43e61a782bf075539288679c93",
+  "sourcePackSha256": "4e0e2868db2aec3a037e1afcabcf8b3532d5be195c6e1cdf5c87c207ae55cde9",
   "sourceBodyControlSha256": "b0b0fff054e1ee70ff35f37b7f5935091efda841573fd80bbc20a57e97c656a4",
   "source": "Own BATB13 black actor1091, bounded738..817; filmedSwitchGoofy Rightnose/Lefttail, normalbase uncertain; one initial-nose/anatomical reflection. Original source pixels private and unchanged.",
   "viewer": "http://127.0.0.1:63761/a5-switch-fs-pop-shove/",
@@ -14,7 +14,7 @@
       0.25
     ],
     "ordinaryEndSeconds": 4,
-    "decodedPhaseSeeks": 28,
+    "decodedPhaseSeeks": 32,
     "browserErrors": 0,
     "contactCaptures": 24
   },
@@ -24,12 +24,13 @@
       "physicalStance": "regular",
       "nativeStance": "goofy",
       "profile": "low",
-      "sha256": "ccfb9ea9108567b12d5bc2e5bbf7aff8eebea89748bdb317d5ac90df0bd27638",
-      "glbSha256": "f5966d52790e56a35d26536c4c6f145ae40b65402970104e07cd02497fe6cc77",
-      "inputSha256": "eab1669027b112b544ea753755c3f114198724f4a002c4ceaec98cded5d3fdfa",
+      "sha256": "c6ae1dc582fd765d08c018ac9703f85d6002b09dc7a2ff540aecf85903ab7baf",
+      "glbSha256": "7006d39f0f5100658dc96e8228b30176a7a71263c2380bdc6ebce01bec1659b8",
+      "inputSha256": "b40e7ef23f3034f604fd11329dde6753cbe1c804a8b7234d0d4681ed5546156d",
       "phases": {
         "Load": 0.8166666666666667,
-        "Pop": 1,
+        "Pop": 0.85,
+        "TailStrike": 1,
         "Scoop": 1.0833333333333333,
         "Repair774": 1.0166666666666666,
         "Air": 1.2,
@@ -44,12 +45,13 @@
       "physicalStance": "regular",
       "nativeStance": "goofy",
       "profile": "normal",
-      "sha256": "cf5166278934fcd9103c711fc3e2a271d08c3e52aa14d671f256bd5e000c9562",
-      "glbSha256": "0621ac122a76d80ca85afe8ba61a646649b4ce9467573278a0b3f24881b9a2e9",
-      "inputSha256": "041e9ab6853a376872f29a4723d20a211365bbca4f0fe56f61b04f3510544d99",
+      "sha256": "e24ef42b3519de19abb49817475c782fb4c975a73721b0f0fb8901aa2d851d7d",
+      "glbSha256": "0eb8f8421c514bbde9f8fe34a4eb8c6778402144c50227cbd665272dfc420674",
+      "inputSha256": "7cd56b572393ef2fe20e965ebaec75e4efc1bcfa69487f4774116ba3fa9e2db4",
       "phases": {
         "Load": 0.8166666666666667,
-        "Pop": 1.0166666666666666,
+        "Pop": 0.85,
+        "TailStrike": 1.0166666666666666,
         "Scoop": 1.1,
         "Repair774": 1.0333333333333334,
         "Air": 1.2166666666666666,
@@ -64,12 +66,13 @@
       "physicalStance": "goofy",
       "nativeStance": "regular",
       "profile": "low",
-      "sha256": "b91af3979591e76d4c03729151e4d3fcb6e949f717e01c81fa30be2faa76a117",
-      "glbSha256": "825dce8727f537004d72443939813313967447d70adb8cc338821e09ba2e18bf",
-      "inputSha256": "cfc1208c007481c414e021d5f94608d18d85e9d798c895f755d16c2acf8c105c",
+      "sha256": "c15f07fdc1b1911dcca0affa78ad69f571b1740dc516ffc204607a63e35c6aa0",
+      "glbSha256": "36e9a40c4851d9884e718dc88f542537d0834856992a4b30f45b1ad9e562f56a",
+      "inputSha256": "e1bb57ea5aa8288602ebf900e7d6e9669897f5bdd15159277962d0cb4312b246",
       "phases": {
         "Load": 0.8166666666666667,
-        "Pop": 1,
+        "Pop": 0.85,
+        "TailStrike": 1,
         "Scoop": 1.0833333333333333,
         "Repair774": 1.0166666666666666,
         "Air": 1.2,
@@ -84,12 +87,13 @@
       "physicalStance": "goofy",
       "nativeStance": "regular",
       "profile": "normal",
-      "sha256": "8afc49836202c57d3775efba1a019f12868a3a625bb087de6451a0b988028675",
-      "glbSha256": "0e64782c664f53b82ef2897a3f325def461f0adcc92245a2b6ed01a18dc33df7",
-      "inputSha256": "8a1d31fc69082c372059d9b6dfaca05ef11b2f5ac7eb24da7a8a41830cad877e",
+      "sha256": "ce67117d3df810f2b61dea9c06ae240d73a53856ba905c50a4b8c07283ade235",
+      "glbSha256": "fc675e7e5cf3521bcbf05569703df4988d86a7b679cd74887d1993bbc58e48d4",
+      "inputSha256": "b9204ffb2256600e0aa3375bb63fc258b37a4e67598a2f7b8b0a979e2f6d30b6",
       "phases": {
         "Load": 0.8166666666666667,
-        "Pop": 1.0166666666666666,
+        "Pop": 0.85,
+        "TailStrike": 1.0166666666666666,
         "Scoop": 1.1,
         "Repair774": 1.0333333333333334,
         "Air": 1.2166666666666666,
@@ -105,170 +109,73 @@
       "file": "switch-fs-pop-shove-normal-physical-regular-contacts.jpg",
       "profile": "normal",
       "physicalStance": "regular",
-      "sha256": "6c482c1be59a5c37488c5f1ff3d53fed3e5c20e80ed7910d6ecb2b1223293ffd"
+      "sha256": "6c312a8a34da0be5109ddd7d894f2003461a28c6611b1b7e00943d183a950162"
     },
     {
       "file": "switch-fs-pop-shove-normal-physical-goofy-contacts.jpg",
       "profile": "normal",
       "physicalStance": "goofy",
-      "sha256": "4025e35bba6f18f84005dc5f7e048d608174a0de473706933fef184f56ba6007"
+      "sha256": "68905f6777fd6fa3efff7058e92a41041e27abcf3ca6e8c030725e90603fe65e"
     },
     {
       "file": "switch-fs-pop-shove-low-physical-regular-contacts.jpg",
       "profile": "low",
       "physicalStance": "regular",
-      "sha256": "e1659f9815c77e5bc632d220d90770725ffc3fbbd4d49b3e80fa85eb8385ee93"
+      "sha256": "055bb42012dc354a7bb54297350b36a49922b8169ebc0816294503b3a6e28681"
     },
     {
       "file": "switch-fs-pop-shove-low-physical-goofy-contacts.jpg",
       "profile": "low",
       "physicalStance": "goofy",
-      "sha256": "8a2dc9ffe33667cdca8a910b1d778f0af4ee02497046d8d4a3b645db30562a6c"
+      "sha256": "9a68d758f8838576cd4951128d5c252dd34a5d6ff3a4437453522d70a7416e25"
     }
   ],
-  "limits": "Own reconstruction and managed actual Pad/Step/Land/scorer fixture, not native Rust/Shadow. Root and Claude retain visual/offline gates. No approval promotion.",
-  "signature": {
-    "pop": "Ollie",
-    "switch": true,
-    "tailLeads": false,
-    "flip": 0,
-    "shove": 180,
-    "spin": 0,
-    "body": 0
-  },
-  "sourceContext": {
-    "videoUrl": "https://www.youtube.com/watch?v=tL8Ey9GS0xQ&t=205",
-    "videoSha256": "220a8f31da226010bb44afa81882f684744ab2071458279eb937cf68b95fee48",
-    "bodyControlSha256": "b0b0fff054e1ee70ff35f37b7f5935091efda841573fd80bbc20a57e97c656a4",
-    "frames": [
-      738,
-      817
+  "limits": "Both-arm owner-directed repair; all non-arm actual frames and complete native traces match the prior baseline. Managed actual Pad/Step/Land/scorer fixture, not native Rust/Shadow. Root and Claude retain visual/offline gates. No approval promotion.",
+  "repair": {
+    "gate": "https://github.com/Dj-Shortcut/rust-skate-mod/issues/716#issuecomment-6567110165",
+    "scope": "Only both elbow/hand trajectories are authored for bent below-shoulder balance. Captured body and all source/actual non-arm fields exact; all four complete native traces match the rendered4f2 baseline.",
+    "windowSourceFrames": [
+      762,
+      768,
+      797,
+      808
     ],
-    "nextActorCut": 827,
-    "fps": "30000/1001",
-    "pts": "1001*localFrame",
-    "timeBase": "1/30000",
-    "firstPts": 0,
-    "originalGlobalFramesKnown": false,
-    "filmedExecution": "Goofy Rightnose/Lefttail; baseRegular only inferred from Switch label",
-    "canonicalRegularReflectionCount": 1,
-    "rejectedOwnModelFrames": [
-      774
-    ],
-    "reconstruction": "Own773/775 only; no other take/body borrowed",
-    "sourcePixelMirror": false
-  },
-  "firstRiseEntry": {
-    "sourcePop": 768,
-    "sourceStrike": 773.5,
-    "entryFraction": 0.125,
-    "entryScope": "Only this newly added Switch FS exact clip; older reviewed clips unchanged",
-    "pelvisFeetBoardCurvesUnchanged": true,
-    "nativeTracesByteIdentical": true
-  },
-  "camera": {
-    "sourceMatchingGoofy": [
-      0.966,
-      0.06,
-      0.259
-    ],
-    "regularMirrorView": [
-      -0.966,
-      0.06,
-      0.259
-    ],
-    "radius": 4.5,
-    "scope": "Private fixed source-facing estimates; mirrored viewing side for opposite execution; no native heading, pose, gameplay camera or source pixels changed"
-  },
-  "selfReview": "Author viewed all four original-mesh phase/source sequences, normal/quarter playback, source774 and side/foot details. Claude retains independent offline judgement; no raw/native promotion.",
-  "checks": {
-    "actualNativeSourceCases": 4,
-    "normalCaptureSamples": [
-      36,
-      36
-    ],
-    "lowCaptureSamples": [
-      34,
-      34
-    ],
-    "bodySeconds": 4,
-    "originalGLBs": 4,
-    "phaseFrames": 32,
-    "decodedPhaseSeeks": 28,
-    "detailCaptures": 24,
-    "captionChecks": 2,
-    "browserErrors": 0,
-    "strictGuardsUnchanged": true
+    "sourceCapturedBodyUnchanged": true,
+    "sourceConstraintsSha256": "237e5fac329e97b04111347a9eddcbc30b4f403e2584d75610306b301d75ba11",
+    "bakerSha256": "106e8e8f6d4200714211dcfbe0af959c5ab5a1096b766b155e70913c38e432f5",
+    "mainPopSourceFrame": 768,
+    "mainPopActualSeconds": 0.85,
+    "retainedRejectedTailStrikeSourceFrame": 773.5,
+    "retainedNormalTailStrikeActualSeconds": 1.0166666666666666
   },
   "beforeAfter": [
     {
-      "file": "entry-before-after-goofy.jpg",
-      "sha256": "e2c0a4d04b5acf44eac44a0e4e41ab7f4b870faae0bece4c01630af26ac5746a",
-      "physicalStance": "goofy",
-      "profile": "normal",
-      "baselineRaw": "6c2069768cfaf735a292a45e62cb3505093d2dde7ca149378155e72794a0f6c9",
-      "baselineRuntime": "f575295d0f5f5ff87e9fda7bce78d596be919f37",
-      "sameCameraAndRig": true,
-      "sourceAndNativeTimesLabelled": true,
-      "rigOnly": true
+      "file": "arms-before-after-regular.jpg",
+      "physicalStance": "regular",
+      "sha256": "7b302be3618589116675e28d93bd7d4a861c9e6d61622ffe2904f33c0b3761a4",
+      "moments": [
+        "TailStrike",
+        "Scoop",
+        "Catch",
+        "Land"
+      ],
+      "sameCameraAndTimes": true
     },
     {
-      "file": "entry-before-after-regular.jpg",
-      "sha256": "c5ce0506b5347652e431e151d0f6b894af989cff0fce3d663fb8440ae0450167",
-      "physicalStance": "regular",
-      "profile": "normal",
-      "baselineRaw": "6c2069768cfaf735a292a45e62cb3505093d2dde7ca149378155e72794a0f6c9",
-      "baselineRuntime": "f575295d0f5f5ff87e9fda7bce78d596be919f37",
-      "sameCameraAndRig": true,
-      "sourceAndNativeTimesLabelled": true,
-      "rigOnly": true
+      "file": "arms-before-after-goofy.jpg",
+      "physicalStance": "goofy",
+      "sha256": "2518c846f2149c43e23c5a975ef13a31f57e596d3d87131d6818000f9c20a577",
+      "moments": [
+        "TailStrike",
+        "Scoop",
+        "Catch",
+        "Land"
+      ],
+      "sameCameraAndTimes": true
     }
   ],
-  "models": [
-    {
-      "profile": "low",
-      "requestedStance": "goofy",
-      "physicalStance": "regular",
-      "glbSha256": "f5966d52790e56a35d26536c4c6f145ae40b65402970104e07cd02497fe6cc77",
-      "inputSha256": "eab1669027b112b544ea753755c3f114198724f4a002c4ceaec98cded5d3fdfa",
-      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
-      "boardParts": 13
-    },
-    {
-      "profile": "normal",
-      "requestedStance": "goofy",
-      "physicalStance": "regular",
-      "glbSha256": "0621ac122a76d80ca85afe8ba61a646649b4ce9467573278a0b3f24881b9a2e9",
-      "inputSha256": "041e9ab6853a376872f29a4723d20a211365bbca4f0fe56f61b04f3510544d99",
-      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
-      "boardParts": 13
-    },
-    {
-      "profile": "low",
-      "requestedStance": "regular",
-      "physicalStance": "goofy",
-      "glbSha256": "825dce8727f537004d72443939813313967447d70adb8cc338821e09ba2e18bf",
-      "inputSha256": "cfc1208c007481c414e021d5f94608d18d85e9d798c895f755d16c2acf8c105c",
-      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
-      "boardParts": 13
-    },
-    {
-      "profile": "normal",
-      "requestedStance": "regular",
-      "physicalStance": "goofy",
-      "glbSha256": "0e64782c664f53b82ef2897a3f325def461f0adcc92245a2b6ed01a18dc33df7",
-      "inputSha256": "8a1d31fc69082c372059d9b6dfaca05ef11b2f5ac7eb24da7a8a41830cad877e",
-      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
-      "boardParts": 13
-    }
-  ],
-  "postMainUnion": {
-    "revision": "2676f9c8c21925738cfce1f3938dd85a7c321546",
-    "scope": "Preserves main Nollie FS index36 and appends Switch FS index37; original rendered runtime4f2 is unchanged evidence.",
-    "completeBodyFilesByteIdentical": 4,
-    "completeNativeTraceFilesByteIdentical": 4,
-    "privateReceiptSha256": "787e2af03f24387fc787c167204d808c74793415252d5f8486ddc7f2b61a4186",
-    "rawReviewed": false,
-    "nativeGame": false
-  }
+  "selfReview": "Author viewed normal/low, both physical stances, source-matching and mirrored execution, complete1x/quarter replays, source/side/feet details and rollout. No high-arm rebound seen. Root independently viewed bounded original-rig before/after; Claude owns independent offline verdict.",
+  "independentOfflineApproved": false,
+  "physicalDefault": "goofy",
+  "defaultReason": "Audited source-matching execution; Regular is explicitly labelled mirror."
 }
