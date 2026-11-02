@@ -2,7 +2,7 @@
   "format": "skate-rig-only-review-media/1",
   "trick": "Fakie Hardflip",
   "sourceCodeRevision": "c11506b26cf9c98263ada83a907809da44431d36",
-  "runtimeRouteRevision": "c11506b26cf9c98263ada83a907809da44431d36",
+  "runtimeRouteRevision": "dce4c345cf253f293a671bff4fec402785c8256e",
   "sourcePackSha256": "eba070749c25218b4a69d32af8500946f93092fd92d5fef63461409737dedb39",
   "rawReviewed": false,
   "offlineReviewed": false,
@@ -779,7 +779,7 @@
     }
   ],
   "privateReceiptSha256": {
-    "ROUTES.private.json": "9a3c00513715c8fb4e2c6e4b45774d251687cbafc9d34899f07bc92c14679ca4",
+    "ROUTES.private.json": "a0c51ff18b5aff6ea3395e4ce64762c70920997a8067a4f6b734ae734b8ebffd",
     "ACTUAL-BENT-ARM-SCOPE.private.json": "dbb07d24a992b0923aca63c1026428669afdea591c6e1e54eb960d8a968b8bb4",
     "ACTUAL-RETURN-ARM-SCOPE.private.json": "184e3260f8321def1749855a15a6ee574d93a9f6dd2188ab94cc760788a552b8",
     "RETURN-ARM-BONE-ASSOCIATION.private.json": "d7ae61eb8c1cd4c98777162d9a59d2d6db6c0dc86496f9ceebb6d9ad8a0376cf",
@@ -829,5 +829,17 @@
       "file": "normal-regular-return-before-after.jpg",
       "sha256": "891be91eac983842af752a618b52345932272ff0efe1e93eb16b7c3c69bbd811"
     }
-  ]
+  ],
+  "renderedRouteRevision": "c11506b26cf9c98263ada83a907809da44431d36",
+  "renderedRouteReceiptSha256": "9a3c00513715c8fb4e2c6e4b45774d251687cbafc9d34899f07bc92c14679ca4",
+  "postMainComposition": {
+    "mainBase": "dd9672cb084f699f4879ba48fa16cfea918f8276",
+    "preservedExistingCatalogIndices": "0\u201340 byte-identical declarations",
+    "newCatalogIndex": 41,
+    "completeCurrent81SourceProductionInteropCompile": "PASS; all three changed presentation/catalog files actually pinned to dce4c345",
+    "all4BodyAndAll4NativeTraceBytesExactRenderedC115": true,
+    "independentFinalStillReview": "PASS all8phase/contact and2returnwitnesses",
+    "rootFinalReview": "PASS final10sheet mosaic plus original source and fixed-side return comparisons",
+    "nativeAcceptance": false
+  }
 }
