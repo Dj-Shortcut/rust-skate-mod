@@ -91,6 +91,10 @@
       0
     ],
     [
+      15478.5,
+      0
+    ],
+    [
       15481,
       -40
     ],
@@ -694,7 +698,7 @@
       ]
     }
   ],
-  "provenance": "Own genuine Rodriguez Nollie Hardflip15420..15534, source physicalGoofy Rightnose pop/Leftrear instep. Own VIDEO107/115 body, one anatomical reflection to canonical Leftnose pop/Rightrear instep. Own first-rise, forward nose pressure, opposite-foot tail-side outer-upper drag, full+360roll/FS-180yaw, compact feet, grip-up reversed-deck catch, bent landing and soft recovery are authored against the actual footage. No normal Hardflip body, source-specific frame150..158, world-root2/11 or client0.28 tuck reused. Geometry/interpolation/fixed-chain maths only shared. Combined visible correction: dense15470..15481 brackets first extension15474..15475, so Pop15474.5 precedes the retained real nose strike. Intrinsic steep free-Air pitch is authored through the between-leg hardflip pass; same camera/yaw/roll/foot roles, independent of projection. Catch pelvis is lower and late rollaway keeps soft knees instead of the initial nearly straight finish.",
+  "provenance": "Own genuine Rodriguez Nollie Hardflip15420..15534, source physicalGoofy Rightnose pop/Leftrear instep. Own VIDEO107/115 body, one anatomical reflection to canonical Leftnose pop/Rightrear instep. Own first-rise, forward nose pressure, opposite-foot tail-side outer-upper drag, full+360roll/FS-180yaw, compact feet, grip-up reversed-deck catch, bent landing and soft recovery are authored against the actual footage. No normal Hardflip body, source-specific frame150..158, world-root2/11 or client0.28 tuck reused. Geometry/interpolation/fixed-chain maths only shared. Combined visible correction: dense15470..15481 brackets first extension15474..15475, so Pop15474.5 precedes the retained real nose strike. Intrinsic steep free-Air pitch is authored through the between-leg hardflip pass; same camera/yaw/roll/foot roles, independent of projection. Catch pelvis is lower and late rollaway keeps soft knees instead of the initial nearly straight finish. Body rise and board pressure are explicitly separate: retain the genuinely flat deck through15478.5 before the unchanged nose strike15481; the earlier first-rise marker does not begin the board snap.",
   "uncertainty": [
     "Eight rejected VIDEO frames15484-86 and15489-93 explicitly reconstructed only as bracketed control rows; raw rejection preserved.",
     "Pop/catch shoe overlap and near end-on board obscure exact3D contact/rotation; full curves are authored hypotheses, not measured mocap.",
