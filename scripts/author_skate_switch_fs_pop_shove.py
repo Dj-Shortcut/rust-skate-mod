@@ -110,6 +110,22 @@ def sample(c, s, sf):
             direction = unit(joints[side+name]-joints[side+previous])
             goal = unit(axes@np.asarray(prior['upper' if name == 'Elbow' else 'fore']))
             joints[side+name] = joints[side+previous]+unit(direction*(1-blend)+goal*blend)*length
+    # The filmed/cropped wrists are not authority for an overhead cheer pose.
+    # Own authored balance keeps both elbows and hands below the shoulders
+    # through scoop, catch and impact; feet, torso and source clock are untouched.
+    balance = s['armBalance']
+    a, b, c0, d = balance['window']
+    amount = smooth((sf-a)/(b-a))*(1-smooth((sf-c0)/(d-c0)))
+    if amount:
+        across = unit((joints['RightHip']-joints['LeftHip'])*[1,0,1])
+        arm_axes = np.column_stack((unit(np.cross(across,UP)),UP,across))
+        for side in ('Left','Right'):
+            original_directions = dict(Elbow=unit(joints[side+'Elbow']-joints[side+'Shoulder']),
+                                       Hand=unit(joints[side+'Hand']-joints[side+'Elbow']))
+            for name, previous, length, key in [('Elbow','Shoulder',.29,'upper'),('Hand','Elbow',.27,'fore')]:
+                current = original_directions[name]
+                goal = unit(arm_axes@keyed(balance[side][key],sf))
+                joints[side+name] = joints[side+previous]+unit(current*(1-amount)+goal*amount)*length
     original = {k:v.copy() for k,v in joints.items()}
     feet = {side:foot(s, sf, side) for side in ('Left', 'Right')}
     lo, hi = -float('inf'), float('inf')
@@ -190,7 +206,7 @@ def bake(body_raw, controls):
         sourceRootMotion='Hip-centered own capture; reference carrier excluded once; actual native carrier owns jump and travel.',
         contactLimit='Own source-led tail-ball/sole release, shaped-deck fit and signed180 scoop are authored3D estimates. Front foot lifts; no instep or heel flick.',
         provenance=s['provenance'],uncertainty=s['uncertainty'],sourcePhaseLimit=s['sourcePhaseLimit'],
-        reconstruction=dict(pelvisHeightKeys=s['pelvisHeightKeys'],kneePlaneBlendKeys=s['kneePlaneBlendKeys'],hiddenArm=s['hiddenArm'],recoveryWindow=s['recoveryWindow'],croppedArmBalance=s['croppedArmBalance']),
+        reconstruction=dict(pelvisHeightKeys=s['pelvisHeightKeys'],kneePlaneBlendKeys=s['kneePlaneBlendKeys'],hiddenArm=s['hiddenArm'],recoveryWindow=s['recoveryWindow'],croppedArmBalance=s['croppedArmBalance'],armBalance=s['armBalance']),
         rig=dict(thigh=.44,shin=.43,upperArm=.29,forearm=.27,spine=.52,shoulderRise=.44,hipHalfWidth=.09,shoulderHalfWidth=.18,head=.12,foot=.14,toeDrop=.07))
     duration=(s['lastSourceFrame']-s['firstSourceFrame'])/s['sourceFps']
     clip=dict(format='skate-source-keyed-switch-fs-shove/1',metadata=meta,stance='regular',fps=s['sourceFps']*6,duration=duration,
