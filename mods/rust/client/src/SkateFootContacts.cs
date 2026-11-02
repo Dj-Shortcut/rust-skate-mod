@@ -15,7 +15,7 @@ public static class SkateFootContacts
     private static SkateDeckContactSurface surface;
     private static SkateBoardMesh board;
     private static double boardTop;
-    private static int failures, snapshots, version;
+    private static int version;
     private static bool viewKnown, thirdView;
     private static string boardStatus = "Foot contacts unavailable: board surface not set.";
     public static bool Ready { get { return surface != null && active != null && active.Fresh && active.Ready; } }
@@ -31,6 +31,8 @@ public static class SkateFootContacts
         internal long SkinSet;
         internal bool HasSkinSet, Fresh, Ready, Stable;
         internal double NextCheck, NextAttempt;
+        internal int Failures, Snapshots;
+        internal string FirstRefusal;
         internal long Key;
         internal double[] Pose, LeftPoints, RightPoints;
         internal int[] LeftIndices, RightIndices;
@@ -40,6 +42,9 @@ public static class SkateFootContacts
         {
             Fresh = Ready = Stable = false; Pose = LeftPoints = RightPoints = null;
             LeftIndices = RightIndices = null; Left = Right = null; Key = 0; NextCheck = NextAttempt = 0;
+            // Acquisition belongs to this visible skin epoch. Switching views
+            // retains its bound; replacing that view's skin starts a fresh one.
+            Failures = Snapshots = 0; FirstRefusal = null;
             Note = "Foot contacts waiting for a fresh visible model sample.";
         }
     }
@@ -206,7 +211,7 @@ public static class SkateFootContacts
     {
         // The board may have been built before Bind. It is immutable and retained;
         // only ride/model ownership, profiles and bounded acquisition budgets reset.
-        failures = snapshots = 0; viewKnown = false; active = null;
+        viewKnown = false; active = null;
         first.Clear(); third.Clear(); first.HasSkinSet = third.HasSkinSet = false; Bump();
     }
     public static void UseView(bool thirdPerson, long skinSet)
@@ -225,9 +230,9 @@ public static class SkateFootContacts
         Vector3 soleL, Vector3 soleR, bool eligible)
     {
         if (active == null || surface == null) return;
-        if (snapshots >= MaximumSnapshots && (!active.Stable || active.Left == null || active.Right == null))
-        { Unavailable("Foot contacts unavailable: calibration snapshot budget exhausted."); return; }
-        if (failures >= MaximumFailures) { Unavailable("Foot contacts unavailable: acquisition failure budget exhausted."); return; }
+        if (active.Snapshots >= MaximumSnapshots && (!active.Stable || active.Left == null || active.Right == null))
+        { Unavailable("Foot contacts unavailable: calibration snapshot budget exhausted.", true); return; }
+        if (active.Failures >= MaximumFailures) { Unavailable("Foot contacts unavailable: acquisition failure budget exhausted.", true); return; }
         try
         {
             double now = Time.realtimeSinceStartup;
@@ -251,9 +256,9 @@ public static class SkateFootContacts
             if (same && active.Stable && active.Left != null && active.Right != null)
             { active.Ready = true; active.Note = "Foot contacts measured for the current visible view."; return; }
             if (!eligible) { active.Note = "Foot contacts waiting for ordinary flat-ground calibration."; return; }
-            if (snapshots >= MaximumSnapshots)
-            { Unavailable("Foot contacts unavailable: calibration snapshot budget exhausted."); return; }
-            snapshots++;
+            if (active.Snapshots >= MaximumSnapshots)
+            { Unavailable("Foot contacts unavailable: calibration snapshot budget exhausted.", true); return; }
+            active.Snapshots++;
             Patch lp, rp; Bake(read, left, right, out lp, out rp);
             double[] lxyz = lp.Points.ToArray(), rxyz = rp.Points.ToArray(); int[] li = lp.Indices.ToArray(), ri = rp.Indices.ToArray();
             SkateFootContactProfile lprofile, rprofile; string error;
@@ -266,12 +271,12 @@ public static class SkateFootContacts
             active.Left = lfit; active.Right = rfit; active.LeftPoints = lxyz; active.RightPoints = rxyz;
             active.LeftIndices = li; active.RightIndices = ri; active.Ready = true; active.Stable = stable;
             active.Note = stable ? "Foot contacts measured for the current visible view." : "Foot contacts measured; calibration confirmation pending.";
-            if (!stable && snapshots >= MaximumSnapshots) Unavailable("Foot contacts unavailable: measured geometry did not stabilize.");
+            if (!stable && active.Snapshots >= MaximumSnapshots) Unavailable("Foot contacts unavailable: measured geometry did not stabilize.");
             Bump();
         }
         catch (Exception e)
         {
-            failures++; active.NextAttempt = active.NextCheck;
+            active.Failures++; active.NextAttempt = active.NextCheck;
             Unavailable("Foot contacts unavailable: " + (e is Unsupported ? e.Message : "native geometry read " + e.GetType().Name) + ".");
         }
     }
@@ -450,9 +455,14 @@ public static class SkateFootContacts
     private static bool Finite(double value) { return !double.IsNaN(value) && !double.IsInfinity(value); }
     private static bool Finite(Vector3 value) { return Finite(value.x) && Finite(value.y) && Finite(value.z); }
     private static void Bump() { version = version == int.MaxValue ? 1 : version + 1; }
-    private static void Unavailable(string note)
+    private static void Unavailable(string note, bool budgetExhausted = false)
     {
         if (active == null) return;
+        if (budgetExhausted)
+        {
+            if (active.FirstRefusal != null) note += " First refusal: " + active.FirstRefusal;
+        }
+        else if (active.FirstRefusal == null) active.FirstRefusal = note;
         bool changed = active.Ready || active.Fresh || active.Note != note;
         active.Ready = active.Fresh = false; active.Note = note; active.NextAttempt = Math.Max(active.NextAttempt, active.NextCheck);
         if (changed) Bump();

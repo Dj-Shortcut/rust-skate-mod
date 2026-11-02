@@ -94,6 +94,7 @@ public static class RiderRig
     private static bool footCalibrated;
     private static int calibratedFootVersion = -1;
     private static string reportedFootStatus, reportedFootFit;
+    private static int reportedCapturePop = -1;
     public static string FootSupportError { get; private set; } = "";
 
     // The module answers every frame from that frame's state alone. Between two states (rolling, a
@@ -842,6 +843,7 @@ public static class RiderRig
         SkateFootContacts.Reset();
         footCalibrated = false; calibratedFootVersion = -1; FootSupportError = "";
         reportedFootStatus = reportedFootFit = null;
+        reportedCapturePop = -1;
         grabSince = grabHold = -1f; plantBlend = chestLead = crouchSpeed = 0f; Crouch = 0.18f;
         chargePosePop = -1; chargePoseEpoch = 0; chargePoseAmount = 0;
         chargeOwnedGround = chargeSetupGrounded = false;
@@ -1332,6 +1334,15 @@ public static class RiderRig
             Apply(upV, legsOnly, leftSole, rightSole);
             if (kickturnPosed) SkateRide.ConfirmKickturnPose(kickturnPlayer, kickturnSide, kickturnEpoch, kickturnFootVersion);
             Applied++;
+            // A loaded pack is not proof that its pose reached the native bones.
+            // Report only after the writer succeeds, once per airborne pop.
+            // The live signature resets before captured landing recovery ends.
+            if (SkateCapturedTricks.HasFrame && SkateRide.Mode == RideMode.Air && reportedCapturePop != SkateRide.Pops)
+            {
+                string kind = SkateRide.PresentationSignature.MovementKind;
+                reportedCapturePop = SkateRide.Pops;
+                Say("capture applied in air: " + kind + "; stance=" + (SkateRide.Goofy ? "goofy" : "regular") + "; pop=" + SkateRide.Pops);
+            }
         }
         catch (Exception e)
         {
