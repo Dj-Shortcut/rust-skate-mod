@@ -1,0 +1,615 @@
+{
+  "format": "skate-own-source-nollie-fs-shove/1",
+  "id": "nollie-fs-pop-shove-it-source-keyed-v1",
+  "movementKind": "nollie-fs-pop-shove-it",
+  "signature": {
+    "pop": "Nollie",
+    "switch": false,
+    "tailLeads": false,
+    "flip": 0,
+    "shove": 180,
+    "spin": 0,
+    "body": 0
+  },
+  "sourceBodySha256": "16a9deaab25c20bd5c737a789e448e81e87e75886da032f7ba4f50a17fa075c6",
+  "sourceFps": 29.97002997002997,
+  "firstSourceFrame": 30,
+  "lastSourceFrame": 98,
+  "sampleHz": 180,
+  "geometryReference": {
+    "path": "assets/authored/animation/treflip-keyed/constraints.json",
+    "geometryDataSha256": "21e757c6dd6e170558c6ee2f570cbdbb282f68e30f873dc3f5f0596402cd7da3",
+    "scope": "Original board/shoe/support geometry only; no other trick body read."
+  },
+  "surfaceReference": {
+    "path": "assets/authored/animation/treflip-keyed/own-board-surface.json",
+    "sha256": "8873121f728af49a9af90c2ee4ba723b7f56259d60913155f578d3a88e976acd"
+  },
+  "popFrame": 56,
+  "noseStrikeFrame": 57.5,
+  "rearReleaseFrame": 57,
+  "noseReleaseFrame": 59,
+  "pressEndFrame": 61,
+  "firstCatchFrame": 66.5,
+  "bothCatchFrame": 68,
+  "landFrame": 73,
+  "soleGap": 0.005,
+  "freeFootBlendFrames": 1.5,
+  "catchBlendFrames": 1.5,
+  "sourceRootMotion": {
+    "popFrame": 56,
+    "landFrame": 73,
+    "referenceFlight": 0.6,
+    "gravity": 8,
+    "deckOriginGroundDatum": 0.092,
+    "normalization": "One upright reference carrier removed once; actual native flight adds live carrier once. Original ground datum0.092m retained; no bodyhalfturn or sourceboard yaw removed from body."
+  },
+  "boardYaw": [
+    [
+      30,
+      0
+    ],
+    [
+      56,
+      0
+    ],
+    [
+      59,
+      -12
+    ],
+    [
+      61,
+      -55
+    ],
+    [
+      63,
+      -110
+    ],
+    [
+      65,
+      -155
+    ],
+    [
+      66.5,
+      -176
+    ],
+    [
+      68,
+      -180
+    ],
+    [
+      98,
+      -180
+    ]
+  ],
+  "boardPitch": [
+    [
+      30,
+      0
+    ],
+    [
+      56,
+      0
+    ],
+    [
+      57.5,
+      -38
+    ],
+    [
+      59,
+      -38
+    ],
+    [
+      61,
+      -30
+    ],
+    [
+      63,
+      -22
+    ],
+    [
+      65,
+      -12
+    ],
+    [
+      66.5,
+      -5
+    ],
+    [
+      68,
+      0
+    ],
+    [
+      98,
+      0
+    ]
+  ],
+  "feet": {
+    "Left": {
+      "load": [
+        0.035,
+        0.345,
+        80
+      ],
+      "catch": [
+        -0.025,
+        -0.23,
+        -105
+      ],
+      "freeForward": [
+        0.9659258262890683,
+        0,
+        0.25881904510252074
+      ],
+      "free": [
+        [
+          59,
+          0.025,
+          0.25,
+          0.3
+        ],
+        [
+          61,
+          0.02,
+          0.16,
+          0.23
+        ],
+        [
+          64,
+          0.025,
+          0.16,
+          0.21
+        ],
+        [
+          66.5,
+          0.02,
+          0.15,
+          0.22
+        ],
+        [
+          68,
+          0.02,
+          0.15,
+          0.23
+        ],
+        [
+          98,
+          0.02,
+          0.15,
+          0.23
+        ]
+      ]
+    },
+    "Right": {
+      "load": [
+        -0.01,
+        -0.16,
+        75
+      ],
+      "catch": [
+        0.01,
+        0.23,
+        -110
+      ],
+      "freeForward": [
+        0.9659258262890683,
+        0,
+        0.25881904510252074
+      ],
+      "free": [
+        [
+          57,
+          -0.01,
+          0.27,
+          -0.16
+        ],
+        [
+          59,
+          -0.02,
+          0.24,
+          -0.15
+        ],
+        [
+          61,
+          -0.015,
+          0.16,
+          -0.15
+        ],
+        [
+          64,
+          -0.015,
+          0.16,
+          -0.18
+        ],
+        [
+          66.5,
+          -0.02,
+          0.15,
+          -0.21
+        ],
+        [
+          68,
+          -0.02,
+          0.15,
+          -0.23
+        ],
+        [
+          98,
+          -0.02,
+          0.15,
+          -0.23
+        ]
+      ]
+    }
+  },
+  "pelvisRelativeToBoard": [
+    [
+      30,
+      0,
+      0.91,
+      0
+    ],
+    [
+      49,
+      0,
+      0.56,
+      0.03
+    ],
+    [
+      56,
+      0,
+      0.75,
+      0.08
+    ],
+    [
+      57.5,
+      0,
+      0.7,
+      0.13
+    ],
+    [
+      59,
+      0,
+      0.65,
+      0.1
+    ],
+    [
+      61,
+      0,
+      0.61,
+      0.03
+    ],
+    [
+      63,
+      0,
+      0.65,
+      0
+    ],
+    [
+      65,
+      0,
+      0.69,
+      0
+    ],
+    [
+      68,
+      0,
+      0.7,
+      0
+    ],
+    [
+      73,
+      0,
+      0.66,
+      0.015
+    ],
+    [
+      80,
+      0,
+      0.8,
+      0
+    ],
+    [
+      90,
+      0,
+      0.9,
+      0
+    ],
+    [
+      98,
+      0,
+      0.92,
+      0
+    ]
+  ],
+  "torsoFold": [
+    [
+      30,
+      12
+    ],
+    [
+      49,
+      32
+    ],
+    [
+      56,
+      18
+    ],
+    [
+      59,
+      17
+    ],
+    [
+      61,
+      30
+    ],
+    [
+      64,
+      35
+    ],
+    [
+      68,
+      29
+    ],
+    [
+      73,
+      22
+    ],
+    [
+      80,
+      18
+    ],
+    [
+      90,
+      9
+    ],
+    [
+      98,
+      5
+    ]
+  ],
+  "reachShare": {
+    "press": 0.91,
+    "free": 0.985
+  },
+  "armReconstruction": {
+    "Left": {
+      "weights": [
+        [
+          30,
+          0
+        ],
+        [
+          98,
+          0
+        ]
+      ],
+      "upper": [
+        [
+          30,
+          0.2,
+          -0.8,
+          0.3
+        ],
+        [
+          98,
+          0.2,
+          -0.8,
+          0.3
+        ]
+      ],
+      "fore": [
+        [
+          30,
+          0.6,
+          -0.5,
+          0
+        ],
+        [
+          98,
+          0.6,
+          -0.5,
+          0
+        ]
+      ]
+    },
+    "Right": {
+      "weights": [
+        [
+          30,
+          1
+        ],
+        [
+          98,
+          1
+        ]
+      ],
+      "upper": [
+        [
+          30,
+          0.15,
+          -0.8,
+          -0.35
+        ],
+        [
+          49,
+          0.25,
+          -0.65,
+          -0.65
+        ],
+        [
+          56,
+          0.1,
+          0.65,
+          -0.45
+        ],
+        [
+          61,
+          0.1,
+          0.5,
+          -0.65
+        ],
+        [
+          64,
+          0.15,
+          0.05,
+          -0.7
+        ],
+        [
+          68,
+          -0.05,
+          -0.55,
+          -0.7
+        ],
+        [
+          73,
+          -0.1,
+          -0.65,
+          -0.55
+        ],
+        [
+          90,
+          0.1,
+          -0.95,
+          -0.1
+        ],
+        [
+          98,
+          0.1,
+          -0.98,
+          -0.05
+        ]
+      ],
+      "fore": [
+        [
+          30,
+          0.2,
+          -0.9,
+          0
+        ],
+        [
+          49,
+          0.6,
+          -0.5,
+          -0.1
+        ],
+        [
+          56,
+          0.5,
+          0.45,
+          0.2
+        ],
+        [
+          61,
+          0.55,
+          0.35,
+          0.2
+        ],
+        [
+          64,
+          0.8,
+          0.15,
+          0.05
+        ],
+        [
+          68,
+          0.6,
+          -0.35,
+          0
+        ],
+        [
+          73,
+          0.35,
+          -0.75,
+          -0.1
+        ],
+        [
+          90,
+          0.15,
+          -0.98,
+          0
+        ],
+        [
+          98,
+          0.1,
+          -0.99,
+          0
+        ]
+      ]
+    }
+  },
+  "events": [
+    {
+      "frame": 30,
+      "phase": "load",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 56,
+      "phase": "pop",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 57,
+      "phase": "pop",
+      "contacts": [
+        "LeftFoot"
+      ]
+    },
+    {
+      "frame": 59,
+      "phase": "air",
+      "contacts": []
+    },
+    {
+      "frame": 61,
+      "phase": "air",
+      "contacts": []
+    },
+    {
+      "frame": 66.5,
+      "phase": "catch",
+      "contacts": [
+        "LeftFoot"
+      ]
+    },
+    {
+      "frame": 68,
+      "phase": "catch",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 73,
+      "phase": "land",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 90,
+      "phase": "recovery",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    }
+  ],
+  "provenance": "Own black-shirt/cap Nollie FS Pop Shove-it, BATB13 tL8Ey9GS0xQ CSV1084. Strict own82/84 VIDEO raw20..103; gaps68/69 remain raw failures and are explicitly reconstructed from67/70. Animation30..98 excludes cropped approachhead. Manual Goofy/right-nose source is anatomically reflected once into canonicalRegular/Leftnose, all joints/directions consistently. No A4/othertrick body read. Generic fixed-chain geometry/math only. Own nose-pressure/scoop, board-only\u2212180/no flip/bodyturn, monotonic post-release pitch, free shoes, reverse-deck catch toes and bent landing/ordinary recovery are authored from this take. CanonicalRight wrist corresponds to unreliable rawLeft wrist and is reconstructed with bent depth/real raised prepop balance from source pixels. The other arm uses own detector directions. Native input/scoring/landing remain authoritative; rawfalse.",
+  "uncertainty": [
+    "Manual Goofy base and Right/nose role checked against same actor A4 Fakie witnesses; not calibrated3D stance.",
+    "World depth/camera/board pitch-yaw, foot support/release, pelvis and far-wrist depth are authored visual estimates. Source hand rises around56..61; it is not a fabricated straight overheadV.",
+    "Strict actor selection rejects68/69; reconstructed control rows are labelled, raw detector failures preserved. Raw20..29 head/cap crop is outside animation trim.",
+    "No full-video/global frame indices: bounded source PTS1001*frame at timebase1/30000; public181s offset is approximate.",
+    "Raw reviewed=false. No Claude offline or native/Shadow approval implied."
+  ]
+}
