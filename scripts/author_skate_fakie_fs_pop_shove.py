@@ -146,10 +146,10 @@ def bake(body_raw, controls):
     if geometry.digest(body_raw) != s['sourceBodySha256']:
         raise ValueError('Own Fakie FS shove body binding differs')
     c = json.loads(body_raw)
-    if (c['firstSourceFrame'], c['lastSourceFrame'], c['filmedStance'], c['canonicalStance'], c['reviewed']) != (1084, 1138, 'goofy', 'regular', False):
+    if (c['firstSourceFrame'], c['lastSourceFrame'], c['filmedStance'], c['canonicalStance'], c['reviewed']) != (1084, 1138, 'regular', 'regular', False):
         raise ValueError('Use only the own unreviewed BATB13 black Fakie take')
-    if c['sourceVideoSha256'] != s['sourceVideoSha256'] or not c['sourceReflectionAppliedOnce']:
-        raise ValueError('Own bounded video / one-time anatomical reflection differs')
+    if c['sourceVideoSha256'] != s['sourceVideoSha256'] or c['sourceReflectionAppliedOnce'] or c.get('sourceReflectionCount') != 0:
+        raise ValueError('Own video / zero-reflection Regular anatomical binding differs')
     for name, expected in s['geometryCodeSha256'].items():
         if geometry.digest((ROOT / 'scripts' / name).read_bytes()) != expected:
             raise ValueError('Read-only geometry/math helper differs: ' + name)
@@ -184,8 +184,8 @@ def bake(body_raw, controls):
               (s['recovery'], 'recovery', ['LeftFoot', 'RightFoot'])]
     meta = dict(id=s['id'], movementKind=s['movementKind'], reviewed=False,
                 label='Fakie FS Pop Shove-it — own BATB13 body / board-only180 [UNREVIEWED]',
-                authored=True, capturedBody=True, canonicalStance='regular', filmedStance='goofy',
-                sourceReflectionAppliedOnce=True, nativeSignature=s['nativeSignature'],
+                authored=True, capturedBody=True, canonicalStance='regular', filmedStance='regular',
+                sourceReflectionAppliedOnce=False, sourceReflectionCount=0, nativeSignature=s['nativeSignature'],
                 firstSourceFrame=s['firstSourceFrame'], lastSourceFrame=s['lastSourceFrame'], lastGenuineSourceFrame=s['lastGenuineSourceFrame'], sourceFps=s['sourceFps'],
                 sourceRawFrameCount=c['sourceRawFrameCount'], sourceSelectedFrameCount=c['sourceSelectedFrameCount'], authoredRecoverySuffix=True,
                 sourceUrl=s['sourceUrl'], sourceAuthor=s['sourceAuthor'],

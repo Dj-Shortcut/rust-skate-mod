@@ -2,7 +2,7 @@
   "format": "authored-fakie-fs-pop-shove-controls/1",
   "id": "fakie-fs-pop-shove-it-source-keyed-v1",
   "movementKind": "fakie-fs-pop-shove-it",
-  "sourceBodySha256": "a645103d84f2cbd2ed1508052a17204db6dad3926bc017c1f1216d6975f02d2c",
+  "sourceBodySha256": "e760bfd7924d06cb0c16f9b73413779268d6ae9d32aeddba628f0ef41d388fee",
   "geometrySha256": "806a59f06a0f28eb0a81550675e2cff391bf27b286f788690b65ed857794d4c5",
   "geometryCodeSha256": {
     "author_skate_ollie.py": "98ac9495fd5db440194e7f3438d9c4791f30b7fe4a65fcb4c8f6944a305945ac",
@@ -22,7 +22,7 @@
   "firstSourceFrame": 1084,
   "lastSourceFrame": 1170.0,
   "lastGenuineSourceFrame": 1138,
-  "filmedStance": "goofy",
+  "filmedStance": "regular",
   "pop": 1114.0,
   "frontRelease": 1115.3,
   "tailStrike": 1115.8,
@@ -433,22 +433,22 @@
         1119.3,
         1121.4
       ],
-      "side": "Right",
+      "side": "Left",
       "upper": [
         0.15,
         0.6,
-        -0.78
+        0.78
       ],
       "fore": [
         0.2,
         0.8,
-        -0.3
+        0.3
       ],
-      "provenance": "Genuine brief two diagonal raised arms; only clipped/overlay-hidden originalLeft/canonicalRight wrist is coherently reconstructed from visible upper/forearm with bent elbow. OriginalRight/canonicalLeft raw arm retained, no false second-V clamp copied from another take."
+      "provenance": "Genuine brief two diagonal raised arms; only clipped/overlay-hidden originalLeft/canonicalLeft wrist is coherently reconstructed from visible upper/forearm with bent elbow. OriginalRight/canonicalRight raw arm retained, no false second-V clamp copied from another take."
     }
   ],
   "provenance": "Own genuine black-shirt/cap/tattooed-arm BATB13 Fakie FS Pop Shove-it, bounded1084..1138 of existing181..219s cache. Actual leading-tail heel-pocket scoop, noflip/bodyturn, board-onlyopposite180, catch/flatland. Own49/55 VIDEO body with6 declared pre-pop gaps; estimated camera/depth/anatomy/knee/gaze and source-real clipped arm reconstruction. Original shaped-deck full-shoe/fixedchain support and own authored root/freefeet/catch. Upright recovery1138..1170 is explicitly authored from this same take own upright1090 because cache ends in bent absorption. Reference video held at genuine1138; no generated footage, another-trick body or raw/native approval.",
-  "uncertainty": "Manual Goofy-base Fakie/originalLeft tail inference from same actor; no independent full normal baseline. Single-camera depth, tail-ball occlusion, small rotating board, clipped far wrist and6 rejected pre-pop frames. Source upright recovery missing after1138; same-own-body authored suffix. Full-video frame indices/hash unknown.",
+  "uncertainty": "Own source1114/1116/1118 anatomical hip-knee-ankle/heel/toe chains verify physicalRegular Leftnose/Righttail, not priorBlackGoofy inference. Initialnose imageRight/high end, actualRight lowtail pressure; backwards travel is manually corroborated by Fakie sequence/action, not calibrated ground motion. Single-camera depth, tail-ball occlusion, small rotating board, clipped far wrist and6 rejected pre-pop frames. Source upright recovery missing after1138; same-own-body authored suffix. Full-video frame indices/hash unknown.",
   "sourceRootMotion": "Own hip-relative body has no carrier/jump baked. Initial nose+Z independent from backwards velocity. Source boardlocal\u2212180 only; body unspun/native, reference rise removed only from pressure board offset before actual carrier once.",
   "phaseClockLimit": "Own authored visual marks: Pop1114/front sole release1115.3/strike1115.8/Right-tail release1116.7/laterfreeAir1118/LeftfirstCatch1126/both1127/Land1129. Source genuine through1138; own-body authored recovery to1170, video clamped1138. Actual native input/observed landing/scoring remain authoritative."
 }
