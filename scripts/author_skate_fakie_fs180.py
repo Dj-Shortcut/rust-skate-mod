@@ -24,6 +24,21 @@ def value(rows, frame):
     return curve([r[0]for r in rows],[r[1:]for r in rows],frame)
 
 
+
+def soften_forearm(spec, frame, upper, fore, local_vector):
+    """Soften only the wrist direction in the rider's anatomical balance plane."""
+    control=spec.get('elbowSoftening')
+    if control is None:return fore
+    start,full,held,end=control['window']
+    weight=smooth((frame-start)/(full-start))*(1-smooth((frame-held)/(end-held)))
+    if weight<=0:return fore
+    plane=local_vector(control['bendDirection'])
+    plane=unit(plane-upper*np.dot(plane,upper))
+    angle=math.radians(control['bendDegrees'])
+    goal=unit(upper*math.cos(angle)+plane*math.sin(angle))
+    return unit(fore*(1-weight)+goal*weight)
+
+
 def reference_height(spec, frame):
     ref=spec['sourceRootMotion']
     u=float(np.clip((frame-ref['popFrame'])/(ref['landFrame']-ref['popFrame']),0,1))
@@ -110,6 +125,7 @@ def sample(body, spec, frame):
         upper=unit(captured[side+'Elbow']-captured[side+'Shoulder']);fore=unit(captured[side+'Hand']-captured[side+'Elbow'])
         c=spec['armReconstruction'];w=float(value(c['weights'],frame)[0]);a=c[side]
         upper=unit(upper*(1-w)+local_vector(value(a['upper'],frame))*w);fore=unit(fore*(1-w)+local_vector(value(a['fore'],frame))*w)
+        fore=soften_forearm(spec,frame,upper,fore,local_vector)
         j[side+'Shoulder']=shoulder;j[side+'Elbow']=shoulder+upper*.29;j[side+'Hand']=j[side+'Elbow']+fore*.27
     dirs=dict(PelvisForward=facing,PelvisUp=UP,ChestForward=chest_forward,ChestUp=up,HeadForward=gaze)
     # Complete scene-heading removal. This includes physical toes, all limb
@@ -134,6 +150,7 @@ def bake(body_bytes, spec):
     frames=[sample(body,spec,spec['firstSourceFrame']+t*spec['sourceFps'])for t in times]
     events=[dict(t=(e['frame']-spec['firstSourceFrame'])/spec['sourceFps'],phase=e['phase'],contacts=e['contacts'])for e in spec['events']]
     metadata=dict(id=spec['id'],movementKind=spec['movementKind'],label='Fakie FS180 — own plaid Halfcab source, native single-turn authority [UNREVIEWED]',reviewed=False,authored=True,independentSource=True,canonicalStance='regular',sourceFilmedStance=body['filmedStance'],sourceUrl=body['sourceUrl'],sourceAuthor=body['sourceAuthor'],sourceVideoSha256=body['sourceVideoSha256'],sourcePoseSha256=body['sourcePoseSha256'],sourceBodySha256=spec['sourceBodySha256'],sourceFps=spec['sourceFps'],firstSourceFrame=spec['firstSourceFrame'],lastSourceFrame=spec['lastFilmedSourceFrame'],authoredTimelineLastFrame=spec['lastSourceFrame'],authoredRecoveryAfterCut=True,sourceRootMotion=spec['sourceRootMotion'],nativeYawAuthority=True,removedSourceBoardYawKeys=spec['sourceBoardYaw'],provenance=spec['provenance'],uncertainty=spec['uncertainty'],authoredGapFrames=body['gapFrames'],lowConfidenceModelFrames=body['lowConfidenceModelFrames'],sourceTiming=body['timing'],authoredBoardAndContacts=True,toeContract='Physical toe endpoints include one sole-up toeDrop; the native sampler restores flat targets before writer drop.')
+    if 'elbowSoftening' in spec:metadata['authoredElbowSoftening']=spec['elbowSoftening']
     clip=dict(format='skate-own-source-native-yaw-keyed/1',metadata=metadata,stance='regular',fps=spec['sampleHz'],duration=duration,events=contact_events(events,duration),frames=frames)
     return clip,encode_pack([clip])
 

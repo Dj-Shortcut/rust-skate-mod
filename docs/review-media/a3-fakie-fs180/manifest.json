@@ -1,16 +1,16 @@
 {
   "format": "a3-fakie-fs180-rig-only-review/1",
-  "sourceAuthoringHead": "a94919b74b20af5a3cd33cccb93d8f53900011dc",
-  "runtimeRouteRevision": "b8411f55270e99ab60da032284cf9b998d313a0f",
-  "sourcePackSha256": "8545776186b856edd4b5eebbd5bcb52f836c3472e347596a396fe895e9659960",
+  "sourceAuthoringHead": "8c04e0c563c9f61078e74b24a74aa9faa9cefdf7",
+  "runtimeRouteRevision": "8c04e0c563c9f61078e74b24a74aa9faa9cefdf7",
+  "sourcePackSha256": "dc04306f8008fc0a212be043ef136f6bffab100ed16b1bc62c3d0e630e4e041a",
   "rawReviewed": false,
   "independentFakieFs180Source": true,
   "nativeGame": false,
   "sourceOriginGroundDatumM": 0.092,
   "sourceYawRemovedFromAllFields": true,
   "authoredRecoveryAfterCut": true,
-  "offlineVerdict": "pending Claude",
-  "viewer": "http://127.0.0.1:63761/a3-fakie-fs180-own-source/",
+  "offlineVerdict": "Claude owns verdict for current minor refinement; raw and native status unchanged",
+  "viewer": "http://127.0.0.1:63761/a3-fs-halfcab-soft-elbows/",
   "sourceUrl": "https://www.youtube.com/watch?v=H4MEulcgUTc&t=29",
   "sourceWindow": {
     "boundedFrames": [
@@ -32,15 +32,15 @@
     "ptsStep": 1001,
     "originalGlobalFrameNumbers": null
   },
-  "scope": "Original rig-only frames. Own genuine pure Fakie FS180 relative gesture plus labelled authored monocular heading/depth, fixed-chain contacts and hidden-arm reconstruction; all source yaw removed before one actual native turn. Source-cut suffix is explicitly authored upright recovery with last genuine video frame held. No source pixels redistributed. Claude owns the offline quality verdict.",
+  "scope": "Same accepted FS702 original skin/weights/13-part rig and camera settings. Own captured-body remains byte-identical. Small authored forearm/hand bend during Air only; no gameplay/C#/physics/scoring/camera changes, no source pixels redistributed.",
   "files": [
     {
       "profile": "low",
       "requestedStance": "goofy",
       "physicalStance": "regular",
       "file": "docs/review-media/a3-fakie-fs180/low-regular-phases.jpg",
-      "sha256": "5bd6a5c13b48ac46a1c07fbb0df6f3827c75872f01dbcfe21f92095ef1deaf70",
-      "glbSha256": "3b95304530ddd3674fcab98abb3e7d27bc1974a3392e68010bb80cead1c25b71",
+      "sha256": "5c5b1a2643e0acc3cf429c2c4934da595c899637fcbe97dbff4d4630f5ab77c4",
+      "glbSha256": "7c6bb71df2f897a2b5989b6af2f64a46af97f80b686353e5f486d2aef102cedf",
       "phaseMoments": {
         "Load": 0.8166666666666667,
         "Pop": 0.8666666666666667,
@@ -57,8 +57,8 @@
       "requestedStance": "goofy",
       "physicalStance": "regular",
       "file": "docs/review-media/a3-fakie-fs180/normal-regular-phases.jpg",
-      "sha256": "b4dea71a09d85b9e5f90eec3d2fc26828f63d7de196b529cb6254046e3d61ab3",
-      "glbSha256": "9f173156dad51e8936c6dd37001466ec450a885c4863eb582bdadff64a78084a",
+      "sha256": "2649478ac360984d8251649e02e1c9911504fc7383d4073fb574a9dd9f526229",
+      "glbSha256": "85be163f968b6d29c8adcbbbe7615630e2d71934ec8efa9052d45acbc9726a65",
       "phaseMoments": {
         "Load": 0.8166666666666667,
         "Pop": 0.8666666666666667,
@@ -75,8 +75,8 @@
       "requestedStance": "regular",
       "physicalStance": "goofy",
       "file": "docs/review-media/a3-fakie-fs180/low-goofy-phases.jpg",
-      "sha256": "1e6ff5096a4fa8a2fa164919996c114976b1113e872a70749227c2214d30167c",
-      "glbSha256": "b87a7298d1e86c2e9d1ff9faa875709063994327d078260ad89c3dba9a0333ac",
+      "sha256": "ebf3a044b5e09073b41aa2a1e7f7a9357079424c46e3fa9c2d9226bfe69b1bd8",
+      "glbSha256": "0beff2b0ed6af4df687a5d55ca99a9357cd5cd5cf4fe1293028e74d86dbccad6",
       "phaseMoments": {
         "Load": 0.8166666666666667,
         "Pop": 0.8666666666666667,
@@ -93,8 +93,8 @@
       "requestedStance": "regular",
       "physicalStance": "goofy",
       "file": "docs/review-media/a3-fakie-fs180/normal-goofy-phases.jpg",
-      "sha256": "54d6efc2d4c2c1fdec0b5a5dae1b37717df64d5c5c8709f957476a9cbed27162",
-      "glbSha256": "04d637f80bbb5bdce9b8797faf9c4e9722f2691738967f45b06bdd55f76f7f9c",
+      "sha256": "5ed4a1ff57a8018172d0ab36f131e1dace4e41f667dbeee728e18f3385ad0a17",
+      "glbSha256": "73c97cf182ec33d973a1cd77c73d813782439f76b96bf150ead00a78a41c868c",
       "phaseMoments": {
         "Load": 0.8166666666666667,
         "Pop": 0.8666666666666667,
@@ -105,6 +105,30 @@
         "Rollaway": 2.45,
         "End": 4.0
       }
+    },
+    {
+      "profile": "normal",
+      "physicalStance": "regular",
+      "file": "docs/review-media/a3-fakie-fs180/normal-regular-contacts.jpg",
+      "sha256": "1cbe6cfc8379d43cfbc0c7acb6674c9419e9e2ac98d811aeff50fea656c9e51a"
+    },
+    {
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "file": "docs/review-media/a3-fakie-fs180/normal-goofy-contacts.jpg",
+      "sha256": "cd20471ac5ac88a0e73e87907a9a8d8c6a89d80fe5c0b8ace8fd88dd6dfb215f"
+    },
+    {
+      "profile": "low",
+      "physicalStance": "regular",
+      "file": "docs/review-media/a3-fakie-fs180/low-regular-contacts.jpg",
+      "sha256": "cfe60863559f5746cc097e983b3f19475181c5e5a7670406494ee3e52f773626"
+    },
+    {
+      "profile": "low",
+      "physicalStance": "goofy",
+      "file": "docs/review-media/a3-fakie-fs180/low-goofy-contacts.jpg",
+      "sha256": "db0ab7ee354ed5141c753c7650ab5306fd14a426913a62d2b7dee44e1219b078"
     }
   ],
   "continuousReplay": [
@@ -330,5 +354,34 @@
   "contactBrowserErrors": 0,
   "originalSkinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
   "sourceFrameHold": "Reference holds the final genuine PTS/frame during the explicitly authored planted upright suffix; next actor is never shown.",
-  "visibleCorrections": "Earlier restrained snap followed by earlier tail-sole release, front-bolt upper-shoe drag and level Guide; the front knee bends forward/down. Original0.092m deck datum retains visible wheels at Land/rollaway; world-space charge gaze keeps Load/earlyPop head forward. Accepted later source Air/Catch/Land/recovery remain unchanged."
+  "visibleCorrections": "Earlier restrained snap followed by earlier tail-sole release, front-bolt upper-shoe drag and level Guide; the front knee bends forward/down. Original0.092m deck datum retains visible wheels at Land/rollaway; world-space charge gaze keeps Load/earlyPop head forward. Accepted later source Air/Catch/Land/recovery remain unchanged.",
+  "baselineSourcePackSha256": "8545776186b856edd4b5eebbd5bcb52f836c3472e347596a396fe895e9659960",
+  "sourceHandsOnly": true,
+  "sourceForearmWindow": [
+    242,
+    254
+  ],
+  "sourceOtherFieldsExact": true,
+  "actualSamplerArmScope": "Existing fixed-chain sampler/crossfade refits elbows and wrists; shoulders and all non-arm fields, physics, contact and source clock are exact against baseline run through same current runtime.",
+  "baseClaudeGate": "6565046080/#707: base FS Halfcab offline reviewed; softer Air elbows requested.",
+  "beforeAfter": {
+    "file": "docs/review-media/a3-fakie-fs180/air-catch-before-after.jpg",
+    "sha256": "2f810a4d995a96c99e3a3ca09aaeca51378059f7df3425be087ffaf17380fd76",
+    "scope": "Accepted854 baseline versusdc043 candidate, same current8c04 runtime/camera/original rig, physicalRegular/normal at exactsame Air and Catch times."
+  },
+  "checks": {
+    "actualPadStepScorerBodyCases": 4,
+    "normalAirSamples": 36,
+    "lowAirSamples": 34,
+    "rates": [
+      1,
+      0.25
+    ],
+    "ordinaryRecoverySeconds": 4,
+    "decodedSourcePhaseSeeks": 28,
+    "focusedArmContactCaptures": 20,
+    "browserErrors": 0,
+    "rawReviewed": false,
+    "nativeGame": false
+  }
 }
