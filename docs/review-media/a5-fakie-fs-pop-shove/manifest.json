@@ -655,5 +655,12 @@
   ],
   "sourcePoseSha256": "87e364bba8ded9f4fde8796583d92baf592f512316cdcd56dc78f019ffb2b637",
   "sourceConstraintsSha256": "14036ce57345d325801ba0fb0bc0e8165fc49d7685de28378c4a51df0a286e8e",
-  "sourceBakerSha256": "e71138fe2e96fe302266e5b52529afee203131ff98cef91c321c93f6bcb05737"
+  "sourceBakerSha256": "e71138fe2e96fe302266e5b52529afee203131ff98cef91c321c93f6bcb05737",
+  "postMainComposition": {
+    "main": "44471a5a75b513671a99946285b292e9410aef13",
+    "mergeCommit": "b26dcb1bb29f2a3351873f4038bada4a1645a87f",
+    "allClientSharedCSharpByteExactToRendered987": true,
+    "currentBakerReproducesRenderedRaw": "a145ce83197cb41e67d1d33bb284f4b69ade2a4647318b80bc96185fb8c81725",
+    "independentStillReviewer": "A second agent viewed all8 current sheets plus source/bodySide beforeafters; scoped still PASS, no independent playback or Claude/native approval."
+  }
 }
