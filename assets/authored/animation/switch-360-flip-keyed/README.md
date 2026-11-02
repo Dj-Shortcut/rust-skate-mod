@@ -1,6 +1,6 @@
 # Switch 360 Flip — own BATB12 reconstruction
 
-Source present and executable; **not visually reviewed, not offline approved and not tested in game**. The raw pack keeps `reviewed=false`. Root owns the normal-route integration and final PR; Claude owns the library status.
+Source present and executable; **the prior1fdf Catch/Land preview was held for stiffness, and this source correction is not yet visually reviewed, offline approved or tested in game**. The raw pack keeps `reviewed=false`. Root owns the normal-route integration and final PR; Claude owns the library status.
 
 ## Source and anatomy
 
@@ -30,10 +30,16 @@ Only generic original rig, shoe, curved-deck, interpolation and clearance mathem
 
 Source-real high arms are deliberately replaced with bent asymmetric shoulder-height balance under the owner's rule. Hidden Left forearm depth is reconstructed and labelled. After genuine frame 6117 the upper body returns smoothly to this take's own upright 6060 pose while the caught/landed shoe anchors stay fixed; no later heel reset or leg swing is inherited. This is an **authored source suffix**, not measured recovery.
 
+## Catch and landing correction
+
+Root held the initial1fdf preview: both knees were nearly straight at Catch/Land, with the visible absorption delayed until after touchdown. The authored pelvis now lowers before first catch6099 and both-feet catch6100, stays bent through landing6102.7, reaches one absorption trough6106 and recovers smoothly through6110/6113 into the existing own6117–6135 upright suffix. The hands stay low and open on bent, asymmetric arms while that torso lowers. These controls are consciously authored for a believable landing, not additional captured motion.
+
+Board winding, all source clocks/events, original foot paths, contacted ankle/toe/sole targets, the zero-reflection anatomical binding and the6117 genuine-source cutoff remain unchanged. The old preview is an explicit rejected baseline; unchanged exports and prior route checks do not certify these new controls. The fresh458-sample raw bake and four actual managed Pad/Step/Land/scorer/body cases pass. Complete physics/scoring traces remain byte-identical to the held2520 route, and all source board clocks/events, source foot targets and runtime contacted shoe/toe targets remain unchanged. Root original-mesh comparison/replay is still required before publication; Claude retains the independent offline verdict.
+
 ## Reproduce and remaining gates
 
 ```sh
 python scripts/author_skate_switch_360_flip.py --output context/switch-tre-baked
 ```
 
-The initial local bake produces 458 samples. Source, geometry and helper hashes are validated before output; output is written atomically. This only proves executable source data. Four real Pad/Step/scorer/body routes, original-skin/13-part-board GLBs, same-source normal/low Regular/Goofy phase sheets, 1×/¼× viewer review, Claude's independent offline verdict and the separate Shadow test remain pending.
+The initial local bake produces 458 samples. Source, geometry and helper hashes are validated before output; output is written atomically. This proves executable source data. The fresh four actual Pad/Step/scorer/body routes pass (normal36/36, low34/34 captured Air frames), return to ordinary Ground by4s and preserve all prior physics/scoring traces exactly. Original-skin/13-part-board GLBs, same-source normal/low physical Regular/Goofy phase sheets, 1×/¼× viewer review, Claude's independent offline verdict and the separate Shadow test remain pending for this correction.

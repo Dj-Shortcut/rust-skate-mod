@@ -444,31 +444,37 @@
     [
       6099,
       -0.075,
-      0.74,
+      0.64,
       0
     ],
     [
       6100,
       -0.075,
-      0.76,
+      0.63,
       0
     ],
     [
       6102.7,
       -0.075,
-      0.78,
+      0.6,
       0
     ],
     [
       6106,
       -0.085,
-      0.63,
+      0.56,
+      0
+    ],
+    [
+      6110,
+      -0.081,
+      0.64,
       0
     ],
     [
       6113,
       -0.075,
-      0.84,
+      0.76,
       0
     ],
     [
@@ -588,21 +594,21 @@
         ],
         [
           6095,
-          0.35,
-          -0.63,
-          0.69
+          0.31,
+          -0.48,
+          0.82
         ],
         [
           6100,
-          0.65,
-          -0.7,
-          0.3
+          0.32,
+          -0.54,
+          0.78
         ],
         [
           6106,
-          0.55,
-          -0.78,
-          0.3
+          0.33,
+          -0.64,
+          0.7
         ],
         [
           6117,
@@ -638,21 +644,21 @@
         ],
         [
           6095,
-          0.9,
-          0.1,
-          -0.42
+          0.83,
+          -0.4,
+          -0.39
         ],
         [
           6100,
-          0.9,
-          0.08,
-          -0.42
+          0.81,
+          -0.47,
+          -0.35
         ],
         [
           6106,
-          0.85,
-          -0.2,
-          -0.45
+          0.77,
+          -0.55,
+          -0.33
         ],
         [
           6117,
@@ -667,7 +673,7 @@
           -0.45
         ]
       ],
-      "provenance": "Own original/canonicalLeft front-side arm. Source-real high diagonal is deliberately lowered to bent asymmetric shoulder-height balance under the owner rule. Occluded6091\u20136092/6097\u20136098 and6104\u20136117 forearm depth is reconstructed, not copied from another body. Returns continuously to own6060 upright in authored recovery."
+      "provenance": "Own original/canonicalLeft front-side arm. Source-real high diagonal is deliberately lowered to bent asymmetric shoulder-height balance under the owner rule. Occluded6091\u20136092/6097\u20136098 and6104\u20136117 forearm depth is reconstructed, not copied from another body. Returns continuously to own6060 upright in authored recovery. Authored pre-Catch/Land refinement keeps the upper arm open and elbow bent while the pelvis lowers; only the own6095/6100/6106 balance keys change."
     },
     {
       "side": "Right",
@@ -698,21 +704,21 @@
         ],
         [
           6095,
-          0.3,
-          -0.72,
-          -0.62
+          0.24,
+          -0.57,
+          -0.79
         ],
         [
           6100,
-          0.35,
-          -0.8,
-          -0.49
+          0.25,
+          -0.63,
+          -0.74
         ],
         [
           6106,
-          0.3,
-          -0.82,
-          -0.49
+          0.27,
+          -0.68,
+          -0.68
         ],
         [
           6117,
@@ -748,21 +754,21 @@
         ],
         [
           6095,
-          0.9,
-          -0.05,
-          0.43
+          0.8,
+          -0.43,
+          0.41
         ],
         [
           6100,
-          0.9,
-          -0.18,
-          0.4
+          0.78,
+          -0.49,
+          0.39
         ],
         [
           6106,
-          0.85,
-          -0.3,
-          0.42
+          0.75,
+          -0.57,
+          0.34
         ],
         [
           6117,
@@ -777,11 +783,11 @@
           0.42
         ]
       ],
-      "provenance": "Own original/canonicalRight tail-side balance arm, deliberately bent/asymmetric below shoulders instead of the higher near-straight real windup. Only this take is used; no generic T/V pose or foreign body. Authored6060 upright return has landed feet fixed."
+      "provenance": "Own original/canonicalRight tail-side balance arm, deliberately bent/asymmetric below shoulders instead of the higher near-straight real windup. Only this take is used; no generic T/V pose or foreign body. Authored6060 upright return has landed feet fixed. Authored pre-Catch/Land refinement keeps the upper arm open and elbow bent while the pelvis lowers; only the own6095/6100/6106 balance keys change."
     }
   ],
-  "provenance": "Own striped-shirt Rodriguez genuine Switch360Flip from cached full BATB12 Chris Joslin vs Paul Rodriguez Pq. Direct physicalRegular Leftfront/Righttail verified on original6084\u20136090 chains; zero anatomical reflection. Dense6081\u20136104 original frames show full board-only360shove/kickflip with body unspun, catch and flat landing. Own76/76 strict actor selections; animation uses6060\u20136117 only, rejecting collapsed6097/swapped6098 =>56 accepted own poses. Generic original rig/shaped-deck/shoe math only; no normalTre/Hardflip timing, feet or body motion. World-height pressure pelvis is authored with visible reserve, subtracting reference rise once. Gaze/depth/full winding/contact keys and bent asymmetric arms are explicitly reconstructed under owner guidance. Suffix6117\u20136135 returns upperbody to own6060 upright with caught/landed shoes fixed; source is held at6117, excluding6118+ heel reset.",
-  "uncertainty": "Single moving fisheye camera cannot measure full3D winding, depth, upper-shoe contact or exact strike. CanonicalRegular and anatomicalLeftfront/Righttail are independently checked on source pixels.6097/6098 are rejected whole poses; occludedLeft forearm/wrist and hidden toe/sole depth are reconstructed. Exact PTS1001*globalframe/timebase30000 and cached full-source hash are authoritative. Dataset/on-screen names support identification but are not the sole proof.",
+  "provenance": "Own striped-shirt Rodriguez genuine Switch360Flip from cached full BATB12 Chris Joslin vs Paul Rodriguez Pq. Direct physicalRegular Leftfront/Righttail verified on original6084\u20136090 chains; zero anatomical reflection. Dense6081\u20136104 original frames show full board-only360shove/kickflip with body unspun, catch and flat landing. Own76/76 strict actor selections; animation uses6060\u20136117 only, rejecting collapsed6097/swapped6098 =>56 accepted own poses. Generic original rig/shaped-deck/shoe math only; no normalTre/Hardflip timing, feet or body motion. World-height pressure pelvis is authored with visible reserve, subtracting reference rise once. Gaze/depth/full winding/contact keys and bent asymmetric arms are explicitly reconstructed under owner guidance. Suffix6117\u20136135 returns upperbody to own6060 upright with caught/landed shoes fixed; source is held at6117, excluding6118+ heel reset. Root held the1fdf preview because Catch/Land were nearly straight and absorption began only after touchdown. The own6099/6100/6102.7 pelvis targets are now lower before and through Catch/Land, followed by one6106 trough and gradual6110/6113 upright recovery. Open bent low-arm keys accompany the lower torso; exact shoe contacts, free foot paths, winding, source phases and genuine6117 reference cutoff are unchanged. These are authored pose corrections, not new detections or offline approval.",
+  "uncertainty": "Single moving fisheye camera cannot measure full3D winding, depth, upper-shoe contact or exact strike. CanonicalRegular and anatomicalLeftfront/Righttail are independently checked on source pixels.6097/6098 are rejected whole poses; occludedLeft forearm/wrist and hidden toe/sole depth are reconstructed. Exact PTS1001*globalframe/timebase30000 and cached full-source hash are authoritative. Dataset/on-screen names support identification but are not the sole proof. The earlier1fdf Catch/Land presentation is a rejected baseline for landing stiffness. The corrected landing depth and accompanying low balance arms are explicitly authored and still require original-mesh playback and Claude review.",
   "sourceRootMotion": "Own hip-relative body contains no source carrier translation/jump. Estimated source camera heading is removed once into initial board nose+Z, independently from switch signature and travel. No source bodyspin or reflection; board +360roll/+360yaw once. Pressure world-pelvis removes reference rise exactly once; actual native upright carrier remains authoritative. Authored suffix uses own6060 body with already-caught feet fixed, no source heel reset.",
   "phaseClockLimit": "Source visual estimates: true first-risePop6082, Leftsole release6086.6/full outer-upper instep6087.4, tailstrike6087.8, Righttail release6088.2, instep release6088.8, distinct laterfreeAir6089.4, firstLeftcatch6099/both6100, Land6102.7. Original pixels are held at genuine6117 while explicitly authored upright stabilization continues to6135. Native pop/landing/scoring remain authoritative; source original unmirrored/private."
 }
