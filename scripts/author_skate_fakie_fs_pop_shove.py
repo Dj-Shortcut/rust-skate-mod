@@ -73,17 +73,23 @@ def foot(s, sf, side):
 
 
 def pressure_knee_offset(s, sf):
-    # An authored pose envelope, not a changed reach guard. Cap the last
-    # over-tall extension once, collect through the same strike/release, and
-    # return exactly to accepted free-Air1118. Feet/board/clocks stay unchanged.
-    rows = s['pressureKneeOffsetKeys']
-    if sf <= rows[0][0] or sf >= rows[-1][0]:
+    # Author one coherent pose-height envelope inside the existing pressure
+    # reach domain. This changes no contact, floor, rig or native flight limit.
+    envelope = s['pressureKneeEnvelope']
+    start, full, held, end = envelope['window']
+    if sf <= start or sf >= end:
         return 0.
+    rows = envelope['referenceWorldKeys']
+    world = rows[-1][1]
     for a, b in zip(rows, rows[1:]):
         if a[0] <= sf <= b[0]:
             weight = smooth((sf - a[0]) / (b[0] - a[0]))
-            return a[1] * (1 - weight) + b[1] * weight
-    return 0.
+            world = a[1] * (1 - weight) + b[1] * weight
+            break
+    desired = world - geometry.reference_height(s, sf)
+    original = scalar(s['pelvisKeys'], sf)
+    blend = smooth((sf - start) / (full - start)) * (1 - smooth((sf - held) / (end - held)))
+    return (desired - original) * blend
 
 
 def sample(c, s, sf):
@@ -179,10 +185,15 @@ def bake(body_raw, controls):
     g['_surfacePoints'], g['_surfaceTriangles'] = np.asarray(surface['points']), np.asarray(surface['triangles'])
     g['authored']['minimumAirSoleClearance'] = s['minimumAirSoleClearance']
     s['_geometry'] = g
+    envelope = s['pressureKneeEnvelope']
+    if not all(a < b for a, b in zip(envelope['window'], envelope['window'][1:])) or envelope['window'][-1] != s['pressEnd']:
+        raise ValueError('Own knee-reserve envelope must rejoin the accepted free-Air boundary')
+    if not all(a[0] < b[0] for a, b in zip(envelope['referenceWorldKeys'], envelope['referenceWorldKeys'][1:])):
+        raise ValueError('Own knee-reserve source-reference keys must increase')
     ordered = [s[k] for k in ('firstSourceFrame', 'pop', 'frontRelease', 'tailStrike', 'tailRelease', 'pressEnd', 'firstCatch', 'catch', 'land', 'recovery', 'lastSourceFrame')]
     if not all(a < b for a, b in zip(ordered, ordered[1:])):
         raise ValueError('Expected own Right-tail sole release, later free Air and catch order')
-    for name in ('yawKeys', 'pitchKeys', 'pelvisKeys', 'frontFreeKeys', 'rearFreeKeys', 'gazeKeys', 'pressureKneeOffsetKeys'):
+    for name in ('yawKeys', 'pitchKeys', 'pelvisKeys', 'frontFreeKeys', 'rearFreeKeys', 'gazeKeys'):
         if not all(a[0] < b[0] for a, b in zip(s[name], s[name][1:])):
             raise ValueError('Own source keys must increase: ' + name)
     times = np.unique(np.round(np.r_[np.arange(s['firstSourceFrame'], s['lastSourceFrame'] + 1e-7, 1 / 6), ordered], 9))
@@ -215,7 +226,7 @@ def bake(body_raw, controls):
                 sourcePhaseLimit=s['phaseClockLimit'],
                 contactLimit='Own authored Right-tail sole/scoop, front foot lifts without flick; independent body-frame free shoes return to reversed deck-local ends after180. No measured3D confidence.',
                 combinedWinding=dict(nativeFlip=0, nativeShove=180, bodySpin=0, canonicalRoll=0, canonicalYaw=-180),
-                reconstruction=dict(pelvisKeys=s['pelvisKeys'], kneePlane=s['kneePlane'], pressureKneeOffsetKeys=s['pressureKneeOffsetKeys'], gazeKeys=s['gazeKeys'], balanceWindows=s['balanceWindows'], authoredRecoverySuffix=[s['lastGenuineSourceFrame'],s['lastSourceFrame']], ownUprightReferenceFrame=s['recoverySourceFrame'], maximumReachShare=s['maximumReachShare']),
+                reconstruction=dict(pelvisKeys=s['pelvisKeys'], kneePlane=s['kneePlane'], pressureKneeEnvelope=s['pressureKneeEnvelope'], gazeKeys=s['gazeKeys'], balanceWindows=s['balanceWindows'], authoredRecoverySuffix=[s['lastGenuineSourceFrame'],s['lastSourceFrame']], ownUprightReferenceFrame=s['recoverySourceFrame'], maximumReachShare=s['maximumReachShare']),
                 rig=dict(thigh=.44, shin=.43, upperArm=.29, forearm=.27, spine=.52, shoulderRise=.44, hipHalfWidth=.09, shoulderHalfWidth=.18, head=.12, foot=.14, toeDrop=.07))
     duration = (s['lastSourceFrame'] - s['firstSourceFrame']) / s['sourceFps']
     clip = dict(format='skate-capture-source-keyed-fakie-fs-pop-shove/1', metadata=meta,

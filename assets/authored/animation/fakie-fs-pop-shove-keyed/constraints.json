@@ -467,30 +467,43 @@
       "provenance": "Own genuine originalRight/tattoo arm gets only Pop/Scoop shoulder-height bent balance. Same anatomy and source; rejoin originalRight at freeAir1118+. No mirrored/borrowed body."
     }
   ],
-  "provenance": "Own genuine black-shirt/cap/tattooed-arm BATB13 Fakie FS Pop Shove-it, bounded1084..1138 of existing181..219s cache. Actual leading-tail heel-pocket scoop, noflip/bodyturn, board-onlyopposite180, catch/flatland. Own49/55 VIDEO body with6 declared pre-pop gaps; estimated camera/depth/anatomy/knee/gaze and source-real clipped arm reconstruction. Original shaped-deck full-shoe/fixedchain support and own authored root/freefeet/catch. Upright recovery1138..1170 is explicitly authored from this same take own upright1090 because cache ends in bent absorption. Reference video held at genuine1138; no generated footage, another-trick body or raw/native approval. Source Pop is the first genuine leg-rise1110, not the already-extended1114 frame; all authored body/board/foot curve keys and other contact marks remain unchanged. Claude A5 balance repair: source-real high arms are deliberately replaced by labelled natural bent shoulder-height Pop/Scoop balance. The existing occludedLeft authored window stays bounded1114.2\u20131121.4 with lower targets; genuineRight rejoins1118+. One authored knee-reserve envelope1112\u20131118 caps only the last over-tall Rise/Pop/Scoop and rejoins exact freeAir1118, without feet/board/events/geometry/guard/physics changes. The last Rise height is necessarily lower; its upward extension remains.",
+  "provenance": "Own genuine black-shirt/cap/tattooed-arm BATB13 Fakie FS Pop Shove-it, bounded1084..1138 of existing181..219s cache. Actual leading-tail heel-pocket scoop, noflip/bodyturn, board-onlyopposite180, catch/flatland. Own49/55 VIDEO body with6 declared pre-pop gaps; estimated camera/depth/anatomy/knee/gaze and source-real clipped arm reconstruction. Original shaped-deck full-shoe/fixedchain support and own authored root/freefeet/catch. Upright recovery1138..1170 is explicitly authored from this same take own upright1090 because cache ends in bent absorption. Reference video held at genuine1138; no generated footage, another-trick body or raw/native approval. Source Pop is the first genuine leg-rise1110, not the already-extended1114 frame; all authored body/board/foot curve keys and other contact marks remain unchanged. Authored shoulder-height Pop/Scoop balance under the owner rule: the occludedLeft uses its same bounded1114.2\u20131121.4 window with lower bent targets, and genuineRight rejoins1118+. One authored source-reference pose-height envelope1111\u20131118 caps the last over-tall Rise, stays inside the unchanged runtime pressure fit domain through strike/release, and rejoins exact lower-body1118+ and whole mainAir1122+. The last Rise height is necessarily lower while its upward extension remains. Feet, board, events, source clock, zero-reflection anatomy and all geometry/reach/floor guards remain unchanged; native physics/carrier lead.",
   "uncertainty": "Own source1114/1116/1118 anatomical hip-knee-ankle/heel/toe chains verify physicalRegular Leftnose/Righttail, not priorBlackGoofy inference. Initialnose imageRight/high end, actualRight lowtail pressure; backwards travel is manually corroborated by Fakie sequence/action, not calibrated ground motion. Single-camera depth, tail-ball occlusion, small rotating board, clipped far wrist and6 rejected pre-pop frames. Source upright recovery missing after1138; same-own-body authored suffix. Full-video frame indices/hash unknown. Shoulder-height Pop/Scoop arm poses and the short knee-reserve height envelope are explicit authored presentation choices under the owner rule, not new measured motion.",
   "sourceRootMotion": "Own hip-relative body has no carrier/jump baked. Initial nose+Z independent from backwards velocity. Source boardlocal\u2212180 only; body unspun/native, reference rise removed only from pressure board offset before actual carrier once.",
   "phaseClockLimit": "Own authored visual marks: Pop1110 (first genuine leg-rise, preceding strike1115.8)/front sole release1115.3/strike1115.8/Right-tail release1116.7/laterfreeAir1118/LeftfirstCatch1126/both1127/Land1129. Source genuine through1138; own-body authored recovery to1170, video clamped1138. Actual native input/observed landing/scoring remain authoritative.",
-  "pressureKneeOffsetKeys": [
-    [
-      1112.0,
-      0.0
+  "pressureKneeEnvelope": {
+    "window": [
+      1111.0,
+      1112.3,
+      1116.9,
+      1118.0
     ],
-    [
-      1114.0,
-      -0.13
+    "referenceWorldKeys": [
+      [
+        1111.0,
+        0.0009123229701504809
+      ],
+      [
+        1112.375,
+        0.82
+      ],
+      [
+        1114.0,
+        0.87
+      ],
+      [
+        1115.8,
+        0.86
+      ],
+      [
+        1116.7,
+        0.88
+      ],
+      [
+        1118.0,
+        0.2910249307479224
+      ]
     ],
-    [
-      1115.8,
-      -0.16
-    ],
-    [
-      1116.7,
-      -0.06
-    ],
-    [
-      1118.0,
-      0.0
-    ]
-  ]
+    "provenance": "Authored source-reference pose envelope, not physics or a second jump. The original last Rise was too tall for bent pressure knees after runtime feet-only compensation; this one lower extension crosses into the feasible pressure domain instead of saturating its cap. Preserve a clear upward body extension, no new hip dip; exact freeAir1118+ lower body and mainAir1122+ whole pose. Same foot/board/source/event targets and guards."
+  }
 }
