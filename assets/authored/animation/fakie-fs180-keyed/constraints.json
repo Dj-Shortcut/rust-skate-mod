@@ -521,7 +521,7 @@
       ]
     }
   ],
-  "provenance": "Genuine plain Frontside Halfcab / Fakie FS180 in official H4MEulcgUTc, same plaid foreground actor. Own49 selected raw body frames, nose/anatomy frame with backwards travel and Right tail pop. Complete source yaw removed once before one actual native NoseYaw turn. Camera/depth, contact/pelvis/fixed legs and low-confidence arm depth are authored. Timeline275\u2013302 is explicitly authored planted upright recovery, not future footage. Visible early-mechanics correction follows the normal-BS source-control pattern: early 35-degree snap, earlier tail-sole release, front-bolt outer-upper drag with a level Guide and forward/down front-knee plane. Source clock, original ground datum, own body/heading and every accepted Air-frame-and-later sample remain unchanged. Source camera is not a pose correction.",
+  "provenance": "Genuine plain Frontside Halfcab / Fakie FS180 in official H4MEulcgUTc, same plaid foreground actor. Own49 selected raw body frames, nose/anatomy frame with backwards travel and Right tail pop. Complete source yaw removed once before one actual native NoseYaw turn. Camera/depth, contact/pelvis/fixed legs and low-confidence arm depth are authored. Timeline275\u2013302 is explicitly authored planted upright recovery, not future footage. Visible early-mechanics correction follows the normal-BS source-control pattern: early 35-degree snap, earlier tail-sole release, front-bolt outer-upper drag with a level Guide and forward/down front-knee plane. Source clock, original ground datum, own body/heading and every accepted Air-frame-and-later sample remain unchanged. Source camera is not a pose correction. A bounded authored forearm-only elbow softening at242\u2013254 brings the hands slightly forward/down from the stiff Air T; shoulders/elbows and all other source fields remain unchanged, with exact accepted poses outside the window.",
   "uncertainty": [
     "Actual raw49/49 selected, no gaps or fallback; low-confidence feet/wrist lists retained.",
     "Camera/depth, heading and contact phase estimates are not measured 3D.",
@@ -855,5 +855,21 @@
       249
     ],
     "metres": 0.045
+  },
+  "elbowSoftening": {
+    "window": [
+      242.0,
+      246.0,
+      250.5,
+      254.0
+    ],
+    "bendDegrees": 32.0,
+    "bendDirection": [
+      0.8,
+      -0.6,
+      0.0
+    ],
+    "scope": "Authored forearm/hand-only balance bend in anatomical facing/up/hip axes during stiff Air. Source shoulder and elbow positions stay unchanged; no backward-travel-frame rotation. Smoothly returns to accepted source at Catch254.",
+    "provenance": "Claude minor gate6565046080/#707: retain accepted plain FS Halfcab and soften the stiff straight T-arms. No captured-body, upper-arm, head, torso, pelvis, feet, board or native whole-turn edit."
   }
 }
