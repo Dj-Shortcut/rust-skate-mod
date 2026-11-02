@@ -88,23 +88,23 @@
     ],
     [
       210,
-      38
+      32
     ],
     [
       211.6,
-      55
+      40
     ],
     [
       212,
-      55
+      40
     ],
     [
       214,
-      38
+      30
     ],
     [
       216,
-      24
+      18
     ],
     [
       218,
@@ -195,7 +195,7 @@
       -0.24
     ]
   ],
-  "provenance": "Own filmed normal FS Pop Shove-it: Sewa Kroetkov, YcmPDIj2BFo local190..276 of124s cache, physicalGoofy manuallychecked1Nov. Generic measured-chain retarget helper only; no other trick body is loaded. The source-led180yaw, heel-side tail pressure and free-ankle guides are authored from this own take; no FS360 winding/timing is halved. Source upper/arm/knee directions retained; original uncertain ankle/deck depth reconstructed against own shaped deck. Complete anatomical catch positions and toe headings stay in world anatomy across the final180 deck reversal. After Land the rear knee and sole-centred pelvis reconstruct the observed steep-shin roll-away; these depth corrections are authored, not new detections. Native flight/landing/scoring remain authoritative. Own catch occurs at220 (the original source contact event), not the later FS360 catch. Explicit218..228 root repair bridges the original contact-prior translation and keeps the observed bent landing; uncertain3D root/limb depths are authored. The Pop event is the source extension start208 with both feet attached. The later visible maximum tail press211.6, frontrelease211 and rearrelease212 are distinct clocks; the runtime physical takeoff remains authoritative. An authored6cm early-press root reserve fades in208..212, holds through214 and ends216; pelvis and upper translate coherently while both fixed-foot legs are solved again. It reconstructs uncertain monocular depth and leaves room for the existing native press compensation; no runtime fallback/guard relaxation.",
+  "provenance": "Own filmed normal FS Pop Shove-it: Sewa Kroetkov, YcmPDIj2BFo local190..276 of124s cache, physicalGoofy manuallychecked1Nov. Generic measured-chain retarget helper only; no other trick body is loaded. The source-led180yaw, heel-side tail pressure and free-ankle guides are authored from this own take; no FS360 winding/timing is halved. Source upper/arm/knee directions retained; original uncertain ankle/deck depth reconstructed against own shaped deck. Complete anatomical catch positions and toe headings stay in world anatomy across the final180 deck reversal. After Land the rear knee and sole-centred pelvis reconstruct the observed steep-shin roll-away; these depth corrections are authored, not new detections. Native flight/landing/scoring remain authoritative. Own catch occurs at220 (the original source contact event), not the later FS360 catch. Explicit218..228 root repair bridges the original contact-prior translation and keeps the observed bent landing; uncertain3D root/limb depths are authored. The Pop event is the source extension start208 with both feet attached. The later visible maximum tail press211.6, frontrelease211 and rearrelease212 are distinct clocks; the runtime physical takeoff remains authoritative. An authored6cm early-press root reserve fades in208..212, holds through214 and ends216; pelvis and upper translate coherently while both fixed-foot legs are solved again. It reconstructs uncertain monocular depth and leaves room for the existing native press compensation; no runtime fallback/guard relaxation. Claude683 item5 authored scoop refinement: the own tail-pressure pitch peaks40 rather than55 degrees and tapers through30 at214 and18 at216. This is a visible-presentation candidate, not a new source measurement; original yaw, carrier, contacts, clocks and all reach/contact/floor guards stay fixed.",
   "recoveryKneeWindow": [
     226,
     236

@@ -7,7 +7,7 @@ the existing native signature is normal Ollie / flip0 / shove+180 / spin0.
 
 The immutable private source reconstruction is local frames190–276 of the
 124 s cache (130.340–133.209 s), physically Goofy/right-leading. Extension-start Pop208 (both feet), front release211, maximum tail press211.6,
-rear release212, catch220, Land226 and recovery241 follow this own take.
+rear release212, catch 220, Land226 and recovery241 follow this own take.
 The actual source was inspected from setup to the landed roll-away; a panning
 three-quarter camera, blur and deck/ankle overlap leave depth uncertain.
 
@@ -55,3 +55,7 @@ source root-entry target and fades out by216. The rear knee stays flexible
 under the existing native tail-press carrier compensation. Feet and board
 paths, contact bits and all native reach guards stay unchanged; this is
 monocular depth reconstruction, not measured motion or extra physics.
+
+## Early scoop refinement candidate
+
+The authored pressure peak is reduced from55° to40°, with a gentler early-Air taper at214/216. This targets the visibly steep end-on Air noted in #683; it is not a new source measurement or physics change. Own source, yaw, contact/timing, catch/recovery and all existing guard thresholds remain fixed. Original-rig before/after, normal/low physical Regular/Goofy phase and focused contact sheets are in `docs/review-media/fs-pop-shove-scoop/`. Four actual managed routes and 1×/¼× viewer replays reach ordinary recovery. Raw stays reviewed=false; Claude offline approval and native Shadow acceptance remain separate.
