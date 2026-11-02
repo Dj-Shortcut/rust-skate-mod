@@ -95,3 +95,17 @@ The 773-sample bake and exact scope comparison pass. Root's integrated four
 actual input/body cases and the same original-mesh sheets/full replays are
 pending; this is not a visually approved repair yet. Raw remains
 `reviewed=false`; Claude and native Shadow acceptance stay separate.
+
+The first Catch/Land candidate `a2defc45` at runtime `6a3aa2cd` visibly opened
+the arms and improved Catch, but the same-camera Land still lengthened the
+legs before a later dip. That original-mesh comparison is preserved and was
+not accepted. The follow-up changes only two world-height targets: Land
+7870.5 is now 0.64m and 7875 is 0.63m, joining the existing 0.63m at 7880.
+This brings the absorption into touchdown relative to the descending board;
+first/both-catch targets and the good low outward arm controls are retained.
+All source clocks, immutable body, shoes, board and carrier accounting remain
+unchanged. New raw SHA-256:
+`85aa60e815f4ff2dfb70b0c58354146e3266072497d30f27461d6052791abb4e`.
+The bounded bake/scope checks pass; updated actual replay and original-mesh
+comparison remain pending. The earlier numerical world-height curve alone
+did not establish a successful landing repair.
