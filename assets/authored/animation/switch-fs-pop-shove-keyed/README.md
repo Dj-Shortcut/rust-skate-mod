@@ -32,7 +32,7 @@ is used. Source video/audio/pixels and raw model arrays remain private.
 `constraints.json` specifies authored tail-ball pressure, heel-side tail pocket,
 front-foot pickup without a flick, signed board yaw−180, grip-up pitch,
 free-foot clearance, reversed-end catch, fixed-chain knees, root height and
-recovery. Pop770, front sole release771.5, strike773.5, tail sole release775.5,
+recovery. Pop768 marks the first leg/body rise (earlier770 marker rejected); front sole release771.5, strike773.5, tail sole release775.5,
 and distinct later freeAir778 are separate markers. Catch782/784 and Land787
 retain both anatomical feet. Partly cropped leading-arm depth at the snap/Air and
 the hidden rollout suffix are explicitly authored in torso anatomical axes,

@@ -20,7 +20,7 @@
     "body": 0
   },
   "phases": {
-    "pop": 770,
+    "pop": 768,
     "frontRelease": 771.5,
     "strike": 773.5,
     "rearRelease": 775.5,
@@ -375,5 +375,5 @@
   },
   "provenance": "Own black-shirt/cap1091 Switch FS Pop Shove-it, BATB13 tL8Ey9GS0xQ local738\u2013817, next actor cut827 excluded. Own80/80 foreground VIDEO selections, with one explicitly rejected model-pose774 reconstructed from own773/775. No normal FS, BS, Halfcab or other motion body borrowed. Original board/shoe/rig math reused read-only. Corrected concrete771/773/774 roles: filmedSwitchGoofy has Rightnose/Lefttail. Align that filmed initial nose once, then exactly one X reflection/anatomical swap normalizes to canonicalRegular Leftnose/Righttail. Earlier no-reflection candidate was rejected; no native heading, authored foot/yaw/timing or gameplay state changed. Contact, signed yaw\u2212180/pitch, root height, foot depth, fixed knees, camera pan and cropped/hidden rear-arm depth are labelled authored monocular reconstruction. Raw remains reviewed=false.",
   "uncertainty": "Source771/773/774 and surrounding frames identify anatomicalRight leading/guide and Left tail/pop: filmedGoofy. Normal-baseRegular follows the Switch label but lacks a full plain-normal witness; both that base inference and monocular3D remain uncertain. Camera pans; full model pose774 reverses anatomy unreliably and is explicitly reconstructed, not accepted or silently mirrored. Some arm/foot landmarks are low confidence; contact/depth/yaw/phase times are authored estimates. No source video/model arrays are published.",
-  "sourcePhaseLimit": "Local decoder indices with PTS1001*frame/timebase1/30000, original global frame/PTS unknown; public181+PTS seconds are bounded-cut estimates. Pop770, strike773.5, rear sole release775.5, distinct freeAir778, front/both catch782/784, landing787, upright809..817. Source contact bits are authored candidates, not measured confidence."
+  "sourcePhaseLimit": "Local decoder indices with PTS1001*frame/timebase1/30000, original global frame/PTS unknown; public181+PTS seconds are bounded-cut estimates. Pop768 first leg/body rise, strike773.5, rear sole release775.5, distinct freeAir778, front/both catch782/784, landing787, upright809..817. Source contact bits are authored candidates, not measured confidence."
 }
