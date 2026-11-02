@@ -1,0 +1,362 @@
+{
+  "format": "a5-nollie-fs-pop-shove-rig-only-review/1",
+  "sourceAuthoringHead": "89f796fbf5367005aef9a2e66c375129ad8eb3b4",
+  "runtimeRouteRevision": "89f796fbf5367005aef9a2e66c375129ad8eb3b4",
+  "runtimeRouteFiles": {
+    "SkateCaptureKeyedPlayback.cs": "00850fb5518a80861e00f984317e09dd700322dbcf66825858123d369890b4fe",
+    "SkateCaptureVariants.cs": "fe2f314d778d6c3170521f1e9a00870ddbc39dc816160a09eb9dd0f4df438a41",
+    "SkateCaptureKickflipUpper.cs": "fe4fc728907b5044b8a7ef3cbfa86031ac07ef2b81f7c07b19eee0b9cf28c206",
+    "SkateCapturePlayback.cs": "33d1cb57dd9e0be8d1521444ec27d69f5680d7bdfa233b758549ebcaec85b203"
+  },
+  "sourcePackSha256": "b1d994cbb0278de2ab9421bbf7de96ac96a80e5aaac9eee84f78cdccb75182be",
+  "rawReviewed": false,
+  "nativeGame": false,
+  "offlineVerdict": "pending Claude",
+  "independentSource": true,
+  "sourceOriginGroundDatumM": 0.092,
+  "boardOnlyYaw": true,
+  "nativeShoveDegrees": 180,
+  "canonicalLocalBoardYawDegrees": -180,
+  "bodyHalfturn": false,
+  "anatomyReflection": "NONE: own sourceRegular/Left nose; mirroredGoofy is the runtime counterpart, not another filmed take.",
+  "viewer": "http://127.0.0.1:63761/a5-nollie-fs-pop-shove/",
+  "sourceUrl": "https://www.youtube.com/watch?v=tL8Ey9GS0xQ&t=182",
+  "sourceWindow": {
+    "retainedRaw": [
+      20,
+      103
+    ],
+    "animation": [
+      30,
+      98
+    ],
+    "nextActorCut": 104,
+    "excludedHeadCrop": [
+      20,
+      29
+    ],
+    "excludedRebatedWhiteAttempt": [
+      104,
+      160
+    ],
+    "firstContainerPts": 0,
+    "timeBase": "1/30000",
+    "ptsStep": 1001,
+    "originalGlobalFrameIndices": null
+  },
+  "sourceVideoSha256": "220a8f31da226010bb44afa81882f684744ab2071458279eb937cf68b95fee48",
+  "sourcePoseSha256": "9fdecd598fef1d38b6be33af263474269cb73a2f39871312df07f32b64178216",
+  "sourceBodySha256": "c4c9215c53060138fd14a63ceb971ea104849316231234408a17053295d4ee3b",
+  "sourceGaps": {
+    "rawRejected": [
+      68,
+      69
+    ],
+    "authoredControlReconstruction": "Only bracketed67..70 control interpolation, explicitly labelled; raw failures preserved.",
+    "unreliableDepth": "FarLeft wrist reconstructed from own source pixels; raised-hand overlap still uncertain. Strong model2D confidence is not calibrated depth."
+  },
+  "sourceRole": "Regular/Left-leading nose independently checked on stable30/54/75/90 legchains and tattooedRight arm74. Pop overlap uncertain; source labels alone were not proof.",
+  "scope": "Own genuine black1084 Nollie FS VIDEO body and explicitly authored camera/depth, nose pressure, board-only FS halfturn, reverse-deck catches and recovery. No A4/othertrick body read; generic geometry/fixed-chain helpers only. Source footage/detector data remain private.",
+  "sourcePhases": {
+    "extensionStart": 54,
+    "noseStrike": 57.5,
+    "rearRelease": 57,
+    "noseRelease": 59,
+    "distinctFreeAir": 61,
+    "midturn": 63,
+    "firstCatch": 66.5,
+    "bothCatch": 68,
+    "land": 73,
+    "recovery": 90,
+    "end": 98
+  },
+  "camera": {
+    "canonicalOffset": [
+      -0.45,
+      0.06,
+      -0.89
+    ],
+    "radius": 4.5,
+    "method": "Fixed approximate view from own initial deck/hip foreshortening, identical for both physical variants. No calibrated3D/camera pan claim or pose/nativeheading workaround."
+  },
+  "presentation": "Own-family root entry .125 flight fraction, with actual input/flight/landing/scoring authority, observed-ground/fullshoe/reach/floor guards unchanged. First Pop54 is ordinary-charge-to-own-source handoff; Source49 Load is a procedural phase witness.",
+  "exports": {
+    "originalSkinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+    "boardParts": 13,
+    "glbs": [
+      {
+        "profile": "low",
+        "nativeRequestedStance": "goofy",
+        "physicalStance": "regular",
+        "sha256": "4a043eb9086079765da92559b5bc1ac4f935926165d173b9ca1fc8c7e5dabf97",
+        "bytes": 2229956,
+        "inputSha256": "6383546a8f549b0cdb347455735378cd14308b176f00e4fb851ade1ac4d664c6",
+        "phaseMoments": {
+          "Load": 0.8333333333333334,
+          "Pop": 0.85,
+          "NoseStrike": 0.95,
+          "FreeAir": 1.05,
+          "Air": 1.1166666666666667,
+          "Catch": 1.2166666666666666,
+          "Land": 1.4166666666666667,
+          "Rollaway": 1.9166666666666667,
+          "End": 4.0
+        }
+      },
+      {
+        "profile": "normal",
+        "nativeRequestedStance": "goofy",
+        "physicalStance": "regular",
+        "sha256": "ad726771968c1d3d4822d87ed5fa2c72060401470b189e4c7d8073b84d128248",
+        "bytes": 2230048,
+        "inputSha256": "98b3f79400bddda23a2f214129b88fa9ab45fd2420cc28ee99d103355c6ad7e8",
+        "phaseMoments": {
+          "Load": 0.8333333333333334,
+          "Pop": 0.85,
+          "NoseStrike": 0.95,
+          "FreeAir": 1.0666666666666667,
+          "Air": 1.1333333333333333,
+          "Catch": 1.2333333333333334,
+          "Land": 1.45,
+          "Rollaway": 1.9833333333333334,
+          "End": 4.0
+        }
+      },
+      {
+        "profile": "low",
+        "nativeRequestedStance": "regular",
+        "physicalStance": "goofy",
+        "sha256": "9096ba4b796ce9d97f5b7547c68ab770c97157fd972c2c0486d789700c250274",
+        "bytes": 2230048,
+        "inputSha256": "745fc8f2fa4a2189cff7e06ac1b5d1dae753754a6ba54637d56132e1e51b28ca",
+        "phaseMoments": {
+          "Load": 0.8333333333333334,
+          "Pop": 0.85,
+          "NoseStrike": 0.95,
+          "FreeAir": 1.05,
+          "Air": 1.1166666666666667,
+          "Catch": 1.2166666666666666,
+          "Land": 1.4166666666666667,
+          "Rollaway": 1.9166666666666667,
+          "End": 4.0
+        }
+      },
+      {
+        "profile": "normal",
+        "nativeRequestedStance": "regular",
+        "physicalStance": "goofy",
+        "sha256": "01cccb2b98c6f978dea864310dd55f331a102abfdf42388d88917e76e328c178",
+        "bytes": 2230048,
+        "inputSha256": "426e8f8c48771a0f53a266a8ed5178c2885986f7bc72acdff32e642b14b31464",
+        "phaseMoments": {
+          "Load": 0.8333333333333334,
+          "Pop": 0.85,
+          "NoseStrike": 0.95,
+          "FreeAir": 1.0666666666666667,
+          "Air": 1.1333333333333333,
+          "Catch": 1.2333333333333334,
+          "Land": 1.45,
+          "Rollaway": 1.9833333333333334,
+          "End": 4.0
+        }
+      }
+    ],
+    "manifestSha256": "9a6aa566a2432b339bc15a82d0082d70f802055911fdf155066c70cab375728d"
+  },
+  "managedRoutes": {
+    "scope": "Actual Pad/full32Hz Step/Land/scorer, body at60Hz, controlled bindings/ground. No native runtime or visual approval.",
+    "receiptSha256": "dddcec38e548559e31a2da9bba09c07970c5e7d76a6bd85ec44b0234816732ae",
+    "cases": [
+      {
+        "profile": "normal",
+        "requestedStance": "regular",
+        "names": [
+          "Combo",
+          "Nollie Frontside Pop Shove-it"
+        ],
+        "sourcePackSha256": "b1d994cbb0278de2ab9421bbf7de96ac96a80e5aaac9eee84f78cdccb75182be",
+        "testPackSha256": "685d55113fdd69eadd6d121ef97e24d9e595f910a33140a2bdc60293869566ee",
+        "traceSha256": "92d1d5eddf3e691bd14b6a7aa6c4fadcf76987da3e609ef5bfc3c11684e7e4f2",
+        "jsonSha256": "be0239c3c2ab08af210a32bc07c917a1b51a058c3718e559600248dd5b909188",
+        "activeAir": 36,
+        "airFrames": 36,
+        "flightDuration": 0.59375,
+        "terminalCapture": false,
+        "t": 4
+      },
+      {
+        "profile": "normal",
+        "requestedStance": "goofy",
+        "names": [
+          "Combo",
+          "Nollie Frontside Pop Shove-it"
+        ],
+        "sourcePackSha256": "b1d994cbb0278de2ab9421bbf7de96ac96a80e5aaac9eee84f78cdccb75182be",
+        "testPackSha256": "685d55113fdd69eadd6d121ef97e24d9e595f910a33140a2bdc60293869566ee",
+        "traceSha256": "c501729dbdea2d8d98a993c21b4295b5cf2c9dafe8da36159dacffc18a3d140b",
+        "jsonSha256": "7a79096b8596835870f41d5bed54afd21d0a77c12fd5f2601a2f699d7cbdae4d",
+        "activeAir": 36,
+        "airFrames": 36,
+        "flightDuration": 0.59375,
+        "terminalCapture": false,
+        "t": 4
+      },
+      {
+        "profile": "low",
+        "requestedStance": "regular",
+        "names": [
+          "Combo",
+          "Nollie Frontside Pop Shove-it"
+        ],
+        "sourcePackSha256": "b1d994cbb0278de2ab9421bbf7de96ac96a80e5aaac9eee84f78cdccb75182be",
+        "testPackSha256": "685d55113fdd69eadd6d121ef97e24d9e595f910a33140a2bdc60293869566ee",
+        "traceSha256": "b1da0e1090145f0eba7d422a5edc0706ff0a00e53fa8c0f945f5aa858a149a41",
+        "jsonSha256": "9d4f04ce3796ce09d3fb51af73cb7904031325eee903637f709d1f9f8651b51b",
+        "activeAir": 34,
+        "airFrames": 34,
+        "flightDuration": 0.5625,
+        "terminalCapture": false,
+        "t": 4
+      },
+      {
+        "profile": "low",
+        "requestedStance": "goofy",
+        "names": [
+          "Combo",
+          "Nollie Frontside Pop Shove-it"
+        ],
+        "sourcePackSha256": "b1d994cbb0278de2ab9421bbf7de96ac96a80e5aaac9eee84f78cdccb75182be",
+        "testPackSha256": "685d55113fdd69eadd6d121ef97e24d9e595f910a33140a2bdc60293869566ee",
+        "traceSha256": "56356a138c26a6b05345776e9f8f9d61e78e411a3d752c102baf7e4628a4812b",
+        "jsonSha256": "01b647cf19519d73964bcbaf480ece42fd4c39be1f621531cd8bbc8b61e924d4",
+        "activeAir": 34,
+        "airFrames": 34,
+        "flightDuration": 0.5625,
+        "terminalCapture": false,
+        "t": 4
+      }
+    ]
+  },
+  "continuousReplay": {
+    "errors": 0,
+    "cases": [
+      {
+        "profile": "normal",
+        "physicalStance": "regular",
+        "rates": [
+          1,
+          0.25
+        ],
+        "endTimes": [
+          4,
+          4
+        ],
+        "phaseSeeks": 9
+      },
+      {
+        "profile": "normal",
+        "physicalStance": "goofy",
+        "rates": [
+          1,
+          0.25
+        ],
+        "endTimes": [
+          4,
+          4
+        ],
+        "phaseSeeks": 9
+      },
+      {
+        "profile": "low",
+        "physicalStance": "regular",
+        "rates": [
+          1,
+          0.25
+        ],
+        "endTimes": [
+          4,
+          4
+        ],
+        "phaseSeeks": 9
+      },
+      {
+        "profile": "low",
+        "physicalStance": "goofy",
+        "rates": [
+          1,
+          0.25
+        ],
+        "endTimes": [
+          4,
+          4
+        ],
+        "phaseSeeks": 9
+      }
+    ],
+    "receiptSha256": "cbd32fb9ee2f4710e3885936bfb68aff53302303edf53421696be7b23577d466"
+  },
+  "sourceSeekChecks": {
+    "focusedViews": 28,
+    "maximumPausedTimeDelta": 3.799999999998249e-05,
+    "method": "Actual readyState>=2/no poster, actual cachetime, screenshots and private decoded-canvas witnesses. No full-frame model-validation claim or same-time paused callback requirement.",
+    "receiptSha256": "745f8c0162d6ddba10170aaf8dcfec26dfbdd42c8100616cc903bbecd21a3414"
+  },
+  "files": [
+    {
+      "file": "low-regular-phases.jpg",
+      "sha256": "c0ca15055c55dd809c41ded78c0ec133cd8e7b40349a055d4945f24edf5beca0",
+      "profile": "low",
+      "physicalStance": "regular",
+      "kind": "phases"
+    },
+    {
+      "file": "low-regular-contacts.jpg",
+      "sha256": "06dacecd603dfd9d4ca33c0e952d3b0d3db3e9937897fb20342bb671af620643",
+      "profile": "low",
+      "physicalStance": "regular",
+      "kind": "contacts"
+    },
+    {
+      "file": "normal-regular-phases.jpg",
+      "sha256": "e9f477306860fb8e2ec60d52329f51f82ef7002d39bd7a74fb89ecdb06942cd0",
+      "profile": "normal",
+      "physicalStance": "regular",
+      "kind": "phases"
+    },
+    {
+      "file": "normal-regular-contacts.jpg",
+      "sha256": "0c41d3698c2ea3db6ab73ad0b581506bfa35be232e3b17385ed777ed76c3aac8",
+      "profile": "normal",
+      "physicalStance": "regular",
+      "kind": "contacts"
+    },
+    {
+      "file": "low-goofy-phases.jpg",
+      "sha256": "ca241815987fe35b280fd11fb00d3e1f44ffecd58034528f5ec4025d048c508a",
+      "profile": "low",
+      "physicalStance": "goofy",
+      "kind": "phases"
+    },
+    {
+      "file": "low-goofy-contacts.jpg",
+      "sha256": "1ae4b3a60eba8c7a9edbb6b2a4b3458b933e19d60374c71c234e1166d931e369",
+      "profile": "low",
+      "physicalStance": "goofy",
+      "kind": "contacts"
+    },
+    {
+      "file": "normal-goofy-phases.jpg",
+      "sha256": "2132083ca691b232791fc94f77fb4dd73e4f16c652e5d27215760a457278df3f",
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "kind": "phases"
+    },
+    {
+      "file": "normal-goofy-contacts.jpg",
+      "sha256": "b6296e760cdbd2498349c0541f29a59a70aa7e5f56a2306eedc6a00ee75562a8",
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "kind": "contacts"
+    }
+  ]
+}

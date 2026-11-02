@@ -62,8 +62,35 @@ native Rust/Shadow result. Claude owns the library and offline verdict.
 
 ## Original-rig review media
 
-[Eight rig-only phase/contact sheets](../../../../docs/review-media/a3-fakie-fs180/README.md) and the private [source-comparison viewer](http://127.0.0.1:63761/a3-fakie-fs180/) cover normal/lower × physical Regular/Goofy,1×/¼×, through actual Land and ordinary4 s recovery. Original skin, weights and board hierarchy are unchanged. Reference footage is held at the last genuine frame during the explicitly authored upright suffix. All raw output remains reviewed=false; Claude verdict and native Shadow validation remain separate.
+[Eight rig-only phase/contact sheets](../../../../docs/review-media/a3-fakie-fs180/README.md) and the private [source-comparison viewer](http://127.0.0.1:63761/a3-fs-halfcab-soft-elbows/) cover normal/lower × physical Regular/Goofy,1×/¼×, through actual Land and ordinary4 s recovery. Original skin, weights and board hierarchy are unchanged. Reference footage is held at the last genuine frame during the explicitly authored upright suffix. All raw output remains reviewed=false; Claude verdict and native Shadow validation remain separate.
 
 ## Early snap and level guide
 
 The brief snap now precedes the main body turn and drops into a level front-bolt upper-shoe guide, with the tail sole already released. The front knee bends forward/down instead of perching over the nose. A small authored pressure extension rejoins the original accepted Air exactly; the own captured body, clock, ground datum, complete native heading authority and later Air/Catch/Land/recovery are retained. This is a source-presentation correction following the reviewed normal-BS control pattern, not a shared physics or camera change. The previous steep Pop/Guide media is superseded by the corrected source checkpoint and final runtime world-gaze fix.
+
+## Air elbow refinement
+
+A small authored forearm bend in bounded frames 242–254 brings the hands
+forward/down from the stiff Air T. The balance plane uses anatomical
+facing/up/hip axes, never backward Fakie travel. Only source hand endpoints
+change: source shoulders and elbows, head/torso/pelvis, feet, soles, deck,
+clock, native coupled turn and all poses outside the open window retain
+the accepted reconstruction. The bend eases into Air and returns to the
+accepted Catch pose at 254. This is a labelled visual refinement, not new
+motion measurement; raw packs stay `reviewed=false`.
+
+
+The existing fixed-chain production sampler/crossfade refits elbows with the
+new wrists; every actual non-arm/shoulder field, physics, contact and source
+clock remains exact against the accepted baseline rerun through the same
+current integration. No C# or rig-specific compensation is added. The early
+snap section above describes the accepted mechanics checkpoint; this Air hand
+exception leaves all its non-arm motion intact.
+
+The same-camera original-rig Air/Catch before/after and eight updated phase/
+detail sheets show both physical stances and normal/low flights. Four actual
+Pad/full Step/Land/scorer/body cases pass, four 1×/¼× replays reach ordinary
+4-second recovery, and 28 decoded-source phase seeks plus 20 focused Air/
+LateAir/Catch/rollaway checks finish without browser/runtime errors. Original
+skin, board hierarchy and accepted camera settings stay unchanged. Raw
+`reviewed=false`, Claude's verdict and native Shadow acceptance remain separate.
