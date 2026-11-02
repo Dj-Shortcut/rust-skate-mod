@@ -1,17 +1,17 @@
 {
   "format": "a5-nollie-fs-pop-shove-rig-only-review/1",
-  "sourceAuthoringHead": "89f796fbf5367005aef9a2e66c375129ad8eb3b4",
-  "runtimeRouteRevision": "89f796fbf5367005aef9a2e66c375129ad8eb3b4",
+  "sourceAuthoringHead": "ca9fb33a903eb162faa62fafe753df0ec8c98070",
+  "runtimeRouteRevision": "ca9fb33a903eb162faa62fafe753df0ec8c98070",
   "runtimeRouteFiles": {
-    "SkateCaptureKeyedPlayback.cs": "00850fb5518a80861e00f984317e09dd700322dbcf66825858123d369890b4fe",
-    "SkateCaptureVariants.cs": "fe2f314d778d6c3170521f1e9a00870ddbc39dc816160a09eb9dd0f4df438a41",
+    "SkateCaptureKeyedPlayback.cs": "318d69caa1277e5bee009b461e51edeff0b1ebaf69f90d77e8d53a1a0a38f234",
+    "SkateCaptureVariants.cs": "95150d1a953d317105b89f69f0fffada3cf78ce2a51f80f9cc23b005812408cd",
     "SkateCaptureKickflipUpper.cs": "fe4fc728907b5044b8a7ef3cbfa86031ac07ef2b81f7c07b19eee0b9cf28c206",
     "SkateCapturePlayback.cs": "33d1cb57dd9e0be8d1521444ec27d69f5680d7bdfa233b758549ebcaec85b203"
   },
-  "sourcePackSha256": "b1d994cbb0278de2ab9421bbf7de96ac96a80e5aaac9eee84f78cdccb75182be",
+  "sourcePackSha256": "7c6e754f0738b272e31e76aacf55188fb9895296382ef6521dd4361c51e0ec1f",
   "rawReviewed": false,
   "nativeGame": false,
-  "offlineVerdict": "pending Claude",
+  "offlineVerdict": "pending Claude A5 repair review",
   "independentSource": true,
   "sourceOriginGroundDatumM": 0.092,
   "boardOnlyYaw": true,
@@ -19,7 +19,7 @@
   "canonicalLocalBoardYawDegrees": -180,
   "bodyHalfturn": false,
   "anatomyReflection": "NONE: own sourceRegular/Left nose; mirroredGoofy is the runtime counterpart, not another filmed take.",
-  "viewer": "http://127.0.0.1:63761/a5-nollie-fs-pop-shove/",
+  "viewer": "http://127.0.0.1:63761/a5-nollie-fs-balance/",
   "sourceUrl": "https://www.youtube.com/watch?v=tL8Ey9GS0xQ&t=182",
   "sourceWindow": {
     "retainedRaw": [
@@ -46,7 +46,7 @@
   },
   "sourceVideoSha256": "220a8f31da226010bb44afa81882f684744ab2071458279eb937cf68b95fee48",
   "sourcePoseSha256": "9fdecd598fef1d38b6be33af263474269cb73a2f39871312df07f32b64178216",
-  "sourceBodySha256": "c4c9215c53060138fd14a63ceb971ea104849316231234408a17053295d4ee3b",
+  "sourceBodySha256": "c2372fa3f4f5f656877b36b600d3a15fc5777b03bcea9dbb953f7bfb9ed7522b",
   "sourceGaps": {
     "rawRejected": [
       68,
@@ -88,9 +88,9 @@
         "profile": "low",
         "nativeRequestedStance": "goofy",
         "physicalStance": "regular",
-        "sha256": "4a043eb9086079765da92559b5bc1ac4f935926165d173b9ca1fc8c7e5dabf97",
+        "sha256": "95db936688a990525afa4ead7bc631e182ac07f9c8e5e92dc0e33a9e92645318",
         "bytes": 2229956,
-        "inputSha256": "6383546a8f549b0cdb347455735378cd14308b176f00e4fb851ade1ac4d664c6",
+        "inputSha256": "c9c36da87fa627517987407b9ef207edb8ed44512139957f010f92894631cb8e",
         "phaseMoments": {
           "Load": 0.8333333333333334,
           "Pop": 0.85,
@@ -107,9 +107,9 @@
         "profile": "normal",
         "nativeRequestedStance": "goofy",
         "physicalStance": "regular",
-        "sha256": "ad726771968c1d3d4822d87ed5fa2c72060401470b189e4c7d8073b84d128248",
+        "sha256": "16c0e9a13610a2893447478952b6a646d68ba175cef3973a55778295b3275dc1",
         "bytes": 2230048,
-        "inputSha256": "98b3f79400bddda23a2f214129b88fa9ab45fd2420cc28ee99d103355c6ad7e8",
+        "inputSha256": "81cbff5203bd781bbffbdcb913162ab934864a7533a92323e599ac0946babc19",
         "phaseMoments": {
           "Load": 0.8333333333333334,
           "Pop": 0.85,
@@ -126,9 +126,9 @@
         "profile": "low",
         "nativeRequestedStance": "regular",
         "physicalStance": "goofy",
-        "sha256": "9096ba4b796ce9d97f5b7547c68ab770c97157fd972c2c0486d789700c250274",
+        "sha256": "27a9403fd6429b0d00efd8e06227d34004c645525155241495cfdaf1390ce00a",
         "bytes": 2230048,
-        "inputSha256": "745fc8f2fa4a2189cff7e06ac1b5d1dae753754a6ba54637d56132e1e51b28ca",
+        "inputSha256": "3ec7d3198045d0cb4078ecc127636450366e97b9f8bc2710e609fd4237b6d279",
         "phaseMoments": {
           "Load": 0.8333333333333334,
           "Pop": 0.85,
@@ -145,9 +145,9 @@
         "profile": "normal",
         "nativeRequestedStance": "regular",
         "physicalStance": "goofy",
-        "sha256": "01cccb2b98c6f978dea864310dd55f331a102abfdf42388d88917e76e328c178",
+        "sha256": "8ae12e8060a8bbb8ab70a20154dc40b6f1cf2a4dea61398f5817f2738712a32e",
         "bytes": 2230048,
-        "inputSha256": "426e8f8c48771a0f53a266a8ed5178c2885986f7bc72acdff32e642b14b31464",
+        "inputSha256": "5393f2c03f7646222d29bfc94cf0d43ff21b288357db9ca5a6e528bf4c64b5d9",
         "phaseMoments": {
           "Load": 0.8333333333333334,
           "Pop": 0.85,
@@ -161,11 +161,11 @@
         }
       }
     ],
-    "manifestSha256": "9a6aa566a2432b339bc15a82d0082d70f802055911fdf155066c70cab375728d"
+    "manifestSha256": "c094463b0e4885c0d82f996ab05282df2f7a6803443245a9451083090d169898"
   },
   "managedRoutes": {
     "scope": "Actual Pad/full32Hz Step/Land/scorer, body at60Hz, controlled bindings/ground. No native runtime or visual approval.",
-    "receiptSha256": "dddcec38e548559e31a2da9bba09c07970c5e7d76a6bd85ec44b0234816732ae",
+    "receiptSha256": "e4b75747ef2d3abc1e992e724cd6d16b73930cc87b4ad858b41dce390986417f",
     "cases": [
       {
         "profile": "normal",
@@ -174,10 +174,10 @@
           "Combo",
           "Nollie Frontside Pop Shove-it"
         ],
-        "sourcePackSha256": "b1d994cbb0278de2ab9421bbf7de96ac96a80e5aaac9eee84f78cdccb75182be",
-        "testPackSha256": "685d55113fdd69eadd6d121ef97e24d9e595f910a33140a2bdc60293869566ee",
+        "sourcePackSha256": "7c6e754f0738b272e31e76aacf55188fb9895296382ef6521dd4361c51e0ec1f",
+        "testPackSha256": "8bde0361dbfeffd59de0afc52d44a5fe7fd80c9c759cbf577dea9cc2abbbfc78",
         "traceSha256": "92d1d5eddf3e691bd14b6a7aa6c4fadcf76987da3e609ef5bfc3c11684e7e4f2",
-        "jsonSha256": "be0239c3c2ab08af210a32bc07c917a1b51a058c3718e559600248dd5b909188",
+        "jsonSha256": "927fa23fdb3f1c76fcda990fc9534f6284717f99ecfc237ef92a009bcc7db3cb",
         "activeAir": 36,
         "airFrames": 36,
         "flightDuration": 0.59375,
@@ -191,10 +191,10 @@
           "Combo",
           "Nollie Frontside Pop Shove-it"
         ],
-        "sourcePackSha256": "b1d994cbb0278de2ab9421bbf7de96ac96a80e5aaac9eee84f78cdccb75182be",
-        "testPackSha256": "685d55113fdd69eadd6d121ef97e24d9e595f910a33140a2bdc60293869566ee",
+        "sourcePackSha256": "7c6e754f0738b272e31e76aacf55188fb9895296382ef6521dd4361c51e0ec1f",
+        "testPackSha256": "8bde0361dbfeffd59de0afc52d44a5fe7fd80c9c759cbf577dea9cc2abbbfc78",
         "traceSha256": "c501729dbdea2d8d98a993c21b4295b5cf2c9dafe8da36159dacffc18a3d140b",
-        "jsonSha256": "7a79096b8596835870f41d5bed54afd21d0a77c12fd5f2601a2f699d7cbdae4d",
+        "jsonSha256": "0fe3b08a28d51758d544be6e6da07167ad45804eeaf6d0abc3295765035dbb5b",
         "activeAir": 36,
         "airFrames": 36,
         "flightDuration": 0.59375,
@@ -208,10 +208,10 @@
           "Combo",
           "Nollie Frontside Pop Shove-it"
         ],
-        "sourcePackSha256": "b1d994cbb0278de2ab9421bbf7de96ac96a80e5aaac9eee84f78cdccb75182be",
-        "testPackSha256": "685d55113fdd69eadd6d121ef97e24d9e595f910a33140a2bdc60293869566ee",
+        "sourcePackSha256": "7c6e754f0738b272e31e76aacf55188fb9895296382ef6521dd4361c51e0ec1f",
+        "testPackSha256": "8bde0361dbfeffd59de0afc52d44a5fe7fd80c9c759cbf577dea9cc2abbbfc78",
         "traceSha256": "b1da0e1090145f0eba7d422a5edc0706ff0a00e53fa8c0f945f5aa858a149a41",
-        "jsonSha256": "9d4f04ce3796ce09d3fb51af73cb7904031325eee903637f709d1f9f8651b51b",
+        "jsonSha256": "5bb00ed71f9385b08e6722324645f5e009722cacbbae6e48c0c82dcd54e2cde8",
         "activeAir": 34,
         "airFrames": 34,
         "flightDuration": 0.5625,
@@ -225,10 +225,10 @@
           "Combo",
           "Nollie Frontside Pop Shove-it"
         ],
-        "sourcePackSha256": "b1d994cbb0278de2ab9421bbf7de96ac96a80e5aaac9eee84f78cdccb75182be",
-        "testPackSha256": "685d55113fdd69eadd6d121ef97e24d9e595f910a33140a2bdc60293869566ee",
+        "sourcePackSha256": "7c6e754f0738b272e31e76aacf55188fb9895296382ef6521dd4361c51e0ec1f",
+        "testPackSha256": "8bde0361dbfeffd59de0afc52d44a5fe7fd80c9c759cbf577dea9cc2abbbfc78",
         "traceSha256": "56356a138c26a6b05345776e9f8f9d61e78e411a3d752c102baf7e4628a4812b",
-        "jsonSha256": "01b647cf19519d73964bcbaf480ece42fd4c39be1f621531cd8bbc8b61e924d4",
+        "jsonSha256": "fcec6ec96c65aec68e6963b2d67f86c933e80cb91043464992e06a0d95fcc3af",
         "activeAir": 34,
         "airFrames": 34,
         "flightDuration": 0.5625,
@@ -293,83 +293,146 @@
         "phaseSeeks": 9
       }
     ],
-    "receiptSha256": "cbd32fb9ee2f4710e3885936bfb68aff53302303edf53421696be7b23577d466"
+    "receiptSha256": "5ffcf45dc292eb28794e18af2b2dcc873a6a4fd779142427dd83397a00e9ecdb"
   },
   "sourceSeekChecks": {
-    "focusedViews": 28,
-    "maximumPausedTimeDelta": 3.799999999998249e-05,
-    "method": "Actual readyState>=2/no poster, actual cachetime, screenshots and private decoded-canvas witnesses. No full-frame model-validation claim or same-time paused callback requirement.",
-    "receiptSha256": "745f8c0162d6ddba10170aaf8dcfec26dfbdd42c8100616cc903bbecd21a3414"
+    "decodedPhases": 36,
+    "videoFrameCallbacks": 36,
+    "maximumDecodedMediaTimeDelta": 0.033399999999999874,
+    "tolerance": "One30000/1001 source frame plus0.1ms rounded UI-clock tolerance",
+    "focusedSideFeetViews": 28,
+    "pressureTransitionViews": 28,
+    "method": "Actual settled video, decoded frame callback/canvas and screenshots; no full-frame pose reconstruction validation claim.",
+    "receiptSha256": "5ffcf45dc292eb28794e18af2b2dcc873a6a4fd779142427dd83397a00e9ecdb",
+    "detailReceiptSha256": "44d4b61a5f628050c2731b75fccc269bfea38638fe7e624f5b0ba17a16b3bb71"
   },
   "files": [
     {
       "file": "low-regular-phases.jpg",
-      "sha256": "c0ca15055c55dd809c41ded78c0ec133cd8e7b40349a055d4945f24edf5beca0",
+      "sha256": "298e01a24802c136020e19af5198abc91380196c28fc0fd932d123139cd2316b",
       "profile": "low",
       "physicalStance": "regular",
       "kind": "phases"
     },
     {
       "file": "low-regular-contacts.jpg",
-      "sha256": "06dacecd603dfd9d4ca33c0e952d3b0d3db3e9937897fb20342bb671af620643",
+      "sha256": "84e815662b0bccf6887d96ca859734237e8d30a5e730a016eb31ff67caf17056",
       "profile": "low",
       "physicalStance": "regular",
       "kind": "contacts"
     },
     {
       "file": "normal-regular-phases.jpg",
-      "sha256": "e9f477306860fb8e2ec60d52329f51f82ef7002d39bd7a74fb89ecdb06942cd0",
+      "sha256": "df359bcb6f8ea8e584f978bdb05482dd8cee755d9a5a00151e846e4909ed31c1",
       "profile": "normal",
       "physicalStance": "regular",
       "kind": "phases"
     },
     {
       "file": "normal-regular-contacts.jpg",
-      "sha256": "0c41d3698c2ea3db6ab73ad0b581506bfa35be232e3b17385ed777ed76c3aac8",
+      "sha256": "f3309d1edccb9c41ef1ba477e7442648a3b98d7ed2778dccf9a7a873f0b4b3aa",
       "profile": "normal",
       "physicalStance": "regular",
       "kind": "contacts"
     },
     {
       "file": "low-goofy-phases.jpg",
-      "sha256": "ca241815987fe35b280fd11fb00d3e1f44ffecd58034528f5ec4025d048c508a",
+      "sha256": "4e9f9c2f517fb69d0b8e767226a14cf2f6dfe20f9d061c7bfa7c47ae5fa75f71",
       "profile": "low",
       "physicalStance": "goofy",
       "kind": "phases"
     },
     {
       "file": "low-goofy-contacts.jpg",
-      "sha256": "1ae4b3a60eba8c7a9edbb6b2a4b3458b933e19d60374c71c234e1166d931e369",
+      "sha256": "edd6b50c616cf5adf978df8056ada75c0c9d4d5d607bd50e906399c0eecd3f4e",
       "profile": "low",
       "physicalStance": "goofy",
       "kind": "contacts"
     },
     {
       "file": "normal-goofy-phases.jpg",
-      "sha256": "2132083ca691b232791fc94f77fb4dd73e4f16c652e5d27215760a457278df3f",
+      "sha256": "2504324312b9e46d39844a095a8535310e69d2ef716edb802d6fe0e959dd109b",
       "profile": "normal",
       "physicalStance": "goofy",
       "kind": "phases"
     },
     {
       "file": "normal-goofy-contacts.jpg",
-      "sha256": "b6296e760cdbd2498349c0541f29a59a70aa7e5f56a2306eedc6a00ee75562a8",
+      "sha256": "715dd206ffaab4b0847eaa33819b6afcf7ce1ba3bfdaf4c35bdd1e8d752ca50c",
       "profile": "normal",
       "physicalStance": "goofy",
       "kind": "contacts"
     }
   ],
-  "sourceIdentityCorrection": {
-    "scope": "Only captured-body.sourceIdentity and its dependent constraints sourceBodySha256; no motion or code changes",
-    "originalRenderedBodySha256": "c4c9215c53060138fd14a63ceb971ea104849316231234408a17053295d4ee3b",
-    "correctedBodySha256": "c2372fa3f4f5f656877b36b600d3a15fc5777b03bcea9dbb953f7bfb9ed7522b",
-    "originalRenderedSourceRuntimeFreezeUnchanged": "89f796fbf5367005aef9a2e66c375129ad8eb3b4",
-    "rawBinaryBytesIdentical": true,
-    "rawSha256": "b1d994cbb0278de2ab9421bbf7de96ac96a80e5aaac9eee84f78cdccb75182be",
-    "allOtherBodyBytesExact": true,
-    "all419FramesAnd9EventsExact": true,
-    "privateReceiptSha256": "c6eb64553e25de2acf6ed610c70eac0c3fa083795864c249464494866a0cc769",
-    "rawReviewed": false,
-    "offlineOrNativePromotion": false
+  "historicalSourceIdentityCorrection": {
+    "pr": 726,
+    "note": "Historical metadata-only correction: old b1d994 raw and89f796f rig media were unchanged THEN. The separate press-balance repair below changes motion/raw and rerenders; source body remains c237.",
+    "details": {
+      "scope": "Only captured-body.sourceIdentity and its dependent constraints sourceBodySha256; no motion or code changes",
+      "originalRenderedBodySha256": "c4c9215c53060138fd14a63ceb971ea104849316231234408a17053295d4ee3b",
+      "correctedBodySha256": "c2372fa3f4f5f656877b36b600d3a15fc5777b03bcea9dbb953f7bfb9ed7522b",
+      "originalRenderedSourceRuntimeFreezeUnchanged": "89f796fbf5367005aef9a2e66c375129ad8eb3b4",
+      "rawBinaryBytesIdentical": true,
+      "rawSha256": "b1d994cbb0278de2ab9421bbf7de96ac96a80e5aaac9eee84f78cdccb75182be",
+      "allOtherBodyBytesExact": true,
+      "all419FramesAnd9EventsExact": true,
+      "privateReceiptSha256": "c6eb64553e25de2acf6ed610c70eac0c3fa083795864c249464494866a0cc769",
+      "rawReviewed": false,
+      "offlineOrNativePromotion": false
+    }
+  },
+  "authoredPressBalanceRepair": {
+    "issue": 716,
+    "scope": "Both bent arms at/below shoulders and press pelvis/knee reserve, source52..63. Own original body/identity, feet/board/events, intrinsic pitch and source camera retained.",
+    "sourceRows": {
+      "rawSha256": "7c6e754f0738b272e31e76aacf55188fb9895296382ef6521dd4361c51e0ec1f",
+      "sourceBodySha256": "c2372fa3f4f5f656877b36b600d3a15fc5777b03bcea9dbb953f7bfb9ed7522b",
+      "rawReviewed": false,
+      "eventsIdentical": true,
+      "boardAllRowsIdentical": true,
+      "footAnkleToeAllRowsIdentical": true,
+      "wholeSourceRowsFrom63Identical": 215,
+      "changedWindow": [
+        52.14452214452214,
+        62.96703296703297
+      ]
+    },
+    "actualBodyIdentity": [
+      {
+        "body": "nollie-fs-pop-shove-it-source-keyed-v1-goofy-low-normal60.json",
+        "actualRowsIdentical": 225,
+        "nativeTraceIdentical": true,
+        "outsidePressureRowsIncludingOrdinary": 225,
+        "allRowsFromActualSource63Through4sIdentical": 174
+      },
+      {
+        "body": "nollie-fs-pop-shove-it-source-keyed-v1-goofy-normal-normal60.json",
+        "actualRowsIdentical": 224,
+        "nativeTraceIdentical": true,
+        "outsidePressureRowsIncludingOrdinary": 224,
+        "allRowsFromActualSource63Through4sIdentical": 173
+      },
+      {
+        "body": "nollie-fs-pop-shove-it-source-keyed-v1-regular-low-normal60.json",
+        "actualRowsIdentical": 225,
+        "nativeTraceIdentical": true,
+        "outsidePressureRowsIncludingOrdinary": 225,
+        "allRowsFromActualSource63Through4sIdentical": 174
+      },
+      {
+        "body": "nollie-fs-pop-shove-it-source-keyed-v1-regular-normal-normal60.json",
+        "actualRowsIdentical": 224,
+        "nativeTraceIdentical": true,
+        "outsidePressureRowsIncludingOrdinary": 224,
+        "allRowsFromActualSource63Through4sIdentical": 173
+      }
+    ],
+    "boardElevationDegreesAtPublishedPress": {
+      "normal": -36.85728088254465,
+      "low": -37.999999637241764
+    },
+    "boardElevationMethod": "Actual animated GLB deck-node world longitudinal axis, identical in both physical stances; Side supplied instead of a camera/geometry change.",
+    "sourceMeasured": false,
+    "rawReviewed": false
   }
 }
