@@ -158,5 +158,16 @@
     "Monocular depth/camera/full board3D/contact reconstruction is authored, not measured3D.",
     "Raw remains false; Claude offline verdict, CI and native Shadow admission remain separate."
   ],
-  "lowInstepCaption": "Both low contact-sheet tiles say Instep release because the sampled foot is already clear. Caption-only correction; no motion/render/replay changes."
+  "lowInstepCaption": "Both low contact-sheet tiles say Instep release because the sampled foot is already clear. Caption-only correction; no motion/render/replay changes.",
+  "runtimeRouteRevision": "d0097d77a5effdb3cb783451c6fc27daa8995098",
+  "renderedRouteRevision": "43d1af06c3321321d2555b0ebf032c6065aa927d",
+  "postMainComposition": {
+    "main": "eee4179c5394c91049cc78ff62cd65f81b3e1392",
+    "preservedIndices0Through39": true,
+    "newSwitchHardflipIndex": 40,
+    "actualProductionCompile": "81pinnedsources/191correctedgameUnity+165framework,BepInEx,Interop/PASS",
+    "all4CompleteActualBodyAndNativeTraceBytesExactToRendered43d": true,
+    "currentBakerRawExact": "a4e474fc82ce19e302b6513a1d17733c617b196989d4e6b837a049247f163097",
+    "independentStillReview": "Second agent viewed8sheets+4source/contactoverviews/PASS;lowcaptionfixedtoInsteprelease;noClaudeorNativeapproval"
+  }
 }
