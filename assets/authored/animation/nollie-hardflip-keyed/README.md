@@ -13,3 +13,9 @@ First extension 15474.5 (bracketed by dense source frames 15474–15475), nose p
 The first bounded actual-rig candidate was rejected: Pop stayed in Load, the direct Air board was too flat, and Catch/recovery too extended. One combined authored correction moves the first-rise marker earlier, gives the full board a steep intrinsic Air pass, and lowers Catch/recovery pelvis while preserving nose strike, sole/instep exits, roll/yaw winding, camera, source body and strict guards. Corrected actual-route/mesh review is still pending.
 
 The body starts extending before the board snaps. A flat-board hold through 15478.5 preserves the visible source setup while retaining the earlier first-rise marker; nose pressure and both release clocks remain unchanged.
+
+## Authored arm balance
+
+The preserved actual-rig views exposed a long near-T at extension15478 and a high/crowded elbow at Catch/Land. An arm-only authored window now uses this take's own hip/facing basis for asymmetric forward/outward balance with bent elbows and hands below the shoulders. First-rise, pressure, steep Air and Catch/Land have their own targets; the overlay fades completely into the original arm recovery by15512. This reconstructs plausible arm depth and elevation instead of claiming measured monocular motion.
+
+The own body file, source anatomy, head/torso, pelvis/knees/feet, board pitch/roll/yaw, contacts and event clocks remain untouched. In particular, firstPop15474.5, the flat-board hold15478.5, genuine nose/instep release, steep full flip, soft Catch and recovery are retained. Raw remains reviewed=false; fresh actual-runtime and visual review are still required for the new arm window.

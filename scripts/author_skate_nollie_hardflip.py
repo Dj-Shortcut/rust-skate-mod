@@ -149,6 +149,12 @@ def sample(body, spec, frame):
         w = float(value(correction['weights'], frame)[0])
         upper = unit(upper * (1 - w) + local(value(correction['upper'], frame)) * w)
         fore = unit(fore * (1 - w) + local(value(correction['fore'], frame)) * w)
+        balance = spec.get('armBalance')
+        if balance is not None:
+            weight = float(value(balance['weights'], frame)[0])
+            if weight > 0:
+                upper = unit(upper * (1 - weight) + local(value(balance[side]['upper'], frame)) * weight)
+                fore = unit(fore * (1 - weight) + local(value(balance[side]['fore'], frame)) * weight)
         j[side + 'Shoulder'] = shoulder
         j[side + 'Elbow'] = shoulder + upper * .29
         j[side + 'Hand'] = j[side + 'Elbow'] + fore * .27
