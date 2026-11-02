@@ -119,8 +119,9 @@
       "file": "switch-hardflip-low-physical-regular-contacts.jpg",
       "physicalStance": "regular",
       "profile": "low",
-      "sha256": "a43bb92813b138b8d142fdb7ce17ff6671194cb34e219b17cd83cd975616a991",
-      "scope": "Original-rig first rise, outer-upper instep, full-flip clearance, swapped-end catch, landing and ordinary recovery; no reference video pixels."
+      "sha256": "604177753365462bfb04a4cfa1d1f3e94d0f9b3611a32618949ed6c036197152",
+      "scope": "Original-rig first rise, outer-upper instep, full-flip clearance, swapped-end catch, landing and ordinary recovery; no reference video pixels.",
+      "captionNote": "Low Instep release tile shows the foot already clear after the guide; it is not labelled a contact. Original source GLB, pose, time and render pixels are unchanged."
     },
     {
       "file": "switch-hardflip-normal-physical-regular-contacts.jpg",
@@ -133,8 +134,9 @@
       "file": "switch-hardflip-low-physical-goofy-contacts.jpg",
       "physicalStance": "goofy",
       "profile": "low",
-      "sha256": "e70814c199c6b6e458cdbc0a9c4b4d63b396fe8031cfccaf86963ae4fbfdd4ba",
-      "scope": "Original-rig first rise, outer-upper instep, full-flip clearance, swapped-end catch, landing and ordinary recovery; no reference video pixels."
+      "sha256": "96f41ff3bcff31534d2b1329e8e0810bf7e1f3493c43f28a606bb69a8133410b",
+      "scope": "Original-rig first rise, outer-upper instep, full-flip clearance, swapped-end catch, landing and ordinary recovery; no reference video pixels.",
+      "captionNote": "Low Instep release tile shows the foot already clear after the guide; it is not labelled a contact. Original source GLB, pose, time and render pixels are unchanged."
     },
     {
       "file": "switch-hardflip-normal-physical-goofy-contacts.jpg",
@@ -155,5 +157,6 @@
     "Catch lead hand near face/chest is retained as a source-like approximation/minor for Claude, not hand-contact certification.",
     "Monocular depth/camera/full board3D/contact reconstruction is authored, not measured3D.",
     "Raw remains false; Claude offline verdict, CI and native Shadow admission remain separate."
-  ]
+  ],
+  "lowInstepCaption": "Both low contact-sheet tiles say Instep release because the sampled foot is already clear. Caption-only correction; no motion/render/replay changes."
 }
