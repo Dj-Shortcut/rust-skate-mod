@@ -23,7 +23,7 @@
   "lastSourceFrame": 1170.0,
   "lastGenuineSourceFrame": 1138,
   "filmedStance": "regular",
-  "pop": 1114.0,
+  "pop": 1110.0,
   "frontRelease": 1115.3,
   "tailStrike": 1115.8,
   "tailRelease": 1116.7,
@@ -447,8 +447,8 @@
       "provenance": "Genuine brief two diagonal raised arms; only clipped/overlay-hidden originalLeft/canonicalLeft wrist is coherently reconstructed from visible upper/forearm with bent elbow. OriginalRight/canonicalRight raw arm retained, no false second-V clamp copied from another take."
     }
   ],
-  "provenance": "Own genuine black-shirt/cap/tattooed-arm BATB13 Fakie FS Pop Shove-it, bounded1084..1138 of existing181..219s cache. Actual leading-tail heel-pocket scoop, noflip/bodyturn, board-onlyopposite180, catch/flatland. Own49/55 VIDEO body with6 declared pre-pop gaps; estimated camera/depth/anatomy/knee/gaze and source-real clipped arm reconstruction. Original shaped-deck full-shoe/fixedchain support and own authored root/freefeet/catch. Upright recovery1138..1170 is explicitly authored from this same take own upright1090 because cache ends in bent absorption. Reference video held at genuine1138; no generated footage, another-trick body or raw/native approval.",
+  "provenance": "Own genuine black-shirt/cap/tattooed-arm BATB13 Fakie FS Pop Shove-it, bounded1084..1138 of existing181..219s cache. Actual leading-tail heel-pocket scoop, noflip/bodyturn, board-onlyopposite180, catch/flatland. Own49/55 VIDEO body with6 declared pre-pop gaps; estimated camera/depth/anatomy/knee/gaze and source-real clipped arm reconstruction. Original shaped-deck full-shoe/fixedchain support and own authored root/freefeet/catch. Upright recovery1138..1170 is explicitly authored from this same take own upright1090 because cache ends in bent absorption. Reference video held at genuine1138; no generated footage, another-trick body or raw/native approval. Source Pop is the first genuine leg-rise1110, not the already-extended1114 frame; all authored body/board/foot curve keys and other contact marks remain unchanged.",
   "uncertainty": "Own source1114/1116/1118 anatomical hip-knee-ankle/heel/toe chains verify physicalRegular Leftnose/Righttail, not priorBlackGoofy inference. Initialnose imageRight/high end, actualRight lowtail pressure; backwards travel is manually corroborated by Fakie sequence/action, not calibrated ground motion. Single-camera depth, tail-ball occlusion, small rotating board, clipped far wrist and6 rejected pre-pop frames. Source upright recovery missing after1138; same-own-body authored suffix. Full-video frame indices/hash unknown.",
   "sourceRootMotion": "Own hip-relative body has no carrier/jump baked. Initial nose+Z independent from backwards velocity. Source boardlocal\u2212180 only; body unspun/native, reference rise removed only from pressure board offset before actual carrier once.",
-  "phaseClockLimit": "Own authored visual marks: Pop1114/front sole release1115.3/strike1115.8/Right-tail release1116.7/laterfreeAir1118/LeftfirstCatch1126/both1127/Land1129. Source genuine through1138; own-body authored recovery to1170, video clamped1138. Actual native input/observed landing/scoring remain authoritative."
+  "phaseClockLimit": "Own authored visual marks: Pop1110 (first genuine leg-rise, preceding strike1115.8)/front sole release1115.3/strike1115.8/Right-tail release1116.7/laterfreeAir1118/LeftfirstCatch1126/both1127/Land1129. Source genuine through1138; own-body authored recovery to1170, video clamped1138. Actual native input/observed landing/scoring remain authoritative."
 }
