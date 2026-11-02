@@ -551,9 +551,9 @@
       "side": "Left",
       "window": [
         102.3,
-        104.0,
-        107.3,
-        108.9
+        104,
+        113,
+        116.8
       ],
       "upperKeys": [
         [
@@ -579,6 +579,30 @@
           0.13,
           -0.61,
           0.78
+        ],
+        [
+          110.5,
+          0.26,
+          -0.62,
+          0.74
+        ],
+        [
+          112.5,
+          0.38,
+          -0.68,
+          0.63
+        ],
+        [
+          114.5,
+          0.4,
+          -0.76,
+          0.51
+        ],
+        [
+          116.8,
+          0.4,
+          -0.76,
+          0.51
         ]
       ],
       "foreKeys": [
@@ -605,9 +629,33 @@
           0.86,
           0.16,
           0.49
+        ],
+        [
+          110.5,
+          0.88,
+          0.2,
+          0.42
+        ],
+        [
+          112.5,
+          0.87,
+          -0.1,
+          0.48
+        ],
+        [
+          114.5,
+          0.9,
+          -0.12,
+          0.42
+        ],
+        [
+          116.8,
+          0.9,
+          -0.12,
+          0.42
         ]
       ],
-      "provenance": "Own originalRight/canonicalLeft arm. Motion-blurred source104 visibly moves outward while VIDEO lags by the hip. Explicit owner-rule authored elbow-down/forearm-return balance replaces a long lateral arm; same102.3\u2013108.9 window, original109+ samples retained for this arm."
+      "provenance": "Own originalRight/canonicalLeft arm, direct-Goofy GLB Right arm verified from actual bone positions. Earlier102.3\u2013107.3 rise/strike targets are unchanged. A bounded authored bent forward/outward return109\u2013116.8 replaces the brief near-straight rearward disappearance as the old108.9 overlay ended; exact own catch117.2 and all later data resume. Other arm and all non-arm fields stay exact."
     },
     {
       "side": "Right",
@@ -684,7 +732,7 @@
       "provenance": "Own originalLeft/canonicalRight source-real high diagonal is deliberately replaced under the owner no-overhead/V/T rule. Bounded bent asymmetric shoulder-level balance102.3\u2013114.5 also covers the original high/near-straight109\u2013112 return, then rejoins the own114.5+ Air/Catch/Land/recovery exactly. Only elbow/hand targets change; not measured motion."
     }
   ],
-  "provenance": "Own white-shirt/cap actor genuine BATB12 Fakie Hardflip. One final continuous requested293\u2013301s excerpt, own decoder20\u2013183: tail-leading setup, vertical flip/halfturn between opened legs, catch, flat landing and genuine upright rollaway. 164/164 own strict same-actor VIDEO selections; crossed-leg anatomical association106 manually rejected, yielding163 accepted own poses. OriginalRight nose/front instep and originalLeft tail => exactly one reflection plus all anatomical swaps into canonicalRegular. No other take body or normal Hardflip timings. Original generic rig/shaped-deck/shoe math only; pelvis/freefoot/board angles/depth/gaze are explicitly authored from this take. Recovery stabilization150\u2013175 uses own actual175 body, no fabricated source suffix. Own bounded arm balance is explicitly authored under the owner rule, rather than reproducing the genuine higher diagonal: originalRight/canonicalLeft keeps its102.3\u2013108.9 window, and originalLeft/canonicalRight uses102.3\u2013114.5 to return from the high/near-straight109\u2013112 source arm with bent shoulder-level asymmetry. All non-arm fields, original114.5+ Air/Catch/Land and recovery remain exact.",
+  "provenance": "Own white-shirt/cap actor genuine BATB12 Fakie Hardflip. One final continuous requested293\u2013301s excerpt, own decoder20\u2013183: tail-leading setup, vertical flip/halfturn between opened legs, catch, flat landing and genuine upright rollaway. 164/164 own strict same-actor VIDEO selections; crossed-leg anatomical association106 manually rejected, yielding163 accepted own poses. OriginalRight nose/front instep and originalLeft tail => exactly one reflection plus all anatomical swaps into canonicalRegular. No other take body or normal Hardflip timings. Original generic rig/shaped-deck/shoe math only; pelvis/freefoot/board angles/depth/gaze are explicitly authored from this take. Recovery stabilization150\u2013175 uses own actual175 body, no fabricated source suffix. Own bounded arm balance is explicitly authored under the owner rule, rather than reproducing the genuine higher diagonal: originalRight/canonicalLeft keeps the earlier rise/strike and now returns with bent forward/outward separation through116.8, and originalLeft/canonicalRight uses102.3\u2013114.5 to return from the high/near-straight109\u2013112 source arm with bent shoulder-level asymmetry. All non-arm fields, original116.8+ catch approach/Catch/Land and recovery remain exact.",
   "uncertainty": "PhysicalGoofy Rightnose/Lefttail and tail-leading travel manually crosschecked on original102/110 chains and continuous source. Single moving fisheye camera cannot measure full board3D, hidden shoe upper contact, depth, exact tail strike or cap gaze. Source106 is rejected/interpolated from own105/107 despite detector selecting the actor. The source has no calibrated full-video frame origin/hash; exact local PTS990+1001*frame and final excerpt hash are authoritative. Initial296\u2013308 scout is a separate private clock and never stitched into this take.",
   "sourceRootMotion": "Own hip-relative body has no source carrier translation or jump; canonical initialnose+Z is independent from backwardFakie velocity. Exactly one Goofy anatomy reflection. Body remains unspun; source board has +360longitudinalroll/-180yaw once. Reference rise is removed only from own board pressure offset; actual native carrier remains authoritative and is applied once.",
   "phaseClockLimit": "Own authored visual estimates in final decoder clock: first-rise Pop100.5, Leftsole release105.6, full outer-upper contact106.4, tail strike106.8, Righttailsole release107.2, Leftinstep release108.2, distinct laterfreeAir109, firstLeftcatch117.2/both118.2, Land121.8, upright recovery150\u2013175. Actual native pop/landing/scoring remain authoritative. Source original pixels stay unmirrored and private."
