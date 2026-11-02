@@ -1,9 +1,9 @@
 {
   "format": "skate-rig-only-review-media/1",
   "trick": "Fakie BS Pop Shove-it",
-  "sourceCodeRevision": "3b9046c1b67df534c0c671cdcd30bdc84a520568",
-  "runtimeRouteRevision": "3b9046c1b67df534c0c671cdcd30bdc84a520568",
-  "sourcePackSha256": "a8991e9b06671ca7d1ff18f2875ac68516538183fe1e1ef02d120ff9d024e16a",
+  "sourceCodeRevision": "364e16cc47fac8318fdae4df53c63d47ae75abeb",
+  "runtimeRouteRevision": "364e16cc47fac8318fdae4df53c63d47ae75abeb",
+  "sourcePackSha256": "08c631f5ee37126d0b3a3e674cae1adc180a43ec69821446dbebe735e4560f6b",
   "rawReviewed": false,
   "offlineReviewed": false,
   "nativeGame": false,
@@ -18,7 +18,7 @@
     "radius": 4.5,
     "scope": "Estimated fixed viewing basis only, not camera-calibrated3D or a body correction"
   },
-  "sourceLimit": "Own84/84 actor selections do not prove3D. Estimated camera, axes/depth/root/shoes/contacts/gaze are authored. Actual source954\u2013957 genuinely raises original Right/canonical Left arm; QR overlay hides the opposite original Left/canonical Right, reconstructed only953.1\u2013957.5 into bent side balance. Real raised Left remains exact.",
+  "sourceLimit": "Own84/84 strict A4 actor selections, original954/956 hip-knee-ankle/heel/toe chains and tattooRight arm verify physicalRegular Leftnose/Righttail. ZERO reflection/no anatomical swap supersedes715 Goofy guess. Genuine canonicalRight retained; actualLeft overlay-occluded Scoop and face-clearCatch are reconstructed with the existing windows/outward targets. Camera/depth/root/contacts/gaze remain authored; no A5 body or measured3D claim.",
   "replay": {
     "status": "passed-controlled-browser",
     "speeds": [
@@ -34,7 +34,7 @@
           {
             "rate": 1,
             "lastTime": 4,
-            "samples": 41
+            "samples": 42
           },
           {
             "rate": 0.25,
@@ -51,7 +51,7 @@
           {
             "rate": 1,
             "lastTime": 4,
-            "samples": 41
+            "samples": 42
           },
           {
             "rate": 0.25,
@@ -68,12 +68,12 @@
           {
             "rate": 1,
             "lastTime": 4,
-            "samples": 41
+            "samples": 42
           },
           {
             "rate": 0.25,
             "lastTime": 4,
-            "samples": 105
+            "samples": 106
           }
         ]
       },
@@ -85,23 +85,22 @@
           {
             "rate": 1,
             "lastTime": 4,
-            "samples": 41
+            "samples": 42
           },
           {
             "rate": 0.25,
             "lastTime": 4,
-            "samples": 105
+            "samples": 106
           }
         ]
       }
     ],
     "sourceDecoded": true,
     "strictSourcePhases": 28,
-    "focusedSourceSideViews": 24,
+    "focusedSourceSideScoopFrames": 40,
     "focusedFeetCloseViews": 12,
     "consoleRuntimeErrors": 0,
-    "initialFeetReadinessRetries": 1,
-    "scope": "Current a899 source/3b904 frozen route; actual decoded reference beside exact managed-route rig. Claude offline and native Shadow remain pending."
+    "scope": "Current08c631/364e16; four full4s1\u00d7/\u00bc\u00d7 source-decoded replays,953\u2013957 Source/Side checks across both heights/physicalstances, unchanged feet, Claude offline/native Shadow pending."
   },
   "managedRoute": {
     "cases": 4,
@@ -122,10 +121,10 @@
       "id": "fakie-bs-pop-shove-it-source-keyed-v1",
       "stance": "goofy",
       "profile": "low",
-      "sha256": "07bad512ae643213c4b33f01fb56328439b1ff57593c91cb75cd0a2511927a6d",
-      "inputSha256": "fb3592a948e738ad344b2f6ec8ef91c1152e3ca7e73af0e4facd021345399214",
+      "sha256": "ffcb2d62d683a78a33e429917be8168386e491d28da79de8c0104d7df06632b3",
+      "inputSha256": "45a5480a4bc79d32eb0052977c091e29ab911bfb929f797c1b09328ab760d801",
       "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
-      "maximumJointErrorM": 5.748583141179135e-06,
+      "maximumJointErrorM": 6.840412089285771e-06,
       "physicalPreview": {
         "profile": "low",
         "requestedStance": "goofy",
@@ -168,10 +167,10 @@
       "id": "fakie-bs-pop-shove-it-source-keyed-v1",
       "stance": "goofy",
       "profile": "normal",
-      "sha256": "4c59822d13508f25057ea1c27b01bee29cb183e1f255ae08a044f62fdc481a07",
-      "inputSha256": "237b0211b401f0fc51297d8fb7e2d227241689d55f9a0824cfcab59792f3287c",
+      "sha256": "4c99d6e258e6982fa7c31f7c7b685cd39c3f52653bd0e6f57caabec1e6299f23",
+      "inputSha256": "8b2e66c059771515bc2a341d728bf09f554b4a14cd8144770b3239d5ed57a9ad",
       "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
-      "maximumJointErrorM": 6.2233402350020114e-06,
+      "maximumJointErrorM": 1.1653401670361179e-05,
       "physicalPreview": {
         "profile": "normal",
         "requestedStance": "goofy",
@@ -214,10 +213,10 @@
       "id": "fakie-bs-pop-shove-it-source-keyed-v1",
       "stance": "regular",
       "profile": "low",
-      "sha256": "0ddd44eff8f4443075cd36ec698dde4c1d886de386f68e80b0f4c0998252ea47",
-      "inputSha256": "f52996d338ecf636ec89184dc961155594cafa13342f6a5489552d13b145f1fc",
+      "sha256": "e6a71e6ab58592cbb0045fb726e7c10c3fba3dbeb8626b048b40910eef3aba0d",
+      "inputSha256": "2b8efc9ef39802d01df798b98c902411c42a9bcb2050cba6181ed22d8adfc823",
       "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
-      "maximumJointErrorM": 5.937380018956219e-06,
+      "maximumJointErrorM": 5.766576110099708e-06,
       "physicalPreview": {
         "profile": "low",
         "requestedStance": "regular",
@@ -260,10 +259,10 @@
       "id": "fakie-bs-pop-shove-it-source-keyed-v1",
       "stance": "regular",
       "profile": "normal",
-      "sha256": "24dde655196fdca655108c52d529798111023df2c49ac65ffc7428f479b5626f",
-      "inputSha256": "d1c1eeeced75189cc6f6d31e9cf3cc501174038ce56baf3f46fb8eadd9bb9270",
+      "sha256": "98a305211c01af42114b0d10080b8715203e6d94ef614dd9db49cbcdafd88155",
+      "inputSha256": "25523d481a7d0663a45195973e29828669e3ba8f73c353484c8f4231ee4f2ff5",
       "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
-      "maximumJointErrorM": 6.348528635857565e-06,
+      "maximumJointErrorM": 1.3352735408167e-05,
       "physicalPreview": {
         "profile": "normal",
         "requestedStance": "regular",
@@ -305,37 +304,65 @@
   ],
   "files": [
     {
+      "file": "low-goofy-anatomy-before-after.jpg",
+      "sha256": "acbc7507f04183c972c76095fa0a36dcbb858355df123e549e863f4a0ab31862"
+    },
+    {
       "file": "low-goofy-contacts.jpg",
-      "sha256": "e3d18891ad76472e96256f7bc9f26a1e15d276eaf35605da8f7f67c616b697d6"
+      "sha256": "61ffa83c7f9891c2a4f32152c406e4a7e8981ddc1a4652f4aee1204bd52252be"
     },
     {
       "file": "low-goofy-phases.jpg",
-      "sha256": "9d1485c33bf0d475c6ecbc145b0a2a0521b71a525e4e8ab292660a4fa24ead25"
+      "sha256": "b12799ab0f47f5b16bf0d2e288e56b1c3403229b97c083f019328254fc75469a"
+    },
+    {
+      "file": "low-regular-anatomy-before-after.jpg",
+      "sha256": "c29bce5f8ea26855c6057d21bde79be9523ef604c8f0f9090313c37babb0215e"
     },
     {
       "file": "low-regular-contacts.jpg",
-      "sha256": "7ce62a6063e3f7ac3bc97a1e376f8fe9397ffc9102b96503c04b2acb08a920f3"
+      "sha256": "93e30f921a13b25cb15f6e217f6f349fb0209d0581122787ad8c81872fad3825"
     },
     {
       "file": "low-regular-phases.jpg",
-      "sha256": "55991b0181b978aae6e29502dc50b8542670222ed70eace5950706b2f36e3efd"
+      "sha256": "3a6cfc952f59789e9220ab314351bdb10dfb5bf25f8f8c4db3525eab2f0a38bd"
+    },
+    {
+      "file": "normal-goofy-anatomy-before-after.jpg",
+      "sha256": "083c88f178f32859b3b20d925948c9b69b6818874b56de980755ff8bf8838c1a"
     },
     {
       "file": "normal-goofy-contacts.jpg",
-      "sha256": "406708427e780337c4de1d683fd981bc086b0b90bdc9a603035d807c88d79685"
+      "sha256": "f409a358225a2cd049f470bd2c95405160d3bc87c5ad5f0b2102f810a2db6ed7"
     },
     {
       "file": "normal-goofy-phases.jpg",
-      "sha256": "c862daab54ddc21e499f59a64f527f9f98fe38d473344097a98c430a1276d7c8"
+      "sha256": "b173fb5393e09c97558e81589ace046826f42ae2708b6f3288ee66e7af7a0afe"
+    },
+    {
+      "file": "normal-regular-anatomy-before-after.jpg",
+      "sha256": "6722d4b1be99d98f13ae00779250b5d1b116ce654de35c1326168854d5c005db"
     },
     {
       "file": "normal-regular-contacts.jpg",
-      "sha256": "2f02912a1b12fce01c4cbd722b0e4c7dbb5673a56f817dd0cdf934eb3cbee984"
+      "sha256": "39753e4515ee5d602a2d05516c40fde513157f32f3434e20915677f2295440ba"
     },
     {
       "file": "normal-regular-phases.jpg",
-      "sha256": "645cfad955fa01187abd72f88ed72ef1216f0fae5f9f420302c906e62504a9d9"
+      "sha256": "3958040dcff5a75b6fd8aebdbb23ed309237c49da5f42a099f7784702046e1e9"
     }
   ],
-  "sourceVideoSha256": "220a8f31da226010bb44afa81882f684744ab2071458279eb937cf68b95fee48"
+  "sourceVideoSha256": "220a8f31da226010bb44afa81882f684744ab2071458279eb937cf68b95fee48",
+  "sourceAnatomyRepair": {
+    "oldRawSha256": "a8991e9b06671ca7d1ff18f2875ac68516538183fe1e1ef02d120ff9d024e16a",
+    "filmedStance": "regular",
+    "canonicalStance": "regular",
+    "anatomicalReflectionCount": 0,
+    "originalRightRole": "tail pop and genuine raised tattoo arm",
+    "originalLeftRole": "nose foot and occluded reconstructed arm",
+    "sameSourceDetections": 84,
+    "all502SourceLowerBodyBoardSolesClockEventsExact": true,
+    "allFour241FrameActualLowerBodyAndBoardExact": true,
+    "scope": "Same own923\u20131006 VIDEO take, own initialnose camera calibration only; no native heading, board yaw, foot, physics, timing, floor/reach guard or scoring change."
+  }
 }
