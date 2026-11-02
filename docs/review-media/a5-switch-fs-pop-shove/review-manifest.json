@@ -177,5 +177,14 @@
   "selfReview": "Author viewed normal/low, both physical stances, source-matching and mirrored execution, complete1x/quarter replays, source/side/feet details and rollout. No high-arm rebound seen. Root independently viewed bounded original-rig before/after; Claude owns independent offline verdict.",
   "independentOfflineApproved": false,
   "physicalDefault": "goofy",
-  "defaultReason": "Audited source-matching execution; Regular is explicitly labelled mirror."
+  "defaultReason": "Audited source-matching execution; Regular is explicitly labelled mirror.",
+  "postMainUnion": {
+    "revision": "a4232184d4f52edc4c5cb983fe4e55ac617ea2ed",
+    "mainBase": "be97ffa73dd8790a69b5b354f6cc9912fb62e1ad",
+    "allCsharpBytesExactToRenderedFreeze": true,
+    "currentBakerRawSha256": "4e0e2868db2aec3a037e1afcabcf8b3532d5be195c6e1cdf5c87c207ae55cde9",
+    "currentBakerRawExactToRenderedFreeze": true,
+    "mediaStillFrozenAt": "05745de05687ec43e61a782bf075539288679c93",
+    "newReplayOrNativeClaim": false
+  }
 }

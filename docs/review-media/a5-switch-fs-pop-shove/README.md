@@ -82,3 +82,5 @@ package acceptance remain separate and unverified. Source video/audio/pixels
 and raw model arrays remain private; committed images show only the
 original rig. The earlier root-entry comparisons above are historical;
 the new arm comparisons and eight current sheets use the freeze linked here.
+
+After composing Nollie balance#727 from main, integration `a4232184d4f52edc4c5cb983fe4e55ac617ea2ed` retains every C# byte from the rendered freeze. The current baker also reproduces the exact same raw4e0e pack. Existing actual-case/GLB/replay evidence therefore retains its explicit original freeze; no rerender or additional native claim is made.
