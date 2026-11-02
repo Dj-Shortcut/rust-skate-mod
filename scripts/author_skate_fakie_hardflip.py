@@ -129,9 +129,15 @@ def sample(c, s, sf):
         shoulder = joints[side + 'Shoulder']
         upper = unit(joints[side + 'Elbow'] - shoulder)
         fore = unit(joints[side + 'Hand'] - joints[side + 'Elbow'])
-        elbow = shoulder + unit(upper * (1 - weight) + local(balance['upper']) * weight) * .29
+        # This take's fast arm sweep is blurred and lagged in the detector.
+        # Own source-specific directions reconstruct only this bounded rise;
+        # the accepted later Air/Catch/recovery return to the original samples.
+        upper_rows, fore_rows = balance['upperKeys'], balance['foreKeys']
+        upper_target = curve([r[0] for r in upper_rows], [r[1:] for r in upper_rows], sf)
+        fore_target = curve([r[0] for r in fore_rows], [r[1:] for r in fore_rows], sf)
+        elbow = shoulder + unit(upper * (1 - weight) + local(upper_target) * weight) * .29
         joints[side + 'Elbow'] = elbow
-        joints[side + 'Hand'] = elbow + unit(fore * (1 - weight) + local(balance['fore']) * weight) * .27
+        joints[side + 'Hand'] = elbow + unit(fore * (1 - weight) + local(fore_target) * weight) * .27
     feet = {side: foot(s, sf, side) for side in ('Left', 'Right')}
     lo, hi = -float('inf'), float('inf')
     reach = .87 * s['maximumReachShare']
