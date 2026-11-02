@@ -5,7 +5,7 @@
   "sourceAuthor": "The Berrics",
   "sourceFps": 29.97002997002997,
   "sourceVideoSha256": "220a8f31da226010bb44afa81882f684744ab2071458279eb937cf68b95fee48",
-  "sourceBodySha256": "7821dcfe56fc9135f5c41dfa51727e9da56200e3c320876a346e7d8d017ff019",
+  "sourceBodySha256": "b0b0fff054e1ee70ff35f37b7f5935091efda841573fd80bbc20a57e97c656a4",
   "geometrySha256": "806a59f06a0f28eb0a81550675e2cff391bf27b286f788690b65ed857794d4c5",
   "firstSourceFrame": 738,
   "lastSourceFrame": 817,
@@ -338,7 +338,7 @@
   ],
   "recoverySourceFrame": 815,
   "croppedArmBalance": {
-    "side": "Right",
+    "side": "Left",
     "window": [
       771,
       774,
@@ -348,32 +348,32 @@
     "upper": [
       0.3,
       0.22,
-      0.93
+      -0.93
     ],
     "fore": [
       0.72,
       0.05,
-      0.69
+      -0.69
     ],
-    "provenance": "Own source raises the rear/right arm but hand is partly cropped around snap/Air. A bent outward and forward shoulder-height wind-up reconstructs that unreliable depth; anatomical facing/up/right axes, not velocity."
+    "provenance": "Own filmedGoofy leadingRight arm is partly cropped around snap/Air; after the one anatomical normalization this is canonicalLeft. Authored bent outward/forward shoulder-height balance direction in anatomical facing/up/right axes, not travel."
   },
   "hiddenArm": {
-    "side": "Right",
+    "side": "Left",
     "start": 792,
     "full": 805,
     "upper": [
       0.18,
       -0.96,
-      0.1
+      -0.1
     ],
     "fore": [
       0.35,
       -0.93,
-      0.02
+      -0.02
     ],
-    "provenance": "Own rear arm becomes low-visibility behind torso during rollout. Relaxed arm-down suffix is authored, independent of another take."
+    "provenance": "Own filmedGoofy Right/leading arm becomes low-visibility behind torso on rollout; it maps to canonicalLeft. An independently authored relaxed arm-down suffix preserves that anatomy."
   },
-  "provenance": "Own black-shirt/cap1091 Switch FS Pop Shove-it, BATB13 tL8Ey9GS0xQ local738\u2013817, next actor cut827 excluded. Own80/80 foreground VIDEO selections, with one explicitly rejected model-pose774 reconstructed from own773/775. No normal FS, BS, Halfcab or other motion body borrowed. Original board/shoe/rig math reused read-only. Filmed SwitchRegular is already canonicalRegular, so no anatomical stance reflection. Contact, signed yaw\u2212180/pitch, root height, foot depth, fixed knees, camera pan and cropped/hidden rear-arm depth are labelled authored monocular reconstruction. Raw remains reviewed=false.",
-  "uncertainty": "BaseGoofy/filmedSwitchRegular and anatomical Left-leading/Right-tail roles are manually inferred from source and same-actor witnesses, not calibrated3D. Camera pans; full model pose774 reverses anatomy unreliably and is explicitly reconstructed, not accepted or silently mirrored. Some arm/foot landmarks are low confidence; contact/depth/yaw/phase times are authored estimates. No source video/model arrays are published.",
+  "provenance": "Own black-shirt/cap1091 Switch FS Pop Shove-it, BATB13 tL8Ey9GS0xQ local738\u2013817, next actor cut827 excluded. Own80/80 foreground VIDEO selections, with one explicitly rejected model-pose774 reconstructed from own773/775. No normal FS, BS, Halfcab or other motion body borrowed. Original board/shoe/rig math reused read-only. Corrected concrete771/773/774 roles: filmedSwitchGoofy has Rightnose/Lefttail. Align that filmed initial nose once, then exactly one X reflection/anatomical swap normalizes to canonicalRegular Leftnose/Righttail. Earlier no-reflection candidate was rejected; no native heading, authored foot/yaw/timing or gameplay state changed. Contact, signed yaw\u2212180/pitch, root height, foot depth, fixed knees, camera pan and cropped/hidden rear-arm depth are labelled authored monocular reconstruction. Raw remains reviewed=false.",
+  "uncertainty": "Source771/773/774 and surrounding frames identify anatomicalRight leading/guide and Left tail/pop: filmedGoofy. Normal-baseRegular follows the Switch label but lacks a full plain-normal witness; both that base inference and monocular3D remain uncertain. Camera pans; full model pose774 reverses anatomy unreliably and is explicitly reconstructed, not accepted or silently mirrored. Some arm/foot landmarks are low confidence; contact/depth/yaw/phase times are authored estimates. No source video/model arrays are published.",
   "sourcePhaseLimit": "Local decoder indices with PTS1001*frame/timebase1/30000, original global frame/PTS unknown; public181+PTS seconds are bounded-cut estimates. Pop770, strike773.5, rear sole release775.5, distinct freeAir778, front/both catch782/784, landing787, upright809..817. Source contact bits are authored candidates, not measured confidence."
 }

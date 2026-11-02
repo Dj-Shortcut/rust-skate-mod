@@ -9,10 +9,14 @@ actor cut827 is excluded. Bounded PTS is1001×frame at timebase1/30000; the
 original video's global frame/PTS is unknown. The requested-cut181s offset is
 an estimate for public seconds, not an original frame index.
 
-The execution is manually identified as Switch Regular from a Goofy-base
-rider: anatomical Left leads, Right pops the tail. Filmed and canonical stance
-are both Regular, so no stance reflection is applied. This is a manual role
-estimate, not calibrated truth. The board turns; the torso and foot headings
+The actual771/773/774 images identify filmed Goofy: anatomical Right guides
+the rising nose and Left pops the trailing tail. The Switch label implies a
+Regular-base rider, but that base inference has no full plain-normal witness.
+The filmed initial nose is aligned once, then exactly one X reflection plus
+anatomical Left/Right swap normalizes to canonicalRegular Leftnose/Righttail.
+The earlier no-reflection assumption was rejected. This fixes source
+normalization; native heading, the authored canonical foot/catch headings and
+board timing remain unchanged. The board turns; the torso and foot headings
 do not turn180 with it. At catch, anatomical feet retain their world-side
 roles while deck-local nose/tail positions are reversed.
 
@@ -30,9 +34,9 @@ front-foot pickup without a flick, signed board yaw−180, grip-up pitch,
 free-foot clearance, reversed-end catch, fixed-chain knees, root height and
 recovery. Pop770, front sole release771.5, strike773.5, tail sole release775.5,
 and distinct later freeAir778 are separate markers. Catch782/784 and Land787
-retain both anatomical feet. Partly cropped rear-arm depth at the snap/Air and
+retain both anatomical feet. Partly cropped leading-arm depth at the snap/Air and
 the hidden rollout suffix are explicitly authored in torso anatomical axes,
-with a bent forward/outward balance arm. Generic board/shoe/rig math is reused
+with a bent forward/outward balance arm (filmedRight becomes canonicalLeft). Generic board/shoe/rig math is reused
 read-only; all production guards remain intact.
 
 Bake using the repository's NumPy environment:

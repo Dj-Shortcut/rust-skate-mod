@@ -154,7 +154,7 @@ def bake(body_raw, controls):
     if digest(body_raw) != s['sourceBodySha256']:
         raise ValueError('Own black1091 Switch body controls differ')
     c = json.loads(body_raw)
-    if (c['firstSourceFrame'],c['lastSourceFrame'],c['filmedStance'],c['sourceReflectionAppliedOnce'],c['reviewed']) != (738,817,'regular',False,False):
+    if (c['firstSourceFrame'],c['lastSourceFrame'],c['filmedStance'],c['sourceReflectionAppliedOnce'],c['reviewed']) != (738,817,'goofy',True,False):
         raise ValueError('Own Switch source/anatomical reflection binding differs')
     raw = (GEOMETRY/'constraints.json').read_bytes()
     if digest(raw) != s['geometrySha256']:
@@ -182,8 +182,8 @@ def bake(body_raw, controls):
         (p['firstCatch'],'catch',['LeftFoot']),(p['bothCatch'],'catch',['LeftFoot','RightFoot']),
         (p['land'],'land',['LeftFoot','RightFoot']),(p['recovery'],'recovery',['LeftFoot','RightFoot'])]
     meta=dict(id=s['id'],movementKind=s['movementKind'],reviewed=False,authored=True,capturedBody=True,
-        label='Switch FS Pop Shove-it — own BATB13 black1091 source [UNREVIEWED]',canonicalStance='regular',filmedStance='regular',
-        sourceReflectionAppliedOnce=False,nativeSignature=s['nativeSignature'],firstSourceFrame=s['firstSourceFrame'],lastSourceFrame=s['lastSourceFrame'],sourceFps=s['sourceFps'],
+        label='Switch FS Pop Shove-it — own BATB13 black1091 source [UNREVIEWED]',canonicalStance='regular',filmedStance='goofy',
+        sourceReflectionAppliedOnce=True,nativeSignature=s['nativeSignature'],firstSourceFrame=s['firstSourceFrame'],lastSourceFrame=s['lastSourceFrame'],sourceFps=s['sourceFps'],
         sourceUrl=s['sourceUrl'],sourceAuthor=s['sourceAuthor'],sourceVideoSha256=s['sourceVideoSha256'],sourceBodyControlSha256=s['sourceBodySha256'],sourcePoseSha256=c['sourcePoseSha256'],sourceTiming=c['sourceTiming'],
         sourceVideoOffsetSeconds=s['sourceCacheOriginalOffsetSeconds']+s['firstSourceFrame']/s['sourceFps'],sourceCacheOriginalOffsetSeconds=s['sourceCacheOriginalOffsetSeconds'],
         referenceGroundPress=s['reference'],combinedWinding=dict(nativeFlip=0,nativeShove=180,bodySpin=0,canonicalYaw=-180,canonicalRoll=0),
