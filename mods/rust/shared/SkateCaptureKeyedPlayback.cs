@@ -324,7 +324,7 @@ namespace Shortcut.RustMod
                 Clip.Id == FakieFs180ClipId && groundCarrierOrigin.HasValue ? pressEnd :
                 Clip.Id == FakieBs180ClipId && groundCarrierOrigin.HasValue ? pressEnd :
                 Clip.Id == BsPopShoveClipId && groundCarrierOrigin.HasValue ? pressEnd :
-                Clip.Id == FakieFsPopShoveClipId && groundCarrierOrigin.HasValue ? pressEnd :
+                Clip.Id == FakieFsPopShoveClipId && groundCarrierOrigin.HasValue ? .125 :
                 Clip.Id == FakieBsPopShoveClipId && groundCarrierOrigin.HasValue ? pressEnd :
                 Clip.Id == SwitchBsPopShoveClipId && groundCarrierOrigin.HasValue ? pressEnd :
                 Clip.Id == NollieBsPopShoveClipId && groundCarrierOrigin.HasValue ? pressEnd :
