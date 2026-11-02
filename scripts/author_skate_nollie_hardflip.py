@@ -186,8 +186,11 @@ def bake(body_bytes, spec):
     count = int(math.ceil(duration * spec['sampleHz']))
     times = sorted(set([i / spec['sampleHz'] for i in range(count)] + [duration] + [(e['frame'] - spec['firstSourceFrame']) / spec['sourceFps'] for e in spec['events']] + [(spec['noseStrikeFrame'] - spec['firstSourceFrame']) / spec['sourceFps']]))
     frames = [sample(body, spec, spec['firstSourceFrame'] + t * spec['sourceFps']) for t in times]
-    if min(qmatrix(r['board']['quaternion'])[1, 1] for r in frames) > -.5:
-        raise ValueError('Own Nollie Hardflip must actually invert the full board')
+    # Full roll is local to the pitched board. World-up cannot establish winding:
+    # a steep between-leg pass need never have a globally flat upside-down deck.
+    roll_samples = [float(value(spec['boardRoll'], f['sourceFrame'])[0]) for f in frames]
+    if any(b < a - 1e-7 for a, b in zip(roll_samples, roll_samples[1:])) or not all(min(roll_samples) <= a <= max(roll_samples) for a in (90, 180, 270)):
+        raise ValueError('Own Nollie Hardflip must pass every local flip quadrant once')
     if spec['boardRoll'][0][1] != 0 or spec['boardRoll'][-1][1] != 360 or spec['boardYaw'][-1][1] != -180:
         raise ValueError('Own full winding must be +360 roll and -180 board-only yaw')
     events = [dict(t=(e['frame'] - spec['firstSourceFrame']) / spec['sourceFps'], phase=e['phase'], contacts=e['contacts']) for e in spec['events']]

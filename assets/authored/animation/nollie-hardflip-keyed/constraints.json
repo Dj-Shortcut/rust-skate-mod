@@ -25,7 +25,7 @@
     "path": "assets/authored/animation/treflip-keyed/own-board-surface.json",
     "sha256": "8873121f728af49a9af90c2ee4ba723b7f56259d60913155f578d3a88e976acd"
   },
-  "popFrame": 15478.0,
+  "popFrame": 15474.5,
   "noseStrikeFrame": 15481.0,
   "noseReleaseFrame": 15482.75,
   "pressEndFrame": 15485.5,
@@ -36,7 +36,7 @@
   "soleGap": 0.005,
   "catchBlendFrames": 2.5,
   "sourceRootMotion": {
-    "popFrame": 15478.0,
+    "popFrame": 15474.5,
     "landFrame": 15498.0,
     "referenceFlight": 0.64,
     "gravity": 8.0,
@@ -87,7 +87,7 @@
       0
     ],
     [
-      15478,
+      15474.5,
       0
     ],
     [
@@ -96,18 +96,30 @@
     ],
     [
       15482.75,
-      -34
+      -40
     ],
     [
       15485.5,
-      -18
+      -65
     ],
     [
       15488,
-      -7
+      -72
+    ],
+    [
+      15490,
+      -60
     ],
     [
       15492,
+      -30
+    ],
+    [
+      15493.5,
+      -5
+    ],
+    [
+      15494.5,
       0
     ],
     [
@@ -370,15 +382,21 @@
       0.025
     ],
     [
-      15476,
+      15474.5,
       0,
       0.65,
       0.04
     ],
     [
+      15476,
+      0,
+      0.68,
+      0.05
+    ],
+    [
       15478,
       0,
-      0.7,
+      0.73,
       0.065
     ],
     [
@@ -408,43 +426,49 @@
     [
       15491,
       0,
-      0.75,
+      0.7,
+      0
+    ],
+    [
+      15494.5,
+      0,
+      0.69,
       0
     ],
     [
       15495.5,
       0,
-      0.8,
+      0.69,
       0
     ],
     [
       15498,
       0,
-      0.75,
+      0.7,
       0
     ],
     [
       15503,
       0,
-      0.72,
+      0.71,
       0.01
     ],
     [
       15512,
       0,
-      0.83,
+      0.8,
       0
     ],
     [
       15525,
       0,
-      0.94,
+      0.86,
       0
     ],
     [
       15534,
       0,
-      0.98,
+      0.9,
       0
     ]
   ],
@@ -614,7 +638,7 @@
       ]
     },
     {
-      "frame": 15478.0,
+      "frame": 15474.5,
       "phase": "pop",
       "contacts": [
         "LeftFoot",
@@ -670,13 +694,14 @@
       ]
     }
   ],
-  "provenance": "Own genuine Rodriguez Nollie Hardflip15420..15534, source physicalGoofy Rightnose pop/Leftrear instep. Own VIDEO107/115 body, one anatomical reflection to canonical Leftnose pop/Rightrear instep. Own first-rise, forward nose pressure, opposite-foot tail-side outer-upper drag, full+360roll/FS-180yaw, compact feet, grip-up reversed-deck catch, bent landing and soft recovery are authored against the actual footage. No normal Hardflip body, source-specific frame150..158, world-root2/11 or client0.28 tuck reused. Geometry/interpolation/fixed-chain maths only shared.",
+  "provenance": "Own genuine Rodriguez Nollie Hardflip15420..15534, source physicalGoofy Rightnose pop/Leftrear instep. Own VIDEO107/115 body, one anatomical reflection to canonical Leftnose pop/Rightrear instep. Own first-rise, forward nose pressure, opposite-foot tail-side outer-upper drag, full+360roll/FS-180yaw, compact feet, grip-up reversed-deck catch, bent landing and soft recovery are authored against the actual footage. No normal Hardflip body, source-specific frame150..158, world-root2/11 or client0.28 tuck reused. Geometry/interpolation/fixed-chain maths only shared. Combined visible correction: dense15470..15481 brackets first extension15474..15475, so Pop15474.5 precedes the retained real nose strike. Intrinsic steep free-Air pitch is authored through the between-leg hardflip pass; same camera/yaw/roll/foot roles, independent of projection. Catch pelvis is lower and late rollaway keeps soft knees instead of the initial nearly straight finish.",
   "uncertainty": [
     "Eight rejected VIDEO frames15484-86 and15489-93 explicitly reconstructed only as bracketed control rows; raw rejection preserved.",
     "Pop/catch shoe overlap and near end-on board obscure exact3D contact/rotation; full curves are authored hypotheses, not measured mocap.",
     "Own panning camera/depth and small body windup are reconstructed independently of board winding.",
     "Late low-confidence source Right-wrist becomes canonicalLeft; bounded soft-arm recovery authored.",
     "Source pixels stay private and unmirrored. Canonical Regular reflects the own filmedGoofy body exactly once; runtime physicalGoofy is the source-matching companion.",
-    "Lower-chain/body root and final soft upright recovery are authored, with ordinary runtime handoff independently tested later. No native or offline approval."
+    "Lower-chain/body root and final soft upright recovery are authored, with ordinary runtime handoff independently tested later. No native or offline approval.",
+    "Free-Air pitch and Catch/recovery compactness are visibly authored from the actual images; not a recovered3D camera solution. Both original stances had the same near-horizontal old long axis, so the correction changes intrinsic pose, not camera/native heading."
   ]
 }
