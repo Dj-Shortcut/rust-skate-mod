@@ -1,20 +1,59 @@
-# A3 Frontside Halfcab / Fakie Frontside180: original-rig review
+# FS Halfcab: softer Air elbows on the original rig
 
-[Viewer](http://127.0.0.1:63761/a3-fakie-fs180/): normal/lower × physical Regular/Goofy, **1× and¼×**, actual Land and ordinary recovery through4 s.
+[Viewer and original source](http://127.0.0.1:63761/a3-fs-halfcab-soft-elbows/)
+cover normal/low × physical Regular/Goofy through actual Land and ordinary
+4-second recovery. The [same-camera Air/Catch comparison](air-catch-before-after.jpg)
+shows the accepted baseline beside the forearm refinement.
 
-| Flight | Physical stance | Full sequence | Side/foot contacts |
+| Flight | Physical stance | Full sequence | Arm/foot details |
 |---|---|---|---|
-| normal | Regular | [Phases](normal-regular-phases.jpg) | [Contacts](normal-regular-contacts.jpg) |
-| normal | Goofy | [Phases](normal-goofy-phases.jpg) | [Contacts](normal-goofy-contacts.jpg) |
-| low | Regular | [Phases](low-regular-phases.jpg) | [Contacts](low-regular-contacts.jpg) |
-| low | Goofy | [Phases](low-goofy-phases.jpg) | [Contacts](low-goofy-contacts.jpg) |
+| normal | Regular | [Phases](normal-regular-phases.jpg) | [Details](normal-regular-contacts.jpg) |
+| normal | Goofy | [Phases](normal-goofy-phases.jpg) | [Details](normal-goofy-contacts.jpg) |
+| low | Regular | [Phases](low-regular-phases.jpg) | [Details](low-regular-contacts.jpg) |
+| low | Goofy | [Phases](low-goofy-phases.jpg) | [Details](low-goofy-contacts.jpg) |
 
-These eight JPEGs show the unchanged original skin/weights and13-part board. Phase sheets cover Load, early snap, level grip guide, Air, Catch, actual Land, rollaway and ordinary End. Contacts add a side pressure view, a foot close-up at the front-bolt upper-shoe guide and planted rollaway. Source camera/depth are approximate; no body or board pose is changed by the preview. No reference-video pixels are redistributed.
+Claude reviewed the base FS Halfcab in gate 6565046080/#707 and requested a
+small elbow refinement. During source frames 242–254 the wrists bend slightly
+forward/down in anatomical facing/up/hip axes, rather than backward travel.
+Only source hand endpoints change; source shoulders/elbows, every non-arm
+field, feet, board, contacts, source clock and outside-window poses stay
+unchanged. The existing production fixed-chain sampler naturally refits
+elbows with the changed wrist goals. Its source/controller/physics code and
+safety guards stay intact; this is an authored visual correction.
 
-The own genuine take is [The Berrics: Moose Vs Bastien Salabanzi, BATB6 Round1](https://www.youtube.com/watch?v=H4MEulcgUTc), plaid shirt/black knitcap, physical Regular. Local bounded frames **227–275** stop before the next-actor cut at276; original global frame indices remain unknown. Exact bounded PTS=990+1001·frame, timebase1/30000,30000/1001 fps. Backward approach, pure board+body half-turn, no flip and landed forward roll were checked directly.
+These eight phase/detail JPEGs and the before/after contain the unchanged
+original skin, weights and complete 13-part skateboard. Full phase grids
+retain Load, early snap, level front-bolt guide, Air, Catch, bent Land,
+upright rollaway and ordinary End. The source/camera settings match the
+accepted #702 renderer and viewer. Actual animated GLB foot bones establish
+physical stance; requested native binding is recorded separately. No source
+pixels are published, and the preview changes no gameplay camera or pose.
 
-Monocular heading/depth, hidden arm depth, fixed-chain feet and source-cut recovery are labelled authored reconstruction. Complete source heading is removed once from all joints/toes, directions, soles and board; actual native NoseYaw supplies one turn. Timeline **275–302** is authored planted upright recovery; genuine video holds at its last frame. The original0.092m deck datum keeps the wheels above the floor through Land and ordinary handoff. Early pressure now snaps before the main turn, releases the tail sole earlier and levels through the front-bolt guide; later source Air/Catch/Land/recovery are retained. The runtime also includes the independent world-space charge-gaze fix.
+The genuine [Berrics Moose vs Bastien BATB6 source](https://www.youtube.com/watch?v=H4MEulcgUTc&t=29)
+uses one plaid/black-knitcap foreground actor, physically Regular. Bounded
+frames 227–275 end before actor cut276; original global frames are unknown.
+Exact bounded PTS=990+1001·frame, time base 1/30000, 30000/1001 fps. Backward
+approach, pure rider+board half-turn, no flip and landed forward roll were
+checked directly. Complete source heading is removed from every joint,
+direction, sole and board; actual native NoseYaw supplies the sole real turn.
 
-All four controlled managed Pad/32Hz Step/Land/scorer and final60Hz body routes pass. All four1×/¼× decoded-source replay pairs complete at4 s with zero browser errors; Root independently repeated the full pairs and captured the12 current contact images. This is not native Rust/Shadow evidence. Raw stays **reviewed=false**; Claude owns the offline quality verdict and library status.
+Camera/depth, hidden arm depth, fixed-chain contacts and cut recovery remain
+explicit authored estimates. Timeline 275–302 is authored planted upright
+recovery, with the genuine reference held at 275. Original deck ground datum,
+accepted snap/guide, gaze, feet and native coupled rotation remain intact.
+Four actual Pad/full 32 Hz Step/Land/scorer and 60 Hz body cases pass.
+All four 1×/¼× viewer pairs reach ordinary 4-second recovery; 28 phase seeks
+decode actual source frames and 20 arm/foot detail views finish with zero
+browser/runtime errors. The author inspected normal/low physical Regular/
+Goofy beside the original source through Load/Air/Catch/Land and upright
+recovery, including forearm depth from Source and Side.
 
-Reachable [source checkpoint a94919b7](https://github.com/Dj-Shortcut/rust-skate-mod/commit/a94919b74b20af5a3cd33cccb93d8f53900011dc) and [runtime freeze b8411f55](https://github.com/Dj-Shortcut/rust-skate-mod/commit/b8411f55270e99ab60da032284cf9b998d313a0f); raw pack `8545776186b856edd4b5eebbd5bcb52f836c3472e347596a396fe895e9659960`. [Manifest](manifest.json).
+Source packs stay **reviewed=false**. Claude owns the offline/library verdict;
+native Rust/Shadow remains pending.
+
+[Integrated source/runtime freeze 8c04e0c5](https://github.com/Dj-Shortcut/rust-skate-mod/commit/8c04e0c563c9f61078e74b24a74aa9faa9cefdf7)
+uses raw pack `dc04306f8008fc0a212be043ef136f6bffab100ed16b1bc62c3d0e630e4e041a`.
+The accepted baseline raw SHA-256
+`8545776186b856edd4b5eebbd5bcb52f836c3472e347596a396fe895e9659960`
+is reproduced from its original controls and rerun through the same current
+runtime for the comparison. [Manifest](manifest.json).
