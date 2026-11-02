@@ -1,0 +1,346 @@
+{
+  "format": "switch-hardflip-landing-repair-own-rig-review/1",
+  "sourceReviewed": false,
+  "nativeGame": false,
+  "sourceCodeRevision": "13d34285290bdc55b2e3ee4144a8dc976132d1eb",
+  "sourcePackSha256": "85aa60e815f4ff2dfb70b0c58354146e3266072497d30f27461d6052791abb4e",
+  "sourceBodyControlSha256": "06b1bc7a1659a902f3b2f2ef2e9eb61c1a79af2873e6a6f11d2ae265e05113a0",
+  "sourceConstraintsSha256": "a9fffb2907e56dfdbc86047e58a35136d0247ba58cd9baa497614e6de432eb51",
+  "sourceBakerSha256": "0b061933f1051dc15b4b56ebc97faac15095ad5789ca94e590525c4c1f9f1402",
+  "viewer": "http://127.0.0.1:63761/a6-switch-hardflip-landing-repair/",
+  "source": "Own Rodriguez genuine landed Switch Hardflip, Pq7804\u20137932. Physical Regular Left nose/instep, Right tail; zero source reflection. Physical Goofy is a labelled mirror; source pixels remain private/unmirrored.",
+  "authoredRepair": "Own7864.5\u20137890 world-pelvis/low outward bent-arm reconstruction. Earlier absorption maintains knee bend relative to the descending board through touchdown. Existing one reference-carrier subtraction, immutable body06b1, all shoes/board/events/dirs and accepted source outside the window retained.",
+  "managedRoute": "Four actual Pad/full32HzStep/Land/scorer controlled managed cases pass;36/36 normal and34/34 low captured Air, ordinary Ground/capture off at4s. Managed physics/scoring traces exact original under controlled bindings/ground, not native-gameplay evidence.",
+  "csharpScope": "Root reports all85 product C# source files exact to the already corrected-production-SDK-compiled main; this source/control/media repair adds no C# changes.",
+  "defaultPhysicalStance": "regular",
+  "files": [
+    {
+      "file": "switch-hardflip-normal-physical-regular.jpg",
+      "type": "phases",
+      "profile": "normal",
+      "physicalStance": "regular",
+      "requestedEnumStance": "goofy",
+      "sourceRole": "DIRECT filmed Regular",
+      "sha256": "5b350d24f90edf781ac90d89e989555397464bb3d0070c517a5dfb92b4239b65",
+      "glbSha256": "1dcaf6d3867bc5b9d51d6eda8550357a4711e056f37756a8b75e415815feb557",
+      "inputSha256": "2d8c0edf3fa2f2335882a87eb1464c28cbc024198f48fc953ee6edd7f5b57f04",
+      "phaseMoments": {
+        "Load": 0.8333333333333334,
+        "Pop": 0.8833333333333333,
+        "TailStrike": 1.0833333333333333,
+        "Flick": 1.0666666666666667,
+        "Air": 1.2166666666666666,
+        "Catch": 1.4333333333333333,
+        "Land": 1.4833333333333334,
+        "Rollaway": 2.45,
+        "End": 4.0
+      },
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+    },
+    {
+      "file": "switch-hardflip-normal-physical-regular-contacts.jpg",
+      "type": "contacts",
+      "profile": "normal",
+      "physicalStance": "regular",
+      "sha256": "2ce0077010bd7740e230c9d010ac852b8c5198b70d935c4a018263774829c2d4",
+      "glbSha256": "1dcaf6d3867bc5b9d51d6eda8550357a4711e056f37756a8b75e415815feb557",
+      "captionNote": "Upper-shoe guide and later caught soles are separate phases."
+    },
+    {
+      "file": "switch-hardflip-normal-physical-regular-catch-land-before-after.jpg",
+      "type": "original-a4-to-final85-before-after",
+      "profile": "normal",
+      "physicalStance": "regular",
+      "sha256": "3da8691ab3ab061d5626d7360ec636bc50a84153819be22d0109415f717c2647",
+      "beforeGlbSha256": "e6d4c0217ac51bc59e7747b14ac821a79efe4a55261ebf2ede461a4b1bc5298a",
+      "afterGlbSha256": "1dcaf6d3867bc5b9d51d6eda8550357a4711e056f37756a8b75e415815feb557",
+      "sameActualCatchLandTimes": true,
+      "scope": "Source-free original-rig Source/Feet at the exact rejected Catch/Land times; original a4e runtime43d versus final85 runtime13d."
+    },
+    {
+      "file": "switch-hardflip-low-physical-regular.jpg",
+      "type": "phases",
+      "profile": "low",
+      "physicalStance": "regular",
+      "requestedEnumStance": "goofy",
+      "sourceRole": "DIRECT filmed Regular",
+      "sha256": "1f1d623f2112500fb8b3326a4e75fcacc43083c398dbf4c78ef55f5394d24e73",
+      "glbSha256": "4e527ae6595e0da5bb98e7272a3210732ce0e0c76306491be5473c15908fe961",
+      "inputSha256": "83ce5356db11329e714636e0e440afe4c319388eb86269ede040d534423467d0",
+      "phaseMoments": {
+        "Load": 0.8666666666666667,
+        "Pop": 0.8833333333333333,
+        "TailStrike": 1.0666666666666667,
+        "Flick": 1.0666666666666667,
+        "Air": 1.2,
+        "Catch": 1.3833333333333333,
+        "Land": 1.45,
+        "Rollaway": 2.35,
+        "End": 4.0
+      },
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+    },
+    {
+      "file": "switch-hardflip-low-physical-regular-contacts.jpg",
+      "type": "contacts",
+      "profile": "low",
+      "physicalStance": "regular",
+      "sha256": "6f5ae0a193641134f678bf8d692e3535de2d09022caf52c4ab948680a99a1987",
+      "glbSha256": "4e527ae6595e0da5bb98e7272a3210732ce0e0c76306491be5473c15908fe961",
+      "captionNote": "Low instep tile shows release/clearance, not a continuing sole/upper contact."
+    },
+    {
+      "file": "switch-hardflip-low-physical-regular-catch-land-before-after.jpg",
+      "type": "original-a4-to-final85-before-after",
+      "profile": "low",
+      "physicalStance": "regular",
+      "sha256": "f138198a4b49fc922cd7e01e33846b8c2feb3c9998a7962da6c16cbefbfdd782",
+      "beforeGlbSha256": "d404b2bb3dcce4bc3746051b5eee2188202d78c025931b776222dd27f1f44c25",
+      "afterGlbSha256": "4e527ae6595e0da5bb98e7272a3210732ce0e0c76306491be5473c15908fe961",
+      "sameActualCatchLandTimes": true,
+      "scope": "Source-free original-rig Source/Feet at the exact rejected Catch/Land times; original a4e runtime43d versus final85 runtime13d."
+    },
+    {
+      "file": "switch-hardflip-low-physical-goofy.jpg",
+      "type": "phases",
+      "profile": "low",
+      "physicalStance": "goofy",
+      "requestedEnumStance": "regular",
+      "sourceRole": "GOOFY mirror / original source unmirrored",
+      "sha256": "136ea46431e9ef82bf4645ce112472ab6e2da677eefba7e1f16a4961440801f4",
+      "glbSha256": "6dea4523402bbb1568378b6f66f401f2dd851bf7d2e31f6fb53142690e8ed0c2",
+      "inputSha256": "a5424eefd42173f9c0081a5c002e95b3309c8cb51498e925073d87bb7788435d",
+      "phaseMoments": {
+        "Load": 0.8666666666666667,
+        "Pop": 0.8833333333333333,
+        "TailStrike": 1.0666666666666667,
+        "Flick": 1.0666666666666667,
+        "Air": 1.2,
+        "Catch": 1.3833333333333333,
+        "Land": 1.45,
+        "Rollaway": 2.35,
+        "End": 4.0
+      },
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+    },
+    {
+      "file": "switch-hardflip-low-physical-goofy-contacts.jpg",
+      "type": "contacts",
+      "profile": "low",
+      "physicalStance": "goofy",
+      "sha256": "eea24ad15b49afab3b686dbe85615624dd543844935e51ccc296daae15dd2f33",
+      "glbSha256": "6dea4523402bbb1568378b6f66f401f2dd851bf7d2e31f6fb53142690e8ed0c2",
+      "captionNote": "Low instep tile shows release/clearance, not a continuing sole/upper contact."
+    },
+    {
+      "file": "switch-hardflip-low-physical-goofy-catch-land-before-after.jpg",
+      "type": "original-a4-to-final85-before-after",
+      "profile": "low",
+      "physicalStance": "goofy",
+      "sha256": "d0ea4e01ebdf1a2f980ff3f689c50da01cea8ccf2f6c4d94167a357360a2ff13",
+      "beforeGlbSha256": "1dc1a75af62620f2fd0eac16a8e44f15d23cc5d3f70d129d8001284b2642840b",
+      "afterGlbSha256": "6dea4523402bbb1568378b6f66f401f2dd851bf7d2e31f6fb53142690e8ed0c2",
+      "sameActualCatchLandTimes": true,
+      "scope": "Source-free original-rig Source/Feet at the exact rejected Catch/Land times; original a4e runtime43d versus final85 runtime13d."
+    },
+    {
+      "file": "switch-hardflip-normal-physical-goofy.jpg",
+      "type": "phases",
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "requestedEnumStance": "regular",
+      "sourceRole": "GOOFY mirror / original source unmirrored",
+      "sha256": "52ca84bbab055e05ee5982a461380f9c02abdfd5e421ed343a2a0e54f7db271e",
+      "glbSha256": "fc21145a75344b5989b0cf39d0ed1ead159ca1cbf6d3420e369a850dc706491d",
+      "inputSha256": "3ea9662df1f2de7a71bfd314eb90c88b1e48fc20c9c685fc671f6c53e95bcffb",
+      "phaseMoments": {
+        "Load": 0.8333333333333334,
+        "Pop": 0.8833333333333333,
+        "TailStrike": 1.0833333333333333,
+        "Flick": 1.0666666666666667,
+        "Air": 1.2166666666666666,
+        "Catch": 1.4333333333333333,
+        "Land": 1.4833333333333334,
+        "Rollaway": 2.45,
+        "End": 4.0
+      },
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+    },
+    {
+      "file": "switch-hardflip-normal-physical-goofy-contacts.jpg",
+      "type": "contacts",
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "sha256": "0e852f55f670839915bbd44c5aeea49af74d227f20f9beae7d9f64a86b22acf8",
+      "glbSha256": "fc21145a75344b5989b0cf39d0ed1ead159ca1cbf6d3420e369a850dc706491d",
+      "captionNote": "Upper-shoe guide and later caught soles are separate phases."
+    },
+    {
+      "file": "switch-hardflip-normal-physical-goofy-catch-land-before-after.jpg",
+      "type": "original-a4-to-final85-before-after",
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "sha256": "493ab88702cb7bd20036c3ba79ea5d737e9ddfe36ba4d01f4e4adc3353dff603",
+      "beforeGlbSha256": "b9a2974a3ea37461c7d3302c615425635511de6a157327b213026df9b60cb7e0",
+      "afterGlbSha256": "fc21145a75344b5989b0cf39d0ed1ead159ca1cbf6d3420e369a850dc706491d",
+      "sameActualCatchLandTimes": true,
+      "scope": "Source-free original-rig Source/Feet at the exact rejected Catch/Land times; original a4e runtime43d versus final85 runtime13d."
+    }
+  ],
+  "models": [
+    {
+      "requestedEnumStance": "goofy",
+      "physicalPreview": {
+        "profile": "normal",
+        "requestedStance": "goofy",
+        "physicalPreviewStance": "regular",
+        "leadFoot": "Left",
+        "at": 0.8666666666666667,
+        "leadDistance": 0.36576375114539594,
+        "leftFoot": [
+          0.03998348912044827,
+          0.19539510752585423,
+          3.3438271671414226
+        ],
+        "rightFoot": [
+          0.04520193634155834,
+          0.21759328708521214,
+          2.9780634159960266
+        ],
+        "deckForward": [
+          -2.4492937051703357e-16,
+          0.0,
+          1.0
+        ],
+        "toeSideDot": -0.833285705614189,
+        "glbDeckForwardDot": 1.0,
+        "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+        "note": "Actual animated GLB foot-bone world positions against its recorded DeckForward; frozen proxy anatomy, not a global native-handedness claim"
+      },
+      "profile": "normal",
+      "glbSha256": "1dcaf6d3867bc5b9d51d6eda8550357a4711e056f37756a8b75e415815feb557",
+      "inputSha256": "2d8c0edf3fa2f2335882a87eb1464c28cbc024198f48fc953ee6edd7f5b57f04"
+    },
+    {
+      "requestedEnumStance": "goofy",
+      "physicalPreview": {
+        "profile": "low",
+        "requestedStance": "goofy",
+        "physicalPreviewStance": "regular",
+        "leadFoot": "Left",
+        "at": 0.8666666666666667,
+        "leadDistance": 0.36576571234225996,
+        "leftFoot": [
+          0.03998398808516804,
+          0.19539469695068573,
+          3.3438287278816
+        ],
+        "rightFoot": [
+          0.04520229836964277,
+          0.2175922792205729,
+          2.97806301553934
+        ],
+        "deckForward": [
+          -2.4492937051703357e-16,
+          0.0,
+          1.0
+        ],
+        "toeSideDot": -0.8332843747725633,
+        "glbDeckForwardDot": 1.0,
+        "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+        "note": "Actual animated GLB foot-bone world positions against its recorded DeckForward; frozen proxy anatomy, not a global native-handedness claim"
+      },
+      "profile": "low",
+      "glbSha256": "4e527ae6595e0da5bb98e7272a3210732ce0e0c76306491be5473c15908fe961",
+      "inputSha256": "83ce5356db11329e714636e0e440afe4c319388eb86269ede040d534423467d0"
+    },
+    {
+      "requestedEnumStance": "regular",
+      "physicalPreview": {
+        "profile": "low",
+        "requestedStance": "regular",
+        "physicalPreviewStance": "goofy",
+        "leadFoot": "Right",
+        "at": 0.8666666666666667,
+        "leadDistance": -0.3657829019398995,
+        "leftFoot": [
+          -0.045189568702068666,
+          0.21763858936536182,
+          2.9780620097049164
+        ],
+        "rightFoot": [
+          -0.04001071737552117,
+          0.19539342391005465,
+          3.343844911644816
+        ],
+        "deckForward": [
+          -2.4492937051703357e-16,
+          0.0,
+          1.0
+        ],
+        "toeSideDot": 0.8332853735879358,
+        "glbDeckForwardDot": 1.0,
+        "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+        "note": "Actual animated GLB foot-bone world positions against its recorded DeckForward; frozen proxy anatomy, not a global native-handedness claim"
+      },
+      "profile": "low",
+      "glbSha256": "6dea4523402bbb1568378b6f66f401f2dd851bf7d2e31f6fb53142690e8ed0c2",
+      "inputSha256": "a5424eefd42173f9c0081a5c002e95b3309c8cb51498e925073d87bb7788435d"
+    },
+    {
+      "requestedEnumStance": "regular",
+      "physicalPreview": {
+        "profile": "normal",
+        "requestedStance": "regular",
+        "physicalPreviewStance": "goofy",
+        "leadFoot": "Right",
+        "at": 0.8666666666666667,
+        "leadDistance": -0.3657812269299243,
+        "leftFoot": [
+          -0.045189833599191605,
+          0.21763921932686348,
+          2.9780630173595006
+        ],
+        "rightFoot": [
+          -0.0400102924906465,
+          0.19539299671557614,
+          3.343844244289425
+        ],
+        "deckForward": [
+          -2.4492937051703357e-16,
+          0.0,
+          1.0
+        ],
+        "toeSideDot": 0.8332846798258212,
+        "glbDeckForwardDot": 1.0,
+        "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+        "note": "Actual animated GLB foot-bone world positions against its recorded DeckForward; frozen proxy anatomy, not a global native-handedness claim"
+      },
+      "profile": "normal",
+      "glbSha256": "fc21145a75344b5989b0cf39d0ed1ead159ca1cbf6d3420e369a850dc706491d",
+      "inputSha256": "3ea9662df1f2de7a71bfd314eb90c88b1e48fc20c9c685fc671f6c53e95bcffb"
+    }
+  ],
+  "replay": {
+    "status": "PASS: current four controlled original-mesh variants completed both rates through 4 seconds; independent bounded visual review passed. Claude offline and native Shadow remain pending.",
+    "physicalCases": 4,
+    "rates": [
+      1,
+      0.25
+    ],
+    "ordinaryEndSeconds": 4,
+    "completedFullPlays": 8,
+    "decodedPhaseSeeks": 36,
+    "detailCaptures": 48,
+    "browserErrors": 0,
+    "visualMotionFramesReviewed": 80,
+    "visualScope": "Independent browser worker inspected impact/recovery sequences and feet details: retained knee reserve into touchdown, one absorption, upright rollaway; no renewed stand/bob, leg swing or chin/belly fist clamp. Controlled managed viewer evidence, not native-gameplay or Claude approval.",
+    "browserResultSha256": "75315dff4a8164ab29668a76c7021b77f43badd1b278b93bd94b82ef55c21910",
+    "visualJudgmentSha256": "4cc8141208514e49e59c74e333e01e86731125f19a137a81e03b541a0d466d44"
+  },
+  "status": "Original-rig review candidate only; Claude independent offline and native Shadow gates pending.",
+  "selfInspection": {
+    "scope": "Author visually inspected all4 phase sheets,4 contact sheets and4 originala4-to-final85 comparisons; Root independently inspected the same12. No new obvious foot/skin defect, Catch-to-Land knee reserve and low open arms read correctly. Continuous playback/source checks remain pending; this is not Claude offline/native approval.",
+    "sheets": 12
+  }
+}
