@@ -72,6 +72,20 @@ def foot(s, sf, side):
     return ankle, frame
 
 
+def pressure_knee_offset(s, sf):
+    # An authored pose envelope, not a changed reach guard. Cap the last
+    # over-tall extension once, collect through the same strike/release, and
+    # return exactly to accepted free-Air1118. Feet/board/clocks stay unchanged.
+    rows = s['pressureKneeOffsetKeys']
+    if sf <= rows[0][0] or sf >= rows[-1][0]:
+        return 0.
+    for a, b in zip(rows, rows[1:]):
+        if a[0] <= sf <= b[0]:
+            weight = smooth((sf - a[0]) / (b[0] - a[0]))
+            return a[1] * (1 - weight) + b[1] * weight
+    return 0.
+
+
 def sample(c, s, sf):
     t = (sf - s['firstSourceFrame']) / s['sourceFps']
     joints, dirs, soles = body_at(c, t)
@@ -86,12 +100,13 @@ def sample(c, s, sf):
             joints[side + 'Elbow'] = joints[side + 'Shoulder'] + unit(joints[side + 'Elbow'] - joints[side + 'Shoulder']) * .29
             joints[side + 'Hand'] = joints[side + 'Elbow'] + unit(joints[side + 'Hand'] - joints[side + 'Elbow']) * .27
     pelvis = curve([r[0] for r in s['pelvisKeys']], [r[1:] for r in s['pelvisKeys']], sf)
+    pelvis[1] += pressure_knee_offset(s, sf)
     delta = pelvis - joints['Pelvis']
     for k in joints:
         joints[k] += delta
-    # The two diagonal raised arms are source-real for this take. Only the
-    # clipped far wrist is reconstructed from its visible upper/forearm,
-    # with a believable bent elbow. No other trick body or false-V clamp.
+    # Authored shoulder-height bent balance wins over the source's high
+    # diagonals at Pop/Scoop. The occluded Left uses its existing bounded
+    # reconstruction window; no other body or motion source is substituted.
     for balance in s['balanceWindows']:
         start, full, held, end = balance['window']
         weight = smooth((sf - start) / (full - start)) * (1 - smooth((sf - held) / (end - held)))
@@ -167,7 +182,7 @@ def bake(body_raw, controls):
     ordered = [s[k] for k in ('firstSourceFrame', 'pop', 'frontRelease', 'tailStrike', 'tailRelease', 'pressEnd', 'firstCatch', 'catch', 'land', 'recovery', 'lastSourceFrame')]
     if not all(a < b for a, b in zip(ordered, ordered[1:])):
         raise ValueError('Expected own Right-tail sole release, later free Air and catch order')
-    for name in ('yawKeys', 'pitchKeys', 'pelvisKeys', 'frontFreeKeys', 'rearFreeKeys', 'gazeKeys'):
+    for name in ('yawKeys', 'pitchKeys', 'pelvisKeys', 'frontFreeKeys', 'rearFreeKeys', 'gazeKeys', 'pressureKneeOffsetKeys'):
         if not all(a[0] < b[0] for a, b in zip(s[name], s[name][1:])):
             raise ValueError('Own source keys must increase: ' + name)
     times = np.unique(np.round(np.r_[np.arange(s['firstSourceFrame'], s['lastSourceFrame'] + 1e-7, 1 / 6), ordered], 9))
@@ -200,7 +215,7 @@ def bake(body_raw, controls):
                 sourcePhaseLimit=s['phaseClockLimit'],
                 contactLimit='Own authored Right-tail sole/scoop, front foot lifts without flick; independent body-frame free shoes return to reversed deck-local ends after180. No measured3D confidence.',
                 combinedWinding=dict(nativeFlip=0, nativeShove=180, bodySpin=0, canonicalRoll=0, canonicalYaw=-180),
-                reconstruction=dict(pelvisKeys=s['pelvisKeys'], kneePlane=s['kneePlane'], gazeKeys=s['gazeKeys'], balanceWindows=s['balanceWindows'], authoredRecoverySuffix=[s['lastGenuineSourceFrame'],s['lastSourceFrame']], ownUprightReferenceFrame=s['recoverySourceFrame'], maximumReachShare=s['maximumReachShare']),
+                reconstruction=dict(pelvisKeys=s['pelvisKeys'], kneePlane=s['kneePlane'], pressureKneeOffsetKeys=s['pressureKneeOffsetKeys'], gazeKeys=s['gazeKeys'], balanceWindows=s['balanceWindows'], authoredRecoverySuffix=[s['lastGenuineSourceFrame'],s['lastSourceFrame']], ownUprightReferenceFrame=s['recoverySourceFrame'], maximumReachShare=s['maximumReachShare']),
                 rig=dict(thigh=.44, shin=.43, upperArm=.29, forearm=.27, spine=.52, shoulderRise=.44, hipHalfWidth=.09, shoulderHalfWidth=.18, head=.12, foot=.14, toeDrop=.07))
     duration = (s['lastSourceFrame'] - s['firstSourceFrame']) / s['sourceFps']
     clip = dict(format='skate-capture-source-keyed-fakie-fs-pop-shove/1', metadata=meta,
