@@ -536,7 +536,11 @@ namespace Shortcut.RustMod
                     var left = boardShift * (goofy ? rear : front);
                     var right = boardShift * (goofy ? front : rear);
                     var beforePress = pose;
-                    if (!SkateCaptureFootSupport.TryShiftFeet(rig, pose, left, right, false, out pose, out error))
+                    // This backward shove keeps its grounded feet through the short root entry.
+                    // Fit the pelvis to those measured targets continuously during the press,
+                    // using the same closest reachable fit as shaped-deck support.
+                    bool fitPressPelvis = Clip.Id == FakieFsPopShoveClipId;
+                    if (!SkateCaptureFootSupport.TryShiftFeet(rig, pose, left, right, fitPressPelvis, out pose, out error))
                     {
                         // A shallow observed charge can reach the source feet but
                         // not their final downward press compensation. Keep every
@@ -547,6 +551,7 @@ namespace Shortcut.RustMod
                             return false;
                         entryShift += pose.Pelvis - beforePress.Pelvis;
                     }
+                    if (fitPressPelvis) entryShift += pose.Pelvis - beforePress.Pelvis;
                 }
             }
             var board = new SkateBoardPose(uprightCarrier.Point(source.Board.Origin) + boardShift,
