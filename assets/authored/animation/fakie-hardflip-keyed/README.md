@@ -1,0 +1,17 @@
+# Own-source Fakie Hardflip
+
+The white-shirt/cap rider in [The Berrics BATB12 Chris Cole vs Sewa Kroetkov](https://www.youtube.com/watch?v=YcmPDIj2BFo&t=293) makes a tail-leading Fakie Hardflip: a vertical kickflip/frontside halfturn between the legs, catch, flat landing and upright rollaway. The final source is one continuous requested293–301s excerpt, bounded decoder20–183. It has30000/1001fps and actual container PTS990+1001×frame, timebase1/30000. Its SHA256 is451892de1705afe07901bb33346f090c42353b0a554f3beffa2875932f0ae6d7. Original full-video frame indices/hash are unknown. The earlier296–308s scout has a separate clock and is never stitched into the final take. Footage, detector arrays and model weights stay private.
+
+The own strict VIDEO pass selects the manually checked foreground actor164/164 times. Source106 has an inconsistent crossed-leg anatomical association despite successful actor selection: that complete pose is explicitly rejected and reconstructed between this take’s own105/107, leaving163 accepted own poses. Model confidence is not a contact or depth measurement. No other trick body is read.
+
+Original setup/flick chains identify physical Goofy: original Right at the nose/front instep and original Left on the popping tail. Tail-leading travel is corroborated by the continuous take. Exactly ONE X reflection and all anatomical Left/Right swaps produce canonical Regular Left-front/Right-tail data. Original source pixels stay unmirrored. No extra switch/fakie swap or body halfturn is added. Own moving-camera yaw, hip/shoulder axes, depth, lower chains, gaze, root, shoes and board angles are explicitly reconstructed. The initial nose frame remains separate from backwards velocity.
+
+Canonical Right is on the tail beyond the bolts for the frontside scoop. Canonical Left rolls onto the original shoe’s outer-upper instep feature; its fitted surface point/normal touch the shaped grip, rather than substituting the sole. Toe tangent and upper normal are transformed in the same board frame exactly once. After release both shoes are free; the board has one complete+360 longitudinal roll and−180 local yaw, with an unspun body. Catch footprints/toe headings reverse their deck-local ends after the halfturn. Original full-shoe/floor/leg-length/reach guards remain strict.
+
+Own visual estimates: first-rise Pop100.5, Left sole release105.6, full upper contact106.4, tail strike106.8, Right-tail sole release107.2, Left upper release108.2, distinct later free Air109, first Left catch117.2, both118.2 and Land121.8. Upright source continues to183; own recovery stabilization150–175 uses this take’s actual175 pose. There is no fabricated source suffix. These authored marks and board/contact estimates do not replace actual native input, flight, landing or scoring.
+
+```sh
+python scripts/author_skate_fakie_hardflip.py --output context/private/fakie-hardflip
+```
+
+NumPy is required. The baker pins its own body and read-only original geometry/math, validates the complete pack before output replacement and leaves raw `reviewed=false`. Current evidence is a valid source bake only. Ordinary trick-route integration, four actual Pad/Step/scorer/body cases, original-skin viewer comparison, Claude’s offline verdict and native Shadow testing are separate pending gates. A source or export is not a completed animation.
