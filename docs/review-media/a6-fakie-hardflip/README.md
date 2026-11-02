@@ -1,0 +1,22 @@
+# A6 Fakie Hardflip — own source and original-rig review
+
+[Viewer/source comparison](http://127.0.0.1:63761/a6-fakie-hardflip/) · [frozen source/runtime](https://github.com/Dj-Shortcut/rust-skate-mod/commit/c11506b26cf9c98263ada83a907809da44431d36) · [batch #725](https://github.com/Dj-Shortcut/rust-skate-mod/issues/725).
+
+The white-shirt/cap rider in [The Berrics BATB12 Chris Cole vs Sewa Kroetkov](https://www.youtube.com/watch?v=YcmPDIj2BFo&t=293) supplies one continuous tail-leading Fakie Hardflip: full flip/FS halfturn vertically between the opened legs, catch, flat landing and genuine upright rollaway. The own final293–301s excerpt uses decoder20–183, actual PTS990+1001×frame /30000 at30000/1001fps. The earlier296–308 scout is a separate clock; original full-video frames/hash are unknown.
+
+Filmed Goofy has Right nose/instep and Left tail. Exactly one reflection plus anatomical swaps produces canonicalRegular data; actual animated GLB foot bones determine all physical labels. **Goofy is the direct/default preview, Regular the labelled mirrored rig.** Original reference pixels never mirror. Own VIDEO selects164/164 foreground actors; crossed-leg association106 is explicitly rejected and reconstructed between own105/107, leaving163 accepted poses. Camera/depth, root/shoes/contacts, knee planes, gaze and full board angles are authored estimates, not measured3D. No other trick body is borrowed and no source suffix is invented.
+
+CanonicalLeft uses the original shoe outer-upper instep feature/normal rather than its sole, while canonicalRight performs the FS tail scoop. The body stays unspun and the board has one complete canonical+360 roll/−180 yaw. First-rise Pop100.5, instep106.4, strike106.8, tail release107.2, upper release108.2 and later freeAir109 remain distinct marks. First catch117.2/both118.2, Land121.8 and genuine recovery to183 use this take's own clock. The exact new family uses the existing closest measured-pelvis pressure fit; fixed chain/reach/full-shoe/floor guards and physics/scoring remain unchanged. Normal Hardflip source clocks and extra tuck do not leak into this family.
+
+Arms deliberately use bent asymmetric shoulder-height balance under the owner rule, instead of reproducing the real high diagonal. The originalRight/canonicalLeft return stays forward/outward through the short Air interval, then rejoins before117.2 catch; the old short overlay visibly sent that hand behind the torso. Actual direct-Goofy GLB Right-arm bones establish the association. Other arm/body/head/feet/board/events/clocks and the accepted later catch/landing/recovery are exact through this return correction. Same-camera source-free witnesses show the change.
+
+| Height / actual physical stance | Full phases | Instep / feet / balance | Return witness |
+|---|---|---|---|
+| Normal / Goofy | [phases](normal-goofy-phases.jpg) | [contacts](normal-goofy-contacts.jpg) | [same-time before → after](normal-goofy-return-before-after.jpg) |
+| Normal / Regular | [phases](normal-regular-phases.jpg) | [contacts](normal-regular-contacts.jpg) | [same-time before → after](normal-regular-return-before-after.jpg) |
+| Low / Goofy | [phases](low-goofy-phases.jpg) | [contacts](low-goofy-contacts.jpg) | — |
+| Low / Regular | [phases](low-regular-phases.jpg) | [contacts](low-regular-contacts.jpg) | — |
+
+Four actual managed Pad/Step/Land/scorer/body cases pass with one real pop, normal36/36 or low34/34 captured Air samples, unchanged native traces and ordinary Ground/capture-off at4s. The original skin/inverse binds and complete13-part board pass the unchanged exporter. Four full browser runs reach4s at1× and¼×;28 decoded-reference phase visits,32 Source/body-Side details and20 Feet-close visits pass with zero final console/runtime errors. The eight phase/contact sheets and return witnesses were inspected. The manifest pins10images, original-mesh/input/source hashes, physical audits and private evidence hashes.
+
+Raw remains `reviewed=false`; Claude owns the independent offline/library verdict and native Shadow acceptance is pending. Source presence, managed/export/browser checks or green CI do not promote either gate. Original source footage/pixels, detector arrays, generated packs/models, private approvals and weights are not published here.
