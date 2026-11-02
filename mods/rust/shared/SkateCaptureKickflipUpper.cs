@@ -57,16 +57,27 @@ namespace Shortcut.RustMod
                 new SkateCaptureRotation(axis.X, axis.Y, axis.Z, 1 + cosine), weight);
             var p = pose;
             var neck = p.Pelvis + turn.Rotate(p.Neck - p.Pelvis);
+            // Keep look yaw independent of the folded torso. Rebuild a modest
+            // boardward head frame instead of retaining a backward head ray
+            // with horizontal gaze; ease both axes from the unchanged boundary.
+            double headLength = (p.Head - p.Neck).Length;
+            var lookHeading = Unit(p.HeadForward - uprightCarrier.Up * SkateVector.Dot(p.HeadForward, uprightCarrier.Up));
+            if (!Normal(lookHeading)) lookHeading = facing;
+            double down = 25 * Math.PI / 180, headWeight = Smooth(Math.Min(1, chargeWeight / .5));
+            var lookTarget = lookHeading * Math.Cos(down) - uprightCarrier.Up * Math.Sin(down);
+            var headTargetUp = uprightCarrier.Up * Math.Cos(down) + lookHeading * Math.Sin(down);
+            var gaze = Unit(p.HeadForward * (1 - headWeight) + lookTarget * headWeight);
+            var headUp = Unit((p.Head - p.Neck) * (1 - headWeight) + headTargetUp * (headLength * headWeight));
+            if (!Finite(headLength) || headLength <= .00000001 || !Normal(gaze) || !Normal(headUp))
+            { error = "Ordinary charge head frame is degenerate."; return false; }
             folded = new SkateRiderPose(p.Pelvis, p.LeftHip, p.RightHip, p.LeftKnee, p.RightKnee,
                 p.LeftAnkle, p.RightAnkle, p.LeftToe, p.RightToe,
                 p.Pelvis + turn.Rotate(p.Chest - p.Pelvis), neck,
-                neck + (p.Head - p.Neck),
+                neck + headUp * headLength,
                 p.Pelvis + turn.Rotate(p.LeftShoulder - p.Pelvis), p.Pelvis + turn.Rotate(p.RightShoulder - p.Pelvis),
                 p.Pelvis + turn.Rotate(p.LeftElbow - p.Pelvis), p.Pelvis + turn.Rotate(p.RightElbow - p.Pelvis),
                 p.Pelvis + turn.Rotate(p.LeftHand - p.Pelvis), p.Pelvis + turn.Rotate(p.RightHand - p.Pelvis),
-                // The rider keeps an independent gaze while the torso folds.
-                // Rotating it with the chest makes backward setups look skyward.
-                p.PelvisForward, p.PelvisUp, turn.Rotate(p.ChestForward), turn.Rotate(p.ChestUp), p.HeadForward);
+                p.PelvisForward, p.PelvisUp, turn.Rotate(p.ChestForward), turn.Rotate(p.ChestUp), gaze);
             return true;
         }
 

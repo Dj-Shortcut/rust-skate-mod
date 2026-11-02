@@ -1,0 +1,407 @@
+{
+  "format": "fakie-360-flip-own-rig-review/1",
+  "sourceReviewed": false,
+  "nativeGame": false,
+  "sourceCodeRevision": "8504ed4f63328498c8a2824efe2247f713cd6304",
+  "sourcePackSha256": "70d8c47d8722fec344a899849ed3d3cfada8d9ea3461f41b83939fa7b76348bf",
+  "sourceBodyControlSha256": "0052718b567ae680a513e47eac95f8a9dbd73392494173b56c098c9a98a0be78",
+  "sourceConstraintsSha256": "d0c5c49ffbccea7873c39152ef21b9738892bec68a5ece8363d8286ab1190eae",
+  "sourceBakerSha256": "6a25638b1cbdc7d2e27eed911cb45656d008835dae99d443c4e6480b0954101d",
+  "chargeHeadHelperSha256": "9b5c4f4aca8ca0bde78f133b76c881264282cb83b9797a9c6326118e13153b28",
+  "viewer": "http://127.0.0.1:63761/a7-fakie-360-flip/",
+  "source": "Own landed Rodriguez Fakie Tre, Pq frames9780\u20139875. Filmed Goofy Right nose/instep and Left tail; one reflection/side swap creates canonical Regular. Regular is a labelled mirror; source pixels stay private and unmirrored.",
+  "authoredReconstruction": "Own monocular camera/depth/root/contacts/full board winding and source knee/gaze/clipped wrist/crown reconstruction.87/96 strict VIDEO selections; nine raw gaps retained, bracketed same-take control interpolation labelled. No other trick motion borrowed.",
+  "ordinaryChargeHead": "Shared ordinary charge alone eases a 25-degree boardward gaze and consistent head-up, preserving independent look yaw and neck-to-head length. Only actual Head/HeadForward change in all four cases; all other frame fields and four controlled managed physics/scoring traces byte-identical. Zero-charge pose unchanged. No source body/feet/board/contact-clock change or camera/skin/export-only workaround.",
+  "managedRoute": {
+    "scope": "Four genuine Pad/full 32 Hz Step/Land/scorer/body cases under controlled managed bindings/ground, not native gameplay. 36/34 normal/low Air samples, Fakie 360 Flip score, ordinary Ground/capture off at 4 seconds.",
+    "runtimeRevision": "8504ed4f63328498c8a2824efe2247f713cd6304",
+    "receiptSha256": "759ea379acf65cdc484789275132bfac1e24fbdf264cd87783650996993a1a37",
+    "nonHeadFrameFieldsExact": true,
+    "allFourPhysicsScoringTracesByteIdentical": true
+  },
+  "productionSdkCompile": {
+    "sourceRevision": "8504ed4f63328498c8a2824efe2247f713cd6304",
+    "sourceCount": 81,
+    "references": 356,
+    "correctedGameUnityReferences": 191,
+    "retainedFrameworkBepInterop": 165,
+    "exitCode": 0,
+    "receiptSha256": "78d9cb5e8969ca6b03f16d858c2cd3eda0868922412e40d928614e00f5abf62d"
+  },
+  "defaultPhysicalStance": "goofy",
+  "files": [
+    {
+      "file": "fakie-360-flip-normal-physical-goofy.jpg",
+      "type": "phases",
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "requestedEnumStance": "regular",
+      "sourceRole": "DIRECT filmed Goofy",
+      "sha256": "0674295f886b61baf79b5c65f4cac317d811a0edfac633a2bf02c47813dc6622",
+      "glbSha256": "90d54de4c5b0cedf1e5cf93d1b225e69ed834d041b415208598041787efb9cef",
+      "inputSha256": "7ad08d5db942d15446a2df9dc85dc1485f9e82ce4fc3d88e893925e8d25d4a53",
+      "phaseMoments": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.85,
+        "Guide": 1,
+        "Air": 1.15,
+        "FirstCatch": 1.3666666666666667,
+        "Catch": 1.3833333333333333,
+        "Land": 1.45,
+        "Rollaway": 2.1,
+        "End": 4.0,
+        "SourcePop": 0.85,
+        "Rise": 0.9333333333333333,
+        "Instep": 1,
+        "Strike": 0.9833333333333333,
+        "FreeAir": 1.0833333333333333,
+        "GenuineEnd": 2.533333333333333,
+        "Flick": 1,
+        "TailStrike": 0.9833333333333333
+      },
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+    },
+    {
+      "file": "fakie-360-flip-normal-physical-goofy-contacts.jpg",
+      "type": "contacts",
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "sha256": "d180dfb9c61322c33224f4ce02ecf431fbf030fe8d4e56e2ae2bb479090ef3ce",
+      "glbSha256": "90d54de4c5b0cedf1e5cf93d1b225e69ed834d041b415208598041787efb9cef",
+      "captionNote": "Guide phase is distinct from later sole catch. No measured contact/heel pressure is claimed."
+    },
+    {
+      "file": "fakie-360-flip-low-physical-regular.jpg",
+      "type": "phases",
+      "profile": "low",
+      "physicalStance": "regular",
+      "requestedEnumStance": "goofy",
+      "sourceRole": "REGULAR mirror / original source unmirrored",
+      "sha256": "a04ea70f8232b0f9074a740e54239c53c64af81aa6afbdd553b953d066618791",
+      "glbSha256": "6c897cce19e60b347ed0589f9cde28999c551fbd14264bea3984ffa9f985e571",
+      "inputSha256": "7724373b7b89d0d423affbb810b1bd5c13caf025139899799eb6ce214144c978",
+      "phaseMoments": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.85,
+        "Guide": 0.9833333333333333,
+        "Air": 1.1333333333333333,
+        "FirstCatch": 1.3333333333333333,
+        "Catch": 1.35,
+        "Land": 1.4166666666666667,
+        "Rollaway": 2.033333333333333,
+        "End": 4.0,
+        "SourcePop": 0.85,
+        "Rise": 0.9166666666666666,
+        "Instep": 0.9833333333333333,
+        "Strike": 0.9833333333333333,
+        "FreeAir": 1.0666666666666667,
+        "GenuineEnd": 2.4166666666666665,
+        "Flick": 0.9833333333333333,
+        "TailStrike": 0.9833333333333333
+      },
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+    },
+    {
+      "file": "fakie-360-flip-low-physical-regular-contacts.jpg",
+      "type": "contacts",
+      "profile": "low",
+      "physicalStance": "regular",
+      "sha256": "d43437d2f22af4ab1c23476c6edbf4f9faf5a589cd5ce59e7080485ee77aec8f",
+      "glbSha256": "6c897cce19e60b347ed0589f9cde28999c551fbd14264bea3984ffa9f985e571",
+      "captionNote": "Guide phase is distinct from later sole catch. No measured contact/heel pressure is claimed."
+    },
+    {
+      "file": "fakie-360-flip-normal-physical-regular.jpg",
+      "type": "phases",
+      "profile": "normal",
+      "physicalStance": "regular",
+      "requestedEnumStance": "goofy",
+      "sourceRole": "REGULAR mirror / original source unmirrored",
+      "sha256": "131e1e399cce419890c40e2112c9b4b49c8b443a3a9a23a0709ee81b7fd74633",
+      "glbSha256": "2fb98a7fd144264518092c4abd3a14ede95f860e6377fa321c768b274d0f8da0",
+      "inputSha256": "6cb3b4793034445ea01b7c898b9695a7057a7359d07e30e080d0daa4722bd43e",
+      "phaseMoments": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.85,
+        "Guide": 1,
+        "Air": 1.15,
+        "FirstCatch": 1.3666666666666667,
+        "Catch": 1.3833333333333333,
+        "Land": 1.45,
+        "Rollaway": 2.1,
+        "End": 4.0,
+        "SourcePop": 0.85,
+        "Rise": 0.9333333333333333,
+        "Instep": 1,
+        "Strike": 0.9833333333333333,
+        "FreeAir": 1.0833333333333333,
+        "GenuineEnd": 2.533333333333333,
+        "Flick": 1,
+        "TailStrike": 0.9833333333333333
+      },
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+    },
+    {
+      "file": "fakie-360-flip-normal-physical-regular-contacts.jpg",
+      "type": "contacts",
+      "profile": "normal",
+      "physicalStance": "regular",
+      "sha256": "b5f68e15eb17c05f7806b9e811d3940efed60ab0bcbd0a6bc7d7e4f598b201bb",
+      "glbSha256": "2fb98a7fd144264518092c4abd3a14ede95f860e6377fa321c768b274d0f8da0",
+      "captionNote": "Guide phase is distinct from later sole catch. No measured contact/heel pressure is claimed."
+    },
+    {
+      "file": "fakie-360-flip-low-physical-goofy.jpg",
+      "type": "phases",
+      "profile": "low",
+      "physicalStance": "goofy",
+      "requestedEnumStance": "regular",
+      "sourceRole": "DIRECT filmed Goofy",
+      "sha256": "a8abe4d0ed26425070c164cecc469740588552844f503797b01ca655b0b2c641",
+      "glbSha256": "b09cdd1057be8ca8aa7e23bb33923a9272194c78e8d9f907a8f2954937a44702",
+      "inputSha256": "b014c2d17c75706c494a1ff365662e39586159014591dbd95e31e396fa96710d",
+      "phaseMoments": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.85,
+        "Guide": 0.9833333333333333,
+        "Air": 1.1333333333333333,
+        "FirstCatch": 1.3333333333333333,
+        "Catch": 1.35,
+        "Land": 1.4166666666666667,
+        "Rollaway": 2.033333333333333,
+        "End": 4.0,
+        "SourcePop": 0.85,
+        "Rise": 0.9166666666666666,
+        "Instep": 0.9833333333333333,
+        "Strike": 0.9833333333333333,
+        "FreeAir": 1.0666666666666667,
+        "GenuineEnd": 2.4166666666666665,
+        "Flick": 0.9833333333333333,
+        "TailStrike": 0.9833333333333333
+      },
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+    },
+    {
+      "file": "fakie-360-flip-low-physical-goofy-contacts.jpg",
+      "type": "contacts",
+      "profile": "low",
+      "physicalStance": "goofy",
+      "sha256": "19740151d23ff57e26a3a7d550a9ddf5eda9266a7ca4301f58590b2581bae854",
+      "glbSha256": "b09cdd1057be8ca8aa7e23bb33923a9272194c78e8d9f907a8f2954937a44702",
+      "captionNote": "Guide phase is distinct from later sole catch. No measured contact/heel pressure is claimed."
+    },
+    {
+      "file": "fakie-360-flip-charge-gaze-before-after.jpg",
+      "type": "charge-head-before-after",
+      "physicalStance": "goofy",
+      "profile": "normal",
+      "sha256": "f7bd2598aaa9cfb1e39f919be44d5fc2b1edf74a5b815df9ae65ef1d3042a417",
+      "scope": "Same Source/Side crops at Load, first-rise Pop and entry.90. Old99b baseline versus current8504. Original skin/board and fixed cameras; only actual ordinary Head/HeadForward corrected."
+    }
+  ],
+  "models": [
+    {
+      "requestedEnumStance": "regular",
+      "physicalPreview": {
+        "profile": "normal",
+        "requestedStance": "regular",
+        "physicalPreviewStance": "goofy",
+        "leadFoot": "Right",
+        "at": 0.8333333333333334,
+        "leadDistance": -0.36528566502652415,
+        "leftFoot": [
+          -0.03998445695649926,
+          0.2262097973682381,
+          -3.4841020015284756
+        ],
+        "rightFoot": [
+          -0.04520335369874766,
+          0.19512290912539446,
+          -3.1188163365019514
+        ],
+        "deckForward": [
+          -2.4492937051703357e-16,
+          0.0,
+          1.0
+        ],
+        "toeSideDot": 0.8332835334516421,
+        "glbDeckForwardDot": 1.0,
+        "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+        "note": "Actual animated GLB foot-bone world positions against its recorded DeckForward; frozen proxy anatomy, not a global native-handedness claim"
+      },
+      "profile": "normal",
+      "glbSha256": "90d54de4c5b0cedf1e5cf93d1b225e69ed834d041b415208598041787efb9cef",
+      "inputSha256": "7ad08d5db942d15446a2df9dc85dc1485f9e82ce4fc3d88e893925e8d25d4a53",
+      "renderedRuntimeRevision": "8504ed4f63328498c8a2824efe2247f713cd6304",
+      "actualManagedReplayRevision": "8504ed4f63328498c8a2824efe2247f713cd6304"
+    },
+    {
+      "requestedEnumStance": "goofy",
+      "physicalPreview": {
+        "profile": "low",
+        "requestedStance": "goofy",
+        "physicalPreviewStance": "regular",
+        "leadFoot": "Left",
+        "at": 0.8333333333333334,
+        "leadDistance": 0.3653053165688771,
+        "leftFoot": [
+          0.04519095098852072,
+          0.1951164828550158,
+          -3.1188113452993003
+        ],
+        "rightFoot": [
+          0.04001006045316604,
+          0.2262186999611049,
+          -3.4841166618681774
+        ],
+        "deckForward": [
+          -2.4492937051703357e-16,
+          0.0,
+          1.0
+        ],
+        "toeSideDot": -0.8332834758651929,
+        "glbDeckForwardDot": 1.0,
+        "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+        "note": "Actual animated GLB foot-bone world positions against its recorded DeckForward; frozen proxy anatomy, not a global native-handedness claim"
+      },
+      "profile": "low",
+      "glbSha256": "6c897cce19e60b347ed0589f9cde28999c551fbd14264bea3984ffa9f985e571",
+      "inputSha256": "7724373b7b89d0d423affbb810b1bd5c13caf025139899799eb6ce214144c978",
+      "renderedRuntimeRevision": "8504ed4f63328498c8a2824efe2247f713cd6304",
+      "actualManagedReplayRevision": "8504ed4f63328498c8a2824efe2247f713cd6304"
+    },
+    {
+      "requestedEnumStance": "goofy",
+      "physicalPreview": {
+        "profile": "normal",
+        "requestedStance": "goofy",
+        "physicalPreviewStance": "regular",
+        "leadFoot": "Left",
+        "at": 0.8333333333333334,
+        "leadDistance": 0.3653040866192816,
+        "leftFoot": [
+          0.04519133860100352,
+          0.19511679749739447,
+          -3.1188141441835935
+        ],
+        "rightFoot": [
+          0.04001040975102431,
+          0.2262183944813263,
+          -3.484118230802875
+        ],
+        "deckForward": [
+          -2.4492937051703357e-16,
+          0.0,
+          1.0
+        ],
+        "toeSideDot": -0.8332849205209324,
+        "glbDeckForwardDot": 1.0,
+        "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+        "note": "Actual animated GLB foot-bone world positions against its recorded DeckForward; frozen proxy anatomy, not a global native-handedness claim"
+      },
+      "profile": "normal",
+      "glbSha256": "2fb98a7fd144264518092c4abd3a14ede95f860e6377fa321c768b274d0f8da0",
+      "inputSha256": "6cb3b4793034445ea01b7c898b9695a7057a7359d07e30e080d0daa4722bd43e",
+      "renderedRuntimeRevision": "8504ed4f63328498c8a2824efe2247f713cd6304",
+      "actualManagedReplayRevision": "8504ed4f63328498c8a2824efe2247f713cd6304"
+    },
+    {
+      "requestedEnumStance": "regular",
+      "physicalPreview": {
+        "profile": "low",
+        "requestedStance": "regular",
+        "physicalPreviewStance": "goofy",
+        "leadFoot": "Right",
+        "at": 0.8333333333333334,
+        "leadDistance": -0.36528732084142,
+        "leftFoot": [
+          -0.039983203562055876,
+          0.22620938425473078,
+          -3.484100800626634
+        ],
+        "rightFoot": [
+          -0.04520263710602422,
+          0.19512283176826203,
+          -3.118813479785214
+        ],
+        "deckForward": [
+          -2.4492937051703357e-16,
+          0.0,
+          1.0
+        ],
+        "toeSideDot": 0.8332832265706026,
+        "glbDeckForwardDot": 1.0,
+        "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+        "note": "Actual animated GLB foot-bone world positions against its recorded DeckForward; frozen proxy anatomy, not a global native-handedness claim"
+      },
+      "profile": "low",
+      "glbSha256": "b09cdd1057be8ca8aa7e23bb33923a9272194c78e8d9f907a8f2954937a44702",
+      "inputSha256": "b014c2d17c75706c494a1ff365662e39586159014591dbd95e31e396fa96710d",
+      "renderedRuntimeRevision": "8504ed4f63328498c8a2824efe2247f713cd6304",
+      "actualManagedReplayRevision": "8504ed4f63328498c8a2824efe2247f713cd6304"
+    }
+  ],
+  "replay": {
+    "status": "PASS current controlled viewer review: all four cases played completely at 1\u00d7 and \u00bc\u00d7 through 4 seconds, with no browser errors. Claude offline and native approval remain separate.",
+    "runtimeRevision": "8504ed4f63328498c8a2824efe2247f713cd6304",
+    "receiptSha256": "ee66c633879607c5fe32303b2ae6dd2900c4c881cc3fb8d4133afc2d737b3fff",
+    "counts": {
+      "physicalCases": 4,
+      "actualFull1xQuarterRuns": 8,
+      "decodedPhaseVisits": 36,
+      "sourceSideFeetDetails": 64,
+      "actualLiveHeadHandoffImages": 34,
+      "actualLiveLandingImages": 77,
+      "explicitlyPausedSupplementalImages": 80,
+      "browserErrors": 0
+    },
+    "observations": {
+      "head": "Load and true first-risePop face now points forward/down instead of upward in Source and fixedSide, normal/low and both physical stances. Live quarter/1x handoff witnesses and intermediate fixedSide views continue into extension/instep naturally; no visible head flip/snap or buried-neck pose.",
+      "feetAndRotation": "Original shaped board completes its board-only flip/turn under collected feet; the front outer-upper instep guide is distinct from a sole press, and caught soles remain planted through landing/recovery in inspected Feet/Side/source witnesses.",
+      "landing": "One continuous absorption after caught/bent touchdown, then stable upright rollout. No renewed stand-before-late-dip bob or new leg swing seen in either height/physical stance.",
+      "arms": "Bent low asymmetric balance retained; no new overheadV/flatT or face/belly tuck blocker seen."
+    },
+    "assetChecks": [
+      {
+        "profile": "normal",
+        "physicalStance": "goofy",
+        "requestedEnum": "regular",
+        "glbSha256": "90d54de4c5b0cedf1e5cf93d1b225e69ed834d041b415208598041787efb9cef",
+        "boardMeshes": 13,
+        "originalConnectedSkinPresent": true
+      },
+      {
+        "profile": "normal",
+        "physicalStance": "regular",
+        "requestedEnum": "goofy",
+        "glbSha256": "2fb98a7fd144264518092c4abd3a14ede95f860e6377fa321c768b274d0f8da0",
+        "boardMeshes": 13,
+        "originalConnectedSkinPresent": true
+      },
+      {
+        "profile": "low",
+        "physicalStance": "goofy",
+        "requestedEnum": "regular",
+        "glbSha256": "b09cdd1057be8ca8aa7e23bb33923a9272194c78e8d9f907a8f2954937a44702",
+        "boardMeshes": 13,
+        "originalConnectedSkinPresent": true
+      },
+      {
+        "profile": "low",
+        "physicalStance": "regular",
+        "requestedEnum": "goofy",
+        "glbSha256": "6c897cce19e60b347ed0589f9cde28999c551fbd14264bea3984ffa9f985e571",
+        "boardMeshes": 13,
+        "originalConnectedSkinPresent": true
+      }
+    ],
+    "witnessSemantics": "Uninterrupted replay witnesses and explicitly paused interpolation samples are distinct; decoded-source exact-time checks are not fabricated frame callbacks. Counts alone do not establish visual acceptance.",
+    "scope": "PASS bounded current-viewer inspection; no visible blocker found in this review. This is not independent Claude/offline or native Shadow approval."
+  },
+  "status": "Current author/peer viewer and original-rig still review passed within stated scope. Raw false; independent Claude offline and native Shadow gates pending.",
+  "selfInspection": {
+    "sheets": 8,
+    "gazeBeforeAfter": true,
+    "status": "Author inspected all eight current phase/contact sheets and same-camera head before/after. Visible skyward Load/Pop gaze is removed in both heights/stances; original contacts/full winding/compact Air/modest landing reserve/own recovery remain. Full continuous browser review is a separate pending gate."
+  }
+}
