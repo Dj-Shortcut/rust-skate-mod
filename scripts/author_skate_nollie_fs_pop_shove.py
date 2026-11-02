@@ -78,6 +78,9 @@ def sample(body, spec, frame):
     origin, rotation = board_at(spec, frame)
     feet = {side: foot_frame(spec, frame, side) for side in ('Left', 'Right')}
     pelvis = origin + value(spec['pelvisRelativeToBoard'], frame)
+    balance = spec.get('pressBalance')
+    if balance is not None:
+        pelvis[1] += float(value(balance['pelvisOffset'], frame)[0])
     hip_axis = unit((captured['LeftHip'] - captured['RightHip']) * np.array([1., 0., 1.]))
     facing = unit(np.cross(UP, hip_axis))
     share = spec['reachShare']['press'] + (spec['reachShare']['free'] - spec['reachShare']['press']) * smooth((frame - spec['noseReleaseFrame']) / (spec['pressEndFrame'] - spec['noseReleaseFrame']))
@@ -120,6 +123,11 @@ def sample(body, spec, frame):
         w = float(value(correction['weights'], frame)[0])
         upper = unit(upper * (1 - w) + local(value(correction['upper'], frame)) * w)
         fore = unit(fore * (1 - w) + local(value(correction['fore'], frame)) * w)
+        if balance is not None:
+            weight = float(value(balance['weights'], frame)[0])
+            if weight > 0:
+                upper = unit(upper * (1 - weight) + local(balance[side]['upper']) * weight)
+                fore = unit(fore * (1 - weight) + local(balance[side]['fore']) * weight)
         j[side + 'Shoulder'] = shoulder
         j[side + 'Elbow'] = shoulder + upper * .29
         j[side + 'Hand'] = j[side + 'Elbow'] + fore * .27

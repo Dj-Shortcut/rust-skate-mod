@@ -8,4 +8,12 @@ The executable scripts/author_skate_nollie_fs_pop_shove.py validates body/geomet
 
 Pop54 is the actual extension start visible in dense54/55, distinct from maximum nose pressure57.5. Release59/free61, catch66.5/both68 and Land73 stay fixed. This corrects the source marker; native flight and shared clocks are unchanged. Private source-camera projection is estimated independently; no torso/arm change is made to compensate for a wrong view.
 
-The captured-body sourceIdentity now names this same black actor20–103 /animation30–98; an older white-actor description was a metadata-only leftover. Only that string and its dependent constraints hash changed. All other body bytes, all419 baked frames and all9 events remain exact, and the complete raw binary remains byte-identical (`b1d994cbb0278de2ab9421bbf7de96ac96a80e5aaac9eee84f78cdccb75182be`). The existing rig sheets/GLBs/replays therefore retain their original runtime freeze; the adjacent review manifest records both control-file provenance hashes. No motion, approval or native status changes.
+In PR#726, only the obsolete sourceIdentity description and its dependent hash changed. All other body bytes, all419 baked frames/events and the then-current rawb1d994 remained exact; the then-existing89f796f media stayed frozen. This was historical metadata-only work. The separate balance correction below changes motion/raw and rerenders while retaining the corrected c237 source-body file.
+
+## Authored press balance correction
+
+The A5 visual review rejected the overhead V arms and the extended supporting leg at nose pressure. A bounded authored override now bends both arms around or below shoulder height and lowers the pelvis during54–61, fading completely by63. This reconstructs balance and knee reserve rather than claiming new source measurement. The original black actor identity and c237 body file stay unchanged.
+
+Nose pitch is preserved: the actual original-rig GLB deck axis was36.86° down for normal height and38° for low height at the published press frame, within the requested35–45° range. A clear side view accompanies the same fixed source camera; no camera/heading/geometry change hides the projection. Feet, board, source/event timing and all motion from Air63 through Catch/Land/rollaway are unchanged. The raw pack remains reviewed=false; source/mesh replay verification and Claude/Shadow decisions remain separate.
+
+The balance repair has four actual managed cases and four complete1×/¼× original-rig replay pairs, with same-time pressure before/after and Side/feet details in `docs/review-media/a5-nollie-fs-pop-shove/`. All native traces, board/feet/events and actual body rows from Air63 onward remain unchanged. Claude/offline and Shadow acceptance remain separate.
