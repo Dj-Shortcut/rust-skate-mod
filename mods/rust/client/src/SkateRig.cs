@@ -3,6 +3,8 @@
 // component, a dynamic Rigidbody, a capsule) that is replaced on death and reconnect, so it is
 // looked up again and gets a fresh late driver each time.
 using System;
+using System.Collections.Generic;
+using Il2CppInterop.Runtime;
 using Il2CppInterop.Runtime.Attributes;
 using UnityEngine;
 
@@ -182,13 +184,26 @@ public class SkateRig : MonoBehaviour
     // trace for each changed failure, while every new press still gets visible feedback.
     private static string lastMountFailure;
     [HideFromIl2Cpp]
+    private static string MountErrorMessage(Exception error)
+    {
+        var message = error.Message ?? "";
+        if (message.Length > 240) message = message.Substring(0, 240);
+        var chars = message.ToCharArray();
+        for (var i = 0; i < chars.Length; i++)
+            if (char.IsControl(chars[i])) chars[i] = ' ';
+        return new string(chars);
+    }
+
+    [HideFromIl2Cpp]
     private static void MountFailure(string step, Exception error)
     {
         SkateHud.Notice("Cannot get on the skateboard: client check failed (" + step + "). See skate.log");
-        var failure = step + ": " + error.GetType().Name + ": " + error.Message;
+        var failure = step + ": " + error.GetType().Name + ": " + MountErrorMessage(error);
         if (failure == lastMountFailure) return;
         lastMountFailure = failure;
         Say("MOUNT failure step=" + step + " type=" + error.GetType().Name);
+        if (error is NotSupportedException || error is MissingMethodException)
+            Say("MOUNT method message=" + MountErrorMessage(error));
         // Stack frames identify code, never player state. Do not dump objects or native payloads.
         var trace = error.StackTrace;
         if (string.IsNullOrEmpty(trace)) { Say("MOUNT trace unavailable"); return; }
@@ -215,6 +230,74 @@ public class SkateRig : MonoBehaviour
             Local != null && Local.lifestate == BaseCombatEntity.LifeState.Alive && LocalT != null && LocalT == Local.transform && LocalT.parent == null &&
             Body != null && !Body.isKinematic && Collides(Body) && Body.transform == p.Frame && p.Frame.parent == p.Parent && !p.Frame.IsChildOf(LocalT) &&
             Walk != null && Walk.enabled && Walk.transform == p.Frame && p.Proxy != null && p.Proxy.transform == LocalT && p.Proxy.isKinematic && !Collides(p.Proxy);
+    }
+
+    [HideFromIl2Cpp]
+    private static bool MountLookupUnavailable(Exception error)
+    {
+        for (var i = 0; i < 4 && error is TypeInitializationException; i++)
+        {
+            if (error.InnerException == null) return true;
+            error = error.InnerException;
+        }
+        return error is NotSupportedException || error is MissingMemberException || error is TypeLoadException ||
+            error is ArgumentException || error is NullReferenceException;
+    }
+
+    [HideFromIl2Cpp]
+    private static bool IsNativeMountJoint(Component component)
+    {
+        var type = component.GetIl2CppType();
+        if (type == null) throw new NotSupportedException("native Component type unavailable");
+        var seen = new HashSet<IntPtr>();
+        for (var depth = 0; type != null; depth++, type = type.BaseType)
+        {
+            if (depth >= 32 || type.Pointer == IntPtr.Zero || !seen.Add(type.Pointer))
+                throw new NotSupportedException("native Component ancestry unavailable or cyclic");
+            var name = type.FullName;
+            if (string.IsNullOrEmpty(name)) throw new NotSupportedException("native Component type name unavailable");
+            if (name == "UnityEngine.Joint") return true;
+        }
+        return false;
+    }
+
+    // Mount-only guard: an incomplete lookup is reported, never claimed as Joint-free.
+    [HideFromIl2Cpp]
+    private static bool HasMountJoints(Transform frame, string owner)
+    {
+        try { return frame.GetComponentsInChildren<Joint>(true).Length != 0; }
+        catch (NotSupportedException error)
+        { Say("ROOTSYNC Joint check " + owner + ": generic unavailable; " + MountErrorMessage(error)); }
+        try
+        {
+            var joints = frame.GetComponentsInChildren(Il2CppType.Of<Joint>(), true);
+            Say("ROOTSYNC Joint check " + owner + ": non-generic fallback");
+            return joints.Length != 0;
+        }
+        catch (Exception error) when (MountLookupUnavailable(error))
+        { Say("ROOTSYNC Joint check " + owner + ": native-type unavailable; " + error.GetType().Name + ": " + MountErrorMessage(error)); }
+        try
+        {
+            Exception incomplete = null;
+            var components = frame.GetComponentsInChildren<Component>(true);
+            foreach (var component in components)
+            {
+                try
+                {
+                    if (component != null && IsNativeMountJoint(component))
+                    { Say("ROOTSYNC Joint check " + owner + ": Component fallback found Joint"); return true; }
+                }
+                catch (Exception error) when (MountLookupUnavailable(error))
+                { if (incomplete == null) incomplete = error; }
+            }
+            if (incomplete == null)
+            { Say("ROOTSYNC Joint check " + owner + ": Component fallback"); return false; }
+            Say("ROOTSYNC Joint check " + owner + ": Component ancestry incomplete; " + incomplete.GetType().Name + ": " + MountErrorMessage(incomplete));
+        }
+        catch (Exception error) when (MountLookupUnavailable(error))
+        { Say("ROOTSYNC Joint check " + owner + ": Component lookup unavailable; " + error.GetType().Name + ": " + MountErrorMessage(error)); }
+        Say("ROOTSYNC Joint check " + owner + ": SKIPPED; absence of Joints unverified");
+        return false;
     }
 
     [HideFromIl2Cpp]
@@ -251,10 +334,10 @@ public class SkateRig : MonoBehaviour
             if (bodies.Length != 1 || bodies[0] != proxy)
                 throw new InvalidOperationException("player proxy has other physical owners");
             step = "root Joint children";
-            if (LocalT.GetComponentsInChildren<Joint>(true).Length != 0)
+            if (HasMountJoints(LocalT, "root"))
                 throw new InvalidOperationException("player proxy has other physical owners");
             step = "physical Joint children";
-            if (frame.GetComponentsInChildren<Joint>(true).Length != 0)
+            if (HasMountJoints(frame, "physical"))
                 throw new InvalidOperationException("player proxy has other physical owners");
             step = "physical body position";
             var position = Body.position;
@@ -286,7 +369,7 @@ public class SkateRig : MonoBehaviour
         }
         catch (Exception e)
         {
-            Say("ROOTSYNC mount refused: " + e.GetType().Name + ": " + e.Message);
+            Say("ROOTSYNC mount refused: " + e.GetType().Name + ": " + MountErrorMessage(e));
             ReleaseRootProxy();
             MountFailure(step, e);
             return false;
