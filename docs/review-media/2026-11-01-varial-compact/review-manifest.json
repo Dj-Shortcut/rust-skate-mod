@@ -1,0 +1,225 @@
+{
+  "format": "varial-compact-visual-handoff/1",
+  "status": "Collecting-foot refinement supplied for Claude visual gate; no native approval",
+  "sourceAuthoringHead": "95b1a116a69b9325420a9e4746c709e5d01e6f72",
+  "runtimeRouteRevision": "95b1a116a69b9325420a9e4746c709e5d01e6f72",
+  "sourcePackSha256": "d849d6578b5479800375e371e050c051a4f37809a5ef23f26c228f4c51a43639",
+  "baselineSourcePackSha256": "1ed91061c97a2ea5b8a4d8676e54ad661e9abb7b1ef4a28c15cc6e38b5be9bd3",
+  "baselineSourceAuthoringHead": "f8ee996686bb0e15870be468fafd310cc56bc299",
+  "baselineReviewPr": 678,
+  "sourceFootageIncluded": false,
+  "sourcePixelsIncluded": false,
+  "sourceVideo": "https://www.youtube.com/watch?v=_oRoo1x1uzM",
+  "reference": "Shared Tre body guide; BS180/full kickflip, compact Air and balance authored. No filmed Varial take claimed.",
+  "scope": "Only canonical Left ankle/knee/toe positions change during the existing free-foot window 406\u2013420; rear foot, pelvis, upper body, directions, sole frames, board keys and contacts remain fixed. Accepted press, final Catch, Land and recovery remain fixed. Existing clearance/reach/floor guards unchanged.",
+  "rawPackReviewed": false,
+  "nativeGameApproved": false,
+  "viewer": "http://127.0.0.1:63761/varial-air-gap/",
+  "sourceTransport": "Existing corrected private source transport reused; unsupported rates pause/seek exact reference frames. Camera, source movie and actor reference unchanged.",
+  "inspectionLimits": "Eight original-rig phase/comparison sheets and private source pairs inspected. Complete normal/quarter playback sampled through browser clock readbacks, plus 20 detail captures including four changed-window feet views; not every rendered frame visually inspected and no native game run.",
+  "detailReview": {
+    "captures": 20,
+    "browserErrors": 0,
+    "changedWindowSourceFrames": [
+      410,
+      412,
+      414,
+      416
+    ]
+  },
+  "managedRouteReview": {
+    "normalAirFrames": [
+      36,
+      36
+    ],
+    "lowAirFrames": [
+      34,
+      34
+    ],
+    "scoredName": "Varial Kickflip",
+    "ordinaryRecoverySeconds": 4,
+    "bindings": "Controlled managed bindings and flat ground; actual mirrored Pad/full32Hz Step/Land/scorer and body60Hz."
+  },
+  "entries": [
+    {
+      "profile": "low",
+      "physicalStance": "regular",
+      "requestedStance": "goofy",
+      "glbSha256": "8de942c817081dd8ea96b899afb4e16a37ce1b1471860b4434ae93958c47614b",
+      "baselineGlbSha256": "dd7e5f8566a9e3a7380579142c68bd26e95ae4b424329ae4acf0aaf91c40ddf3",
+      "inputSha256": "e20756b275aca3b3c8b6788a4ebb71f872cee76eb581d9c70f4ed7a21b0036a8",
+      "physicalFlightSeconds": 0.5625,
+      "phaseMoments": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.8666666666666667,
+        "Flick": 0.9166666666666666,
+        "Air": 1.0833333333333333,
+        "Catch": 1.3,
+        "Land": 1.4166666666666667,
+        "Rollaway": 1.5833333333333333,
+        "End": 4.0
+      },
+      "rawPackReviewed": false,
+      "nativeGameApproved": false,
+      "playback": [
+        {
+          "rate": 1,
+          "sampledClockReadbacks": 42,
+          "exactEndSeconds": 4
+        },
+        {
+          "rate": 0.25,
+          "sampledClockReadbacks": 114,
+          "exactEndSeconds": 4
+        }
+      ],
+      "browserErrors": 0,
+      "sourcePhasePosterFallbacks": 0,
+      "images": [
+        {
+          "file": "low-regular-phases.jpg",
+          "sha256": "34d7200cd06d15da0b132a2d967cd5459fcdc04311dee662a6fc5b739330c2f4"
+        },
+        {
+          "file": "low-regular-air-catch-before-after.jpg",
+          "sha256": "9fbb53e8474e104cfbec35e8c7e957e9f87419bfcdaa75546148615a8cb9abd1"
+        }
+      ]
+    },
+    {
+      "profile": "normal",
+      "physicalStance": "regular",
+      "requestedStance": "goofy",
+      "glbSha256": "0788789e36a7fbc65c8ce10da623031fb23b2e7382a32fca95ab545413de4364",
+      "baselineGlbSha256": "5584b6abfebd296691640830450ae3bbd3195ecb588a23dc4175245de73e4797",
+      "inputSha256": "017db2d1434c5999d3fe15f2dbeed6b870cf88d88c3d3303e8cfba3a8950ce52",
+      "physicalFlightSeconds": 0.59375,
+      "phaseMoments": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.8666666666666667,
+        "Flick": 0.9166666666666666,
+        "Air": 1.1,
+        "Catch": 1.3333333333333333,
+        "Land": 1.45,
+        "Rollaway": 1.6166666666666667,
+        "End": 4.0
+      },
+      "rawPackReviewed": false,
+      "nativeGameApproved": false,
+      "playback": [
+        {
+          "rate": 1,
+          "sampledClockReadbacks": 43,
+          "exactEndSeconds": 4
+        },
+        {
+          "rate": 0.25,
+          "sampledClockReadbacks": 114,
+          "exactEndSeconds": 4
+        }
+      ],
+      "browserErrors": 0,
+      "sourcePhasePosterFallbacks": 0,
+      "images": [
+        {
+          "file": "normal-regular-phases.jpg",
+          "sha256": "86280a24a1216e3581adc55fc6c14c6f5de4e757eb352c83ac3e18bbe2331264"
+        },
+        {
+          "file": "normal-regular-air-catch-before-after.jpg",
+          "sha256": "66b99033c8b9684d0ae34db96c94ca16b7f2635586aefa0da7de2342acc9d233"
+        }
+      ]
+    },
+    {
+      "profile": "low",
+      "physicalStance": "goofy",
+      "requestedStance": "regular",
+      "glbSha256": "8b57241740a1015fabb8947b50e6b1056722d118158054210396c45e9cfa0106",
+      "baselineGlbSha256": "517290a3a9598808076d3e339a3203eb27a2e042bacc94af748556dd376f777e",
+      "inputSha256": "df16550320135b8334f75ab87030eeb96c0572dca48780d27c6d27992decb475",
+      "physicalFlightSeconds": 0.5625,
+      "phaseMoments": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.8666666666666667,
+        "Flick": 0.9166666666666666,
+        "Air": 1.0833333333333333,
+        "Catch": 1.3,
+        "Land": 1.4166666666666667,
+        "Rollaway": 1.5833333333333333,
+        "End": 4.0
+      },
+      "rawPackReviewed": false,
+      "nativeGameApproved": false,
+      "playback": [
+        {
+          "rate": 1,
+          "sampledClockReadbacks": 43,
+          "exactEndSeconds": 4
+        },
+        {
+          "rate": 0.25,
+          "sampledClockReadbacks": 115,
+          "exactEndSeconds": 4
+        }
+      ],
+      "browserErrors": 0,
+      "sourcePhasePosterFallbacks": 0,
+      "images": [
+        {
+          "file": "low-goofy-phases.jpg",
+          "sha256": "f5e0930fe737ed96470ca9811d2525fbbbd9687a5992839d548f2ee66436e8fa"
+        },
+        {
+          "file": "low-goofy-air-catch-before-after.jpg",
+          "sha256": "ffff09ec36c43135b741c470bfc54e0e18dcbd467ffbcab3b053ea2bc19e0b09"
+        }
+      ]
+    },
+    {
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "requestedStance": "regular",
+      "glbSha256": "81230bf0e62b38c013fc6e4ac0dda118b920ff968b43263d456ee7056d7a3ef2",
+      "baselineGlbSha256": "21264de694cf1c62bfa753560741e792a547b89b67c65259a7905327e202f54b",
+      "inputSha256": "cc931c12c5723eecf68c742a72c1986a46708ae69cdad495ce8cbc74227562f0",
+      "physicalFlightSeconds": 0.59375,
+      "phaseMoments": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.8666666666666667,
+        "Flick": 0.9166666666666666,
+        "Air": 1.1,
+        "Catch": 1.3333333333333333,
+        "Land": 1.45,
+        "Rollaway": 1.6166666666666667,
+        "End": 4.0
+      },
+      "rawPackReviewed": false,
+      "nativeGameApproved": false,
+      "playback": [
+        {
+          "rate": 1,
+          "sampledClockReadbacks": 43,
+          "exactEndSeconds": 4
+        },
+        {
+          "rate": 0.25,
+          "sampledClockReadbacks": 114,
+          "exactEndSeconds": 4
+        }
+      ],
+      "browserErrors": 0,
+      "sourcePhasePosterFallbacks": 0,
+      "images": [
+        {
+          "file": "normal-goofy-phases.jpg",
+          "sha256": "11840af7599258d487a576945c161df4cbd4351288244da7f64e1709025430eb"
+        },
+        {
+          "file": "normal-goofy-air-catch-before-after.jpg",
+          "sha256": "5c420bb0bc723060e95a440b5460d2216caca4f608c741a12694904e09945de3"
+        }
+      ]
+    }
+  ]
+}

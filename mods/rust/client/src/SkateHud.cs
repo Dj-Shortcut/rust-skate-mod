@@ -13,6 +13,9 @@
 //   upper centre  the trick that just landed, coloured by its kind, a bail
 //   bottom left   speed, the last tricks landed with their points (the feed), and the controls
 //                 for the first seconds on the board
+//   top left      every trick while Back is held on the controller (four pages, the first the
+//                 flick cards: name and stick arrow), or every key
+//                 while H is held on the keyboard (one page)
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -225,28 +228,31 @@ public static class SkateHud
     private static void Box(float x, float y, float width, float height, Color colour)
     {
         if (!texture || width < 1f || height < 1f || colour.a <= 0.01f) return;
-        try
-        {
-            var t = Fill(colour);
-            var r = new Rect(x, y, width, height);
-            if (drawTexture)
-            {
-                try { GUI.DrawTexture(r, t); return; }
-                catch (Exception e) { drawTexture = false; Out.Say("HUD panels: textures cannot be drawn directly here (" + e.GetType().Name + "); labels carry them instead"); }
-            }
-            if (!background) return;
-            GUIStyle s;
-            var key = t.GetHashCode();
-            if (!fillStyles.TryGetValue(key, out s))
-            {
-                s = new GUIStyle();
-                try { s.normal.background = t; }
-                catch (Exception e) { background = false; Out.Say("HUD panels unavailable: a style takes no background here (" + e.GetType().Name + ")"); return; }
-                fillStyles[key] = s;
-            }
-            GUI.Label(r, "", s);
-        }
+        try { Picture(x, y, width, height, Fill(colour)); }
         catch (Exception e) { texture = false; Out.Say("HUD panels unavailable: " + e.GetType().Name + ": " + e.Message); }
+    }
+
+    // A texture, drawn directly or as the background of an empty label. False when neither can be.
+    private static bool Picture(float x, float y, float width, float height, Texture2D t)
+    {
+        var r = new Rect(x, y, width, height);
+        if (drawTexture)
+        {
+            try { GUI.DrawTexture(r, t); return true; }
+            catch (Exception e) { drawTexture = false; Out.Say("HUD panels: textures cannot be drawn directly here (" + e.GetType().Name + "); labels carry them instead"); }
+        }
+        if (!background) return false;
+        GUIStyle s;
+        var key = t.GetHashCode();
+        if (!fillStyles.TryGetValue(key, out s))
+        {
+            s = new GUIStyle();
+            try { s.normal.background = t; }
+            catch (Exception e) { background = false; Out.Say("HUD panels unavailable: a style takes no background here (" + e.GetType().Name + ")"); return false; }
+            fillStyles[key] = s;
+        }
+        GUI.Label(r, "", s);
+        return true;
     }
 
     private static Color Fade(Color c, float alpha) { return new Color(c.r, c.g, c.b, c.a * alpha); }
@@ -273,10 +279,39 @@ public static class SkateHud
         return s;
     }
 
+    // The address of the owner's server, when the session staged it beside the plugin
+    // (plugins\skate_server.txt, written by session.ps1 from the staging folder's server.txt), so
+    // that the main menu can say what to type after F1. Read once, the first line only, and kept
+    // only when it looks like a host name or an address with a port: the line is drawn as rich
+    // text. It is never logged. Shown until the rider has been ready in a world once: after that
+    // he is on the server, or knows the way back.
+    private static string server;
+    private static bool serverRead, wasReady;
+    private static string ServerAddress()
+    {
+        if (serverRead) return server;
+        serverRead = true; server = "";
+        try
+        {
+            var path = System.IO.Path.Combine(BepInEx.Paths.PluginPath, "skate_server.txt");
+            if (!System.IO.File.Exists(path)) return server;
+            var text = System.IO.File.ReadAllText(path);
+            var end = text.IndexOfAny(new[] { '\r', '\n' });
+            var first = (end < 0 ? text : text.Substring(0, end)).Trim();
+            if (first.Length == 0 || first.Length > 80) return server;
+            foreach (var c in first)
+                if (!(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == '.' || c == ':' || c == '-')) return server;
+            server = first;
+        }
+        catch (Exception e) { Out.Say("HUD server hint not read: " + e.GetType().Name); }
+        return server;
+    }
+
     public static void Draw()
     {
         var now = Time.realtimeSinceStartup;
         var v = Staged ? Stage : Sample(now);
+        if (SkateRig.Ready) wasReady = true;
         if ((SkatePieces.Open || SkatePieces.RustModeHint) && !v.Riding) { SkateBuildWheel.Draw(); return; }
         if (!v.Riding) SkateSupportFootprint.Draw();
         var onFoot = !Scenarios.Active && !v.Riding && (!SkateRig.Ready || now - SkateRig.AwakeAt < 12f || SkateKeys.Help);
@@ -290,7 +325,8 @@ public static class SkateHud
         if (Scenarios.Active) Text(40f * k, 110f * k, w - 80f * k, "SKATE TEST  " + Scenarios.Phase, (int)(19 * k), Ink, 0, 1f);
         if (onFoot)
         {
-            var hint = !SkateRig.Ready ? "Skate mod " + SkatePlugin.Version + " loaded"
+            var address = wasReady ? "" : ServerAddress();
+            var hint = !SkateRig.Ready ? "Skate mod " + SkatePlugin.Version + " loaded" + (address == "" ? "" : "   To join the server: press F1, type   connect " + address + "   then Enter")
                 : (SkatePad.Shared ? "Skate mod: press Y on the controller, or K, or jump twice to get on the board" : "Skate mod: press K or jump twice to get on the board") + "   (stance " + SkateRide.StanceName + ": hold F2" + (SkatePad.Shared ? " or Back+Y" : "") + " to switch)   hold H to see this again";
             Text(40f * k, 110f * k, w - 80f * k, hint, (int)(19 * k), Ink, 0, 1f);
         }
@@ -311,7 +347,7 @@ public static class SkateHud
             if (v.Cap < SkateRide.MaxSpeed - 0.25f && capSince < 3f)
                 Text(40f * k, h - 336f * k, w - 80f * k, "The server put the board back; held to " + (v.Cap * 3.6f).ToString("F0") + " km/h for now", (int)(18 * k), Amber, 0, capSince > 2.5f ? (3f - capSince) / 0.5f : 1f);
             Combo(v, now, w, h, k);
-            if (v.Hints && v.Pad && SkateKeys.Help) { Tricks(w, k); return; }
+            if (v.Hints && SkateKeys.Help) { Tricks(v.Pad, w, k); return; }
             if (v.Hints) Hints(v, w, h, k);
         }
         Middle(v, now, w, h, k);
@@ -466,27 +502,55 @@ public static class SkateHud
         else
         {
             Text(x, y, w - 80f * k, Key("W") + " push   " + Key("S") + " brake   " + Key("A / D") + " carve   " + Key("SPACE") + " ollie   hold " + Key("SHIFT") + " manual   " + Key("K") + " or hold " + Key("CTRL") + " get off   " + Key("L") + " camera", size, Ink, 0, 1f);
-            Text(x, y + 28f * k, w - 80f * k, "In the air: tap " + Key("W") + " kickflip   tap " + Key("S") + " heelflip   " + Key("A / D") + " spin   hold " + Key("CTRL") + " grab", size, Ink, 0, 1f);
+            Text(x, y + 28f * k, w - 80f * k, "In the air: tap " + Key("W") + " kickflip   tap " + Key("S") + " heelflip   tap " + Key("X") + " body varial   " + Key("A / D") + " spin   hold " + Key("CTRL") + " grab", size, Ink, 0, 1f);
         }
-        Text(x, y + 56f * k, w - 80f * k, v.Pad ? "Hold " + Key("BACK") + " on the board to see these controls again" : "Hold " + Key("H") + " to see these controls again", (int)(15 * k), Dim, 0, 1f);
+        Text(x, y + 56f * k, w - 80f * k, v.Pad ? "Hold " + Key("BACK") + " on the board to see these controls again" : "Hold " + Key("H") + " on the board for every key", (int)(15 * k), Dim, 0, 1f);
     }
 
-    // Every controller trick, while Back is held on the board. Sides are those of a regular rider
-    // going nose first; goofy, or rolling tail first, they are the other way round.
-    private static readonly string[] PadTricks = {
+    // Every keyboard action, while H is held on the board: the Keys table of the client README as
+    // one page. Sides are those of a regular rider going nose first; goofy, or rolling tail first,
+    // they are the other way round.
+    private static readonly string[] KeyTricks = {
+        "@KEYBOARD   every key on the board, while H is held   (regular nose first; goofy/fakie: mirrored)",
+        "@ON THE GROUND",
+        "#W push with the back foot, from the leading end when rolling tail first   #S brake   #A / #D carve   mouse: the board turns to the view",
+        "#S with #A or #D held above walking pace: #Powerslide, the board across the travel until let go (left: frontside, right: backside)",
+        "hold #SHIFT while rolling: #Manual   #K get off   #CTRL or #C on the ground: pump down a slope when let go quickly, get off when held a moment longer",
+        "#L camera: the view from behind or the game's first person",
+        "@POP",
+        "#SPACE: #Ollie, and off a grind or a stall   #Q held with SPACE: #No Comply   #Z held with SPACE: #Boneless",
+        "@IN THE AIR",
+        "tap #W: #Kickflip   tap #S: #Heelflip, each tap one more flip   hold #A / #D: the rider spins left / right; an odd half turn lands switch",
+        "tap #X: #Body Varial, the rider's half round without the board, landing switch   hold #CTRL or #C: grab",
+        "@EDGES",
+        "come down over an edge while moving along it: grind   square onto an edge: stall, with SHIFT held a tail stall   SPACE pops off either",
+        "#CTRL or #C held when the board meets an edge square: #Handplant",
+        "@ON FOOT",
+        "#K, or SPACE twice quickly: get on   hold #F2 for a second: stance regular / goofy, kept for the next start   hold #H: the controls",
+    };
+
+    // The flick cards in words, for a client that cannot draw their pictures.
+    private static readonly string[] FlickLines = {
         "@RIGHT STICK   BACK + D-PAD left/right for pages   (regular nose first; goofy/fakie: mirrored)",
         "back, flick forward: #Ollie   forward, flick back: #Nollie   back, flick to the forward right / left: #Kickflip / #Heelflip",
         "back, roll a quarter round to the right / left: #Pop Shove-it / #Frontside Pop Shove-it   half round: #360 Shove-it",
         "hold back-left / back-right, flick across to the opposite front: #Varial Kickflip / #Varial Heelflip",
         "from the left / right, roll round to the back, flick to the opposite front: #360 Flip / #Laser Flip",
         "from the right / left, roll round to the back, flick to the same front: #360 Hardflip / #360 Inward Heelflip",
-        "back, roll 45-60 degrees to the right / left, flick straight forward: #Hardflip / #Inward Heelflip",
+        "back, hook 45-60 degrees to the right / left, flick forward to that side: #Hardflip / #Inward Heelflip",
         "LB + popped stick gesture: #Impossible   RB: #Front Foot Impossible   LB + RB: #Underflip (no triggers)",
-        "forward setup gives #Nollie Impossible / #Nollie Back Foot Impossible; release used bumpers before a handplant",
         "part way back / forward for a moment: #Manual / #Nose Manual, flick out of it to pop",
+    };
+
+    // The controller tricks the cards leave out, while Back is held on the board. Sides are those
+    // of a regular rider going nose first; goofy, or rolling tail first, they are the other way round.
+    private static readonly string[] PadTricks = {
+        "@MORE   BACK + D-PAD left/right for pages   (regular nose first; goofy/fakie: mirrored)",
+        "forward setup gives #Nollie Impossible / #Nollie Back Foot Impossible; release used bumpers before a handplant",
+        "flick out of a #Manual or #Nose Manual to pop",
         "@IN THE AIR",
         "keep the same rim direction after a pure pop flip: #Double / #Triple; release, grab or change direction to end the hold",
-        "right stick flicked to the right / left: #Late Kickflip / #Late Heelflip, again for another flip",
+        "the same flick in the air: a late flip, again for another",
         "left stick held to a side: #spin, with a shove the same way a #Bigspin   left stick round a full circle: #Body Varial",
         "RT: #Backside   up #Seatbelt   down #Nose   left #Melon   right #Method        LT: #Frontside   up #Tail   down #Crail   right #Stalefish",
         "LT + RT: #Double   up #Nosebone   down #Tailbone        no flip during a grab; let the stick come back to the middle after one",
@@ -542,9 +606,12 @@ public static class SkateHud
         "A held variant fades before another one starts. The captured edge anchors the planted hand."
     };
 
-    private static void Tricks(float w, float k)
+    // The controller's four pages while Back is held, the flick cards first, or the keyboard's one
+    // page while H is held.
+    private static void Tricks(bool pad, float w, float k)
     {
-        var lines = SkateKeys.HelpPage == 0 ? PadTricks : SkateKeys.HelpPage == 1 ? ExtendedGrabs : PlantTricks;
+        if (pad && SkateKeys.HelpPage == 0 && Cards(w, k)) return;
+        var lines = !pad ? KeyTricks : SkateKeys.HelpPage == 0 ? FlickLines : SkateKeys.HelpPage == 1 ? PadTricks : SkateKeys.HelpPage == 2 ? ExtendedGrabs : PlantTricks;
         float x = 40f * k, y = 96f * k, step = 25f * k, width = Math.Min(w - 80f * k, 1320f * k);
         Box(x - 14f * k, y - 10f * k, width + 28f * k, (lines.Length * 25f + 18f) * k, Fade(Dark, 0.72f));
         for (var i = 0; i < lines.Length; i++, y += step)
@@ -553,6 +620,71 @@ public static class SkateHud
             if (t.StartsWith("@")) { Text(x, y + 4f * k, width, t.Substring(1), (int)(15 * k), Dim, 0, 1f); continue; }
             Text(x, y, width, Marked(t), (int)(16 * k), Ink, 0, 1f);
         }
+    }
+
+    // Each card's picture, made once. A few are made per call, so the first look at the page does
+    // not stall a frame on all of them.
+    private static readonly Dictionary<string, Texture2D> cardArt = new Dictionary<string, Texture2D>();
+    private static bool cardArtFailed;
+    private const int CardPixels = 96, CardsMadePerCall = 4;
+
+    // The flick cards: each trick's name under its stick and arrow, in rows by section. False when
+    // the pictures cannot be made here; the page is then said in words.
+    private static bool Cards(float w, float k)
+    {
+        if (cardArtFailed || !texture || (!drawTexture && !background)) return false;
+        var sections = SkateFlickCards.Sections;
+        float x0 = 40f * k, y = 96f * k, width = Math.Min(w - 80f * k, 1320f * k);
+        float art = 72f * k, cell = 118f * k, gap = 8f * k, title = 26f * k, name = 17f * k, card = art + 14f * k + 2f * name + 18f * k;
+        var across = Math.Max(1, (int)((width + gap) / (cell + gap)));
+        var height = 30f * k;
+        foreach (var section in sections) height += title + (section.Cards.Length + across - 1) / across * (card + gap);
+        Box(x0 - 14f * k, y - 10f * k, Math.Min(width, across * (cell + gap) - gap) + 28f * k, height + 8f * k, Fade(Dark, 0.72f));
+        Text(x0, y + 4f * k, width, "RIGHT STICK   BACK + D-PAD left/right for more   (regular nose first; goofy/fakie: mirrored)", (int)(15 * k), Dim, 0, 1f);
+        y += 30f * k;
+        var made = 0;
+        foreach (var section in sections)
+        {
+            Text(x0, y + 4f * k, width, section.Title, (int)(14 * k), Dim, 0, 1f);
+            y += title;
+            for (var i = 0; i < section.Cards.Length; i++)
+            {
+                var c = section.Cards[i];
+                float cx = x0 + i % across * (cell + gap), cy = y + i / across * (card + gap);
+                Box(cx, cy, cell, card, Fade(Dark, 0.6f));
+                Texture2D t;
+                if (!cardArt.TryGetValue(c.Name, out t) && made < CardsMadePerCall)
+                {
+                    made++;
+                    try
+                    {
+                        t = Out.Keep(new Texture2D(CardPixels, CardPixels, TextureFormat.RGBA32, false));
+                        t.SetPixels32(SkateFlickCards.Pixels(c, CardPixels)); t.Apply();
+                        cardArt[c.Name] = t;
+                    }
+                    catch (Exception e) { cardArtFailed = true; Out.Say("HUD flick cards unavailable, shown as text: " + e.GetType().Name + ": " + e.Message); return false; }
+                }
+                if (t != null)
+                {
+                    try { if (!Picture(cx + (cell - art) * 0.5f, cy + 7f * k, art, art, t)) return false; }
+                    catch (Exception e) { cardArtFailed = true; Out.Say("HUD flick cards unavailable, shown as text: " + e.GetType().Name + ": " + e.Message); return false; }
+                }
+                // A long name takes two lines, broken at the space nearest its middle.
+                var top = c.Name; var bottom = "";
+                if (top.Length > 12)
+                {
+                    var split = -1;
+                    for (var j = 0; j < top.Length; j++) if (top[j] == ' ' && (split < 0 || Math.Abs(j - top.Length / 2) < Math.Abs(split - top.Length / 2))) split = j;
+                    if (split > 0) { bottom = top.Substring(split + 1); top = top.Substring(0, split); }
+                }
+                var ny = cy + art + 12f * k;
+                Text(cx, ny, cell, top.ToUpperInvariant(), (int)(15 * k), Ink, 1, 1f);
+                if (bottom != "") Text(cx, ny + name, cell, bottom.ToUpperInvariant(), (int)(15 * k), Ink, 1, 1f);
+                if (c.Buttons != null) Text(cx, ny + 2f * name, cell, c.Buttons, (int)(13 * k), Amber, 1, 1f);
+            }
+            y += (section.Cards.Length + across - 1) / across * (card + gap);
+        }
+        return true;
     }
 
     // "#Kickflip" as the trick's name in amber: up to the next space-separated word that does not

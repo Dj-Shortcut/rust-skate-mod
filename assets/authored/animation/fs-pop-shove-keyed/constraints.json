@@ -1,0 +1,256 @@
+{
+  "format": "authored-fs-pop-shove-controls/1",
+  "id": "fs-pop-shove-it-source-keyed-v1",
+  "movementKind": "fs-pop-shove-it",
+  "sourceId": "frontside-pop-shove-it-batb12-kroetkov",
+  "sourceJsonSha256": "c5e7742516b4b59784731494b000b0ae11fa92c5f7653caab2f514b0463da307",
+  "retargetHelperSha256": "01f0a04414f76671f9c442e13a0b7f210d2c6b2eb1e67cf509cfa22a562745e5",
+  "geometrySha256": "806a59f06a0f28eb0a81550675e2cff391bf27b286f788690b65ed857794d4c5",
+  "sourceFps": 29.97002997002997,
+  "firstSourceFrame": 190,
+  "lastSourceFrame": 276,
+  "pop": 208,
+  "frontRelease": 211,
+  "rearRelease": 212,
+  "pressEnd": 214,
+  "rotationEnd": 220,
+  "catchStart": 218,
+  "catch": 220,
+  "catchFeet": {
+    "Left": {
+      "sourceFrame": 220,
+      "xyz": [
+        -0.04,
+        0,
+        0.24
+      ],
+      "toeHeadingDegrees": 65
+    },
+    "Right": {
+      "sourceFrame": 220,
+      "xyz": [
+        -0.04,
+        0,
+        -0.24
+      ],
+      "toeHeadingDegrees": 85
+    }
+  },
+  "land": 226,
+  "recovery": 241,
+  "maximumReachShare": 0.998,
+  "yawKeys": [
+    [
+      190,
+      0
+    ],
+    [
+      211,
+      0
+    ],
+    [
+      212,
+      -12
+    ],
+    [
+      214,
+      -50
+    ],
+    [
+      216,
+      -105
+    ],
+    [
+      218,
+      -155
+    ],
+    [
+      220,
+      -180
+    ],
+    [
+      276,
+      -180
+    ]
+  ],
+  "pitchKeys": [
+    [
+      190,
+      0
+    ],
+    [
+      208,
+      0
+    ],
+    [
+      209,
+      15
+    ],
+    [
+      210,
+      32
+    ],
+    [
+      211.6,
+      40
+    ],
+    [
+      212,
+      40
+    ],
+    [
+      214,
+      30
+    ],
+    [
+      216,
+      18
+    ],
+    [
+      218,
+      8
+    ],
+    [
+      220,
+      0
+    ],
+    [
+      276,
+      0
+    ]
+  ],
+  "frontFreeKeys": [
+    [
+      211,
+      -0.04,
+      0.104,
+      0.043
+    ],
+    [
+      212,
+      -0.04,
+      0.19,
+      0.09
+    ],
+    [
+      214,
+      -0.045,
+      0.3,
+      0.21
+    ],
+    [
+      216,
+      -0.04,
+      0.32,
+      0.24
+    ],
+    [
+      218,
+      -0.04,
+      0.27,
+      0.24
+    ],
+    [
+      220,
+      -0.04,
+      0.1,
+      0.24
+    ]
+  ],
+  "rearFreeKeys": [
+    [
+      212,
+      -0.045,
+      0.1,
+      -0.323
+    ],
+    [
+      213,
+      0.07,
+      0.14,
+      -0.25
+    ],
+    [
+      214,
+      0.14,
+      0.21,
+      -0.17
+    ],
+    [
+      216,
+      0.08,
+      0.25,
+      -0.2
+    ],
+    [
+      218,
+      -0.03,
+      0.23,
+      -0.24
+    ],
+    [
+      220,
+      -0.04,
+      0.1,
+      -0.24
+    ]
+  ],
+  "provenance": "Own filmed normal FS Pop Shove-it: Sewa Kroetkov, YcmPDIj2BFo local190..276 of124s cache, physicalGoofy manuallychecked1Nov. Generic measured-chain retarget helper only; no other trick body is loaded. The source-led180yaw, heel-side tail pressure and free-ankle guides are authored from this own take; no FS360 winding/timing is halved. Source upper/arm/knee directions retained; original uncertain ankle/deck depth reconstructed against own shaped deck. Complete anatomical catch positions and toe headings stay in world anatomy across the final180 deck reversal. After Land the rear knee and sole-centred pelvis reconstruct the observed steep-shin roll-away; these depth corrections are authored, not new detections. Native flight/landing/scoring remain authoritative. Own catch occurs at220 (the original source contact event), not the later FS360 catch. Explicit218..228 root repair bridges the original contact-prior translation and keeps the observed bent landing; uncertain3D root/limb depths are authored. The Pop event is the source extension start208 with both feet attached. The later visible maximum tail press211.6, frontrelease211 and rearrelease212 are distinct clocks; the runtime physical takeoff remains authoritative. An authored6cm early-press root reserve fades in208..212, holds through214 and ends216; pelvis and upper translate coherently while both fixed-foot legs are solved again. It reconstructs uncertain monocular depth and leaves room for the existing native press compensation; no runtime fallback/guard relaxation. Claude683 item5 authored scoop refinement: the own tail-pressure pitch peaks40 rather than55 degrees and tapers through30 at214 and18 at216. This is a visible-presentation candidate, not a new source measurement; original yaw, carrier, contacts, clocks and all reach/contact/floor guards stay fixed.",
+  "recoveryKneeWindow": [
+    226,
+    236
+  ],
+  "sourceCacheOriginalOffsetSeconds": 124,
+  "rootRepair": {
+    "start": 218,
+    "end": 228,
+    "keys": [
+      [
+        218,
+        -0.239,
+        0.76,
+        -0.311
+      ],
+      [
+        220,
+        -0.231,
+        0.755,
+        -0.18
+      ],
+      [
+        222,
+        -0.228,
+        0.78,
+        -0.08
+      ],
+      [
+        224,
+        -0.154,
+        0.78,
+        -0.03
+      ],
+      [
+        226,
+        -0.115,
+        0.78,
+        0.004
+      ],
+      [
+        228,
+        -0.078,
+        0.75,
+        -0.006
+      ]
+    ],
+    "limit": "Authored own-source catch root: bridge the old one-frame contact-prior translation and retain a bent landing; no extra board/carrier motion."
+  },
+  "tailStrike": 211.6,
+  "pressRootReserve": {
+    "start": 208,
+    "full": 212,
+    "holdUntil": 214,
+    "end": 216,
+    "dropMetres": 0.06,
+    "limit": "Authored own-source pelvis/upper translation during extension and tail press. Keeps the rear chain bent enough for the existing actual-carrier press compensation and includes the source214 C1 root target. Feet, board and native reach guards unchanged; not measured depth."
+  }
+}

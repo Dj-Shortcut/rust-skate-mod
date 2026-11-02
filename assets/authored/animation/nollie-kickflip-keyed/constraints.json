@@ -1,0 +1,451 @@
+{
+  "format": "authored-nollie-kickflip-controls/1",
+  "id": "nollie-kickflip-source-keyed-v1",
+  "movementKind": "nollie-kickflip",
+  "sourceBodySha256": "57542397bfded702beda0ca090a2ce3a3168378f057d39303c7e8f07733d027c",
+  "geometrySha256": "806a59f06a0f28eb0a81550675e2cff391bf27b286f788690b65ed857794d4c5",
+  "sourceUrl": "https://www.youtube.com/watch?v=PqJZcwTY1QE&t=189",
+  "sourceAuthor": "The Berrics",
+  "sourceVideoSha256": "531eb85fd1d292c229836f6eedc4adec422aaf6dd644040c49c7480b2beadad7",
+  "sourceCacheOriginalOffsetSeconds": 0,
+  "sourceFps": 29.97002997002997,
+  "firstSourceFrame": 5678,
+  "lastSourceFrame": 5742,
+  "pop": 5702,
+  "noseStrike": 5708,
+  "noseRelease": 5709,
+  "rearRelease": 5710,
+  "pressEnd": 5712,
+  "rotationStart": 5709.5,
+  "rotationEnd": 5717.5,
+  "firstCatch": 5718,
+  "catch": 5720,
+  "land": 5722,
+  "recovery": 5733,
+  "reference": {
+    "gravity": 8,
+    "flightSeconds": 0.6,
+    "noseStrike": 5708,
+    "wheelClearance": 0.005
+  },
+  "pitchKeys": [
+    [
+      5678,
+      0
+    ],
+    [
+      5702,
+      0
+    ],
+    [
+      5705,
+      20
+    ],
+    [
+      5708,
+      46
+    ],
+    [
+      5709,
+      46
+    ],
+    [
+      5710,
+      35
+    ],
+    [
+      5712,
+      14
+    ],
+    [
+      5714,
+      4
+    ],
+    [
+      5717.5,
+      0
+    ],
+    [
+      5742,
+      0
+    ]
+  ],
+  "rollKeys": [
+    [
+      5678,
+      0
+    ],
+    [
+      5709.5,
+      0
+    ],
+    [
+      5711,
+      65
+    ],
+    [
+      5713,
+      160
+    ],
+    [
+      5715,
+      260
+    ],
+    [
+      5717.5,
+      360
+    ],
+    [
+      5742,
+      360
+    ]
+  ],
+  "setupFeet": {
+    "Left": {
+      "x": -0.025,
+      "z": 0.325,
+      "yaw": 85
+    },
+    "Right": {
+      "x": -0.03,
+      "z": -0.16,
+      "yaw": 135
+    }
+  },
+  "catchFeet": {
+    "Left": {
+      "x": -0.025,
+      "z": 0.24,
+      "yaw": 75
+    },
+    "Right": {
+      "x": -0.025,
+      "z": -0.24,
+      "yaw": 85
+    }
+  },
+  "flick": {
+    "start": 5707.5,
+    "full": 5708.5,
+    "release": 5709.5,
+    "end": 5711.5,
+    "deckLocal": [
+      -0.0805,
+      0.0325,
+      -0.36
+    ],
+    "shoeLocal": [
+      0.04219660068,
+      -0.04039648743,
+      0.08992672899
+    ],
+    "instepSurfaceNormalLocal": [
+      0.97935,
+      0.19878,
+      0.03674
+    ],
+    "toeHeadingDegrees": 135,
+    "provenance": "Anatomical rear/Right outer-instep patch mirrors the own Left shoe side across localX, with toe heading toward the tail. Dark side of upper meets heel-side tail rim; sole is not the flick patch. Own source rear-foot flick direction/phase; exact hidden depth and contact are authored."
+  },
+  "frontFreeKeys": [
+    [
+      5709,
+      -0.02,
+      0.22,
+      0.32
+    ],
+    [
+      5710.5,
+      -0.02,
+      0.3,
+      0.29
+    ],
+    [
+      5712,
+      -0.02,
+      0.335,
+      0.26
+    ],
+    [
+      5714,
+      -0.025,
+      0.32,
+      0.24
+    ],
+    [
+      5716,
+      -0.025,
+      0.285,
+      0.24
+    ],
+    [
+      5718,
+      -0.025,
+      0.2,
+      0.24
+    ]
+  ],
+  "rearFreeKeys": [
+    [
+      5709.5,
+      -0.1,
+      0.28,
+      -0.32
+    ],
+    [
+      5710.5,
+      -0.15,
+      0.315,
+      -0.3
+    ],
+    [
+      5712,
+      -0.11,
+      0.34,
+      -0.27
+    ],
+    [
+      5714,
+      -0.04,
+      0.335,
+      -0.24
+    ],
+    [
+      5716,
+      -0.025,
+      0.29,
+      -0.24
+    ],
+    [
+      5720,
+      -0.025,
+      0.2,
+      -0.24
+    ]
+  ],
+  "pelvisKeys": [
+    [
+      5678,
+      -0.09,
+      0.84,
+      0.02
+    ],
+    [
+      5685,
+      -0.09,
+      0.72,
+      0.02
+    ],
+    [
+      5693,
+      -0.09,
+      0.64,
+      0.04
+    ],
+    [
+      5699,
+      -0.09,
+      0.64,
+      0.05
+    ],
+    [
+      5702,
+      -0.08,
+      0.66,
+      0.1
+    ],
+    [
+      5705,
+      -0.07,
+      0.79,
+      0.18
+    ],
+    [
+      5708,
+      -0.055,
+      0.91,
+      0.24
+    ],
+    [
+      5710,
+      -0.065,
+      0.78,
+      0.17
+    ],
+    [
+      5712,
+      -0.075,
+      0.66,
+      0.08
+    ],
+    [
+      5715,
+      -0.085,
+      0.65,
+      0.035
+    ],
+    [
+      5718,
+      -0.085,
+      0.72,
+      0.015
+    ],
+    [
+      5720,
+      -0.085,
+      0.76,
+      0.01
+    ],
+    [
+      5722,
+      -0.085,
+      0.73,
+      0.01
+    ],
+    [
+      5724,
+      -0.085,
+      0.69,
+      0.01
+    ],
+    [
+      5728,
+      -0.085,
+      0.75,
+      0.01
+    ],
+    [
+      5733,
+      -0.085,
+      0.85,
+      0.01
+    ],
+    [
+      5742,
+      -0.085,
+      0.87,
+      0.01
+    ]
+  ],
+  "recoveryWindow": [
+    5725,
+    5734
+  ],
+  "maximumReachShare": 0.998,
+  "minimumAirSoleClearance": 0.02,
+  "provenance": "Own Paul Rodriguez landed Nollie Kickflip, filmedGoofy PqJZcwTY1QE5678..5742. Own65-frame identity-checked raw model retarget supplies body/arm/head directions; no other trick motion is loaded. Source nose pop and anatomical rear-foot outer-instep flick are distinct. Full continuous pitch+roll, camera/depth, coherent root, sole fits, compact free Air, bent catch/landing and stable roll-away are authored reconstruction against own board/shoe geometry. Source presence and successful transport do not grant offline or native acceptance; reviewed stays false. Head/gaze and Catch/Land lead-arm balance are explicitly authored to replace the unreliable source-depth head axis and exaggerated straight overhead reading; no measured head/arm confidence is claimed.",
+  "uncertainty": "Single handheld camera: back-side arm, foot roll, sole, board depth and exact subframe contact are reconstructed, not measured. Low-visibility source estimates remain declared in captured-body.json. Native physics, actual landing/scoring and runtime action clock remain authoritative.",
+  "sourceRootMotion": "Own source carrier translation removed once; the native physical carrier/flight arc is added once. Authored ground-press subtraction uses reference0.6s/gravity8; no second baked jump arc.",
+  "phaseClockLimit": "Pop5702 begins extension with both feet; noseStrike5708 and noseRelease5709 precede rear-instep release5710. RearRelease5710 is Pop/None: both feet are free while the authored flick/pressure stage finishes. The first distinct Air/None5712 closes the pressure window and is the actual native entry target. Catch5718/5720 and Land5722 are source contact estimates, not physics callbacks.",
+  "upperBalance": {
+    "headWindow": [
+      5698,
+      5702
+    ],
+    "gazeKeys": [
+      [
+        5702,
+        0.7,
+        -0.5,
+        0.51
+      ],
+      [
+        5708,
+        0.75,
+        -0.46,
+        0.47
+      ],
+      [
+        5713,
+        0.7,
+        -0.45,
+        0.56
+      ],
+      [
+        5720,
+        0.65,
+        -0.38,
+        0.66
+      ],
+      [
+        5722,
+        0.6,
+        -0.32,
+        0.73
+      ],
+      [
+        5728,
+        0.45,
+        -0.18,
+        0.88
+      ],
+      [
+        5733,
+        0.35,
+        -0.08,
+        0.93
+      ],
+      [
+        5742,
+        0.32,
+        -0.04,
+        0.95
+      ]
+    ],
+    "side": "Left",
+    "armWindow": [
+      5712,
+      5718,
+      5724,
+      5733
+    ],
+    "armKeys": [
+      [
+        5718,
+        0.15,
+        -0.1,
+        0.98,
+        0.72,
+        -0.55,
+        0.42
+      ],
+      [
+        5720,
+        0.12,
+        -0.25,
+        0.96,
+        0.72,
+        -0.65,
+        0.25
+      ],
+      [
+        5722,
+        0.2,
+        -0.3,
+        0.93,
+        0.65,
+        -0.7,
+        0.3
+      ],
+      [
+        5724,
+        0.25,
+        -0.42,
+        0.87,
+        0.55,
+        -0.78,
+        0.3
+      ],
+      [
+        5733,
+        0.2,
+        -0.8,
+        0.4,
+        0.45,
+        -0.8,
+        0.25
+      ]
+    ],
+    "provenance": "Authored head/lead-arm repair under the owner visible-quality rule, not measured 3D. The normalized raw Head-minus-Neck points downward through Pop/Land; use an upright head frame and gaze toward the board/landing. Rodriguez5720..5722 really holds a high diagonal arm, but the monocular reconstruction reads as a straight overhead pole on the proxy; consciously bend and settle that balance arm through Catch/Land. No pelvis, torso, shoulders, feet, board, source clock or contact changes."
+  }
+}

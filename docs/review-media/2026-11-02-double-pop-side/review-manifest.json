@@ -1,0 +1,144 @@
+{
+  "format": "double-pop-side-check/1",
+  "purpose": "Claude #683 minor item4: check apparent sit-back from the side",
+  "viewer": "http://127.0.0.1:63761/double-kickflip-source-keyed/",
+  "inspectedExistingAcceptedRender": true,
+  "newCurrentMainRuntimeRun": false,
+  "sourcePoseChanged": false,
+  "sourcePixelsIncluded": false,
+  "rawPackReviewed": false,
+  "nativeGameApproved": false,
+  "browserErrors": 0,
+  "finding": "Side view shows pelvis above central deck/nose-side and forward torso lean; rear view foreshortens the bent front leg. No pelvis sitting behind the tail was found. Claude owns the final quality judgement.",
+  "limits": "Focused Load/Pop angle check on the accepted c62a1b3b render freeze; not a new current-main body export or native game test. Four-family full-motion review remains at its original evidence gate.",
+  "entries": [
+    {
+      "profile": "normal",
+      "physicalStance": "regular",
+      "requestedNativeStance": "goofy",
+      "sourceCodeRevision": "c62a1b3b1d316b63586a9bf853eac5c809b5d7d3",
+      "packSha256": "831eb4fecdf8361535df4d5c853b8140ac32ea9e85308a6bee31bdcc87c5fddd",
+      "glbSha256": "8ab05ec3f0c987e8bc84567a00218502c86eede017e2e8d6519b655209e177ea",
+      "image": "normal-regular-load-pop-side.jpg",
+      "imageSha256": "1d8ffad380d2d9afb47eaa385f4d6ce90cb8aa65a29df69d4ed28172625d4503",
+      "phases": [
+        {
+          "phase": "Load",
+          "view": "behind",
+          "clock": "0.833 / 3.000 s"
+        },
+        {
+          "phase": "Load",
+          "view": "side",
+          "clock": "0.833 / 3.000 s"
+        },
+        {
+          "phase": "Pop",
+          "view": "behind",
+          "clock": "0.950 / 3.000 s"
+        },
+        {
+          "phase": "Pop",
+          "view": "side",
+          "clock": "0.950 / 3.000 s"
+        }
+      ]
+    },
+    {
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "requestedNativeStance": "regular",
+      "sourceCodeRevision": "c62a1b3b1d316b63586a9bf853eac5c809b5d7d3",
+      "packSha256": "831eb4fecdf8361535df4d5c853b8140ac32ea9e85308a6bee31bdcc87c5fddd",
+      "glbSha256": "afe33a9a2563b2975a7dad85e6f28996588ee1915f81de10290e69d12aa1916c",
+      "image": "normal-goofy-load-pop-side.jpg",
+      "imageSha256": "f93c722727eb4e6932f8f0b0ded574e90b889fa7ede40edaa62451d425bd1267",
+      "phases": [
+        {
+          "phase": "Load",
+          "view": "behind",
+          "clock": "0.833 / 3.000 s"
+        },
+        {
+          "phase": "Load",
+          "view": "side",
+          "clock": "0.833 / 3.000 s"
+        },
+        {
+          "phase": "Pop",
+          "view": "behind",
+          "clock": "0.950 / 3.000 s"
+        },
+        {
+          "phase": "Pop",
+          "view": "side",
+          "clock": "0.950 / 3.000 s"
+        }
+      ]
+    },
+    {
+      "profile": "low",
+      "physicalStance": "regular",
+      "requestedNativeStance": "goofy",
+      "sourceCodeRevision": "c62a1b3b1d316b63586a9bf853eac5c809b5d7d3",
+      "packSha256": "831eb4fecdf8361535df4d5c853b8140ac32ea9e85308a6bee31bdcc87c5fddd",
+      "glbSha256": "94de8fb18bbde388a6bea19a47a275dcaafde88b3187ae57db97b02779b64fec",
+      "image": "low-regular-load-pop-side.jpg",
+      "imageSha256": "caf1f62d2b16071d3d53ff2268cffe050ec9d5e527187bf9f8bc507e394b6b12",
+      "phases": [
+        {
+          "phase": "Load",
+          "view": "behind",
+          "clock": "0.883 / 3.000 s"
+        },
+        {
+          "phase": "Load",
+          "view": "side",
+          "clock": "0.883 / 3.000 s"
+        },
+        {
+          "phase": "Pop",
+          "view": "behind",
+          "clock": "0.933 / 3.000 s"
+        },
+        {
+          "phase": "Pop",
+          "view": "side",
+          "clock": "0.933 / 3.000 s"
+        }
+      ]
+    },
+    {
+      "profile": "low",
+      "physicalStance": "goofy",
+      "requestedNativeStance": "regular",
+      "sourceCodeRevision": "c62a1b3b1d316b63586a9bf853eac5c809b5d7d3",
+      "packSha256": "831eb4fecdf8361535df4d5c853b8140ac32ea9e85308a6bee31bdcc87c5fddd",
+      "glbSha256": "880b4d124428241ef2067337ad63cb8a8366d0106fcc740754b08e7bb3a21a02",
+      "image": "low-goofy-load-pop-side.jpg",
+      "imageSha256": "cd11342a7dd37afd4504cc500778a08fd218ef19d65ae69aba734ece8d8169b6",
+      "phases": [
+        {
+          "phase": "Load",
+          "view": "behind",
+          "clock": "0.883 / 3.000 s"
+        },
+        {
+          "phase": "Load",
+          "view": "side",
+          "clock": "0.883 / 3.000 s"
+        },
+        {
+          "phase": "Pop",
+          "view": "behind",
+          "clock": "0.933 / 3.000 s"
+        },
+        {
+          "phase": "Pop",
+          "view": "side",
+          "clock": "0.933 / 3.000 s"
+        }
+      ]
+    }
+  ]
+}

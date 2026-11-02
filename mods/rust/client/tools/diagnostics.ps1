@@ -77,6 +77,106 @@ function Get-SkateArtworkFiles([string]$Manifest, [string]$Directory = '') {
   return $names
 }
 
+# Discovery is read-only. Missing drives, stale registry entries and unreadable metadata
+# are skipped without stopping the search. Use literal paths, including for Steam libraries.
+function Test-SkateFile([string]$Path) {
+  try { return [bool](Test-Path -LiteralPath $Path -PathType Leaf -ErrorAction Stop) } catch { return $false }
+}
+
+function Get-SkateSteamFolder {
+  $default = 'C:\Program Files (x86)\Steam'
+  # The current user's Steam takes precedence over a leftover copy on C:.
+  foreach ($key in 'HKCU:\Software\Valve\Steam', 'HKLM:\SOFTWARE\WOW6432Node\Valve\Steam', 'HKLM:\SOFTWARE\Valve\Steam') {
+    foreach ($name in 'SteamPath', 'InstallPath') {
+      $value = try { '' + (Get-ItemProperty -Path $key -ErrorAction Stop).$name } catch { '' }
+      $folder = ($value -replace '/', '\').TrimEnd('\')
+      if ($folder -match '^[A-Za-z]:\\' -and (Test-SkateFile ($folder + '\steam.exe'))) { return $folder }
+    }
+  }
+  return $default
+}
+
+# Read the quoted KeyValues subset written by Steam. Preserve object boundaries so
+# nested/commented keys cannot masquerade as AppState fields or library paths.
+function Read-SkateKeyValues([string]$Path) {
+  $text = Get-Content -LiteralPath $Path -Raw -Encoding UTF8 -ErrorAction Stop
+  $root = @{}; $stack = New-Object System.Collections.Stack
+  $node = $root; $key = $null; $offset = 0
+  $pattern = '\G(?:\s+|//[^\r\n]*|"((?:\\[\\"]|[^"\\])*)"|([{}]))'
+  while ($offset -lt $text.Length) {
+    # Match from the current position (\G must not restart at zero).
+    $token = ([regex]$pattern).Match($text, $offset)
+    if (-not $token.Success) { throw 'Invalid Steam metadata.' }
+    $offset += $token.Length
+    if ($token.Groups[1].Success) {
+      $value = $token.Groups[1].Value.Replace('\"', '"').Replace('\\', '\')
+      if ($null -eq $key) { $key = $value }
+      else {
+        if ($node.ContainsKey($key)) { throw 'Duplicate Steam metadata key.' }
+        $node[$key] = $value; $key = $null
+      }
+    } elseif ($token.Groups[2].Value -eq '{') {
+      if ($null -eq $key -or $node.ContainsKey($key)) { throw 'Invalid Steam metadata object.' }
+      $child = @{}; $node[$key] = $child; $stack.Push($node); $node = $child; $key = $null
+    } elseif ($token.Groups[2].Value -eq '}') {
+      if ($null -ne $key -or $stack.Count -eq 0) { throw 'Invalid Steam metadata closing brace.' }
+      $node = $stack.Pop()
+    }
+  }
+  if ($null -ne $key -or $stack.Count) { throw 'Incomplete Steam metadata.' }
+  return $root
+}
+
+function Get-SkateRustFolder {
+  $steam = Get-SkateSteamFolder
+  $libraries = @($steam)
+  try {
+    $folders = (Read-SkateKeyValues ($steam + '\steamapps\libraryfolders.vdf'))['libraryfolders']
+    if ($folders -is [System.Collections.IDictionary]) {
+      foreach ($number in @($folders.Keys | Sort-Object)) {
+        if ($number -notmatch '^\d+$') { continue }
+        $entry = $folders[$number]
+        $library = if ($entry -is [System.Collections.IDictionary]) { $entry['path'] } else { $entry }
+        if ($library -isnot [string]) { continue }
+        $library = ($library -replace '/', '\').TrimEnd('\')
+        if ($library -match '^[A-Za-z]:\\' -and $libraries -notcontains $library) { $libraries += $library }
+      }
+    }
+  } catch { } # Steam's own library remains usable even if the library index is unreadable.
+  foreach ($library in $libraries) {
+    $acf = $library + '\steamapps\appmanifest_252490.acf'
+    try {
+      $app = (Read-SkateKeyValues $acf)['AppState']
+      if ($app -isnot [System.Collections.IDictionary] -or $app['appid'] -ne '252490') { continue }
+      $installDir = $app['installdir']; $build = $app['buildid']
+      # One Windows directory component only: no traversal, roots, ADS or wildcards.
+      if ($installDir -isnot [string] -or $installDir -match '[<>:"/\\|?*\x00-\x1f]' -or
+          $installDir -match '[. ]$' -or -not $installDir -or
+          $installDir -match '^(?i:CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(?:\.|$)' -or
+          $build -isnot [string] -or $build -notmatch '^\d+$') { continue }
+      $rust = $library + '\steamapps\common\' + $installDir
+      if (Test-SkateFile ($rust + '\RustClient.exe')) {
+        return @{ Steam = $steam; Rust = $rust; Acf = $acf; BuildId = $build; Found = $true }
+      }
+    } catch { continue }
+  }
+  return @{ Steam = $steam; Rust = ($steam + '\steamapps\common\Rust'); Acf = ($steam + '\steamapps\appmanifest_252490.acf'); BuildId = ''; Found = $false }
+}
+
+# Steam's shortcut must launch the same client that received the staged loader.
+function Test-SkateRustShortcut([string]$Exe, [string]$RustPath) {
+  $target = $Exe.Trim().Trim('"') -replace '/', '\'
+  return $target -ieq ($RustPath.TrimEnd('\') + '\RustClient.exe')
+}
+
+# A receipt for one Steam library must never authorize cleanup in another.
+# Historical receipts did not record a folder and were written only for the C: path.
+function Test-SkateRecoveryFolder([string[]]$Receipt, [string]$RustPath) {
+  $folders = @($Receipt | Where-Object { $_.StartsWith('rust ') })
+  if ($folders.Count -eq 0) { return $RustPath -ieq 'C:\Program Files (x86)\Steam\steamapps\common\Rust' }
+  return $folders.Count -eq 1 -and $folders[0].Substring(5) -ieq $RustPath
+}
+
 function Save-SkateLogSnapshot([string]$RustPath, [string]$ProbePath, [string]$Reason = 'before-launch') {
   $sources = @('BepInEx/plugins/skate.log', 'BepInEx/LogOutput.log', 'BepInEx/ErrorLog.log')
   $present = @($sources | Where-Object { Test-Path -LiteralPath (Join-Path $RustPath $_) -PathType Leaf })
@@ -212,7 +312,7 @@ function Show-SkateChecks([string]$RustPath, [string]$ProbePath) {
 
 if ($MyInvocation.InvocationName -ne '.') {
   $diagnosticProbe = "$HOME\Downloads\claude-loader-probe"
-  $diagnosticRust = 'C:\Program Files (x86)\Steam\steamapps\common\Rust'
+  $diagnosticRust = (Get-SkateRustFolder).Rust
   $saved = Save-SkateLogSnapshot $diagnosticRust $diagnosticProbe 'manual-diagnostics'
   if ($saved.Count) { Write-Host ('  Preserved ' + $saved.Count + ' existing logs in ' + $saved.Directory) }
   Show-SkateChecks $diagnosticRust $diagnosticProbe

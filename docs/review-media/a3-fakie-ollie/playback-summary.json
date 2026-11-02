@@ -1,0 +1,151 @@
+{
+  "format": "a3-fakie-ollie-playback-summary/2",
+  "sourceReviewed": false,
+  "nativeGame": false,
+  "viewerUrl": "http://127.0.0.1:63761/a3-fakie-ollie-owner-fixes/",
+  "publishedSourceRevision": "78762a18385ff2cc95f2066c1e1b444bb8f4634b",
+  "runtimeRouteRevision": "2733b2cd8b2d357c8c199e34725bb4b154738dc9",
+  "sourcePackSha256": "b7f4dda73a2f390f9f0e8c64d399b8cfe235f33986711755b38151de47bee655",
+  "managed": [
+    {
+      "profile": "normal",
+      "requestedStance": "regular",
+      "names": [
+        "Combo",
+        "Fakie Ollie"
+      ],
+      "sourcePackSha256": "b7f4dda73a2f390f9f0e8c64d399b8cfe235f33986711755b38151de47bee655",
+      "traceSha256": "62a7fb4359602675dd102d69759ca150851b4f0683cb4d36595259d6f84c4831",
+      "jsonSha256": "a1651479a1aef10f89c96a4125cf3145f8212e361b334f8c7b2b312a2872f0ce",
+      "activeAir": 36,
+      "airFrames": 36,
+      "flightDuration": 0.59375,
+      "terminalCapture": false,
+      "t": 4
+    },
+    {
+      "profile": "normal",
+      "requestedStance": "goofy",
+      "names": [
+        "Combo",
+        "Fakie Ollie"
+      ],
+      "sourcePackSha256": "b7f4dda73a2f390f9f0e8c64d399b8cfe235f33986711755b38151de47bee655",
+      "traceSha256": "7b0a686216c7c0e4a9cb8a25984fa7d4006fc76b6c003d5b519a2968cf237f9e",
+      "jsonSha256": "4cba6c27b28510b6ff66dcee6a1a4f80913ff1482812c8e6d714cc7708218db3",
+      "activeAir": 36,
+      "airFrames": 36,
+      "flightDuration": 0.59375,
+      "terminalCapture": false,
+      "t": 4
+    },
+    {
+      "profile": "low",
+      "requestedStance": "regular",
+      "names": [
+        "Combo",
+        "Fakie Ollie"
+      ],
+      "sourcePackSha256": "b7f4dda73a2f390f9f0e8c64d399b8cfe235f33986711755b38151de47bee655",
+      "traceSha256": "7c765941280c0904c599938365e8b4754c34c98a38986b0dd9b2b8418b255e65",
+      "jsonSha256": "9d6f5cd1371796637708fa2df89e096960b4ade48bd0cfbf90b837ab794a62a7",
+      "activeAir": 34,
+      "airFrames": 34,
+      "flightDuration": 0.5625,
+      "terminalCapture": false,
+      "t": 4
+    },
+    {
+      "profile": "low",
+      "requestedStance": "goofy",
+      "names": [
+        "Combo",
+        "Fakie Ollie"
+      ],
+      "sourcePackSha256": "b7f4dda73a2f390f9f0e8c64d399b8cfe235f33986711755b38151de47bee655",
+      "traceSha256": "14737f00f88c8879fd572994d467d5ffd33d82e21c09ba50b0b8a5c057b3fa55",
+      "jsonSha256": "57550ccb8499d328dd355a2f423fe36ca760c07bdd1d71946071c691b2814f83",
+      "activeAir": 34,
+      "airFrames": 34,
+      "flightDuration": 0.5625,
+      "terminalCapture": false,
+      "t": 4
+    }
+  ],
+  "viewer": [
+    {
+      "profile": "normal",
+      "physicalStance": "regular",
+      "phaseCount": 7,
+      "rates": [
+        {
+          "rate": 1,
+          "sampleCount": 40,
+          "endSeconds": 4
+        },
+        {
+          "rate": 0.25,
+          "sampleCount": 105,
+          "endSeconds": 4
+        }
+      ]
+    },
+    {
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "phaseCount": 7,
+      "rates": [
+        {
+          "rate": 1,
+          "sampleCount": 40,
+          "endSeconds": 4
+        },
+        {
+          "rate": 0.25,
+          "sampleCount": 105,
+          "endSeconds": 4
+        }
+      ]
+    },
+    {
+      "profile": "low",
+      "physicalStance": "regular",
+      "phaseCount": 7,
+      "rates": [
+        {
+          "rate": 1,
+          "sampleCount": 40,
+          "endSeconds": 4
+        },
+        {
+          "rate": 0.25,
+          "sampleCount": 105,
+          "endSeconds": 4
+        }
+      ]
+    },
+    {
+      "profile": "low",
+      "physicalStance": "goofy",
+      "phaseCount": 7,
+      "rates": [
+        {
+          "rate": 1,
+          "sampleCount": 40,
+          "endSeconds": 4
+        },
+        {
+          "rate": 0.25,
+          "sampleCount": 105,
+          "endSeconds": 4
+        }
+      ]
+    }
+  ],
+  "browserErrors": 0,
+  "corrections": [
+    "Real ordinary charge preserves independent gaze and upright neck-to-head segment before future trick is selected.",
+    "Bounded authored canonical Left Pop balance stays at/below shoulder height, preserving all feet/board/torso and accepted later geometry."
+  ],
+  "limits": "Controlled managed execution and original-rig/source comparisons. Raw pack unapproved and unchanged; private test-only approval copy. No Unity/IL2CPP or native Shadow acceptance; independent library record owned by Claude."
+}

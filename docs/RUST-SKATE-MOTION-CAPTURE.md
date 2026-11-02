@@ -42,6 +42,69 @@ changing calibration invalidates the affected job. Failed jobs are reported
 individually and the command exits nonzero. A partial batch is not a completed
 library.
 
+## Compose shared-source variants
+
+The first composition step in [#584](https://github.com/Dj-Shortcut/rust-skate-mod/issues/584)
+reuses the switch/nollie heel-flick and fakie toe-flick references for their
+double and triple variants. These six presentations have independent identities;
+they are not six additional filmed captures. The five existing source variants
+remain available.
+
+Use retained, converted clip JSON files as inputs:
+
+```json
+{
+  "version": 1,
+  "sources": {
+    "switch-heelflip": "source-clips/switch-heelflip.json",
+    "nollie-heelflip": "source-clips/nollie-heelflip.json",
+    "fakie-kickflip": "source-clips/fakie-kickflip.json"
+  },
+  "variants": [
+    "switch-double-heelflip", "switch-triple-heelflip",
+    "nollie-double-heelflip", "nollie-triple-heelflip",
+    "fakie-double-kickflip", "fakie-triple-kickflip"
+  ]
+}
+```
+
+```sh
+python scripts/capture_pipeline.py compose /absolute/private/compose.json \
+  --output /absolute/private/composed-output --include-base
+```
+
+Paths are relative to the manifest. `--include-base` also includes the declared
+source clips; the two other batch-1 sources may be declared without deriving a
+variant. The complete candidate is validated before replacing the previous pack.
+Each derived JSON retains the source frames, contacts, board keys and provenance,
+and records `sourceFamily`, `derivedFromClipId`, `requestedFlipDegrees` and
+`derivation`. Generic composed variants use their movement kind as their own
+`id`. An explicitly supported source-keyed derivative may instead use a versioned
+ID: for example, `double-kickflip-source-keyed-v1` has movement kind
+`double-kickflip`. The loader permits that exception only when
+`SkateCaptureKeyedPlayback.Accepts` matches the exact ID, movement kind and
+registered trick signature. `reviewed` starts false in either case.
+Review and approval apply to that exact variant and pack hash; approving a source
+does not approve its derived variants.
+
+The game still owns every board turn and the available airtime. Presentation
+keeps the source release/flick on the first turn and the return/catch on the last;
+extra turns extend only the free body interval. A separately approved held-flip
+extension may continue from the last shown source pose when both entries have
+identical source samples and contact events. It cannot rewind the pop, change
+families, extend after catch or acquire approval from its source. A longer review
+flight does not establish that an ordinary flat-ground ollie has enough airtime.
+Inspect both stances against the real board before approving any result.
+
+While the controller's same-rim hold can still request an extra turn, presentation
+reserves the last fully free source pose before the existing 0.08-second foot
+return. A queued extra retains that reservation until physics consumes it.
+An approved extension holds the last shown progress until its new family clock
+catches up; it never stretches a near-catch foot pose through another board turn.
+If source foot return already began, the extension is refused. With no pending
+hold or extension, the original source clock remains unchanged. Physics, contact
+events and the ordinary catch-approach guards retain authority.
+
 ## Job data
 
 The manifest has `version: 1` and a `jobs` array. See the
@@ -87,6 +150,23 @@ working capture. Replace the source paths and calibrate each actual attempt.
   opposing axes and source bend components below 2 mm refuse conversion;
   uncertain straight-leg observations need explicit reconstruction. This does
   not improve source confidence or remove root/contact noise.
+- `retarget.sourceContactRootFit`: optional explicit root reconstruction for
+  planted feet. Set `mode: "source-knee-distance"`, a
+  `maximumCorrectionM` greater than zero and at most 0.5, and nonempty
+  `provenance` and `uncertainty` notes (at most 4096 characters each). The source
+  knee angle determines each canonical hip-to-ankle distance. One coherent
+  pelvis is fitted to the fixed ankle guide or the intersection of both guides'
+  distance spheres, using `body.pelvisKeys` as the soft image/depth prior.
+  Merely fitting inside the maximum leg reach can otherwise flatten an observed
+  landing bend into an almost straight leg. Ankle guides, contact events, bone
+  lengths and free-Air targets remain unchanged. Incompatible distances,
+  underdetermined fits or correction beyond the declared bound refuse conversion.
+  The existing canonical IK endpoint bounds still apply and any resulting
+  distance adjustment is reported. Omission retains the previous behavior.
+  Metadata and quality retain the reconstruction notes, source knee distances
+  and additional root correction. This does not improve detector confidence or
+  approve a clip. Producers must author coherent root/free-foot joins at release
+  and catch; the core option does not silently smooth those boundaries.
 - `board.floorEnvelope`: optional `{points, provenance, sourceSha256}` replaces
   the default eight-corner floor box with 4–4096 finite board-local points in
   meters, relative to the deck-top origin. Supply the complete geometry needed
@@ -297,7 +377,8 @@ velocity. Recorded full board rotation transforms declared contact targets to
 the full live deck frame; it is not added to the game's rotations a second time.
 The existing charge pose remains authoritative before the requested trick is
 known. Catch and recovery cannot cause an early gameplay landing. A changed
-trick or interruption relinquishes capture presentation.
+trick or interruption relinquishes capture presentation, except for the
+separately approved, same-source held-flip extension described above.
 
 The entry weight applies to the complete pose, including a foot still marked as
 Pop contact. Apply its measured deck-support fit after blending; pinning it
@@ -338,6 +419,21 @@ landing impact remains intact. This avoids compressing the whole leg-pose
 transition into a 0.12-second linear fade; it does not repair noisy source roots
 or drifting authored foot anchors by itself.
 
+Switch Heelflip and Nollie 360 Flip have explicitly authored catch placement
+(`SkateCaptureFootSupport.LandingPlacementProvenance`). Their ambiguous source
+ankles must not become persistent off-edge or kicked-nose rollaway anchors.
+The measured shoe footprint is centred on bolt regions 0.18 m either side of
+the deck midpoint; toe direction follows the anatomical facing, with the front
+shoe angled 20 degrees from across the board. The existing shaped-deck fit still
+owns vertical support. A C2 approach begins at most 0.18 source seconds before
+each real catch, preserving the release/catch events and measured leg lengths.
+While a foot is free, its target uses the future catch basis rather than the
+still-turning source deck. The horizontal approach retains its filmed height
+with an authored C2 clearance lift (0.16 m scaled to the thigh, capped at 0.20 m)
+that returns to zero at catch. Attached feet then use the actual deck frame.
+Other source families retain their original placement. Source clips remain
+unchanged; this correction does not approve a pack or establish native boot fit.
+
 The first observed landing records model-fitted board-local foot frames. They remain
 fixed during recovery and ordinary roll-away, including after capture ownership
 ends. A normal or mongo push releases only its moving foot. New actions, stance,
@@ -348,12 +444,84 @@ transition.
 Supported recovery explicitly reconstructs leg bend direction: it transports the
 first displayed landing's bend planes onto each current hip-to-ankle axis, then
 returns them to the ordinary supported planes with a C2 transition from 0.12 to
-0.47 seconds after landing. Feet, pelvis and torso retain their existing targets;
-this is not a new measured source observation. Gaze returns separately from 0.12
+0.47 seconds after landing. This bend-direction step retains the existing foot,
+pelvis and torso targets; the separate landing prior below may lower the body.
+Neither is a new measured source observation. Gaze returns separately from 0.12
 to 0.72 seconds using heading and elevation, avoiding a vertical shortcut between
 opposite headings. Captured recovery limits displayed head yaw relative to the
 current chest; camera look remains unrestricted. Idle
 riding retains the measured rig's soft knees without adding an extra crouch.
+
+Captured presentation has a shared **authored knee prior** for ambiguous
+monocular depth. Once Catch has actually returned both feet to the board, it
+prepares at least 35 degrees of knee flex (145-degree internal angle) over
+0.04 seconds. Free feet,
+source return, board rotation and physical contact timing are unchanged. The last
+shown preparation continues at the actual landing; compression then reaches
+at least 52.5 degrees of flex over 0.15 seconds and releases over 0.30 seconds.
+Without a completed catch, landing starts unprepared. The angular floor avoids
+compressing the already prepared impact pose a second time. A deeper source is
+not straightened.
+
+Both hips and the upper body move together, capped at 0.14 m on the reference
+0.87 m leg chain; ankle and toe anchors remain fixed and canonical IK stays in
+force. This is presentation reconstruction, not measured capture, a changed
+contact event or a physics/scoring change. Review replays must identify the
+authored prior and use the same `SkateCaptureFootSupport.TryCatchPreparation` and
+`TryLandingAbsorption` implementations as normal riding. Source packs and their
+approval remain separate.
+
+Normal Kickflip has an explicitly authored paired free-foot presentation prior.
+The rear pop foot begins a short C2 pickup 0.02 seconds after Pop; the front foot
+keeps its slide/flick until the live flick-edge release. This may lift a foot
+while the source still labels it attached; original source contact bits remain
+unchanged and are not relabelled as live contact. Both ankles converge over the
+bolt regions at one height. Clearance uses the full reference deck, trucks and
+wheels, clipping their actual triangles against the horizontal bounds of both
+measured shoe footprints. The maximum overlapping height, measured upright shoe
+support and a small gap determine the pair height; a high nose outside the shoes
+does not raise both feet. Face-interior overlap is included, not just vertices.
+This replaces ambiguous monocular free-foot depth, not the rig or physical jump.
+The source Catch owns the existing C2 return. The prior preserves the upper body
+and uses the same measured IK and positive-only return fit; other source families
+do not enter it. Apply it before the front-foot flick owner so that the flick can
+return toward the compact pair. This is authored presentation; a source pass
+alone does not approve its coupled visible result.
+
+The ordinary capture body enters with a C2 blend over 0.10 seconds. Its landing
+carrier transition uses the same C2 curve over the 0.15-second impact window,
+preserving fitted feet and the existing source-owned BS pop-foot entry. This
+removes the linear crossfade's abrupt endpoint velocities; physical takeoff,
+collision, source contact times and scoring remain unchanged. Pop/impact must
+still be judged in the integrated viewer with the real launch profile and foot
+work; an eased curve alone is not a complete-animation approval.
+
+All captured flips share a physical Catch rise limit. The previous displayed
+pelvis is transported to the current riding carrier; source stand-up cannot add
+another upward pelvis motion as the feet return to the board. The capped coherent
+body shift keeps the current foot positions and reconstructs canonical legs.
+It starts on physical Catch even while source return is still labelled Air;
+source contacts, rotation and the real flight remain authoritative. Land inherits
+the reached final knee floor. Review metadata must identify `CatchRiseProvenance`.
+
+The nollie BS180 heelflip uses a deeper authored supported profile: a 100-degree
+internal knee target in Catch and at impact. Its deeper catch eases in over
+0.12 seconds, retaining the same impact/release clock, drop cap and fixed feet.
+Its knee planes ease toward the ordinary toe-directed
+guides because retaining the ambiguous source planes still looked straight.
+Normal 360 Flip uses a 135-degree catch target with the default landing target
+and source knee planes. The other families keep the default angles and planes.
+Review metadata must
+include `SupportedKneeProvenance`.
+
+The nollie BS180 heelflip also has an explicitly authored supported-torso
+cleanup for its unreliable filmed lean. From Catch through recovery, a 0.12-second
+entry eases the upper body toward a 30-degree lean, with at most 25 degrees of
+correction. It rotates the chest/arm chain together around the pelvis; the helper
+retains the pelvis heading, leg and foot points, and solved world gaze. Board
+rotation, contacts, landing and approval gates are unchanged. Review metadata
+must include `SupportedTorsoProvenance`; this is visual reconstruction, not a
+source observation or acceptance of the entire BS180 clip.
 
 Presentation events may repeat a phase to describe individual foot contacts.
 The initial load has both feet attached; load/pop may release them separately,
@@ -364,14 +532,71 @@ The first event of each phase remains its timing anchor.
 The first live pop frame retains the procedural pose. The normal route can use
 the known variants' Pop-to-Catch rotation clock to retain their individual foot
 releases. Callers without that option retain the Air-to-Catch clock.
-For the five known single-turn variants, playback precomputes an inverse of the
+For the registered source families, playback precomputes an inverse of the
 source board's unwrapped Y*X*Z rotation progress. The pose follows the last
 unfinished live rotation instead of assuming a linear source-time relationship.
 Each active source axis must advance without reversing; a plateau in the limiting
 progress, a large rotation step, a turn more than five degrees from its expected
 endpoint or a near-gimbal pitch keeps
-the previous linear clock. The startup status reports how many inverse clocks
-were accepted. The arrays are built during loading; lookup does not allocate.
+the previous linear clock. The startup status counts the Air-to-Catch inverse
+clocks and the Pop-to-Catch inverse clocks separately. The arrays are built during
+loading; lookup does not allocate.
+
+The registered `bs-pop-shove-it` and `fs-pop-shove-it` presentations use an
+ordinary ollie stance, zero flip/body spin, and live shove targets of -180 and
++180 degrees respectively. Their canonical source yaw is +180 and -180 degrees.
+Only yaw drives these inverse clocks; the inactive roll stays within five
+degrees and is never used as a divisor or limiting progress. A zero-flip source
+has no held-flip expansion. Existing rotation/contact guards and pack approval
+remain unchanged. This source route does not approve either new capture or
+establish visual or native-game acceptance.
+
+A source's first trusted Air pose can already be beyond half its rotation. Its
+Air-to-Catch inverse then retains the existing guarded fallback, while a valid
+Pop-to-Catch inverse can still drive the normal route. The startup field
+`source pop-to-catch clocks` identifies that route; a zero Air-clock count alone
+does not mean the normal route uses a linear source clock.
+
+The normal `hardflip` presentation selects exactly an ollie with a +360-degree
+flip and +180-degree frontside shove, with no switch, tail-leading or body/spin
+modifier. This matches the existing gameplay classifier. Its canonical source
+clock expects +360 roll and -180 yaw. Both active axes must pass the same inverse
+guards; an opposite-yaw or otherwise ambiguous source retains the phase-clock
+fallback. Registration and a readable pack do not establish correct free-foot
+motion, catch or visual acceptance. The captured frontside scoop and toe flick
+need their own reviewed source and both-stance normal-route inspection.
+
+Normal Hardflip adds an explicitly authored early free-front-foot tuck. It lifts
+the anatomical front ankle and toe together, up to a reference-scaled 0.28 m,
+using the existing canonical leg solver without moving the pelvis or torso.
+Only a foot without source contact is eligible. The C2 prior occupies the first
+half of the trusted Air-to-Catch source interval, peaks at two sevenths, and
+respects the existing capture-entry weight. It ends before late air/catch;
+the shared catch and landing remain unchanged. Review metadata must retain
+`HardflipEarlyTuckProvenance`; this is presentation authoring, not measured motion
+or permission to approve the source pack.
+
+The normal Impossible has its own exact-ID special-action adapter and original
+[reproducible controls](../assets/authored/animation/impossible-keyed/README.md).
+It uses the same explicit review-bit, ID and exact-pack-digest approval. The
+canonical rear foot keeps the hook through Pop and Air while the front foot is
+free; the ordinary free-flip contact contract is not weakened. The data authors
+one complete, nonlinear vertical winding around the real tail/toe surface.
+Captured source directions are a reconstructed gesture basis, not measured 3D
+hook contact or board motion. Hidden depth remains explicitly authored.
+
+The source Pop-to-Land clock follows the actual physical flight; observed Land
+starts recovery. Physics, scoring and the native special-action lifetime remain
+leading. Only an approved, active exact normal Impossible owns displayed pitch
+and pickup. All other signatures and unavailable/rejected captures keep the
+ordinary native presentation; the native circle implementation is unchanged.
+A bounded geometric clearance correction can move the board and attached rear
+foot together for a low jump, but an unreachable leg is refused rather than
+clamped. Catch restores both feet and uses the existing whole-body departure
+blend. Player, stance, input epoch, geometry changes and conflicting actions
+invalidate the adapter. The original source remains unreviewed; normal-route
+exports, source comparisons, native gameplay and Shadow acceptance are separate
+gates. See the asset README for the current limitations.
 
 For the Air-to-Catch clock, the first trusted air sample can already be partway through its rotation. It is
 held until live progress reaches that fraction, rather than moving back into a
@@ -424,6 +649,14 @@ head axis with the settled recovery gaze; Switch retains its existing authoring.
 The [full animation-library batches](RUST-SKATE-ANIMATION-LIBRARY.md) keep code,
 capture quality and native gameplay acceptance separate.
 
+Ordinary ground rolling above 0.5 m/s keeps an authored minimum crouch of 0.18
+through the real rider spring, including after captured recovery ends. Standing
+still keeps its existing target. Charge, pump and braking can bend farther;
+push, plant, drop-in and other action-owned poses keep their own targets. Air
+and grab targets are unchanged. This is a runtime source posture rule, not a
+viewer start-height adjustment; coupled visual review and the in-game test
+remain separate gates.
+
 The approval file is strict UTF-8 (at most 32 KiB), with these lines and one to
 256 unique canonical clip ids:
 
@@ -457,3 +690,122 @@ Check source/rig comparisons, contact changes, complete board rotations and
 export fidelity per clip. A passing parser or compatibility compile does not
 establish natural motion, the native Rust skin, normal-pop integration or
 in-game acceptance. These remain separate verification gates.
+
+Where the source cannot be trusted, follow the owner's
+[visible-result rule](AUTONOMY.md#visible-result-over-source-fidelity-owner-28-october-2026):
+a labelled authored correction that looks right beats an unlabelled faithful
+copy of a reconstruction error.
+
+What each trick has to look like (start position, pop, flick, tuck, catch,
+landing) is in [the trick anatomy reference](RUST-SKATE-TRICK-ANATOMY.md). Read
+the trick's section before authoring or repairing it.
+
+The [30 October batch-1 coverage record](RUST-SKATE-ANIMATION-LIBRARY.md#reviewed-batch-1-snapshot-30-october)
+records the integrated twenty-clip offline review at main `5cbbf2f7`, using real
+Pad/Ground-to-pop transitions, normal/low flights and both physical stances.
+It does not flip original approval bits, install a pack or establish native
+Rust/Shadow acceptance. Source-derived variants retain separate review gates.
+
+### Switch Heelflip recovery head alignment
+
+The original Switch Heelflip uses the same supported recovery head alignment
+as the other four initial variants. Its head/neck axis follows the already
+computed recovery gaze instead of retaining the source axis while the gaze
+returns to ordinary riding. This is an authored presentation correction during
+physical ground recovery; the source clock, airborne motion, feet, board and
+capture approval gate are unchanged. Viewer review and Shadow playtesting
+remain separate checks.
+
+### Observed-ground pop for the original five sources
+
+The initial Switch Heelflip, Nollie Heelflip, Fakie Kickflip, Nollie BS180
+Heelflip and Nollie360Flip IDs/signatures have a separate authored legacy-pop
+presentation. Their old ordinary air pitch left the tail above the ground.
+The new presentation starts from the last actual charged shoe frames and ground
+normal. It derives support from the original thirteen-part board geometry,
+keeps measured shoe support through the short press and releases to each
+source's existing free-foot motion. Nollies press the nose; the popping foot is
+identified from the observed deck placement, rather than a fixed left/right
+assumption. The real flick gate advances the short source Pop while the scorer
+still holds zero flip degrees; the original rotation clock resumes without a
+backward source-time jump.
+
+Kick-type members close a measured upper-side forefoot face on the actual
+riding skin, then release into their own free-foot motion. The existing rigid
+sideways query preserves the complete shoe geometry and fitting bound; the
+carried-foot markers stop at the real flick gate. Heel variants retain their
+own heel direction.
+
+A bounded world-space C2 body join starts at that observed ground pose. It is a
+presentation correction, not an added jump or force. Physics, scoring, source
+approval and the existing geometric reach refusals stay authoritative. The
+source-keyed normal Kickflip, Heelflip, Tre and Impossible routes do not use this
+helper. A missing or stale observed stance does not create an invented anchor. This
+bounded pop repair does not approve the older airborne body reconstruction or
+landing; those still require their own visible source comparisons.
+
+For the exact original Fakie Kickflip and Switch Heelflip, after the initial
+foot release the root-blend age holds while the observed source cursor holds.
+It resumes at the current elapsed age when the source advances. Actual elapsed
+time still owns board pressure, flick, physical carrier motion and observed
+ground velocity; this adds no world trajectory or pose filter.
+
+### Rebuild the source-led Fakie Air candidate
+
+`author_skate_fakie_kickflip_air.py` reconstructs the free-Air root and both
+ankles together from the striped-shirt reference around source frame 2724.
+It accepts only the checksum-pinned original unreviewed Fakie JSON. The controls
+are authored estimates of monocular depth. Board/events and the established
+pressure, side-instep release and Catch stay outside the repaired interval.
+The ordinary Fakie ID/signature and normal trick selection are retained.
+Its supported recovery also keeps the current, already recovery-weighted source
+gaze instead of prematurely replacing it with ordinary travel-facing gaze.
+The existing recovery blend still returns to ordinary riding. This gaze option
+defaults off and is enabled only for the exact base Fakie ID/kind/signature.
+
+This does not make the complete Fakie animation source-identical. Its grounded
+Load uses the shared ordinary preparation rather than predicting a future
+family. The shared Ground repair retains that pose across Held-to-Flicking and
+uses authored 55-degree full-charge knee/torso targets with the same measured
+shoe anchors. The public Air/upper-fold helper remains at 32 degrees. The short
+entry carries the actual Ground pose into Pop; physics, scoring and the source
+Air/Catch/Land shapes remain authoritative.
+The read-only diagnostic checker still flags front-sole, hip-height, hand-height
+and acceleration limits; the per-profile reports remain beside the bound render
+set, and no threshold was weakened. The visible held-source hop and shared
+Ground preparation passed the integrated offline review above. Exact production
+pack approval and native Shadow play remain separate acceptance work.
+
+Keep generated JSON and packs in ignored `context/`. Starting with the retained
+**complete first-five composition manifest**, these commands replace only its
+Fakie source; all other source entries and derived variants remain present:
+
+```sh
+python scripts/author_skate_fakie_kickflip_air.py \
+  --input context/private/source-clips/fakie-kickflip.json \
+  --output context/private/fakie-air
+
+python - context/private/compose.json \
+  context/private/fakie-air/fakie-kickflip.json \
+  context/private/compose-fakie-air.json <<'PY'
+import json, sys
+from pathlib import Path
+old, replacement, target = map(Path, sys.argv[1:])
+manifest = json.loads(old.read_text())
+required = {'switch-heelflip', 'nollie-heelflip', 'fakie-kickflip',
+            'nollie-backside-180-heelflip', 'nollie-360-flip'}
+assert required <= manifest['sources'].keys(), 'Use the complete retained manifest'
+manifest['sources'] = {kind: str((old.parent / path).resolve())
+                       for kind, path in manifest['sources'].items()}
+manifest['sources']['fakie-kickflip'] = str(replacement.resolve())
+target.write_text(json.dumps(manifest, indent=2) + '\n')
+PY
+
+python scripts/capture_pipeline.py compose context/private/compose-fakie-air.json \
+  --include-base --output context/private/first-five-fakie-air-candidate
+```
+
+This composes the declared first-five/derived set, not unrelated game-pack
+families: retain those entries when assembling the complete game pack. Original
+source flags stay unreviewed; derived variants start unreviewed too. A new pack
+hash still needs its separate visual review and exact approval before gameplay.

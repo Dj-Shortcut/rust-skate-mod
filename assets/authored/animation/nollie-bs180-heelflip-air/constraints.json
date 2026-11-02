@@ -1,0 +1,16 @@
+{
+  "format": "skate-nollie-bs180-heelflip-air-reconstruction/1",
+  "movementKind": "nollie-backside-180-heelflip",
+  "originalPackSha256": "862f205f76712654bf0a0015406edb1bcd17da20d89b5fef139e00ae1940de9a",
+  "sourceUrl": "https://www.youtube.com/watch?v=PqJZcwTY1QE&t=115.0149",
+  "sourceFrames": [3505.0, 3508.5, 3511.5, 3515.5],
+  "pelvisAboveBoardM": 0.72,
+  "feet": {
+    "Left": {"heightAboveBoardM": 0.34},
+    "Right": {"heightAboveBoardM": 0.34}
+  },
+  "torsoForwardLeanDegrees": 55.0,
+  "leftArm": {"reachShare": 0.72, "wristLiftM": 0.08},
+  "provenance": "Source-led reconstruction of the actual striped-shirt Nollie BS180 Heelflip, source3510: pelvis and both free feet collect together, the torso folds over the knees, and the far canonical-left elbow bends rather than retaining the model's straight horizon arm. Preserve the take's tangential foot paths, body yaw, right-arm gesture, complete board winding and Catch. Native carrier/upper-entry masking and the erroneous full-deck free-foot projection are corrected separately before evaluating this source.",
+  "uncertainty": "Single-camera depth, metric compactness and the far-arm bend plane are authored reconstruction, not measured3D motion. This is the take3447-3559 from the SHA-bound original; the replaced3361-3438 model-issue take is excluded. Pop through3505 and Catch3516/Land3518/recovery remain exact. Original capture and output stay unreviewed; mesh and Shadow acceptance remain separate."
+}

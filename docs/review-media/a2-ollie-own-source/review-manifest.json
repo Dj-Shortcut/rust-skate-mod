@@ -1,0 +1,182 @@
+{
+  "format": "own-rolling-ollie-rig-review/1",
+  "sourceReviewed": false,
+  "nativeGame": false,
+  "sourceCodeRevision": "eeec34ecbdb595305ccf1b5f980b6237a4cfe2bf",
+  "runtimeRouteRevision": "6fe181c86847ea3679cb329fce49009f1c4ddddd",
+  "sourcePackSha256": "c4cb02192015f79ccce869c5ca6189e5e9d4c78a3812220d16242331426e1281",
+  "items": [
+    {
+      "physical": "regular",
+      "requested": "goofy",
+      "profile": "low",
+      "sourcePackSha256": "c4cb02192015f79ccce869c5ca6189e5e9d4c78a3812220d16242331426e1281",
+      "glbSha256": "65ddee19f0634709372a92dfe49f5c107969fa856e727329e23a6ce65a4eaf9c",
+      "sourceCodeRevision": "eeec34ecbdb595305ccf1b5f980b6237a4cfe2bf",
+      "runtimeRouteRevision": "6fe181c86847ea3679cb329fce49009f1c4ddddd",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.9833333333333333,
+        "Flick": 1.0333333333333334,
+        "Air": 1.1833333333333333,
+        "Catch": 1.3166666666666667,
+        "Land": 1.4166666666666667,
+        "Rollaway": 2.033333333333333,
+        "End": 4.0
+      },
+      "rigOnlyImage": "low-regular-phases.jpg",
+      "privateSourceComparison": "low-regular-private-source-comparison.jpg"
+    },
+    {
+      "physical": "regular",
+      "requested": "goofy",
+      "profile": "normal",
+      "sourcePackSha256": "c4cb02192015f79ccce869c5ca6189e5e9d4c78a3812220d16242331426e1281",
+      "glbSha256": "f8a35f0944a3c39930f9aa59059a2bfd6f97148b77364c9a5fa13cf84a91b16f",
+      "sourceCodeRevision": "eeec34ecbdb595305ccf1b5f980b6237a4cfe2bf",
+      "runtimeRouteRevision": "6fe181c86847ea3679cb329fce49009f1c4ddddd",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 1,
+        "Flick": 1.05,
+        "Air": 1.2,
+        "Catch": 1.35,
+        "Land": 1.45,
+        "Rollaway": 2.1166666666666667,
+        "End": 4.0
+      },
+      "rigOnlyImage": "normal-regular-phases.jpg",
+      "privateSourceComparison": "normal-regular-private-source-comparison.jpg"
+    },
+    {
+      "physical": "goofy",
+      "requested": "regular",
+      "profile": "low",
+      "sourcePackSha256": "c4cb02192015f79ccce869c5ca6189e5e9d4c78a3812220d16242331426e1281",
+      "glbSha256": "a97e535d1a8650071a40107184316530bc63ce32728ee9c25535c8697ab6c2a6",
+      "sourceCodeRevision": "eeec34ecbdb595305ccf1b5f980b6237a4cfe2bf",
+      "runtimeRouteRevision": "6fe181c86847ea3679cb329fce49009f1c4ddddd",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.9833333333333333,
+        "Flick": 1.0333333333333334,
+        "Air": 1.1833333333333333,
+        "Catch": 1.3166666666666667,
+        "Land": 1.4166666666666667,
+        "Rollaway": 2.033333333333333,
+        "End": 4.0
+      },
+      "rigOnlyImage": "low-goofy-phases.jpg",
+      "privateSourceComparison": "low-goofy-private-source-comparison.jpg"
+    },
+    {
+      "physical": "goofy",
+      "requested": "regular",
+      "profile": "normal",
+      "sourcePackSha256": "c4cb02192015f79ccce869c5ca6189e5e9d4c78a3812220d16242331426e1281",
+      "glbSha256": "254fcf0fe0fe6d9de0c0d0ca1339357de547cf5b5093acb62296746b320efe31",
+      "sourceCodeRevision": "eeec34ecbdb595305ccf1b5f980b6237a4cfe2bf",
+      "runtimeRouteRevision": "6fe181c86847ea3679cb329fce49009f1c4ddddd",
+      "phases": {
+        "Load": 0.8166666666666667,
+        "Pop": 1,
+        "Flick": 1.05,
+        "Air": 1.2,
+        "Catch": 1.35,
+        "Land": 1.45,
+        "Rollaway": 2.1166666666666667,
+        "End": 4.0
+      },
+      "rigOnlyImage": "normal-goofy-phases.jpg",
+      "privateSourceComparison": "normal-goofy-private-source-comparison.jpg"
+    }
+  ],
+  "limits": "Rig-only public images; source pixels and detector files stay private. Stills do not establish continuity, measured depth, approval or native acceptance.",
+  "viewer": "http://127.0.0.1:63761/a2-ollie-own-source/",
+  "browserReplay": {
+    "errors": 0,
+    "cases": [
+      {
+        "profile": "normal",
+        "physicalStance": "regular",
+        "phases": 7,
+        "replayRates": [
+          1,
+          0.25
+        ],
+        "ends": [
+          4,
+          4
+        ]
+      },
+      {
+        "profile": "normal",
+        "physicalStance": "goofy",
+        "phases": 7,
+        "replayRates": [
+          1,
+          0.25
+        ],
+        "ends": [
+          4,
+          4
+        ]
+      },
+      {
+        "profile": "low",
+        "physicalStance": "regular",
+        "phases": 7,
+        "replayRates": [
+          1,
+          0.25
+        ],
+        "ends": [
+          4,
+          4
+        ]
+      },
+      {
+        "profile": "low",
+        "physicalStance": "goofy",
+        "phases": 7,
+        "replayRates": [
+          1,
+          0.25
+        ],
+        "ends": [
+          4,
+          4
+        ]
+      }
+    ]
+  },
+  "images": {
+    "low-goofy-contacts.jpg": "dc309841093c3ffd6a895e9064e34019bcd5a9e3f412aa943dc5766b87f8b113",
+    "normal-regular-phases.jpg": "df100bb398c896118fc984ebe68ed8a01cf4b3de38e02089fc656c2f1d53251e",
+    "low-regular-contacts.jpg": "ecee0d3c7a97a25984ade0c77442d369c69fc9e6f890c10bb655ec0888eaa64f",
+    "low-goofy-phases.jpg": "09f69eb37d56dc6c4b0ac6e829f5198489f081453f92166c0f4cbc3cee55d09f",
+    "normal-regular-contacts.jpg": "5613bb9d0fea19d919d7300db304c5ed985492ca6ef72d49f6d7a1a98c222f4f",
+    "low-regular-phases.jpg": "02b008043ad26f9976d18711621110f13e346ff1c1b95c2b16c66e7280e20c75",
+    "normal-goofy-contacts.jpg": "efe627cf5df9a76a92bea8509baf62162cb092afde309c3273081d2ec5987da8",
+    "normal-goofy-phases.jpg": "2716363c95508584feb3f1531fe3a8bc4b08730ba605932b108f560652ef64f9"
+  },
+  "sideAndFeetClose": {
+    "errors": 0,
+    "cases": 16,
+    "stances": [
+      "regular",
+      "goofy"
+    ],
+    "views": [
+      "side",
+      "feet"
+    ],
+    "phases": [
+      "Pop",
+      "Flick",
+      "Air",
+      "Land"
+    ],
+    "limit": "Additional actual viewer screenshots. The event UI retains the internalFlick key for an Ollie outer-upper guide; no flip is authored."
+  }
+}

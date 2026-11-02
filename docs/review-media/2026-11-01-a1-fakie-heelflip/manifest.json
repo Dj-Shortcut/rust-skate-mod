@@ -1,0 +1,102 @@
+{
+  "format": "a1-fakie-heelflip-rig-only-review/1",
+  "sourceAuthoringHead": "43a64fdcde5617ecf9a412635b78122d332e306b",
+  "runtimeRouteRevision": "43a64fdcde5617ecf9a412635b78122d332e306b",
+  "sourcePackSha256": "f546a76e398fd4b90c5236a33376750252cf286f25bc448e07185095a157c5c4",
+  "rawReviewed": false,
+  "independentFakieHeelflipSource": false,
+  "nativeGame": false,
+  "viewer": "http://127.0.0.1:63761/a1-fakie-heelflip/",
+  "scope": "Original rig-only frames; authored shared Fakie Kickflip body and heel execution. No reference pixels are published. Claude owns the independent offline visual verdict.",
+  "files": [
+    {
+      "profile": "low",
+      "requestedStance": "goofy",
+      "physicalStance": "regular",
+      "file": "docs/review-media/2026-11-01-a1-fakie-heelflip/low-regular-phases.jpg",
+      "sha256": "021ef6647324bad9b90b0d8d9abe1080db2c111627548ea3fdcea553b4e2968e"
+    },
+    {
+      "profile": "normal",
+      "requestedStance": "goofy",
+      "physicalStance": "regular",
+      "file": "docs/review-media/2026-11-01-a1-fakie-heelflip/normal-regular-phases.jpg",
+      "sha256": "9b8a077fb1bc936976e586f55fd5d0da5a58272aa33fdc0afa183fe13854797d"
+    },
+    {
+      "profile": "low",
+      "requestedStance": "regular",
+      "physicalStance": "goofy",
+      "file": "docs/review-media/2026-11-01-a1-fakie-heelflip/low-goofy-phases.jpg",
+      "sha256": "15000f1481a2d83ee591221466d1c00f1d74b83406382aabb7d5276c3b6fea9c"
+    },
+    {
+      "profile": "normal",
+      "requestedStance": "regular",
+      "physicalStance": "goofy",
+      "file": "docs/review-media/2026-11-01-a1-fakie-heelflip/normal-goofy-phases.jpg",
+      "sha256": "57618c5e2de91c7255a6ffe6953b804e4d22d1473654b6c2b72020865fb12aa5"
+    }
+  ],
+  "changeScope": "Only canonical Left lead elbow and hand are changed during source frames 2713\u20132721. Other arm, torso, feet, board, contacts, timing and later source poses stay unchanged.",
+  "managedRouteReview": {
+    "runtimeRevision": "43a64fdcde5617ecf9a412635b78122d332e306b",
+    "input": "Actual mirrored Pad gesture in established Fakie state; full 32 Hz Step/Land/scorer, body at 60 Hz with controlled bindings and flat ground.",
+    "normalAirFrames": [
+      36,
+      36
+    ],
+    "lowAirFrames": [
+      34,
+      34
+    ],
+    "selectedSource": "fakie-heelflip-source-keyed-v1",
+    "scoredName": "Fakie Heelflip",
+    "ordinaryRecoverySeconds": 4.0,
+    "nativeGame": false
+  },
+  "heelCloseViews": [
+    {
+      "profile": "normal",
+      "physicalStance": "regular",
+      "file": "docs/review-media/2026-11-01-a1-fakie-heelflip/heel-flick-regular.jpg",
+      "sha256": "eb814e805a07fa9c56260d03fb615c30bdd79b63ae2aa63b471512024ec0dad9"
+    },
+    {
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "file": "docs/review-media/2026-11-01-a1-fakie-heelflip/heel-flick-goofy.jpg",
+      "sha256": "4ed42f85846e7bb5e9150a809eda50148d3876f71983e0f1faed7dc9f56598f7"
+    },
+    {
+      "profile": "low",
+      "physicalStance": "regular",
+      "file": "docs/review-media/2026-11-01-a1-fakie-heelflip/heel-flick-low-regular.jpg",
+      "sha256": "06dfbd84284b3b46634a3fca681c1f5ebbc821cc5c0686f6dca719d7c6864f06"
+    },
+    {
+      "profile": "low",
+      "physicalStance": "goofy",
+      "file": "docs/review-media/2026-11-01-a1-fakie-heelflip/heel-flick-low-goofy.jpg",
+      "sha256": "b15e1c53ccef380afed7e7896b8a636449b083fc88ea03be90fe3f52a35f2bcb"
+    }
+  ],
+  "heelCloseNotes": "Each height has a current original-rig side arm view and heel-guide close-up; no reference pixels are published.",
+  "playbackReview": {
+    "reviewer": "Author managed browser replay on the Root private profile",
+    "speeds": [
+      1,
+      0.25
+    ],
+    "cases": 4,
+    "seconds": 4,
+    "errors": [],
+    "nativeGame": false
+  },
+  "detailReview": {
+    "reviewer": "Author original-rig browser capture",
+    "captures": 16,
+    "errors": [],
+    "nativeGame": false
+  }
+}

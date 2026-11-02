@@ -1,0 +1,364 @@
+{
+  "format": "fs-pop-shove-scoop-rig-only-review/1",
+  "sourceAuthoringHead": "6d93cfb9b3a1c4e2b0b982326b2f6fa6b42e1cb0",
+  "runtimeRouteRevision": "6d93cfb9b3a1c4e2b0b982326b2f6fa6b42e1cb0",
+  "sourcePackSha256": "b79a6fdf01abb1e23b034e0e8865459df4ac9ee4cd1b5771117ceda51d71ae0d",
+  "rawReviewed": false,
+  "offlineVerdict": "pending Claude",
+  "nativeGame": false,
+  "viewer": "http://127.0.0.1:63761/fs-pop-shove-scoop/",
+  "scope": "Five authored pitch keys only: flatter scoop peak and early-Air taper. This is a visual hypothesis, not a measured source pitch. No C#/physics/scoring/input/camera/placement change.",
+  "source": {
+    "url": "https://www.youtube.com/watch?v=YcmPDIj2BFo&t=130",
+    "actor": "Sewa Kroetkov",
+    "filmedStance": "physical Goofy",
+    "retainedFrames": [
+      190,
+      276
+    ],
+    "sourceContainerCutStartsAtSeconds": 124,
+    "fps": 29.97002997002997,
+    "sha256": "038fa40ab62d32d05967971e600a3e9b6ce5075593f66f3969a8b0c9fab6e70d",
+    "referencePixelsNeverMirrored": true,
+    "sourceAndDetectorFilesPrivate": true
+  },
+  "baseline": {
+    "pr": "https://github.com/Dj-Shortcut/rust-skate-mod/pull/675",
+    "sourcePackSha256": "738f487378b7943733e709b02400c38d58974b7bf97a621fa68251b80eb56d54",
+    "meaning": "Historical accepted675 original-rig snapshot at matching named Pop and Air observations; not claimed to be a current-main rerender.",
+    "manifestSha256": "9265d4302e15952a4c1c6cb57aa6c9a8375bf6106965f08040740d3d4217773d",
+    "sourceFreeze": {
+      "sourceCodeRevision": "6137c4750ad3e5f519a8503adcd6fe8b46cd0e61",
+      "authoredPackSha256": "738f487378b7943733e709b02400c38d58974b7bf97a621fa68251b80eb56d54",
+      "renderInputRevisionLabel": "4cc6eec+c01d7563+private-fs-keyed-adapter",
+      "sharedAdapterSha256": "20793ba29f20428de70f766c8e01f7ea80b7575aaef01402f05eb1a948a0440a",
+      "sourceAuthoringCommit": "c01d7563b74db07512b3a5f325fd6465234a8c9b",
+      "runtimeBinding": "Rendered numeric body inputs are SHA-bound to the exact replay files; shared adapter bytes match the integrated runtime freeze. Earlier input labels remain in inputMetadata."
+    },
+    "glbs": [
+      {
+        "profile": "low",
+        "nativeRequestedStance": "goofy",
+        "physicalStance": "regular",
+        "sha256": "bd529c2c0781885e17f7cb99cc470320c1c177bf541e7dde60ad75bd277fff01"
+      },
+      {
+        "profile": "normal",
+        "nativeRequestedStance": "goofy",
+        "physicalStance": "regular",
+        "sha256": "924993ba0578d7144d41367ca783ce1e8c05fe7bbcc0e19024714be36d6e6083"
+      },
+      {
+        "profile": "low",
+        "nativeRequestedStance": "regular",
+        "physicalStance": "goofy",
+        "sha256": "ead02edcde73644b17fdaabe1dc05d9fbbac3e07fa6c870c5906f5c846b88dd5"
+      },
+      {
+        "profile": "normal",
+        "nativeRequestedStance": "regular",
+        "physicalStance": "goofy",
+        "sha256": "9ea04ffba5a0624ff875890fb1e9b895530abb4e59aef90417b32955ac0892df"
+      }
+    ]
+  },
+  "comparisonCamera": {
+    "canonicalOffset": [
+      0.906,
+      0.06,
+      -0.423
+    ],
+    "radius": 4.5,
+    "method": "Exact accepted675 exporter/render settings and same source-camera estimate for both baseline and candidate. Dedicated side/feet views expose foreshortening; no source-coordinate calibration claim."
+  },
+  "unchanged": {
+    "eventsIdentical": true,
+    "rawFramesFromSource220Identical": true,
+    "laterFrameCount": 337,
+    "allProductionGuardThresholds": true
+  },
+  "nativeManaged": {
+    "method": "Actual Pad/full32Hz Step/Land/scorer, body at60Hz, controlled bindings/ground. No native runtime or visual approval.",
+    "cases": [
+      {
+        "profile": "normal",
+        "requestedStance": "regular",
+        "names": [
+          "Combo",
+          "Frontside Pop Shove-it"
+        ],
+        "sourcePackSha256": "b79a6fdf01abb1e23b034e0e8865459df4ac9ee4cd1b5771117ceda51d71ae0d",
+        "testPackSha256": "796ef0982d6e36ef93cabe8211dbf9916aee8e849429edc1ca440b9bf3fbf65d",
+        "traceSha256": "e8998352e4d239e8ee2d471c851b65d7c052fc6aa336c8fbd3fc837c1a819c0d",
+        "jsonSha256": "add0e77f2d4504c278d6b11abff98325cb5101d52e62b9d28e8306c571b5d038",
+        "activeAir": 36,
+        "airFrames": 36,
+        "flightDuration": 0.59375,
+        "terminalCapture": false,
+        "t": 4
+      },
+      {
+        "profile": "normal",
+        "requestedStance": "goofy",
+        "names": [
+          "Combo",
+          "Frontside Pop Shove-it"
+        ],
+        "sourcePackSha256": "b79a6fdf01abb1e23b034e0e8865459df4ac9ee4cd1b5771117ceda51d71ae0d",
+        "testPackSha256": "796ef0982d6e36ef93cabe8211dbf9916aee8e849429edc1ca440b9bf3fbf65d",
+        "traceSha256": "c134e5bd96fbf176e761e7cd4b45de6198a74ac13895fc9b1a5d579b36a13f8c",
+        "jsonSha256": "59694576369e3ed6d3a80a39d63940134df3df406df59af0b8256612bd777721",
+        "activeAir": 36,
+        "airFrames": 36,
+        "flightDuration": 0.59375,
+        "terminalCapture": false,
+        "t": 4
+      },
+      {
+        "profile": "low",
+        "requestedStance": "regular",
+        "names": [
+          "Combo",
+          "Frontside Pop Shove-it"
+        ],
+        "sourcePackSha256": "b79a6fdf01abb1e23b034e0e8865459df4ac9ee4cd1b5771117ceda51d71ae0d",
+        "testPackSha256": "796ef0982d6e36ef93cabe8211dbf9916aee8e849429edc1ca440b9bf3fbf65d",
+        "traceSha256": "0f4c1ebbca909695da25535bcb154b5472b881ffa2585eb9c0aa6ebada7c013b",
+        "jsonSha256": "b018c8a0dccc32d514bbe7e6d981b0d60eccf0b278f8e3e3eefd838d18ccc531",
+        "activeAir": 34,
+        "airFrames": 34,
+        "flightDuration": 0.5625,
+        "terminalCapture": false,
+        "t": 4
+      },
+      {
+        "profile": "low",
+        "requestedStance": "goofy",
+        "names": [
+          "Combo",
+          "Frontside Pop Shove-it"
+        ],
+        "sourcePackSha256": "b79a6fdf01abb1e23b034e0e8865459df4ac9ee4cd1b5771117ceda51d71ae0d",
+        "testPackSha256": "796ef0982d6e36ef93cabe8211dbf9916aee8e849429edc1ca440b9bf3fbf65d",
+        "traceSha256": "4f7c8282fcc9f5d10839ee46adc731e0f36d7ae3fac86ef25d35544ea23e316f",
+        "jsonSha256": "c17dd70b7ddd56fb0248afcd31912a071a8d2d13681e1efa9fb31ba264712a75",
+        "activeAir": 34,
+        "airFrames": 34,
+        "flightDuration": 0.5625,
+        "terminalCapture": false,
+        "t": 4
+      }
+    ],
+    "receiptSha256": "210d56a907a4f451c8a79183b826ff90d71453171ecf944d9d23dc503af2821a",
+    "literalCurrentNativeSliceAuditSha256": "549bd73833595e86ab66126a063ea9ebd4f06bcf5c56d12518b92f1b0a93d87f"
+  },
+  "exports": {
+    "originalSkinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+    "boardParts": 13,
+    "poseWriterExtraArc": false,
+    "glbs": [
+      {
+        "profile": "low",
+        "nativeRequestedStance": "goofy",
+        "physicalStance": "regular",
+        "sha256": "376a7a23319cbfd91d26ce820108b34a90846814fb647471537267aa01601e4c",
+        "bytes": 2229956,
+        "phaseMoments": {
+          "Load": 0.8333333333333334,
+          "Pop": 0.9666666666666667,
+          "Flick": 1.0333333333333334,
+          "Air": 1.1,
+          "Catch": 1.2333333333333334,
+          "Land": 1.4166666666666667,
+          "Rollaway": 2.216666666666667,
+          "End": 4.0
+        },
+        "inputSha256": "37638871b1ff950f76fae864f380becdd934aae84194923c785178abeefe3593"
+      },
+      {
+        "profile": "normal",
+        "nativeRequestedStance": "goofy",
+        "physicalStance": "regular",
+        "sha256": "42b7d92db49e3f3124abdb7a6bd3d55afc215ebb287b9079f38a157cea182097",
+        "bytes": 2230048,
+        "phaseMoments": {
+          "Load": 0.8333333333333334,
+          "Pop": 0.9666666666666667,
+          "Flick": 1.05,
+          "Air": 1.1166666666666667,
+          "Catch": 1.25,
+          "Land": 1.45,
+          "Rollaway": 2.25,
+          "End": 4.0
+        },
+        "inputSha256": "9a9c1111bfc7ca8a6957394dd82f2620cd3bbc0ec6e5866a29eab035c7b45d76"
+      },
+      {
+        "profile": "low",
+        "nativeRequestedStance": "regular",
+        "physicalStance": "goofy",
+        "sha256": "8015226e772514a13cfef8f560efa5994eda86918ef3fc00d3f84e71fca4c58f",
+        "bytes": 2230048,
+        "phaseMoments": {
+          "Load": 0.8333333333333334,
+          "Pop": 0.9666666666666667,
+          "Flick": 1.0333333333333334,
+          "Air": 1.1,
+          "Catch": 1.2333333333333334,
+          "Land": 1.4166666666666667,
+          "Rollaway": 2.216666666666667,
+          "End": 4.0
+        },
+        "inputSha256": "a050824b1dcef13a6669b2a734365da694f50d064779f4d2532105132c492048"
+      },
+      {
+        "profile": "normal",
+        "nativeRequestedStance": "regular",
+        "physicalStance": "goofy",
+        "sha256": "abc2726b2895928d946c30e67f17947adcf182f2c10a2e7db15492be5f1e9c8b",
+        "bytes": 2230048,
+        "phaseMoments": {
+          "Load": 0.8333333333333334,
+          "Pop": 0.9666666666666667,
+          "Flick": 1.05,
+          "Air": 1.1166666666666667,
+          "Catch": 1.25,
+          "Land": 1.45,
+          "Rollaway": 2.25,
+          "End": 4.0
+        },
+        "inputSha256": "4d175850b219dbe1dc225e586bb0468ea29dcf67251c85b372fe7bc22a5f5d61"
+      }
+    ],
+    "manifestSha256": "e298580a08d0dfd0cef6a35ca2931935d841e3180d508e52f8a42fb50240b654"
+  },
+  "browser": {
+    "consoleRuntimeErrors": 0,
+    "fullReplays": [
+      {
+        "profile": "normal",
+        "physicalStance": "regular",
+        "rates": [
+          1,
+          0.25
+        ],
+        "endTimes": [
+          4,
+          4
+        ],
+        "phaseSeeks": 8
+      },
+      {
+        "profile": "normal",
+        "physicalStance": "goofy",
+        "rates": [
+          1,
+          0.25
+        ],
+        "endTimes": [
+          4,
+          4
+        ],
+        "phaseSeeks": 8
+      },
+      {
+        "profile": "low",
+        "physicalStance": "regular",
+        "rates": [
+          1,
+          0.25
+        ],
+        "endTimes": [
+          4,
+          4
+        ],
+        "phaseSeeks": 8
+      },
+      {
+        "profile": "low",
+        "physicalStance": "goofy",
+        "rates": [
+          1,
+          0.25
+        ],
+        "endTimes": [
+          4,
+          4
+        ],
+        "phaseSeeks": 8
+      }
+    ],
+    "focusedViews": 28,
+    "focus": "Side Pop and source217 early Air; Feet Pop/release214/Air/roll-away; Side Catch.",
+    "maximumPausedSeekDifferenceSeconds": 4.399999999993298e-05,
+    "sourceDecode": "Actual readyState>=2, no poster, actual currentTime matching source target within one frame, screenshot plus private decoded-canvas witnesses. Paused requestVideoFrameCallback is not required; no full-frame detector validation claim.",
+    "replayReceiptSha256": "035987c837b47c6b195e699e7c0d26e92791173f5ed3ae3b548d38f2592c6e11",
+    "focusedReceiptSha256": "2f98356c9e3adb817765ca46c3ab3ba2be548a316e270b593f255a56f1fe1cf0"
+  },
+  "images": [
+    {
+      "file": "low-regular-phases.jpg",
+      "sha256": "b0c48cfb9b7c3b1ce263b09b4a668240eb9f7f41aa281af74686015e341c5adc",
+      "physicalStance": "regular",
+      "profile": "low",
+      "kind": "phases"
+    },
+    {
+      "file": "low-regular-before-after-contacts.jpg",
+      "sha256": "e892199e563d2d4e5b4143ff28e90bdb4d3871e475fd6a622341c00e4b164fa8",
+      "physicalStance": "regular",
+      "profile": "low",
+      "kind": "before-after-contacts"
+    },
+    {
+      "file": "normal-regular-phases.jpg",
+      "sha256": "6056cbffbc60d6854727dbbbbda130e17dbd1f65018e19c8db905e0458b42c51",
+      "physicalStance": "regular",
+      "profile": "normal",
+      "kind": "phases"
+    },
+    {
+      "file": "normal-regular-before-after-contacts.jpg",
+      "sha256": "84dbed0969c5929c562b320f934f8bbbeea88df5b339ddbbb59ff75283f58fd3",
+      "physicalStance": "regular",
+      "profile": "normal",
+      "kind": "before-after-contacts"
+    },
+    {
+      "file": "low-goofy-phases.jpg",
+      "sha256": "0b99dc39dde2aa853537709b9a32dc6492420d4ce752f2dee82ebaaabc59e929",
+      "physicalStance": "goofy",
+      "profile": "low",
+      "kind": "phases"
+    },
+    {
+      "file": "low-goofy-before-after-contacts.jpg",
+      "sha256": "e1f46f13283013b636a312f3aeb9c41212fc7c244fc0e7520f24493c500a7c46",
+      "physicalStance": "goofy",
+      "profile": "low",
+      "kind": "before-after-contacts"
+    },
+    {
+      "file": "normal-goofy-phases.jpg",
+      "sha256": "1039d41071d2e4ca26a8b04b4b358e0b4c4d1b3e24674cfc7d929d5f59e393d6",
+      "physicalStance": "goofy",
+      "profile": "normal",
+      "kind": "phases"
+    },
+    {
+      "file": "normal-goofy-before-after-contacts.jpg",
+      "sha256": "0b461e90a92b14aea1a06804d2af45a221c92a1b9ac5aa84c0eedb5c29fb63c6",
+      "physicalStance": "goofy",
+      "profile": "normal",
+      "kind": "before-after-contacts"
+    }
+  ],
+  "postMainUnion": {
+    "revision": "d63dee80bcd9e9a987e75b70329166480ecad73e",
+    "commitUrl": "https://github.com/Dj-Shortcut/rust-skate-mod/commit/d63dee80bcd9e9a987e75b70329166480ecad73e",
+    "allFourCompleteBodyFilesByteIdentical": true,
+    "allFourCompleteNativeTracesByteIdentical": true,
+    "all95CSharpFilesMatchCompiledMain": "fc68148b5ad94b7ad02c4f9013a355143d49b3b5",
+    "motionRerenderNeeded": false
+  }
+}

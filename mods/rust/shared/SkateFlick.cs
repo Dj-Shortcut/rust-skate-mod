@@ -149,6 +149,17 @@ namespace Shortcut.RustMod
         private const double QuarterSweepDegrees = 67.5;
         private const double SettlingDegreesPerSecond = 120;
 
+        // Presentation only: keep the observed setup while its flick is still
+        // being recognized. Reading it neither advances nor completes a pop.
+        public static bool TryGroundPreparation(SkateFlickState state, out bool nosePop, out double charge)
+        {
+            nosePop = false; charge = 0;
+            if (!Valid(state) || state.Phase != Held && state.Phase != Flicking) return false;
+            nosePop = state.Forward;
+            charge = Math.Min(1, state.HeldSeconds / FullCharge);
+            return true;
+        }
+
         public static bool TryStep(SkateFlickState state, SkateFlickInput input, double dt, out SkateFlickResult result, out string error)
         {
             result = new SkateFlickResult(state, SkateFlickEvents.None, 0, 0, false, state.Manual, state.NoseManual);
@@ -325,6 +336,9 @@ namespace Shortcut.RustMod
                 shove = -Math.Sign(state.SweepDegrees) * (mirrored ? -360 : 360);
             else if (Math.Abs(state.SweepDegrees) >= QuarterSweepDegrees || angle > FlipSpreadDegrees)
                 shove = -(angle > FlipSpreadDegrees ? -Math.Sign(x) : Math.Sign(state.SweepDegrees)) * (mirrored ? -180 : 180);
+            // skate.'s own hardflip: a short hook along the rim to one side, then the flick to the
+            // forward diagonal of that same side.
+            else if (flip != 0 && state.ShallowSide == Math.Sign(x)) shove = flip * 180;
             else if (angle <= StraightSpreadDegrees && state.ShallowSide != 0)
             { flip = (state.ShallowSide < 0) != mirrored ? 1 : -1; shove = flip * 180; }
             return new SkatePop(state.Forward ? SkatePopKind.Nollie : SkatePopKind.Ollie, flip, shove, strength);

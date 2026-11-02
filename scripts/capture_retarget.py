@@ -145,6 +145,90 @@ def confidence_track(raw, first, last, options, actor_expected=False, frame_time
                        reviewRejectedModelFrames=rejected,reviewRejectionProvenance=options.get('rejectedModelProvenance'),
                        correctionMeaning='Interpolated/edge-held observations are reconstruction, not additional measured capture')
 
+def source_contact_root_fit(pelvis, hip_axis, contact_ankles, source_leg_vectors, rig, maximum_correction):
+    """Preserve source knee flex with fixed guides and one coherent root.
+
+    The image/depth pelvis is a soft prior. Each planted leg supplies a sphere
+    whose radius is its source bend retargeted to the canonical bone lengths.
+    Missing, incompatible or underdetermined constraints are never relaxed.
+    """
+    prior = finite(pelvis, (3,)); axis = finite(hip_axis, (3,))
+    if np.linalg.norm(axis) < 1e-9:
+        raise CaptureError('Source contact root has no hip axis')
+    axis = axis / np.linalg.norm(axis)
+    if (not isinstance(contact_ankles, dict) or not 1 <= len(contact_ankles) <= 2 or
+            set(contact_ankles) - {'Left', 'Right'}):
+        raise CaptureError('Source contact root requires one or two declared foot guides')
+    if not math.isfinite(maximum_correction) or not 0 < maximum_correction <= .5:
+        raise ValueError('Source contact root correction bound must be within(0,.5]')
+    a, b = rig['thigh'], rig['shin']; low, high = abs(a-b)+.001, a+b-.001
+    spheres = []; legs = {}
+    for side in ('Left', 'Right'):
+        if side not in contact_ankles: continue
+        upper, lower = (finite(v, (3,)) for v in source_leg_vectors[side])
+        if min(np.linalg.norm(upper), np.linalg.norm(lower)) < 1e-9:
+            raise CaptureError('Source contact root has a degenerate source leg', dict(side=side))
+        upper = upper / np.linalg.norm(upper); lower = lower / np.linalg.norm(lower)
+        desired = float(np.linalg.norm(a*upper+b*lower))
+        radius = float(np.clip(desired, low, high))
+        ankle = finite(contact_ankles[side], (3,))
+        centre = ankle + axis * (rig['hipHalfWidth'] if side == 'Left' else -rig['hipHalfWidth'])
+        spheres.append((centre, radius))
+        legs[side] = dict(sourceFlexDegrees=math.degrees(math.acos(float(np.clip(np.dot(upper, lower), -1, 1)))),
+                          desiredDistanceM=desired, fittedDistanceM=radius,
+                          canonicalIKBoundaryAdjustmentM=radius-desired, fixedAnkle=ankle.tolist())
+    if len(spheres) == 1:
+        centre, radius = spheres[0]; direction = prior-centre
+        if np.linalg.norm(direction) < 1e-9:
+            raise CaptureError('Source contact root sphere is underdetermined')
+        fitted = centre + direction * (radius / np.linalg.norm(direction))
+    else:
+        left, lr = spheres[0]; right, rr = spheres[1]
+        delta = right-left; distance = float(np.linalg.norm(delta))
+        if distance < 1e-9:
+            if abs(lr-rr) > 1e-8:
+                raise CaptureError('Source contact root spheres have incompatible radii')
+            direction = prior-left
+            if np.linalg.norm(direction) < 1e-9:
+                raise CaptureError('Source contact root coincident spheres are underdetermined')
+            fitted = left + direction * (lr / np.linalg.norm(direction))
+        else:
+            if distance > lr+rr+1e-8 or distance < abs(lr-rr)-1e-8:
+                raise CaptureError('Source knee distances cannot share the fixed foot guides',
+                                   dict(centreDistanceM=distance, radiiM=[lr, rr]))
+            normal = delta/distance; along = (lr*lr-rr*rr+distance*distance)/(2*distance)
+            centre = left + normal*along; squared = lr*lr-along*along
+            if squared < -1e-8:
+                raise CaptureError('Source contact root circle has no real solution')
+            radius = math.sqrt(max(0., squared))
+            radial = prior-centre; radial -= normal*np.dot(radial, normal)
+            if radius < 1e-9: fitted = centre
+            elif np.linalg.norm(radial) < 1e-9:
+                raise CaptureError('Source contact root circle is underdetermined')
+            else: fitted = centre + radial*(radius/np.linalg.norm(radial))
+    correction = float(np.linalg.norm(fitted-prior))
+    if correction > maximum_correction+1e-8:
+        raise CaptureError('Source contact root exceeds its declared reconstruction bound',
+                           dict(requiredCorrectionM=correction, maximumCorrectionM=maximum_correction))
+    return fitted, dict(rootCorrectionM=correction, legs=legs,
+                        constraint='Fixed foot guides; source knee flex determines canonical hip-to-ankle distances')
+
+
+def source_contact_root_spec(value):
+    if value is None: return None
+    if (not isinstance(value, dict) or
+            set(value) != {'mode', 'maximumCorrectionM', 'provenance', 'uncertainty'} or
+            value['mode'] != 'source-knee-distance'):
+        raise ValueError('sourceContactRootFit requires an explicit source-knee-distance reconstruction')
+    maximum = value['maximumCorrectionM']
+    if type(maximum) not in (int, float) or not math.isfinite(maximum) or not 0 < maximum <= .5:
+        raise ValueError('sourceContactRootFit maximumCorrectionM must be within(0,.5]')
+    for key in ('provenance', 'uncertainty'):
+        if not isinstance(value[key], str) or not value[key].strip() or len(value[key]) > 4096:
+            raise ValueError('sourceContactRootFit requires bounded explicit '+key)
+    return value
+
+
 def ik(hip, ankle, a, b, pole, limit, corrections, t, side):
     delta = ankle-hip; d = float(np.linalg.norm(delta)); low, high = abs(a-b)+.001, a+b-.001
     distance = float(np.clip(d,low,high)); correction = abs(distance-d)
@@ -357,6 +441,7 @@ def retarget(raw, job, provenance):
     internal_cuts=sorted(k for k in cuts if first<k<=last)
     if internal_cuts:raise CaptureError('Source window crosses a declared/detected cut',dict(sourceFrames=internal_cuts))
     opts=job.get('retarget',{});actor=job['source'].get('actorHint')
+    contact_root = source_contact_root_spec(opts.get('sourceContactRootFit'))
     arm_interpolation=opts.get('armInterpolation','linear')
     if arm_interpolation not in ('linear','spherical'):raise ValueError('Unknown armInterpolation')
     leg_pole_transport=opts.get('legPoleTransport','legacy-target-projection')
@@ -497,7 +582,7 @@ def retarget(raw, job, provenance):
         if not isinstance(digest,str) or len(digest)!=64 or any(c not in '0123456789abcdef' for c in digest):
             raise ValueError('floorEnvelope requires a lowercase source SHA256')
         if reflect_keys:corners=corners*np.array([-1,1,1])
-    frames=[];reaches=[];floor_corrections=[];event_index=0;last_q=None;maximum_chain_error=0.;minimum_floor=float('inf')
+    frames=[];reaches=[];floor_corrections=[];contact_root_fits=[];event_index=0;last_q=None;maximum_chain_error=0.;minimum_floor=float('inf')
     limit=float(opts.get('maxReachCorrectionM',0))
     if not 0<=limit<=.5:raise ValueError('maxReachCorrectionM outside0..0.5')
     for t in times:
@@ -521,6 +606,19 @@ def retarget(raw, job, provenance):
             inverted_contacts.append(t)
         hip_axis=unit(w[24]-w[23],[0,0,-1]);torso=unit((w[11]+w[12]-w[23]-w[24])*.5)
         shoulder_axis=unit(w[12]-w[11]);shoulder_axis=unit(shoulder_axis-torso*np.dot(shoulder_axis,torso),hip_axis)
+        if contact_root is not None and mask & 3:
+            guides = {}; vectors = {}
+            for index, side in enumerate(('Left', 'Right')):
+                if not mask & (1 << index): continue
+                curves = foot_curves[side]
+                local = curves['positionKeys'](t) if 'positionKeys' in curves else np.array([.035,.095,.22 if index==0 else -.22])
+                if reflect_keys: local[0] *= -1
+                guides[side] = origin + R @ local
+                hi, ki, ai = (23,25,27) if index==0 else (24,26,28)
+                vectors[side] = (w[ki]-w[hi], w[ai]-w[ki])
+            pelvis, fitted = source_contact_root_fit(pelvis, hip_axis, guides, vectors, rig,
+                                                       contact_root['maximumCorrectionM'])
+            contact_root_fits.append(dict(t=t, **fitted))
         hips=[pelvis-hip_axis*rig['hipHalfWidth'],pelvis+hip_axis*rig['hipHalfWidth']]
         anatomy=unit(np.cross(hip_axis,UP),[1,0,0]);hip_mid=(w[23]+w[24])*.5
         j=dict(Pelvis=pelvis,Chest=pelvis+torso*(rig['spine']/1.12),Neck=pelvis+torso*rig['spine'])
@@ -592,6 +690,10 @@ def retarget(raw, job, provenance):
     if maximum_chain_error>1e-6:raise CaptureError('Retarget chain length error',dict(maxChainErrorM=maximum_chain_error))
     metadata=dict(id=job['id'],label=job['label'],sourceUrl=job['source']['url'],sourceAuthor=job['source']['author'],movementKind=job['movementKind'],reviewed=job['reviewed'],rights=job['source'].get('rights','No publication/relicensing permission asserted'),canonicalStance='regular',capturedStance=stance,keySpace=key_space,coordinateFrame='Y up, +Z nose, +X right; right-handed quaternion XYZW; origin=deck top',toeContract='Physical toe endpoints include soleUp*toeDrop once; native sampler reconstructs flat toe targets before writer drop',sourceFps=fps,firstSourceFrame=first,lastSourceFrame=last,provenance=provenance,boardProvenance=board_spec['provenance'],boardLimit='Observed keys mean recipe observations/estimates, not calibrated measured3D board mocap',footOrientationLimit='Soles default to board-up in contact and world-up in air unless per-foot keys supplied. Captured heel/toe heading is projected onto that sole; degenerate projections use a perpendicular basis. Not measured shoe orientation.',rootLimit='Pelvis/board trajectory supplied explicitly by recipe; MediaPipe world33 is hip-relative; no player-root/physics authority',sampleLimit='Dense retarget interpolation, not additional measured source frames',camera=job['camera'],rig=rig,metricScale=scale)
     metadata['armInterpolation']=arm_interpolation
+    if contact_root is not None:
+        metadata['sourceContactRootFit'] = {**contact_root,
+            'method': 'One coherent pelvis on fixed ankle-guide spheres with canonical source knee distances; no foot-guide movement',
+            'sourceConfidence': 'Retained source/model estimates and explicitly declared reconstructions remain unmeasured where flagged'}
     if leg_report:metadata['legBends']=leg_report
     if recovery_report is not None:metadata['recoverySmoothing']=recovery_report
     if leg_pole_transport != 'legacy-target-projection':
@@ -619,6 +721,10 @@ def retarget(raw, job, provenance):
     metadata['freeFootPaths']={side:dict(coordinates='Absolute authoring frame, same as pelvisKeys; reflected with captured keySpace',provenance=feet[('Right' if side=='Left' else 'Left') if reflect_keys else side]['airPositionProvenance']) for side in ('Left','Right') if 'airPositionKeys' in foot_curves[side]}
     selection_frames=[dict(frame=f['frame_index'],selection=f['target_selection']) for f in raw['frames'] if first<=f['frame_index']<=last and f.get('target_selection') is not None]
     quality=dict(status='validated transport/kinematics; visual/native acceptance remains open',reviewed=job['reviewed'],confidence=confidence,actorSelection=selection_frames,cutAudit=dict(declaredOrDetectedFrames=sorted(cuts),startsAtDeclaredCut=first in cuts,limit='No automatic visual cut detector; absent markers are not proof of a continuous shot'),boardRotation=rot_quality,boardFloor=dict(policy=floor_policy,minUncorrectedCornerY=minimum_floor,corrections=floor_corrections),invertedFootContactException=dict(explicitlyAllowed=allow_inverted,sampleTimes=inverted_contacts),reachCorrections=reaches,maxChainErrorM=maximum_chain_error,feetDefaultOffsetsEstimated=[s for s in ('Left','Right') if not foot_curves[s].get('positionKeys')],bodyYaw='Preserved in declared camera basis; no per-frame inferred hip-facing normalization',sourceFrames=last-first+1,outputSamples=len(frames))
+    if contact_root is not None:
+        quality['sourceContactRootFit'] = {**metadata['sourceContactRootFit'],
+            'additionalRetargetRootFitMaximumM': max((f['rootCorrectionM'] for f in contact_root_fits), default=0.),
+            'samples': contact_root_fits}
     if authored_head is not None:quality['authoredHead']={**authored_head.report(),'sampleTimes':authored_head.applied}
     if authored_heading is not None:
         quality['authoredHeading']={**authored_heading.report(),'sampleTimes':authored_heading.applied}

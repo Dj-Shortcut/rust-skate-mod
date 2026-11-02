@@ -1,0 +1,509 @@
+{
+  "format": "authored-fakie-fs-pop-shove-controls/1",
+  "id": "fakie-fs-pop-shove-it-source-keyed-v1",
+  "movementKind": "fakie-fs-pop-shove-it",
+  "sourceBodySha256": "e760bfd7924d06cb0c16f9b73413779268d6ae9d32aeddba628f0ef41d388fee",
+  "geometrySha256": "806a59f06a0f28eb0a81550675e2cff391bf27b286f788690b65ed857794d4c5",
+  "geometryCodeSha256": {
+    "author_skate_ollie.py": "98ac9495fd5db440194e7f3438d9c4791f30b7fe4a65fcb4c8f6944a305945ac",
+    "author_skate_bs_pop_shove.py": "01f0a04414f76671f9c442e13a0b7f210d2c6b2eb1e67cf509cfa22a562745e5"
+  },
+  "sourceUrl": "https://www.youtube.com/watch?v=tL8Ey9GS0xQ&t=217",
+  "sourceAuthor": "The Berrics",
+  "sourceVideoSha256": "220a8f31da226010bb44afa81882f684744ab2071458279eb937cf68b95fee48",
+  "sourceFps": 29.97002997002997,
+  "sourceCacheOriginalOffsetSeconds": 181.0,
+  "sourceContainerFirstPts": 0,
+  "sourceTimeBase": [
+    1,
+    30000
+  ],
+  "sourcePtsStep": 1001,
+  "firstSourceFrame": 1084,
+  "lastSourceFrame": 1170.0,
+  "lastGenuineSourceFrame": 1138,
+  "filmedStance": "regular",
+  "pop": 1110.0,
+  "frontRelease": 1115.3,
+  "tailStrike": 1115.8,
+  "tailRelease": 1116.7,
+  "pressEnd": 1118.0,
+  "firstCatch": 1126.0,
+  "catch": 1127.0,
+  "land": 1129.0,
+  "recovery": 1165.0,
+  "reference": {
+    "gravity": 8.0,
+    "flightSeconds": 0.6,
+    "wheelClearance": 0.005
+  },
+  "yawKeys": [
+    [
+      1084,
+      0
+    ],
+    [
+      1114,
+      0
+    ],
+    [
+      1115.3,
+      -2
+    ],
+    [
+      1115.8,
+      -8
+    ],
+    [
+      1116.7,
+      -24
+    ],
+    [
+      1118,
+      -55
+    ],
+    [
+      1121,
+      -102
+    ],
+    [
+      1123,
+      -142
+    ],
+    [
+      1125,
+      -173
+    ],
+    [
+      1126,
+      -180
+    ],
+    [
+      1170,
+      -180
+    ]
+  ],
+  "pitchKeys": [
+    [
+      1084,
+      0
+    ],
+    [
+      1114,
+      0
+    ],
+    [
+      1115.3,
+      10
+    ],
+    [
+      1115.8,
+      35
+    ],
+    [
+      1116.7,
+      33
+    ],
+    [
+      1118,
+      26
+    ],
+    [
+      1121,
+      20
+    ],
+    [
+      1123,
+      12
+    ],
+    [
+      1125,
+      3
+    ],
+    [
+      1126,
+      0
+    ],
+    [
+      1170,
+      0
+    ]
+  ],
+  "setupFeet": {
+    "Left": {
+      "x": -0.035,
+      "z": 0.16,
+      "yaw": 65
+    },
+    "Right": {
+      "x": -0.065,
+      "z": -0.325,
+      "yaw": 85
+    }
+  },
+  "catchFeet": {
+    "Left": {
+      "x": 0.035,
+      "z": -0.24,
+      "yaw": -115
+    },
+    "Right": {
+      "x": 0.025,
+      "z": 0.24,
+      "yaw": -95
+    }
+  },
+  "freeFootYaw": {
+    "Left": 65,
+    "Right": 85
+  },
+  "releaseBlendFrames": 1.6,
+  "catchBlendFrames": 2.0,
+  "frontFreeKeys": [
+    [
+      1115.3,
+      -0.035,
+      0.22,
+      0.16
+    ],
+    [
+      1116.5,
+      -0.03,
+      0.3,
+      0.2
+    ],
+    [
+      1118,
+      -0.03,
+      0.33,
+      0.22
+    ],
+    [
+      1121,
+      -0.03,
+      0.31,
+      0.24
+    ],
+    [
+      1123,
+      -0.03,
+      0.29,
+      0.24
+    ],
+    [
+      1126,
+      -0.035,
+      0.22,
+      0.24
+    ]
+  ],
+  "rearFreeKeys": [
+    [
+      1116.7,
+      -0.065,
+      0.22,
+      -0.325
+    ],
+    [
+      1118,
+      -0.045,
+      0.29,
+      -0.29
+    ],
+    [
+      1121,
+      -0.025,
+      0.3,
+      -0.26
+    ],
+    [
+      1124,
+      -0.025,
+      0.28,
+      -0.24
+    ],
+    [
+      1127,
+      -0.025,
+      0.22,
+      -0.24
+    ]
+  ],
+  "pelvisKeys": [
+    [
+      1084,
+      -0.06,
+      0.89,
+      0
+    ],
+    [
+      1094,
+      -0.065,
+      0.84,
+      0
+    ],
+    [
+      1100,
+      -0.075,
+      0.68,
+      0
+    ],
+    [
+      1105,
+      -0.085,
+      0.54,
+      0
+    ],
+    [
+      1110,
+      -0.075,
+      0.63,
+      0
+    ],
+    [
+      1114,
+      -0.055,
+      0.82,
+      0
+    ],
+    [
+      1115.8,
+      -0.05,
+      0.8,
+      0
+    ],
+    [
+      1116.7,
+      -0.055,
+      0.69,
+      0
+    ],
+    [
+      1118,
+      -0.06,
+      0.58,
+      0
+    ],
+    [
+      1121,
+      -0.075,
+      0.58,
+      0
+    ],
+    [
+      1123,
+      -0.08,
+      0.62,
+      0
+    ],
+    [
+      1126,
+      -0.075,
+      0.74,
+      0
+    ],
+    [
+      1127,
+      -0.075,
+      0.76,
+      0
+    ],
+    [
+      1129,
+      -0.075,
+      0.75,
+      0
+    ],
+    [
+      1134,
+      -0.085,
+      0.61,
+      0
+    ],
+    [
+      1138,
+      -0.08,
+      0.66,
+      0
+    ],
+    [
+      1146,
+      -0.075,
+      0.76,
+      0
+    ],
+    [
+      1155,
+      -0.07,
+      0.85,
+      0
+    ],
+    [
+      1165,
+      -0.065,
+      0.9,
+      0
+    ],
+    [
+      1170,
+      -0.065,
+      0.9,
+      0
+    ]
+  ],
+  "gazeKeys": [
+    [
+      1084,
+      0.55,
+      -0.35,
+      -0.3
+    ],
+    [
+      1105,
+      0.55,
+      -0.65,
+      -0.25
+    ],
+    [
+      1115.8,
+      0.55,
+      -0.7,
+      -0.2
+    ],
+    [
+      1123,
+      0.55,
+      -0.65,
+      -0.2
+    ],
+    [
+      1129,
+      0.5,
+      -0.6,
+      -0.35
+    ],
+    [
+      1138,
+      0.4,
+      -0.35,
+      -0.6
+    ],
+    [
+      1155,
+      0.25,
+      -0.12,
+      -1
+    ],
+    [
+      1170,
+      0.25,
+      -0.12,
+      -1
+    ]
+  ],
+  "recoveryWindow": [
+    1138,
+    1165
+  ],
+  "recoverySourceFrame": 1090,
+  "kneePlane": {
+    "forward": [
+      1.0,
+      0.0,
+      0.02
+    ],
+    "provenance": "Authored coherent toe-side planes, independent from uncertain monocular knee depth."
+  },
+  "maximumReachShare": 0.998,
+  "minimumAirSoleClearance": 0.018,
+  "nativeSignature": {
+    "pop": "Ollie",
+    "switch": true,
+    "tailLeads": true,
+    "flip": 0,
+    "shove": 180,
+    "spin": 0,
+    "body": 0
+  },
+  "balanceWindows": [
+    {
+      "window": [
+        1114.2,
+        1115.3,
+        1119.3,
+        1121.4
+      ],
+      "side": "Left",
+      "upper": [
+        0.15,
+        -0.45,
+        0.88
+      ],
+      "fore": [
+        0.65,
+        0.35,
+        0.67
+      ],
+      "provenance": "Authored owner-rule shoulder-height bent balance replaces the old occluded originalLeft high diagonal over its same bounded window. Preserve genuine Right anatomy and rejoin exact mainAir1122+; no upward rebound into a second V at freeAir."
+    },
+    {
+      "window": [
+        1114.2,
+        1115.3,
+        1116.9,
+        1118.0
+      ],
+      "side": "Right",
+      "upper": [
+        0.2,
+        -0.42,
+        -0.885
+      ],
+      "fore": [
+        0.65,
+        0.3,
+        -0.7
+      ],
+      "provenance": "Own genuine originalRight/tattoo arm gets only Pop/Scoop shoulder-height bent balance. Same anatomy and source; rejoin originalRight at freeAir1118+. No mirrored/borrowed body."
+    }
+  ],
+  "provenance": "Own genuine black-shirt/cap/tattooed-arm BATB13 Fakie FS Pop Shove-it, bounded1084..1138 of existing181..219s cache. Actual leading-tail heel-pocket scoop, noflip/bodyturn, board-onlyopposite180, catch/flatland. Own49/55 VIDEO body with6 declared pre-pop gaps; estimated camera/depth/anatomy/knee/gaze and source-real clipped arm reconstruction. Original shaped-deck full-shoe/fixedchain support and own authored root/freefeet/catch. Upright recovery1138..1170 is explicitly authored from this same take own upright1090 because cache ends in bent absorption. Reference video held at genuine1138; no generated footage, another-trick body or raw/native approval. Source Pop is the first genuine leg-rise1110, not the already-extended1114 frame; all authored body/board/foot curve keys and other contact marks remain unchanged. Authored shoulder-height Pop/Scoop balance under the owner rule: the occludedLeft uses its same bounded1114.2\u20131121.4 window with lower bent targets, and genuineRight rejoins1118+. One authored source-reference pose-height envelope1111\u20131118 caps the last over-tall Rise, stays inside the unchanged runtime pressure fit domain through strike/release, and rejoins exact lower-body1118+ and whole mainAir1122+. The last Rise height is necessarily lower while its upward extension remains. Feet, board, events, source clock, zero-reflection anatomy and all geometry/reach/floor guards remain unchanged; native physics/carrier lead.",
+  "uncertainty": "Own source1114/1116/1118 anatomical hip-knee-ankle/heel/toe chains verify physicalRegular Leftnose/Righttail, not priorBlackGoofy inference. Initialnose imageRight/high end, actualRight lowtail pressure; backwards travel is manually corroborated by Fakie sequence/action, not calibrated ground motion. Single-camera depth, tail-ball occlusion, small rotating board, clipped far wrist and6 rejected pre-pop frames. Source upright recovery missing after1138; same-own-body authored suffix. Full-video frame indices/hash unknown. Shoulder-height Pop/Scoop arm poses and the short knee-reserve height envelope are explicit authored presentation choices under the owner rule, not new measured motion.",
+  "sourceRootMotion": "Own hip-relative body has no carrier/jump baked. Initial nose+Z independent from backwards velocity. Source boardlocal\u2212180 only; body unspun/native, reference rise removed only from pressure board offset before actual carrier once.",
+  "phaseClockLimit": "Own authored visual marks: Pop1110 (first genuine leg-rise, preceding strike1115.8)/front sole release1115.3/strike1115.8/Right-tail release1116.7/laterfreeAir1118/LeftfirstCatch1126/both1127/Land1129. Source genuine through1138; own-body authored recovery to1170, video clamped1138. Actual native input/observed landing/scoring remain authoritative.",
+  "pressureKneeEnvelope": {
+    "window": [
+      1111.0,
+      1112.3,
+      1116.9,
+      1118.0
+    ],
+    "referenceWorldKeys": [
+      [
+        1111.0,
+        0.7464222834588286
+      ],
+      [
+        1112.375,
+        0.82
+      ],
+      [
+        1114.0,
+        0.87
+      ],
+      [
+        1115.8,
+        0.86
+      ],
+      [
+        1116.7,
+        0.88
+      ],
+      [
+        1118.0,
+        0.9310249307479224
+      ]
+    ],
+    "provenance": "Authored source-reference pose envelope, not physics or a second jump. The original last Rise was too tall for bent pressure knees after runtime feet-only compensation; this one lower extension crosses into the feasible pressure domain instead of saturating its cap. Preserve a clear upward body extension, no new hip dip; exact freeAir1118+ lower body and mainAir1122+ whole pose. Same foot/board/source/event targets and guards."
+  }
+}

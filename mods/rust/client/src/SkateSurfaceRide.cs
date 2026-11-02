@@ -357,7 +357,7 @@ public static class SkateSurfaceRide
                 {
                     var fraction = (double)sample / samples;
                     var seconds = duration * fraction;
-                    var translation = fullTurn ? SkateRide.Dir(SkateRide.Yaw) * (SkateRide.Speed * (float)seconds) + Vector3.up * (SkateRide.VSpeed * (float)seconds - .5f * SkateRide.AirGravity * (float)(seconds * seconds)) : Vector3.zero;
+                    var translation = fullTurn ? SkateRide.Dir(SkateRide.Yaw) * (SkateRide.Speed * (float)seconds) + Vector3.up * (SkateRide.VSpeed * (float)seconds - .5f * SkateRide.CurrentAirGravity * (float)(seconds * seconds)) : Vector3.zero;
                     var angle = fullTurn ? (next.Kind == SkateBodyFlipKind.Back ? -360 : 360) * fraction : next.Degrees;
                     var target = TurnPoint(basePoint, pos + flipOffset, (float)angle) + translation;
                     var path = target - previous; var length = path.magnitude;

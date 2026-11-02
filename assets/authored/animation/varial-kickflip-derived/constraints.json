@@ -1,0 +1,261 @@
+{
+  "id": "varial-kickflip-derived-tre-v1",
+  "movementKind": "varial-kickflip",
+  "sourceId": "360-flip-source-keyed-v1",
+  "sourceJsonSha256": "7c25f45e4701cbd60c75313cc595a0cd3d911ba1f742239502ef388c4bed49e3",
+  "treHelperSha256": "cb8b012ef99f7a98920c8e114948cfa7b2540b9567db7f40450da568bee91ac9",
+  "firstSourceFrame": 398,
+  "lastSourceFrame": 446,
+  "pop": 403,
+  "rearRelease": 404,
+  "upperRelease": 404.5,
+  "pressEnd": 406,
+  "rotationEnd": 418.5,
+  "catchStart": 416,
+  "catch": 420,
+  "land": 424,
+  "recovery": 430,
+  "pressYawDegrees": 12.5,
+  "rearScoopDepthReduction": 0.2,
+  "maximumReachShare": 0.998,
+  "provenance": "Authored Varial Kickflip derivation from the shared BATB Tre body reference. No filmed Varial attempt is claimed. Smaller BS180 scoop, full kickflip, free rear-foot depth and complete reversed-deck catch placement/heading are authored. Tre source images remain labelled Tre reference. Monocular body depth and reconstructed contacts are not measured 3D. Original and derived packs remain Reviewed=false.",
+  "upperBalance": {
+    "window": [
+      406,
+      409,
+      426,
+      438
+    ],
+    "foldKeys": [
+      [
+        409,
+        32
+      ],
+      [
+        416,
+        32
+      ],
+      [
+        420,
+        26
+      ],
+      [
+        424,
+        30
+      ],
+      [
+        426,
+        35
+      ],
+      [
+        438,
+        20
+      ]
+    ],
+    "arms": {
+      "Left": {
+        "upper": [
+          [
+            409,
+            [
+              -0.75,
+              0.1,
+              0.55
+            ]
+          ],
+          [
+            416,
+            [
+              -0.75,
+              -0.15,
+              0.55
+            ]
+          ],
+          [
+            420,
+            [
+              -0.55,
+              -0.55,
+              0.4
+            ]
+          ],
+          [
+            424,
+            [
+              -0.45,
+              -0.6,
+              0.4
+            ]
+          ]
+        ],
+        "fore": [
+          [
+            409,
+            [
+              -0.45,
+              -0.15,
+              0.85
+            ]
+          ],
+          [
+            416,
+            [
+              -0.15,
+              -0.45,
+              0.85
+            ]
+          ],
+          [
+            420,
+            [
+              -0.05,
+              -0.9,
+              0.35
+            ]
+          ],
+          [
+            424,
+            [
+              -0.05,
+              -0.9,
+              0.35
+            ]
+          ]
+        ]
+      },
+      "Right": {
+        "upper": [
+          [
+            409,
+            [
+              0.7,
+              -0.35,
+              0.55
+            ]
+          ],
+          [
+            416,
+            [
+              0.65,
+              -0.4,
+              0.55
+            ]
+          ],
+          [
+            420,
+            [
+              0.55,
+              -0.55,
+              0.4
+            ]
+          ],
+          [
+            424,
+            [
+              0.45,
+              -0.6,
+              0.4
+            ]
+          ]
+        ],
+        "fore": [
+          [
+            409,
+            [
+              -0.05,
+              -0.6,
+              0.7
+            ]
+          ],
+          [
+            416,
+            [
+              -0.1,
+              -0.6,
+              0.75
+            ]
+          ],
+          [
+            420,
+            [
+              0.05,
+              -0.9,
+              0.35
+            ]
+          ],
+          [
+            424,
+            [
+              0.05,
+              -0.9,
+              0.35
+            ]
+          ]
+        ]
+      }
+    },
+    "provenance": "Authored stable toe-side chest frame and bent-elbow Varial balance. Neither Tre high-V arms nor its monocular crosswise chest yaw are treated as a filmed Varial requirement. Each hand stays near shoulder/waist level in Air and settles through Catch. Air balance is intentionally asymmetric: one forearm reaches forward near shoulder height while the other hand stays lower, then both settle toward Catch.",
+    "facing": [
+      0.94,
+      0,
+      0.342
+    ]
+  },
+  "compactAir": {
+    "window": [
+      406,
+      410,
+      416,
+      420
+    ],
+    "bodyWindow": [
+      406,
+      410,
+      424,
+      432
+    ],
+    "ankles": {
+      "Left": [
+        -0.04,
+        0.14,
+        0.22
+      ],
+      "Right": [
+        -0.04,
+        0.17,
+        -0.22
+      ]
+    },
+    "pelvisXZ": [
+      -0.08,
+      0.0
+    ],
+    "pelvisHeightKeys": [
+      [
+        410,
+        0.65
+      ],
+      [
+        414,
+        0.65
+      ],
+      [
+        416,
+        0.67
+      ],
+      [
+        420,
+        0.75
+      ],
+      [
+        424,
+        0.708
+      ],
+      [
+        430,
+        0.808
+      ]
+    ],
+    "provenance": "Explicit authored Varial-specific free-foot collection, compact pelvis and bent catch, not measured Tre or Varial 3D. The existing rotating-deck shoe clearance and fixed-leg reach checks still apply. Grounded press and final shoe/deck catch targets are unchanged. The higher collecting Left foot is authored 0.03 m nearer the deck during the existing Air window; the already-near rear-foot target is retained. Full rotating-shoe clearance remains unchanged and retains separation where the deck passes under a shoe. This is not a new measured source observation."
+  }
+}

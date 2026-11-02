@@ -1,0 +1,152 @@
+{
+  "id": "inward-heelflip-derived-heel-v1",
+  "sourceBodySha256": "67e4967d1b7024952c0aca66450323fe53b95b4fb860644b29baeabea3594fd9",
+  "sourceControlsSha256": "0b1eabab51af98da815d523d991eea19ef8594426f2a5ede5ebb8f88d88137db",
+  "heelHelperSha256": "96ef4ec776cdb8960cf5c91bbdf823aee30ea35c9dd24fbb251d921b609d8ff6",
+  "pressEnd": 352.75,
+  "catchStart": 359.5,
+  "rotationEnd": 362,
+  "yawKeys": [
+    [
+      333,
+      0
+    ],
+    [
+      348,
+      0
+    ],
+    [
+      350.75,
+      24
+    ],
+    [
+      354,
+      75
+    ],
+    [
+      358,
+      145
+    ],
+    [
+      360.5,
+      176
+    ],
+    [
+      362,
+      180
+    ],
+    [
+      385,
+      180
+    ]
+  ],
+  "authoredBalance": {
+    "window": [
+      348,
+      351,
+      363,
+      373
+    ],
+    "Left": {
+      "upper": [
+        0.2,
+        0.28,
+        0.93
+      ],
+      "fore": [
+        0.75,
+        -0.6,
+        0.12
+      ]
+    },
+    "Right": {
+      "upper": [
+        -0.05,
+        -0.16,
+        -0.97
+      ],
+      "fore": [
+        0.8,
+        -0.4,
+        -0.08
+      ]
+    }
+  },
+  "provenance": "Owner-authorized authored Inward Heelflip derivation: the normal Heelflip body/timing and actual heel-led toe-side exit are shared; an authored BS180 scoop reverses the board under a non-spinning rider. Authored bent balance arms, both release transitions, full combined winding and reversed-deck catch are reconstructed, not filmed Inward motion or measured3D mocap. Raw reviewed=false.",
+  "sourceScan": {
+    "dataset": "https://doi.org/10.25916/sut.31043779.v1",
+    "rows": 24053,
+    "exactNormalInwardLanded": 113,
+    "exactNormalInwardLandedBATB12": 14,
+    "timestampOrVideoIdsPresent": false,
+    "matchedCachedGames": [
+      {
+        "video": "_oRoo1x1uzM",
+        "zeroBasedDataRows": [
+          23984,
+          24052
+        ],
+        "skaters": [
+          "SKL33873423433",
+          "SKL35617659768"
+        ],
+        "normalInwardAttempts": 0
+      },
+      {
+        "video": "PqJZcwTY1QE",
+        "zeroBasedDataRows": [
+          21828,
+          21914
+        ],
+        "skaters": [
+          "SKL30823802521",
+          "SKL39303814382"
+        ],
+        "normalInwardAttempts": 0
+      },
+      {
+        "video": "YcmPDIj2BFo",
+        "zeroBasedDataRows": [
+          23938,
+          23983
+        ],
+        "skaters": [
+          "SKL33262773577",
+          "SKL37225066182"
+        ],
+        "normalInwardAttempts": 0
+      }
+    ],
+    "decision": "Genuine normal Inward annotations exist elsewhere. No seekable normal take verified in three indexed cached battles; use explicitly labelled authored Heel+BS180 derivation under #684, not an absence claim about all footage."
+  },
+  "pressPelvisOffsetKeys": [
+    [
+      333,
+      0
+    ],
+    [
+      348,
+      0
+    ],
+    [
+      350,
+      -0.08
+    ],
+    [
+      352.75,
+      -0.12
+    ],
+    [
+      354,
+      -0.08
+    ],
+    [
+      356,
+      0
+    ],
+    [
+      385,
+      0
+    ]
+  ]
+}

@@ -1,4 +1,4 @@
-# Pointer byref, nested method and generated callee repair
+# Pointer byref, nested method, generated callee and xref-cache repair
 
 Source for the separate Il2CppInterop generator correction defined in merged
 [PR #295](https://github.com/Dj-Shortcut/rust-skate-mod/pull/295), tracked in
@@ -153,9 +153,36 @@ unchanged. A fresh native 191-assembly generation, complete reference/signature/
 roundtrip and sidecar audit, Windows recipe/staging, loader and gameplay acceptance
 remain unverified gates.
 
+## Cached xref ranges and consumed scan data
+
+Pass89 reuses six cached attribute fields for methods that share a native address.
+The original duplicate path writes `RefRangeStart/End` into `XrefRangeStart/End`.
+The additional hunk copies the matching xref fields instead. Reference ranges,
+metadata initialization fields, native addresses and the cache file format stay
+unchanged; no existing generated assembly or sidecar is repaired in place.
+
+After copying each method's scan records, release that method's consumed scan
+list. Remove its caller-map entry only after the canonical six-field attribute
+has been stored, so a later method at the same address can still reuse it. Clear
+remaining caller entries after gathering completes. This changes retention, not
+scan eligibility, cache mode, output order or the later writer.
+
+A temporary fixture running copies of the two Pass89 method bodies with 360
+authored method contexts preserves byte-exact binary/text sidecars and all six attribute fields against the range-corrected
+baseline, including duplicate addresses across assemblies and an empty first
+method followed by a nonempty duplicate. The locked offline source build passes
+with four existing warnings and zero errors. The patched Pass89 source hash is
+pinned alongside the prior four patched files.
+
+The complete private generation still exhausted the approved 8 GiB limit in
+Pass89, with no new output set. This patch is not evidence that generation fits
+that limit or that the old output is usable. Full output validation, current
+native binding checks, Windows staging and gameplay remain open. No resource
+limit or installation policy is changed.
+
 ## Build and verification contract
 
-The recipe pins the source archive, four-file patch, SDK 8.0.425 and complete
+The recipe pins the source archive, five-file patch, SDK 8.0.425 and complete
 Generator/Common restore locks. It preserves upstream projects, global SDK policy,
 assembly identities and dependency boundaries; only packaging is disabled during
 the build. It stages only the netstandard2.1 Generator replacement, version 1.5.3.0.

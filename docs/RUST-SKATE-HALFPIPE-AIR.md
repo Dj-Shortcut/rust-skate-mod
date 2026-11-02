@@ -1,0 +1,80 @@
+# Coupled rider and board frames in halfpipe airs
+
+A straight vert air keeps the rider and skateboard in their common departure
+basis until a landing is actually observed. Reaching the ballistic apex does not
+supply a new surface or automatically level that assembly. Existing local grab
+tweaks and hand/foot contacts remain relative to this shared base. A sensed
+landing approach then turns both toward the actual return normal.
+
+This policy is latched before TakeOff resets any action owner. It requires an
+actual grounded ramp observation from the same or preceding physics step, at
+most 0.1 s old, with normal Y between 0 and 0.15 (over 81.4 degrees). The actual
+outgoing launch vector must rise, with horizontal speed at most one quarter of
+its vertical speed. Launch passes that uncompensated rise separately; gravity
+compensation for the first air step remains unchanged. A missed lip ray can use
+only that immediately preceding ramp provenance. A new flat support, owner,
+plant or non-air mode cannot inherit this class. Flatground, grind exits, wall
+and independent actions keep their existing policy. Other ordinary free air
+still uses the estimated-apex world-up release; it is not reclassified here.
+
+A valid grab request during that natural vert departure starts the existing
+trick/scoring lifecycle without adding a pop or marking the rider as jumped.
+The existing action, flip, shove and planted-foot restrictions still apply;
+wall, body-flip and special-board owners cannot open this route. Releasing the
+grab retains its normal landing score, while holding it through contact still
+bails. An ordinary fall without this departure class remains unscored.
+
+`SkateRide.ViewNormal` supplies one common base for the board and rider's lower
+body; `RiderViewNormal` reads that same value. Existing ollie pitch, grab tweaks,
+flips and body flips remain relative rotations on top. Foot and grab contacts are
+solved against the actual `DeckFrame`. Leveling only the torso while leaving the
+base board vertical is explicitly rejected.
+
+A free steep transition air without a pop also gathers the knees toward the
+apex and extends toward reentry. The board rises by at most0.10m while the
+matching crouch keeps rider and feet together. Grabs, popped tricks and
+independently anchored actions keep their own pose timing. A sensed steep-air
+landing approach also raises the ordinary crouch target toward0.6 before contact,
+including after a released grab. It uses the existing monotone observed
+`LandingShare`; it does not predict or trigger contact. Existing impact-driven
+landing compression and recovery continue after ground contact.
+
+The free-air timing uses elapsed release time, release rise and gravity. Rotation
+is continuous and bounded. Without positive outgoing rise, the assembly retains
+its departure basis until a landing is sensed, avoiding a brief upright detour on
+an edge drop. A landing approach retains its starting up-vector and
+a monotone share toward the observed plane; a missed probe cannot turn it away
+from an approach already observed. Planted feet retain their support until
+release; wall and handplant routes retain their own frame owners.
+
+Ordinary board and rider placement also share the capsule-sphere display datum:
+`radius * (worldUp - ViewNormal)` before Pop, Tilt and relative board rotations.
+The radius comes from the player's collider. This rotates the displayed assembly
+about the capsule sphere centre instead of leaving a visible gap at steep
+support. The offset stays active through ordinary Ground and Air, and is exactly
+zero on flat ground. Wall, handplant, independent action/oldschool, grind, bail,
+scenario and showcase anchors are excluded. It does not change the physical
+player, velocity, collision, landing detection or scoring.
+
+At most three `AIRFRAME` lines accompany a steep departure: departure, first
+descent and first sensed landing approach. They report mode, whether release
+came from a grind, the common body/board base, nose/deck yaw and relative display
+angles. Flat departures stay quiet. No world position or player identity is
+recorded. Logs are physics-step observations rather than rendered pixels.
+
+The four controlled cases cover two free departures, a grab and an explicit grind
+control on the reference skin and real board. The original body-only comparison
+is superseded. These controls have no sensed landing plane; separate transition
+return previews use labeled offline capsule/mesh contact emulation. Source
+compilation and bounded landing examples do not establish native Unity collision,
+full hand-grip quality or Shadow gameplay acceptance. Native validation remains
+open.
+
+Ordinary ungrabbed air also owns a separate head look. Named grabs retain their
+separate grab look. Rising motion keeps a forward
+horizon gaze; descending motion follows velocity toward the observed landing
+plane, with bounded yaw and downward pitch. This runs after secondary solving
+and is restored after easing/shaping. Native neck yaw uses the solved head up
+instead of the tilted chest up, and the competing generic head lift is skipped
+only when this air look succeeds. Captured heads and special pose owners retain
+precedence. The common body/board basis and every contact endpoint stay unchanged.

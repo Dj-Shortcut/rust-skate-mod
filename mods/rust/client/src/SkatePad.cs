@@ -40,6 +40,9 @@ public static class SkatePad
     private static float heldX, heldY;
     private static double heldSeconds;
     private static bool heldAir;
+    // Presentation may reserve a free pose until this hold or its queued extra
+    // reaches physics. Reading this never consumes or creates a rotation.
+    public static bool HeldFlipExtensionPending { get { return heldFlip != 0 && heldAir && heldExtras < 2 || heldFlips != 0; } }
     // A body varial the left stick asked for, in degrees, until the ride takes it.
     public static float BodyVarialDegrees;
     public static int BodyVarials;
@@ -61,6 +64,13 @@ public static class SkatePad
     private static long grabRimAt;
 
     private static void Say(string m) { Out.Say("PAD " + m); }
+
+    // A read-only presentation setup; the caller still owns ground/action gates.
+    public static bool TryGroundPreparation(out bool nosePop, out double charge)
+    {
+        nosePop = false; charge = 0;
+        return Shared && !rightSuspended && SkateFlick.TryGroundPreparation(flick, out nosePop, out charge);
+    }
 
     public static void Poll(float now)
     {
@@ -276,7 +286,8 @@ public static class SkatePad
         if (!heldAir) { heldAir = true; heldSeconds = 0; }
         heldSeconds += dt;
         // Queue before the first rotation can finish, so physics keeps one continuous burst.
-        var interval = 360.0 / SkateMotion.FlipRate - (heldExtras == 0 ? SkateMotion.MaximumStep : 0);
+        var interval = SkateRide.CanContinueFlatFlip ? .10 :
+            360.0 / SkateMotion.FlipRate - (heldExtras == 0 ? SkateMotion.MaximumStep : 0);
         if (heldSeconds + 1e-9 >= interval)
         {
             heldSeconds -= interval;

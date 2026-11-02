@@ -1,0 +1,1562 @@
+{
+  "format": "original-authored-skate-keys/1",
+  "firstSourceFrame": 254,
+  "sourceFps": 29.97002997002997,
+  "sampleCount": 83,
+  "duration": 1.3666666666666667,
+  "metadata": {
+    "label": "Kickflip \u2014 captured basis + authored reference-ground pop [UNREVIEWED]",
+    "sourceUrl": "https://www.youtube.com/watch?v=YcmPDIj2BFo&t=144",
+    "sourceAuthor": "Original retargeted controls; The Berrics visual reference",
+    "rights": "Original project reconstruction/retarget control data. Reference footage and pixels are not included or relicensed; no footage license is asserted.",
+    "provenance": "Captured body retained; local flick, sole/upper-contact semantics, late foot clearance and soft landing are explicitly authored.",
+    "uncertainties": "Reference filmed stance is uncertain; canonical Regular and its anatomical Goofy mirror are authoring mappings. Flick contact anatomy, hidden depth and Catch273 within blurred272\u2013274 are authored.",
+    "authoredContactSemantics": "Conservative authored contact-intent markers, not measured confidence or a claim that the whole sole stays flat. The front ankle starts rolling during the late259.25\u2013261 grip-slide while masks remain unchanged; dark outer-instep contact leads at261, then262 is free carrier-space release.",
+    "authoredKeyRepair": "Captured body remains the basis with labelled upper reconstruction259\u2013278. Authored reference-ground tail pressure and hip extension258\u2013264.5 replace the earlier floating pop; front live-deck slide/instep/release and later compact tuck/Catch/recovery are retained. No marker or strict-reader guard is relaxed.",
+    "bodyProvenance": "Captured skeletal basis from captured-body.json. Labelled short upper-body reconstruction, authored board and local foot/contact constraints; not fully captured or fully hand-authored body motion.",
+    "rearSolePopCompliance": "Rear sole follows the live tail through physical reference-strike260; pickup starts afterwards and C2 releases through261.5. Semantic contact/event markers remain unchanged and are not evidence of measured contact.",
+    "authoredFreeAirDepth": "Source266/267 images show a compact free-Air tuck. One C2 reconstructed-depth path pair is blended262.5\u2013272. The rear foot rises over the rear board half while the tail turns, then returns to the retained compact source267 target. The existing compact target is retained; reference-ground pressure returns to this captured/contact basis by264.5, while Catch markers remain unchanged; hidden depth remains unreviewed.",
+    "authoredRearClearance": "After the preserved reference tail strike260, the rear foot lifts vertically into one short pickup curve before the retained compact tuck. It does not revisit the former rotating-tail ankle target or receive an extra backwards tail-normal kick. Hidden depth remains authored and unreviewed.",
+    "authoredCatchRecovery": "Completed Catch pins feet over source272\u2013273. Hip recovery starts at273 and reaches its authored landing envelope at277, retaining captured Catch extension before the impact bend.",
+    "authoredEarlyBoardClearance": "Own board convex support points define the early ground countertranslation and tail strike. Original paired nose-retaining board keys remain the base outside the pressure window. The actual runtime carrier is added once with bounded reference-height compensation.",
+    "authoredUpperReconstruction": "Short source-led torso/head reconstruction259\u2013278 retains the earlier forward torso40deg and board-directed gaze267. A separate restrained bent-elbow balance arc258\u2013278 replaces the former raised-hands oscillation. Far-arm depth is occluded/blurred and explicitly authored; no observed overhead gesture is asserted. Captured gesture basis resumes outside its windows; limbs retain fixed lengths.",
+    "authoredPopFlickPath": "One coupled pop-to-flick path: native middle-foot259 slides toward nose260 while the ankle starts rolling after259.25; actual dark outer-instep surface/normal leads the curved heel-side nose contact261, then releases outward262 into the compact board-close tuck. Foot roles, event clock and contact masks are unchanged; hidden depth remains authored/unreviewed.",
+    "authoredKneeAim": "During258\u2013278 displaced ankles retain a continuous stance/body-facing knee bend plane, with a small toe contribution. The flicking foot does not steer the whole thigh; fixed thigh/shin lengths still determine flexion without angle caps.",
+    "authoredGroundPress": "Source258\u2013262 uses own board support hulls to solve actual tail strike while retaining wheel clearance. Reference carrier T=.6/g8 is subtracted during pressure, not added as another jump. Authored near-straight rear-leg pressure260 translates the captured hip/upper group within258\u2013264.5; the existing captured/upper gesture basis returns by264.5. Hidden depth and timing remain authored and unreviewed.",
+    "authoredArmBalance": "One C2 restrained balance arc258\u2013278, with bent elbows: the near hand peaks around shoulder height261 and descends through Air/Catch; the occluded far arm remains a calm lateral balance reconstruction. It replaces the former two-hands-above-head/forward/back sequence. Hidden depth is authored, not observed 3D.",
+    "authoredLoadPopJoin": "Pop259 begins on the actual flat native Load footframes: measured front footprint+.06/rear\u2212.32, not the old+.22 front ankle. The front slides from middle259 to nose260, then instep261; reference board pitch starts0deg259 and reaches the retained44deg strike260. Physical toe render point is native flat toe minus soleUp*.07 exactly once. Source control does not predict a trick during ordinary charge.",
+    "authoredTailStrikeHold": "Visible reference-ground tail pressure holds the exact44.1617deg strike from259.75 through260.25. Both endpoints are explicit additional pack samples; post-strike lift starts after260.25. This prevents60Hz playback missing an instantaneous source strike. Native physics, reference compensation, semantic markers and strict geometry thresholds remain unchanged.",
+    "authoredCoupledAirCatch": "After261 one C2 source-led envelope replaces the independent high captured hips/free-foot clearances. The body collects over close free feet while the board keeps its full existing rotation; Catch is already bent, then absorption/recovery continue smoothly. Own board support geometry defines clearance. Recovery retains a stable body-facing knee plane instead of ill-conditioned near-straight captured poles. No runtime physics correction, measured3D claim or marker relaxation.",
+    "authoredLandingCarrier": "The local hip envelope subtracts the existing reference carrier through271-279, matching the existing curve endpoint velocities so its combined world trajectory remains smooth across sourceLand275. Source board/feet and actual native collision remain authoritative; no additional physical arc or delayed landing.",
+    "authoredInstepMaterialContact": "The projected black outer-instep feature and its actual mesh surface normal define contact against the analytic curved nose normal. Toe heading stays tangential to that surface. The roll begins during the late grip-slide after flat259, and the contact orientation is held after261 while releasing. No absolute angle increase, rig/mesh change, physics alteration or contact-threshold relaxation."
+  },
+  "sourceRootMotion": {
+    "origin": "Physical support anchor local(0,0,0)",
+    "axes": "Y-up, +Z nose; canonical Regular, anatomical Goofy mirror",
+    "groundDeckTopY": 0.092,
+    "ballisticArcIncluded": false,
+    "horizontalTravelIncluded": false,
+    "extraction": "Subtract exactly upright translation [sourceBoard.origin.x,sourceBoard.origin.y-.092,sourceBoard.origin.z] from all joints. Directions unchanged. No inverse rolling-board rotation; no physical flight arc retained.",
+    "runtime": "Add the actual physical upright carrier once to body and board. During authored press, apply (referenceHeight-actualRise)*boardWeight; adjoining feet use their independent release weights. No extra jump arc or second DeckTop.",
+    "board": "Independent authored board path with a short reference-ground countertranslation258\u2013262 from own board support hulls; outside the press window retain the prior source-led board winding.",
+    "bodyAfterSource278": "Captured gesture controls continue through source296, with explicitly authored coupled hip/feet recovery and stable body-facing knee planes. No additional measured footage or source frames are asserted."
+  },
+  "flickPatch": {
+    "shoeLocal": [
+      -0.04219660068,
+      -0.04039648743,
+      0.08992672899
+    ],
+    "deckLocal": [
+      -0.0805,
+      0.0325,
+      0.36
+    ],
+    "provenance": "Projected once onto the original frozen dark outer-instep side mesh, outward normal approximately[-.97935,+.19878,+.03674]; the white band lies about3cm lower locally. Same nose-rim point. Original authored geometry only, not measured source depth."
+  },
+  "keys": [
+    {
+      "sourceFrame": 254,
+      "boardPitch": 0,
+      "boardRoll": 0,
+      "boardLift": 0,
+      "feet": {
+        "Left": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            0.22
+          ],
+          "angles": [
+            45,
+            0,
+            0
+          ]
+        },
+        "Right": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            -0.26
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D."
+    },
+    {
+      "sourceFrame": 257,
+      "boardPitch": 0,
+      "boardRoll": 0,
+      "boardLift": 0,
+      "feet": {
+        "Left": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            0.22
+          ],
+          "angles": [
+            45,
+            0,
+            0
+          ]
+        },
+        "Right": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            -0.26
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D."
+    },
+    {
+      "sourceFrame": 259,
+      "boardPitch": 12,
+      "boardRoll": 0,
+      "boardLift": 0,
+      "feet": {
+        "Left": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            0.22
+          ],
+          "angles": [
+            45,
+            0,
+            0
+          ]
+        },
+        "Right": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            -0.26
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D."
+    },
+    {
+      "sourceFrame": 260,
+      "boardPitch": 31.4213043478261,
+      "boardRoll": 0.0,
+      "boardLift": 0.0,
+      "feet": {
+        "Left": {
+          "space": "deck",
+          "position": [
+            -0.045,
+            0.106,
+            0.275
+          ],
+          "angles": [
+            56,
+            0,
+            0
+          ]
+        },
+        "Right": {
+          "space": "carrier",
+          "position": [
+            0.2,
+            0.13,
+            -0.3
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "uncertainty": "Last sole-slide/body key; hybrid popContact fits the front sole to the live curved deck. The rear foot leaves sideways in that same moving tail frame; neither event mask nor board curve changes.",
+      "boardKey": false
+    },
+    {
+      "sourceFrame": 261,
+      "boardPitch": 23.818560999340143,
+      "boardRoll": 0,
+      "boardLift": -0.09,
+      "feet": {
+        "Left": {
+          "space": "upper-patch",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "angles": [
+            40,
+            40,
+            -25
+          ]
+        },
+        "Right": {
+          "space": "carrier",
+          "position": [
+            0.2,
+            0.14,
+            -0.32
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "uncertainty": "Authored upper/outside forefoot feature on the actual heel-side nose corner, with toes clearing the curved nose. Rear foot is outside the tail sweep; no sole support is asserted.",
+      "boardOffsetX": 0.0,
+      "boardOffsetZ": -0.038979067936874695
+    },
+    {
+      "sourceFrame": 262,
+      "boardPitch": 27.971080239524596,
+      "boardRoll": 25,
+      "boardLift": -0.09,
+      "feet": {
+        "Left": {
+          "space": "carrier",
+          "position": [
+            -0.27679263191836,
+            0.452524564505643,
+            0.20870675311161074
+          ],
+          "angles": [
+            40,
+            40,
+            -25
+          ]
+        },
+        "Right": {
+          "space": "carrier",
+          "position": [
+            0.2,
+            0.16,
+            -0.33
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "uncertainty": "Explicit carrier-space release outward from the source261 upper contact. Foot role remains front/nose; it returns into the existing free-Air tuck rather than tracking the rolling board.",
+      "boardOffsetX": -0.014117970084073478,
+      "boardOffsetZ": -0.04871113887549716
+    },
+    {
+      "sourceFrame": 264,
+      "boardPitch": 18,
+      "boardRoll": 115,
+      "boardLift": 0.035,
+      "feet": {
+        "Left": {
+          "space": "carrier",
+          "position": [
+            -0.055,
+            0.46,
+            0.34
+          ],
+          "angles": [
+            80,
+            5,
+            8
+          ]
+        },
+        "Right": {
+          "space": "carrier",
+          "position": [
+            0.2,
+            0.41,
+            -0.3
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D."
+    },
+    {
+      "sourceFrame": 267,
+      "boardPitch": 2,
+      "boardRoll": 205,
+      "boardLift": 0.055,
+      "feet": {
+        "Left": {
+          "space": "carrier",
+          "position": [
+            -0.055,
+            0.43,
+            0.3
+          ],
+          "angles": [
+            80,
+            5,
+            8
+          ]
+        },
+        "Right": {
+          "space": "carrier",
+          "position": [
+            -0.055,
+            0.41,
+            -0.3
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D."
+    },
+    {
+      "sourceFrame": 269,
+      "boardPitch": -5,
+      "boardRoll": 285,
+      "boardLift": 0.035,
+      "feet": {
+        "Left": {
+          "space": "carrier",
+          "position": [
+            -0.055,
+            0.43,
+            0.3
+          ],
+          "angles": [
+            80,
+            5,
+            8
+          ]
+        },
+        "Right": {
+          "space": "carrier",
+          "position": [
+            -0.055,
+            0.41,
+            -0.3
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D."
+    },
+    {
+      "sourceFrame": 273,
+      "boardPitch": 0,
+      "boardRoll": 360,
+      "boardLift": 0,
+      "feet": {
+        "Left": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            0.22
+          ],
+          "angles": [
+            45,
+            0,
+            0
+          ]
+        },
+        "Right": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            -0.26
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D."
+    },
+    {
+      "sourceFrame": 275,
+      "boardPitch": 0,
+      "boardRoll": 360,
+      "boardLift": 0,
+      "feet": {
+        "Left": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            0.22
+          ],
+          "angles": [
+            45,
+            0,
+            0
+          ]
+        },
+        "Right": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            -0.26
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D."
+    },
+    {
+      "sourceFrame": 278,
+      "boardPitch": 0,
+      "boardRoll": 360,
+      "boardLift": 0,
+      "feet": {
+        "Left": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            0.22
+          ],
+          "angles": [
+            45,
+            0,
+            0
+          ]
+        },
+        "Right": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            -0.26
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "uncertainty": "Authored depth/metric orientation from one oblique view; source frame constrains coupled silhouette, not calibrated3D."
+    },
+    {
+      "sourceFrame": null,
+      "boardPitch": 0,
+      "boardRoll": 360,
+      "boardLift": 0,
+      "feet": {
+        "Left": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            0.22
+          ],
+          "angles": [
+            45,
+            0,
+            0
+          ]
+        },
+        "Right": {
+          "space": "deck",
+          "position": [
+            -0.055,
+            0.106,
+            -0.26
+          ],
+          "angles": [
+            88,
+            0,
+            0
+          ]
+        }
+      },
+      "uncertainty": "AUTHORED beyond source278: gentle0.4s body recovery toward ordinary0.18 soft-knee stance. Same board/bolt foot anchors.",
+      "t": 1.2008,
+      "authoredRecovery": true
+    }
+  ],
+  "events": [
+    {
+      "t": 0,
+      "phase": "load",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "t": 0.16683333333333333,
+      "phase": "pop",
+      "contacts": [
+        "LeftFoot"
+      ]
+    },
+    {
+      "t": 0.20020000000000002,
+      "phase": "air",
+      "contacts": []
+    },
+    {
+      "t": 0.26693333333333336,
+      "phase": "air",
+      "contacts": []
+    },
+    {
+      "t": 0.6339666666666667,
+      "phase": "catch",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "t": 0.7007,
+      "phase": "land",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "t": 0.8008000000000001,
+      "phase": "recovery",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    }
+  ],
+  "hybrid": {
+    "frontWindow": [
+      258,
+      259,
+      262,
+      265
+    ],
+    "rearWindow": [
+      259,
+      260,
+      264,
+      267
+    ],
+    "rearAnkleOffset": [
+      0.18,
+      0,
+      -0.06
+    ],
+    "lateClearanceWindow": [
+      268,
+      270,
+      271,
+      273
+    ],
+    "lateClearance": 0.06,
+    "softLandingStart": 273,
+    "softLandingFull": 277,
+    "softHipKeys": [
+      [
+        273,
+        0.9755
+      ],
+      [
+        275,
+        0.78
+      ],
+      [
+        277,
+        0.76
+      ],
+      [
+        278,
+        0.78
+      ],
+      [
+        290,
+        0.925
+      ],
+      [
+        296,
+        0.925
+      ]
+    ],
+    "sourceBodySha256": "b5224ee43c8e371fdfcfe498cbae2402c447aa97702cc05e3c63b1fc7032e387",
+    "freeAirWindow": [
+      262.5,
+      264.5,
+      269,
+      272
+    ],
+    "groundPinStart": 272,
+    "groundPinFull": 273,
+    "freeAirTargetKeys": {
+      "Left": [
+        [
+          264.5,
+          -0.055,
+          0.41,
+          0.3
+        ],
+        [
+          269,
+          -0.055,
+          0.41,
+          0.3
+        ]
+      ],
+      "Right": [
+        [
+          264.5,
+          0.045,
+          0.46,
+          -0.3
+        ],
+        [
+          266,
+          0.055,
+          0.37,
+          -0.3
+        ],
+        [
+          269,
+          0.055,
+          0.37,
+          -0.3
+        ]
+      ]
+    },
+    "upperWindow": [
+      259,
+      261,
+      273,
+      278
+    ],
+    "upperKeys": [
+      {
+        "frame": 259,
+        "torsoUp": [
+          0.19728498324098728,
+          0.9781092318333368,
+          0.06618886605769418
+        ],
+        "headForward": [
+          0.9164656069490591,
+          -0.02289833006156307,
+          0.39945770459447194
+        ]
+      },
+      {
+        "frame": 261,
+        "torsoUp": [
+          -0.040774837253224026,
+          0.9781476007338057,
+          0.20387418626612014
+        ],
+        "headForward": [
+          -0.18827148973265667,
+          -0.2800000000000001,
+          0.9413574486632834
+        ]
+      },
+      {
+        "frame": 267,
+        "torsoUp": [
+          -0.1260610217264356,
+          0.766044443118978,
+          0.630305108632178
+        ],
+        "headForward": [
+          -0.13670832038072434,
+          -0.7169949188144308,
+          0.6835416019036217
+        ]
+      },
+      {
+        "frame": 273,
+        "torsoUp": [
+          -0.10392571803668625,
+          0.848048096156426,
+          0.5196285901834313
+        ],
+        "headForward": [
+          -0.12535772714300464,
+          -0.7690393009359404,
+          0.6267886357150231
+        ]
+      },
+      {
+        "frame": 278,
+        "torsoUp": [
+          0.07729966889002302,
+          0.9577215884557213,
+          0.27711752054921174
+        ],
+        "headForward": [
+          0.6828237500956967,
+          -0.23266915321903342,
+          0.6925437108555584
+        ]
+      }
+    ],
+    "popContact": {
+      "deckHalfWidth": 0.102,
+      "capBase": 0.288,
+      "capLength": 0.112,
+      "kickStart": 0.245,
+      "kickSpan": 0.155,
+      "kickRise": 0.05,
+      "concave": 0.008,
+      "soleLocalY": -0.0948,
+      "soleRows": [
+        [
+          -0.073,
+          0.031
+        ],
+        [
+          -0.04,
+          0.045
+        ],
+        [
+          0.04,
+          0.046
+        ],
+        [
+          0.121,
+          0.043
+        ],
+        [
+          0.164,
+          0.027
+        ]
+      ],
+      "soleGap": 0.005,
+      "rollClearance": 0.025,
+      "rearFreeKeys": [
+        [
+          262,
+          0.025,
+          0.35,
+          -0.29
+        ],
+        [
+          263,
+          0.04,
+          0.48,
+          -0.3
+        ],
+        [
+          264.5,
+          0.045,
+          0.46,
+          -0.3
+        ]
+      ],
+      "frontFree262": [
+        -0.12,
+        0.43,
+        0.28
+      ],
+      "instepContactBoardQuaternion": [
+        -0.2821982806974629,
+        0.0,
+        0.0,
+        0.9593561019618294
+      ],
+      "instepSurfaceNormalLocal": [
+        -0.97935,
+        0.19878,
+        0.03674
+      ],
+      "instepRollStart": 259.25
+    },
+    "kneeAimWindow": [
+      258,
+      260,
+      296,
+      297
+    ],
+    "referenceGroundPress": {
+      "boardWindow": [
+        258,
+        259,
+        260.25,
+        262
+      ],
+      "bodyWindow": [
+        258,
+        259.5,
+        260.25,
+        264.5
+      ],
+      "referenceFlight": 0.6,
+      "gravity": 8,
+      "popFrame": 259,
+      "landFrame": 275,
+      "strikeSearch": [
+        30,
+        60
+      ],
+      "wheelClearance": 0.005,
+      "liftKeys": [
+        [
+          258,
+          0
+        ],
+        [
+          260.25,
+          0
+        ],
+        [
+          261,
+          0.11
+        ],
+        [
+          262,
+          0.2
+        ]
+      ],
+      "rearReachKeys": [
+        [
+          258,
+          0.78
+        ],
+        [
+          259,
+          0.88
+        ],
+        [
+          260,
+          0.975
+        ],
+        [
+          261,
+          0.92
+        ],
+        [
+          264.5,
+          0.78
+        ]
+      ],
+      "rearFootRelease": [
+        260,
+        261.5
+      ],
+      "frontFootRelease": [
+        261,
+        262
+      ],
+      "sourceBodyRestored": 264.5,
+      "support": {
+        "provenance": "Convex support points of the original project rigid board mesh in deck-top-local coordinates; extracted offline once, no third-party geometry.",
+        "sourceGeometrySha256": "107f9181d5855422577696ef8402ec8c3ac3b438792a5ca38511c435b857ffd8",
+        "board": [
+          [0.09584864, 0.020822149999999998, 0.32630625],
+          [0.08833459, 0.026397489999999996, 0.34399998],
+          [0.07813653, 0.03221428, 0.3599922],
+          [0.051, 0.04278783, 0.38499483],
+          [0.017712114, 0.049149479999999995, 0.39829844],
+          [-0.017712114, 0.049149479999999995, 0.39829844],
+          [-0.034886055, 0.04667307000000001, 0.39324558],
+          [-0.051, 0.04278783, 0.38499483],
+          [-0.09584864, 0.020822149999999998, -0.32630625],
+          [-0.07813653, 0.03221428, -0.3599922],
+          [-0.017712114, 0.049149479999999995, -0.39829844],
+          [0.065564334, 0.037829150000000006, -0.37379697],
+          [0.07813653, 0.03221428, -0.3599922],
+          [0.09584864, 0.020822149999999998, -0.32630625],
+          [0.065564334, 0.037829150000000006, 0.37379697],
+          [0.034886055, 0.04667307000000001, 0.39324558],
+          [6.2456988e-18, 0.049999989999999994, 0.39999998],
+          [-0.065564334, 0.037829150000000006, 0.37379697],
+          [-0.07813653, 0.03221428, 0.3599922],
+          [-0.08833459, 0.026397489999999996, 0.34399998],
+          [-0.09584864, 0.020822149999999998, 0.32630625],
+          [-0.08833459, 0.026397489999999996, -0.34399998],
+          [-0.065564334, 0.037829150000000006, -0.37379697],
+          [-0.051, 0.04278783, -0.38499483],
+          [-0.034886055, 0.04667307000000001, -0.39324558],
+          [-1.8737095e-17, 0.049999989999999994, -0.39999998],
+          [0.017712114, 0.049149479999999995, -0.39829844],
+          [0.034886055, 0.04667307000000001, -0.39324558],
+          [0.051, 0.04278783, -0.38499483],
+          [0.08833459, 0.026397489999999996, -0.34399998],
+          [0.1018467, 0.014574959999999998, 0.30767283],
+          [0.09719102, 0.019522150000000002, 0.3267512],
+          [0.08958631, 0.02509749, 0.34465814],
+          [0.0792602, 0.030914280000000002, 0.3608509],
+          [0.0665226, 0.03652915000000001, 0.374837],
+          [0.051757198, 0.04148782000000001, 0.38618925],
+          [0.03541088, 0.04537305999999999, 0.3945588],
+          [0.01798093, 0.047849470000000005, 0.39968687],
+          [6.2456988e-18, 0.048699980000000004, 0.4014142],
+          [-0.01798093, 0.047849470000000005, 0.39968687],
+          [-0.03541088, 0.04537305999999999, 0.3945588],
+          [-0.051757198, 0.04148782000000001, 0.38618925],
+          [-0.0665226, 0.03652915000000001, 0.374837],
+          [-0.0792602, 0.030914280000000002, 0.3608509],
+          [-0.08958631, 0.02509749, 0.34465814],
+          [-0.09719102, 0.019522150000000002, 0.3267512],
+          [-0.1018467, 0.014574959999999998, 0.30767283],
+          [-0.10341418, 0.010548070000000007, 0.2880071],
+          [-0.10341418, 0.010548070000000007, -0.2880071],
+          [-0.1018467, 0.014574959999999998, -0.30767283],
+          [-0.09719102, 0.019522150000000002, -0.3267512],
+          [-0.08958631, 0.02509749, -0.34465814],
+          [-0.0792602, 0.030914280000000002, -0.3608509],
+          [-0.0665226, 0.03652915000000001, -0.374837],
+          [-0.051757198, 0.04148782000000001, -0.38618925],
+          [-0.03541088, 0.04537305999999999, -0.3945588],
+          [-0.01798093, 0.047849470000000005, -0.39968687],
+          [-1.8737095e-17, 0.048699980000000004, -0.4014142],
+          [0.01798093, 0.047849470000000005, -0.39968687],
+          [0.03541088, 0.04537305999999999, -0.3945588],
+          [0.051757198, 0.04148782000000001, -0.38618925],
+          [0.0665226, 0.03652915000000001, -0.374837],
+          [0.0792602, 0.030914280000000002, -0.3608509],
+          [0.08958631, 0.02509749, -0.34465814],
+          [0.09719102, 0.019522150000000002, -0.3267512],
+          [0.1018467, 0.014574959999999998, -0.30767283],
+          [0.10341418, 0.010548070000000007, -0.2880071],
+          [0.10341418, 0.010548070000000007, 0.2880071],
+          [0.10399997, 0.007348069999999998, 0.28801006],
+          [0.10242509, 0.011374960000000003, 0.3077657],
+          [0.097747065, 0.016322150000000007, 0.32693553],
+          [0.0901048, 0.021897490000000006, 0.34493077],
+          [0.07972565, 0.027714274999999997, 0.3612066],
+          [0.066919535, 0.03332915, 0.37526783],
+          [0.052070852, 0.038287829999999995, 0.386684],
+          [0.03562828, 0.04217307000000001, 0.39510274],
+          [0.01809228, 0.04464947, 0.40026197],
+          [6.2456988e-18, 0.04549998999999999, 0.40199998],
+          [-0.01809228, 0.04464947, 0.40026197],
+          [-0.03562828, 0.04217307000000001, 0.39510274],
+          [-0.052070852, 0.038287829999999995, 0.386684],
+          [-0.066919535, 0.03332915, 0.37526783],
+          [-0.07972565, 0.027714274999999997, 0.3612066],
+          [-0.0901048, 0.021897490000000006, 0.34493077],
+          [-0.097747065, 0.016322150000000007, 0.32693553],
+          [-0.10242509, 0.011374960000000003, 0.3077657],
+          [-0.10399997, 0.007348069999999998, 0.28801006],
+          [-0.103999995, 0.003500000000000003, 0],
+          [-0.10399997, 0.007348069999999998, -0.28801006],
+          [-0.10242509, 0.011374960000000003, -0.3077657],
+          [-0.097747065, 0.016322150000000007, -0.32693553],
+          [-0.0901048, 0.021897490000000006, -0.34493077],
+          [-0.07972565, 0.027714274999999997, -0.3612066],
+          [-0.066919535, 0.03332915, -0.37526783],
+          [-0.052070852, 0.038287829999999995, -0.386684],
+          [-0.03562828, 0.04217307000000001, -0.39510274],
+          [-0.01809228, 0.04464947, -0.40026197],
+          [-1.8737095e-17, 0.04549998999999999, -0.40199998],
+          [0.01809228, 0.04464947, -0.40026197],
+          [0.03562828, 0.04217307000000001, -0.39510274],
+          [0.052070852, 0.038287829999999995, -0.386684],
+          [0.066919535, 0.03332915, -0.37526783],
+          [0.07972565, 0.027714274999999997, -0.3612066],
+          [0.0901048, 0.021897490000000006, -0.34493077],
+          [0.097747065, 0.016322150000000007, -0.32693553],
+          [0.10242509, 0.011374960000000003, -0.3077657],
+          [0.10399997, 0.007348069999999998, -0.28801006],
+          [0.103999995, 0.003500000000000003, 0],
+          [0.1018467, 0.008174959999999995, 0.30767283],
+          [0.09719102, 0.013122149999999999, 0.3267512],
+          [0.08958631, 0.018697489999999997, 0.34465814],
+          [0.0792602, 0.02451428, 0.3608509],
+          [0.0665226, 0.030129160000000002, 0.374837],
+          [0.051757198, 0.035087830000000014, 0.38618925],
+          [0.03541088, 0.03897307, 0.3945588],
+          [0.01798093, 0.04144948000000001, 0.39968687],
+          [6.2456988e-18, 0.042300000000000004, 0.4014142],
+          [-0.01798093, 0.04144948000000001, 0.39968687],
+          [-0.03541088, 0.03897307, 0.3945588],
+          [-0.051757198, 0.035087830000000014, 0.38618925],
+          [-0.0665226, 0.030129160000000002, 0.374837],
+          [-0.0792602, 0.02451428, 0.3608509],
+          [-0.08958631, 0.018697489999999997, 0.34465814],
+          [-0.09719102, 0.013122149999999999, 0.3267512],
+          [-0.1018467, 0.008174959999999995, 0.30767283],
+          [-0.1018467, 0.008174959999999995, -0.30767283],
+          [-0.09719102, 0.013122149999999999, -0.3267512],
+          [-0.08958631, 0.018697489999999997, -0.34465814],
+          [-0.0792602, 0.02451428, -0.3608509],
+          [-0.0665226, 0.030129160000000002, -0.374837],
+          [-0.051757198, 0.035087830000000014, -0.38618925],
+          [-0.03541088, 0.03897307, -0.3945588],
+          [-0.01798093, 0.04144948000000001, -0.39968687],
+          [-1.8737095e-17, 0.042300000000000004, -0.4014142],
+          [0.01798093, 0.04144948000000001, -0.39968687],
+          [0.03541088, 0.03897307, -0.3945588],
+          [0.051757198, 0.035087830000000014, -0.38618925],
+          [0.0665226, 0.030129160000000002, -0.374837],
+          [0.0792602, 0.02451428, -0.3608509],
+          [0.08958631, 0.018697489999999997, -0.34465814],
+          [0.09719102, 0.013122149999999999, -0.3267512],
+          [0.1018467, 0.008174959999999995, -0.30767283],
+          [6.2456988e-18, 0.040999990000000014, 0.39999998],
+          [-1.8737095e-17, 0.040999990000000014, -0.39999998],
+          [-0.098000005, -0.0884999985, -0.245],
+          [-0.098000005, -0.0853515955, -0.25675002],
+          [-0.098000005, -0.081617009, -0.261617],
+          [-0.094500005, -0.092, -0.245],
+          [-0.094500005, -0.0910799967, -0.2519881],
+          [-0.094500005, -0.0883826854, -0.2585],
+          [-0.094500005, -0.084091883, -0.26409188],
+          [-0.094500005, -0.0785, -0.2683827],
+          [-0.098000005, -0.087699255, -0.25108224],
+          [-0.098000005, -0.076749999, -0.2653516],
+          [0.094500005, -0.092, -0.245],
+          [0.094500005, -0.0910799967, -0.2519881],
+          [0.094500005, -0.0883826854, -0.2585],
+          [0.094500005, -0.084091883, -0.26409188],
+          [0.094500005, -0.0785, -0.2683827],
+          [0.098000005, -0.0884999985, -0.245],
+          [0.098000005, -0.0853515955, -0.25675002],
+          [0.098000005, -0.087699255, -0.25108224],
+          [0.098000005, -0.081617009, -0.261617],
+          [0.098000005, -0.076749999, -0.2653516],
+          [-0.098000005, -0.087699255, 0.25108224],
+          [-0.098000005, -0.0884999985, 0.245],
+          [-0.094500005, -0.0785, 0.2683827],
+          [-0.094500005, -0.084091883, 0.26409188],
+          [-0.094500005, -0.0883826854, 0.2585],
+          [-0.094500005, -0.0910799967, 0.2519881],
+          [-0.094500005, -0.092, 0.245],
+          [-0.098000005, -0.076749999, 0.2653516],
+          [-0.098000005, -0.081617009, 0.261617],
+          [-0.098000005, -0.0853515955, 0.25675002],
+          [0.094500005, -0.0785, 0.2683827],
+          [0.094500005, -0.084091883, 0.26409188],
+          [0.094500005, -0.0883826854, 0.2585],
+          [0.094500005, -0.0910799967, 0.2519881],
+          [0.094500005, -0.092, 0.245],
+          [0.098000005, -0.076749999, 0.2653516],
+          [0.098000005, -0.0884999985, 0.245],
+          [0.098000005, -0.081617009, 0.261617],
+          [0.098000005, -0.0853515955, 0.25675002],
+          [0.098000005, -0.087699255, 0.25108224]
+        ],
+        "tail": [
+          [-0.08833459, 0.026397489999999996, -0.34399998],
+          [-0.051, 0.04278783, -0.38499483],
+          [0.017712114, 0.049149479999999995, -0.39829844],
+          [0.034886055, 0.04667307000000001, -0.39324558],
+          [0.065564334, 0.037829150000000006, -0.37379697],
+          [0.07813653, 0.03221428, -0.3599922],
+          [-0.0459, 0.014058719999999997, -0.34649533],
+          [-0.031397447, 0.016448505000000002, -0.353921],
+          [-0.015940903, 0.017990660000000006, -0.3584686],
+          [-1.6863385e-17, 0.01852339, -0.35999995],
+          [0.015940903, 0.017990660000000006, -0.3584686],
+          [0.031397447, 0.016448505000000002, -0.353921],
+          [0.0459, 0.014058719999999997, -0.34649533],
+          [-0.07813653, 0.023214269999999995, -0.3599922],
+          [-0.051, 0.033787819999999996, -0.38499483],
+          [-0.034886055, 0.03767306000000001, -0.39324558],
+          [-0.017712114, 0.04014946999999999, -0.39829844],
+          [-1.8737095e-17, 0.040999990000000014, -0.39999998],
+          [0.034886055, 0.03767306000000001, -0.39324558],
+          [0.07813653, 0.023214269999999995, -0.3599922],
+          [0.08833459, 0.017397486000000004, -0.34399998],
+          [-0.07813653, 0.03221428, -0.3599922],
+          [-0.065564334, 0.037829150000000006, -0.37379697],
+          [-0.034886055, 0.04667307000000001, -0.39324558],
+          [-0.017712114, 0.049149479999999995, -0.39829844],
+          [-1.8737095e-17, 0.049999989999999994, -0.39999998],
+          [0.051, 0.04278783, -0.38499483],
+          [0.08833459, 0.026397489999999996, -0.34399998],
+          [-0.08958631, 0.02509749, -0.34465814],
+          [-0.0792602, 0.030914280000000002, -0.3608509],
+          [-0.0665226, 0.03652915000000001, -0.374837],
+          [-0.051757198, 0.04148782000000001, -0.38618925],
+          [-0.03541088, 0.04537305999999999, -0.3945588],
+          [-0.01798093, 0.047849470000000005, -0.39968687],
+          [-1.8737095e-17, 0.048699980000000004, -0.4014142],
+          [0.01798093, 0.047849470000000005, -0.39968687],
+          [0.03541088, 0.04537305999999999, -0.3945588],
+          [0.051757198, 0.04148782000000001, -0.38618925],
+          [0.0665226, 0.03652915000000001, -0.374837],
+          [0.0792602, 0.030914280000000002, -0.3608509],
+          [0.08958631, 0.02509749, -0.34465814],
+          [-0.0901048, 0.021897490000000006, -0.34493077],
+          [-0.07972565, 0.027714274999999997, -0.3612066],
+          [-0.066919535, 0.03332915, -0.37526783],
+          [-0.052070852, 0.038287829999999995, -0.386684],
+          [-0.03562828, 0.04217307000000001, -0.39510274],
+          [-0.01809228, 0.04464947, -0.40026197],
+          [-1.8737095e-17, 0.04549998999999999, -0.40199998],
+          [0.01809228, 0.04464947, -0.40026197],
+          [0.03562828, 0.04217307000000001, -0.39510274],
+          [0.052070852, 0.038287829999999995, -0.386684],
+          [0.066919535, 0.03332915, -0.37526783],
+          [0.07972565, 0.027714274999999997, -0.3612066],
+          [0.0901048, 0.021897490000000006, -0.34493077],
+          [-0.08958631, 0.018697489999999997, -0.34465814],
+          [-0.0792602, 0.02451428, -0.3608509],
+          [-0.0665226, 0.030129160000000002, -0.374837],
+          [-0.051757198, 0.035087830000000014, -0.38618925],
+          [-0.03541088, 0.03897307, -0.3945588],
+          [-0.01798093, 0.04144948000000001, -0.39968687],
+          [-1.8737095e-17, 0.042300000000000004, -0.4014142],
+          [0.01798093, 0.04144948000000001, -0.39968687],
+          [0.03541088, 0.03897307, -0.3945588],
+          [0.051757198, 0.035087830000000014, -0.38618925],
+          [0.0665226, 0.030129160000000002, -0.374837],
+          [0.0792602, 0.02451428, -0.3608509],
+          [0.08958631, 0.018697489999999997, -0.34465814],
+          [-0.08833459, 0.017397486000000004, -0.34399998],
+          [-0.065564334, 0.028829149999999998, -0.37379697],
+          [0.017712114, 0.04014946999999999, -0.39829844],
+          [0.051, 0.033787819999999996, -0.38499483],
+          [0.065564334, 0.028829149999999998, -0.37379697]
+        ],
+        "wheel": [
+          [-0.098000005, -0.0884999985, -0.245],
+          [-0.098000005, -0.081617009, -0.261617],
+          [-0.098000005, -0.076749999, -0.2653516],
+          [-0.098000005, -0.065, -0.2685],
+          [-0.098000005, -0.058917752999999996, -0.26769927],
+          [-0.098000005, -0.05325, -0.2653516],
+          [-0.098000005, -0.0446484, -0.25675002],
+          [-0.094500005, -0.038, -0.245],
+          [-0.094500005, -0.092, -0.245],
+          [-0.094500005, -0.0910799967, -0.2519881],
+          [-0.094500005, -0.0883826854, -0.2585],
+          [-0.094500005, -0.084091883, -0.26409188],
+          [-0.094500005, -0.0785, -0.2683827],
+          [-0.094500005, -0.07198811299999999, -0.27108002],
+          [-0.094500005, -0.065, -0.272],
+          [-0.094500005, -0.058011886, -0.27108002],
+          [-0.094500005, -0.0515, -0.2683827],
+          [-0.094500005, -0.045908116, -0.26409188],
+          [-0.094500005, -0.04161731, -0.2585],
+          [-0.094500005, -0.038919999999999996, -0.2519881],
+          [-0.098000005, -0.041500002, -0.245],
+          [-0.098000005, -0.087699255, -0.25108224],
+          [-0.098000005, -0.0853515955, -0.25675002],
+          [-0.098000005, -0.071082247, -0.26769927],
+          [-0.098000005, -0.04838299, -0.261617],
+          [-0.098000005, -0.042300746, -0.25108224],
+          [0.094500005, -0.092, -0.245],
+          [0.094500005, -0.0910799967, -0.2519881],
+          [0.094500005, -0.0883826854, -0.2585],
+          [0.094500005, -0.084091883, -0.26409188],
+          [0.094500005, -0.0785, -0.2683827],
+          [0.094500005, -0.07198811299999999, -0.27108002],
+          [0.094500005, -0.065, -0.272],
+          [0.094500005, -0.058011886, -0.27108002],
+          [0.094500005, -0.0515, -0.2683827],
+          [0.094500005, -0.045908116, -0.26409188],
+          [0.094500005, -0.04161731, -0.2585],
+          [0.094500005, -0.038919999999999996, -0.2519881],
+          [0.094500005, -0.038, -0.245],
+          [0.098000005, -0.041500002, -0.245],
+          [0.098000005, -0.0884999985, -0.245],
+          [0.098000005, -0.0853515955, -0.25675002],
+          [0.098000005, -0.076749999, -0.2653516],
+          [0.098000005, -0.058917752999999996, -0.26769927],
+          [0.098000005, -0.05325, -0.2653516],
+          [0.098000005, -0.042300746, -0.25108224],
+          [0.098000005, -0.087699255, -0.25108224],
+          [0.098000005, -0.081617009, -0.261617],
+          [0.098000005, -0.071082247, -0.26769927],
+          [0.098000005, -0.065, -0.2685],
+          [0.098000005, -0.04838299, -0.261617],
+          [0.098000005, -0.0446484, -0.25675002],
+          [-0.098000005, -0.041500002, 0.245],
+          [-0.098000005, -0.042300746, 0.25108224],
+          [-0.098000005, -0.04838299, 0.261617],
+          [-0.098000005, -0.05325, 0.2653516],
+          [-0.098000005, -0.065, 0.2685],
+          [-0.098000005, -0.081617009, 0.261617],
+          [-0.098000005, -0.087699255, 0.25108224],
+          [-0.098000005, -0.0884999985, 0.245],
+          [-0.094500005, -0.038919999999999996, 0.2519881],
+          [-0.094500005, -0.04161731, 0.2585],
+          [-0.094500005, -0.045908116, 0.26409188],
+          [-0.094500005, -0.0515, 0.2683827],
+          [-0.094500005, -0.058011886, 0.27108002],
+          [-0.094500005, -0.065, 0.272],
+          [-0.094500005, -0.07198811299999999, 0.27108002],
+          [-0.094500005, -0.0785, 0.2683827],
+          [-0.094500005, -0.084091883, 0.26409188],
+          [-0.094500005, -0.0883826854, 0.2585],
+          [-0.094500005, -0.0910799967, 0.2519881],
+          [-0.094500005, -0.092, 0.245],
+          [-0.094500005, -0.038, 0.245],
+          [-0.098000005, -0.0446484, 0.25675002],
+          [-0.098000005, -0.058917752999999996, 0.26769927],
+          [-0.098000005, -0.071082247, 0.26769927],
+          [-0.098000005, -0.076749999, 0.2653516],
+          [-0.098000005, -0.0853515955, 0.25675002],
+          [0.094500005, -0.038, 0.245],
+          [0.094500005, -0.038919999999999996, 0.2519881],
+          [0.094500005, -0.04161731, 0.2585],
+          [0.094500005, -0.045908116, 0.26409188],
+          [0.094500005, -0.0515, 0.2683827],
+          [0.094500005, -0.058011886, 0.27108002],
+          [0.094500005, -0.065, 0.272],
+          [0.094500005, -0.07198811299999999, 0.27108002],
+          [0.094500005, -0.0785, 0.2683827],
+          [0.094500005, -0.084091883, 0.26409188],
+          [0.094500005, -0.0883826854, 0.2585],
+          [0.094500005, -0.0910799967, 0.2519881],
+          [0.094500005, -0.092, 0.245],
+          [0.098000005, -0.04838299, 0.261617],
+          [0.098000005, -0.058917752999999996, 0.26769927],
+          [0.098000005, -0.065, 0.2685],
+          [0.098000005, -0.076749999, 0.2653516],
+          [0.098000005, -0.087699255, 0.25108224],
+          [0.098000005, -0.041500002, 0.245],
+          [0.098000005, -0.042300746, 0.25108224],
+          [0.098000005, -0.0446484, 0.25675002],
+          [0.098000005, -0.05325, 0.2653516],
+          [0.098000005, -0.071082247, 0.26769927],
+          [0.098000005, -0.081617009, 0.261617],
+          [0.098000005, -0.0853515955, 0.25675002],
+          [0.098000005, -0.0884999985, 0.245]
+        ]
+      },
+      "rearPickupKeys": [
+        [
+          260,
+          0.0,
+          0.06,
+          -0.372
+        ],
+        [
+          261,
+          0.018,
+          0.18,
+          -0.335
+        ],
+        [
+          262,
+          0.025,
+          0.35,
+          -0.29
+        ],
+        [
+          263,
+          0.04,
+          0.48,
+          -0.3
+        ],
+        [
+          264.5,
+          0.045,
+          0.46,
+          -0.3
+        ]
+      ],
+      "loadEntryFeet": {
+        "Left": {
+          "ankle": [
+            -0.04000949870814638,
+            0.19604784054725258,
+            0.04267028258154586
+          ],
+          "forward": [
+            0.9063077870366494,
+            0.0,
+            0.4226182617407006
+          ],
+          "soleUp": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "measuredFootprintCentreZ": 0.06
+        },
+        "Right": {
+          "ankle": [
+            -0.045190643314124146,
+            0.218292638665548,
+            -0.32310769677919676
+          ],
+          "forward": [
+            0.9961946980917454,
+            0.0,
+            0.08715574274765873
+          ],
+          "soleUp": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "measuredFootprintCentreZ": -0.32
+        }
+      },
+      "tailStrikeHold": [
+        259.75,
+        260.25
+      ],
+      "referenceCompensationWindow": [
+        258,
+        259,
+        260,
+        262
+      ]
+    },
+    "armBalanceWindow": [
+      258,
+      260,
+      273,
+      278
+    ],
+    "armBalanceKeys": [
+      {
+        "frame": 258,
+        "LeftUpper": [
+          -0.13251239864184639,
+          -0.3667504016525376,
+          0.9208336478940626
+        ],
+        "LeftFore": [
+          0.8363366861455983,
+          0.05520083495681243,
+          0.5454299361302694
+        ],
+        "RightUpper": [
+          0.19867581325880132,
+          -0.9756409351597373,
+          -0.09301981975142351
+        ],
+        "RightFore": [
+          0.7860221630061422,
+          -0.4645250636619921,
+          0.4079039402763447
+        ]
+      },
+      {
+        "frame": 261,
+        "RightUpper": [
+          0.47087192032632574,
+          0.2304266844150105,
+          0.8515768771859082
+        ],
+        "RightFore": [
+          -0.519247635996818,
+          0.09985531461477269,
+          0.8487701742255678
+        ],
+        "LeftUpper": [
+          -0.7204093087640989,
+          0.040022739375783274,
+          -0.6923933912010506
+        ],
+        "LeftFore": [
+          -0.6498297668986883,
+          -0.24993452573026473,
+          0.7178119578973202
+        ]
+      },
+      {
+        "frame": 267,
+        "RightUpper": [
+          0.2499488906772505,
+          -0.34992844694815073,
+          0.9028153931262289
+        ],
+        "RightFore": [
+          -0.5502176541318284,
+          -0.4501780806533142,
+          0.7032782015539553
+        ],
+        "LeftUpper": [
+          -0.7196316428741444,
+          -0.39979535715230247,
+          -0.5677094071562695
+        ],
+        "LeftFore": [
+          -0.3999542078646492,
+          -0.7499141397462172,
+          0.5269396688616753
+        ]
+      },
+      {
+        "frame": 273,
+        "RightUpper": [
+          0.17992804317122016,
+          -0.7796881870752873,
+          0.5997601439040672
+        ],
+        "RightFore": [
+          -0.41972726588697135,
+          -0.8494480381045849,
+          0.31979220258054963
+        ],
+        "LeftUpper": [
+          -0.7001904777184332,
+          -0.5801578243952732,
+          -0.4161131981869546
+        ],
+        "LeftFore": [
+          -0.3500964648659368,
+          -0.8502342718172752,
+          0.3931083162637519
+        ]
+      },
+      {
+        "frame": 278,
+        "LeftUpper": [
+          -0.42571838083117586,
+          -0.9044991855954314,
+          -0.025398493649883072
+        ],
+        "LeftFore": [
+          0.3609859071911117,
+          -0.9185155935847896,
+          -0.16130182624816078
+        ],
+        "RightUpper": [
+          -0.07283598263501641,
+          -0.9850002557766605,
+          -0.15642703012428852
+        ],
+        "RightFore": [
+          0.18399840891504646,
+          -0.6976219975469192,
+          0.6924363754565307
+        ]
+      }
+    ],
+    "kneeBodyForwardKeys": [
+      [
+        258,
+        1.0,
+        0.0,
+        0.18
+      ],
+      [
+        264,
+        1.0,
+        0.0,
+        0.1
+      ],
+      [
+        273,
+        1.0,
+        0.0,
+        0.1
+      ],
+      [
+        296,
+        1.0,
+        0.0,
+        0.18
+      ]
+    ],
+    "coupledAirCatch": {
+      "landingCarrierWindow": [271, 279],
+      "startsAfter": 261,
+      "fullBodyFrame": 263.5,
+      "fullFeetFrame": 264.5,
+      "feetReturnToCatch": [
+        271,
+        273
+      ],
+      "pelvisKeys": [
+        [
+          261,
+          0.976
+        ],
+        [
+          262.5,
+          0.9
+        ],
+        [
+          264.5,
+          0.8
+        ],
+        [
+          269,
+          0.75
+        ],
+        [
+          271,
+          0.77
+        ],
+        [
+          273,
+          0.81
+        ],
+        [
+          275,
+          0.75
+        ],
+        [
+          277,
+          0.7
+        ],
+        [
+          279,
+          0.73
+        ],
+        [
+          282,
+          0.8
+        ],
+        [
+          290,
+          0.925
+        ],
+        [
+          296,
+          0.925
+        ]
+      ],
+      "frontFoot": [
+        -0.055,
+        0.3
+      ],
+      "rearFoot": [
+        0.055,
+        -0.3
+      ],
+      "soleBoardGap": 0.005,
+      "provenance": "One authored replacement envelope couples pelvis height, free feet and the unchanged real board envelope. Captured joint directions remain the base; no second physical arc or exporter-only relocation."
+    }
+  }
+}

@@ -1910,6 +1910,7 @@ namespace Oxide.Plugins
         private readonly Dictionary<ulong, ParkSelection> parkSelections = new Dictionary<ulong, ParkSelection>();
         private const int BuilderWoodPrice = SkateBuilderPayment.WoodPrice;
         private readonly Dictionary<ulong, BuilderSelection> builderSelections = new Dictionary<ulong, BuilderSelection>();
+        private readonly Dictionary<ulong, HeldPreviewObservation> heldPreviews = new Dictionary<ulong, HeldPreviewObservation>();
         private BuilderSelection builderPending;
         private readonly Dictionary<ulong, double> builderPlaceTimes = new Dictionary<ulong, double>();
         private readonly List<BuilderWoodReceipt> builderWoodHolds = new List<BuilderWoodReceipt>();
@@ -2166,6 +2167,13 @@ namespace Oxide.Plugins
             public ItemDefinition Definition;
             public SkateParkKind Kind;
             public string Receipt;
+        }
+
+        private sealed class HeldPreviewObservation
+        {
+            public BasePlayer Player;
+            public string Nonce;
+            public double NextRequest, Expires;
         }
 
         private sealed class BuilderWoodReceipt
@@ -3532,6 +3540,9 @@ namespace Oxide.Plugins
                 if (parkSelections.TryGetValue(player.userID, out selection) && ReferenceEquals(selection.Player, player))
                     parkSelections.Remove(player.userID);
                 builderPlaceTimes.Remove(player.userID);
+                HeldPreviewObservation held;
+                if (heldPreviews.TryGetValue(player.userID, out held) && ReferenceEquals(held.Player, player))
+                    heldPreviews.Remove(player.userID);
                 BuilderSelection builder;
                 if (builderSelections.TryGetValue(player.userID, out builder) && ReferenceEquals(builder.Player, player))
                     builderSelections.Remove(player.userID);
@@ -3570,6 +3581,7 @@ namespace Oxide.Plugins
             parkReady = false;
             parkSelections.Clear();
             builderSelections.Clear();
+            heldPreviews.Clear();
             builderPlaceTimes.Clear();
             builderPending = null;
             parkDemolitionPending.Clear();
@@ -4790,8 +4802,62 @@ namespace Oxide.Plugins
         private static bool BuilderTerrainHit(RaycastHit hit)
         { return hit.collider != null && hit.collider.gameObject.layer == LayerMask.NameToLayer("Terrain"); }
 
+        // Optional preview observation only. It cannot select, pay for or place a piece.
+        [ConsoleCommand("skate.held")]
+        private void ObserveHeldParkItem(ConsoleSystem.Arg arg)
+        {
+            BasePlayer player = arg.Player();
+            if (player == null || !player.IsConnected || !player.IsAdmin || arg.Args == null ||
+                arg.Args.Length != 1 || !BuilderReceiptToken(arg.GetString(0)))
+            { arg.ReplyWith("Usage: skate.held <32-character receipt> as a connected administrator."); return; }
+            double now = clock.Elapsed.TotalSeconds;
+            foreach (var pair in heldPreviews.Where(pair => pair.Value.Expires <= now || pair.Value.Player == null ||
+                !pair.Value.Player.IsConnected).ToArray()) heldPreviews.Remove(pair.Key);
+            HeldPreviewObservation previous;
+            if (heldPreviews.TryGetValue(player.userID, out previous) && ReferenceEquals(previous.Player, player) && now < previous.NextRequest) return;
+            if (!heldPreviews.ContainsKey(player.userID) && heldPreviews.Count >= MaximumParkSelections) return;
+            var observation = new HeldPreviewObservation { Player = player, Nonce = arg.GetString(0), NextRequest = now + .25, Expires = now + .75 };
+            heldPreviews[player.userID] = observation;
+            try
+            {
+                Session riding;
+                if (!Eligible(player) || (sessions.TryGetValue(player.userID, out riding) && ReferenceEquals(riding.Player, player) &&
+                    now - riding.RidingAt <= RidingGraceSeconds))
+                { HeldPreviewReply(observation, "unknown"); return; }
+                Item item = player.GetActiveItem();
+                Planner planner = player.GetHeldEntity() as Planner;
+                SkateParkKind kind;
+                if (!ParkItemIdentity(item, out kind) || !ParkPlannerItem(player, player.inventory == null ? null : player.inventory.containerBelt, item, planner) ||
+                    !ReferenceEquals(player.GetActiveItem(), item) || !ReferenceEquals(player.GetHeldEntity(), planner))
+                { HeldPreviewReply(observation, "none"); return; }
+                HeldPreviewReply(observation, "item " + ((int)kind).ToString(CultureInfo.InvariantCulture));
+            }
+            catch (Exception) { HeldPreviewReply(observation, "unknown"); }
+        }
+
+        private static void HeldPreviewReply(HeldPreviewObservation observation, string state)
+        {
+            try
+            {
+                if (observation.Player != null && observation.Player.IsConnected && !string.IsNullOrEmpty(observation.Nonce))
+                    observation.Player.ConsoleMessage("[SKATE-HELD] 1 " + observation.Nonce + " " + state);
+            }
+            catch (Exception) { }
+        }
+
+        private void RevokeHeldPreview(BasePlayer player)
+        {
+            HeldPreviewObservation observation;
+            if (player == null || !heldPreviews.TryGetValue(player.userID, out observation) || !ReferenceEquals(observation.Player, player)) return;
+            // This hook may precede GetActiveItem's change. Revoke only; a fresh request
+            // performs the next observation through the actual current-item API.
+            HeldPreviewReply(observation, "clear");
+            observation.Nonce = "";
+        }
+
         private void OnActiveItemChanged(BasePlayer player, Item oldItem, Item newItem)
         {
+            RevokeHeldPreview(player);
             BuilderSelection selection;
             if (player != null && builderSelections.TryGetValue(player.userID, out selection) &&
                 ReferenceEquals(selection.Player, player) && !ReferenceEquals(newItem, selection.Item))

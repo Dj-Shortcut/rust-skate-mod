@@ -34,9 +34,26 @@ public static class RiderRig
     private static void Swap(ref Transform a, ref Transform b) { var t = a; a = b; b = t; }
     public static SkateRiderRig Rig;
     public static float Thigh, Shin, Foot, UpperArm, Forearm, Crouch = 0.18f;
+    private static int chargePosePop = -1;
+    private static uint chargePoseEpoch;
+    private static float chargePoseAmount;
+    private static double? chargeInitialPelvisOffset;
+    private static bool chargeOwnedGround, chargeSetupGrounded, chargeNosePop, chargeEntryShown;
+    private static Transform chargeOwnerPlayer, chargeEntryPlayer;
+    private static bool chargeOwnerGoofy, chargeEntryGoofy;
+    private static SkateCaptureFrame? chargeEntry;
+    private static SkateBoardPose chargeEntryCarrier;
+    private static int chargeEntryPop = -1;
+    private static uint chargeEntryEpoch;
+    public static double ChargePoseSeed { get { return chargePosePop == SkateRide.Pops && chargePoseEpoch == SkateKeys.InputEpoch ? chargePoseAmount : 0; } }
+    // True only for the measured setup presented by this current ground owner.
+    public static bool GroundChargePresented { get { return chargeOwnedGround && chargeSetupGrounded &&
+        SkateRide.Mode == RideMode.Ground && SkateKeys.ControlsActive && chargeOwnerPlayer == SkateRig.LocalT &&
+        chargeOwnerGoofy == SkateRide.Goofy && chargePoseEpoch == SkateKeys.InputEpoch && chargePosePop == SkateRide.Pops + 1; } }
     public static float Miss;
     public static string MissAt = "", Error = "", MotionError = "";
     private static SkateRiderMotionState motion;
+    private static bool airLookFrame;
     private static RideMode motionMode = RideMode.Ground;
     public static int Applied, Refusals, WithoutPush;
     // Where the head was left by the last pose, so the watch can tell a head moved after it.
@@ -45,6 +62,33 @@ public static class RiderRig
     public static SkateRiderPose Posed, Shown; public static Vector3 PosedPlane;
     private static Transform[] spine = new Transform[0];
     private static Vector3 lSole, rSole;
+    private struct GrabHandBasis
+    {
+        public bool Ready, Saved;
+        public Vector3 Finger, Back;
+        public SkateHandMeasurements Measurements;
+        public Quaternion OriginalLocal;
+    }
+    private struct GrabFingerBone
+    {
+        public Transform Bone;
+        public Vector3 Direction;
+        public Quaternion EntryLocal;
+        public float Length, Curl;
+    }
+    private sealed class GrabFingers
+    {
+        public bool Ready, Saved;
+        public GrabFingerBone[] Bones;
+        public Vector3 ThumbBase;
+        public float Radial, Reach;
+    }
+    private static GrabFingers lGrabFingers, rGrabFingers;
+    private static GrabHandBasis lGrabHand, rGrabHand;
+    private static SkateBoardPose lGrabFrame, rGrabFrame;
+    private static double lGrabWeight, rGrabWeight;
+    private static float travelLookWeight;
+    private static bool motionLookFrame;
     private static bool failed;
     private static SkateVector leftFootCalibration, rightFootCalibration;
     private static bool footCalibrated;
@@ -412,6 +456,10 @@ public static class RiderRig
 
     public static void Unbind()
     {
+        RestoreGrabFingers(lGrabFingers); RestoreGrabFingers(rGrabFingers);
+        RestoreGrabHand(LHand, ref lGrabHand); RestoreGrabHand(RHand, ref rGrabHand);
+        lGrabFingers = rGrabFingers = null;
+        lGrabHand = rGrabHand = default(GrabHandBasis);
         ResetPresentation();
         try { Show(false, true); } catch (Exception) { }
         // What cannot be put back now is kept, and tried again from the next frame on.
@@ -549,11 +597,210 @@ public static class RiderRig
             SkateRide.Clamp(rise, 0f, 0.5f));
         // Which way the soles face, seen from each foot bone, while the player stands.
         lSole = Quaternion.Inverse(LFoot.rotation) * up; rSole = Quaternion.Inverse(RFoot.rotation) * up;
+        lGrabHand = MeasureGrabHand(a, LHand); rGrabHand = MeasureGrabHand(a, RHand);
+        lGrabFingers = MeasureGrabFingers(a, LHand, lGrabHand);
+        rGrabFingers = MeasureGrabFingers(a, RHand, rGrabHand);
+        Rig = Rig.WithHands(lGrabHand.Measurements, rGrabHand.Measurements);
+        Say("grab wrist frames left=" + lGrabHand.Ready + " right=" + rGrabHand.Ready +
+            "; measured MCP left=" + lGrabHand.Measurements.Measured + " right=" + rGrabHand.Measurements.Measured +
+            "; unavailable measurements use authored 65 mm reach");
         failed = false; Bound = true; Error = "";
         Say("bound to " + Root.gameObject.name + " spine bones=" + spine.Length + " thigh=" + Thigh.ToString("F3") + " shin=" + Shin.ToString("F3") + " foot=" + Foot.ToString("F3") + " upperArm=" + UpperArm.ToString("F3")
             + " forearm=" + Forearm.ToString("F3") + " hips=" + hipWidth.ToString("F3") + " hipDrop=" + hipDrop.ToString("F3") + " back=" + back.ToString("F3") + " shoulders=" + Rig.ShoulderWidth.ToString("F3")
             + " neck=" + Rig.NeckToHeadLength.ToString("F3") + " headScale=" + Out.V(Head.localScale));
         return true;
+    }
+
+    // Measure each actual hand, including the existing mirrored bone mapping. A missing finger
+    // basis disables this optional wrist refinement, not riding or the arm/contact solve.
+    private static GrabHandBasis MeasureGrabHand(Animator animator, Transform hand)
+    {
+        var result = default(GrabHandBasis);
+        try
+        {
+            bool humanLeft = hand == animator.GetBoneTransform(HumanBodyBones.LeftHand);
+            var middle = animator.GetBoneTransform(humanLeft ? HumanBodyBones.LeftMiddleProximal : HumanBodyBones.RightMiddleProximal);
+            var index = animator.GetBoneTransform(humanLeft ? HumanBodyBones.LeftIndexProximal : HumanBodyBones.RightIndexProximal);
+            var little = animator.GetBoneTransform(humanLeft ? HumanBodyBones.LeftLittleProximal : HumanBodyBones.RightLittleProximal);
+            if (middle == null || index == null || little == null) return result;
+            var finger = middle.position - hand.position;
+            var across = index.position - little.position;
+            var back = humanLeft ? Vector3.Cross(finger, across) : Vector3.Cross(across, finger);
+            if (finger.sqrMagnitude < .000001f || back.sqrMagnitude < .000000001f) return result;
+            SkateHandMeasurements measurements;
+            if (!SkateHandMeasurements.TryMeasured(finger.magnitude, across.magnitude, out measurements)) return result;
+            result.Measurements = measurements;
+            var inverse = Quaternion.Inverse(hand.rotation);
+            result.Finger = inverse * finger.normalized; result.Back = inverse * back.normalized;
+            result.Ready = true;
+        }
+        catch (Exception e) { Say("grab wrist basis unavailable: " + e.GetType().Name + "; animated hand retained"); }
+        return result;
+    }
+
+    private static void RestoreGrabHand(Transform hand, ref GrabHandBasis basis)
+    {
+        try { if (basis.Saved && hand != null) hand.localRotation = basis.OriginalLocal; }
+        catch (Exception e) { Say("grab wrist restore unavailable: " + e.GetType().Name); basis.Ready = false; }
+        basis.Saved = false;
+    }
+
+    private static void ApplyGrabHand(Transform hand, ref GrabHandBasis basis, SkateBoardPose frame, double weight)
+    {
+        if (hand == null) return;
+        if (!basis.Ready || !frame.Initialized || weight <= 0)
+        { RestoreGrabHand(hand, ref basis); return; }
+        try
+        {
+            if (!basis.Saved) { basis.OriginalLocal = hand.localRotation; basis.Saved = true; }
+            // Rebuild from the entry's real local hand rotation each frame; never accumulate last
+            // frame's correction. Releasing or another action restores it, including ordinary captures.
+            hand.localRotation = basis.OriginalLocal;
+            var target = Quaternion.LookRotation(V(frame.Forward), V(frame.Up)) *
+                Quaternion.Inverse(Quaternion.LookRotation(basis.Finger, basis.Back));
+            hand.rotation = Quaternion.Slerp(hand.rotation, target, SkateRide.Clamp((float)weight, 0, 1));
+        }
+        catch (Exception e)
+        {
+            RestoreGrabHand(hand, ref basis); basis.Ready = false;
+            Say("grab wrist posing unavailable: " + e.GetType().Name + "; animated hand retained");
+        }
+    }
+
+    private static GrabFingers MeasureGrabFingers(Animator animator, Transform hand, GrabHandBasis basis)
+    {
+        var result = new GrabFingers();
+        try
+        {
+            if (!basis.Ready) throw new InvalidOperationException("wrist basis unavailable");
+            var left = hand == animator.GetBoneTransform(HumanBodyBones.LeftHand);
+            if (!left && hand != animator.GetBoneTransform(HumanBodyBones.RightHand))
+                throw new InvalidOperationException("hand mapping ambiguous");
+            var first = left ? HumanBodyBones.LeftIndexProximal : HumanBodyBones.RightIndexProximal;
+            var thumb = left ? HumanBodyBones.LeftThumbProximal : HumanBodyBones.RightThumbProximal;
+            var bones = new GrabFingerBone[15];
+            for (var i = 0; i < bones.Length; i++)
+            {
+                var id = i < 12 ? (HumanBodyBones)((int)first + i) : (HumanBodyBones)((int)thumb + i - 12);
+                var bone = animator.GetBoneTransform(id);
+                if (bone == null) throw new InvalidOperationException("finger mapping incomplete");
+                for (var j = 0; j < i; j++) if (bones[j].Bone == bone)
+                    throw new InvalidOperationException("finger mapping ambiguous");
+                var parent = i % 3 == 0 ? hand : bones[i - 1].Bone;
+                if (bone.parent != parent) throw new InvalidOperationException("finger chain is not direct");
+                bones[i].Bone = bone;
+            }
+            for (var i = 0; i < bones.Length; i++)
+            {
+                var direction = i % 3 < 2 ? bones[i + 1].Bone.position - bones[i].Bone.position
+                    : bones[i].Bone.position - bones[i - 1].Bone.position;
+                var length = direction.magnitude;
+                if (float.IsNaN(length) || float.IsInfinity(length) || length < .004f || length > .12f)
+                    throw new InvalidOperationException("finger segment invalid");
+                bones[i].Direction = Quaternion.Inverse(bones[i].Bone.rotation) * direction.normalized;
+                // Humanoid mapping has no fingertip. The last reach is an authored proportion.
+                bones[i].Length = length * (i % 3 == 2 ? .8f : 1f);
+            }
+            for (var i = 0; i < 12; i += 3)
+            {
+                var l1 = bones[i].Length; var l2 = bones[i + 1].Length; var l3 = bones[i + 2].Length;
+                var dip = 25 * Math.PI / 180;
+                var effective = Math.Sqrt(l2 * l2 + l3 * l3 + 2 * l2 * l3 * Math.Cos(dip));
+                var offset = Math.Atan2(l3 * Math.Sin(dip), l2 + l3 * Math.Cos(dip));
+                var scale = basis.Measurements.McpLength / .065;
+                var angle = 20 * Math.PI / 180;
+                var ny = -Math.Cos(angle); var nz = Math.Sin(angle);
+                var oy = Math.Sin(angle); var oz = Math.Cos(angle);
+                var pad = (i == 3 ? .0085 : i == 9 ? .0067 : .008) * .8 * scale;
+                var edgeY = .065 * scale - oy * .020 * scale - ny * .013 * scale;
+                var edgeZ = -oz * .020 * scale - nz * .013 * scale;
+                var y = edgeY - oy * .018 * scale - ny * (.010 * scale + pad) - .065 * scale;
+                var inside = -(edgeZ - oz * .018 * scale - nz * (.010 * scale + pad));
+                var cosine = (y * y + inside * inside - l1 * l1 - effective * effective) / (2 * l1 * effective);
+                var bend = Math.Acos(Math.Max(-1, Math.Min(1, cosine)));
+                var start = Math.Atan2(inside, y) - Math.Atan2(effective * Math.Sin(bend), l1 + effective * Math.Cos(bend));
+                bones[i].Curl = (float)start;
+                bones[i + 1].Curl = (float)(start + bend - offset);
+                bones[i + 2].Curl = (float)(start + bend - offset + dip);
+            }
+            result.Bones = bones; result.Radial = left ? -1 : 1;
+            result.Reach = (float)basis.Measurements.McpLength;
+            result.ThumbBase = Quaternion.Inverse(hand.rotation) * (bones[12].Bone.position - hand.position);
+            result.Ready = true;
+            Say("grab fingers " + (left ? "human left" : "human right") + ": 15 cached bones; authored closure enabled");
+        }
+        catch (Exception e)
+        {
+            Say("grab fingers " + (hand == LHand ? "shown left" : "shown right") + " unavailable: " + e.Message + "; avatar finger animation retained");
+        }
+        return result;
+    }
+
+    private static void RestoreGrabFingers(GrabFingers fingers)
+    {
+        if (fingers == null || !fingers.Saved) return;
+        var failed = false;
+        for (var i = 0; i < fingers.Bones.Length; i++)
+        {
+            try { if (fingers.Bones[i].Bone != null) fingers.Bones[i].Bone.localRotation = fingers.Bones[i].EntryLocal; }
+            catch (Exception) { failed = true; }
+        }
+        fingers.Saved = false;
+        if (failed)
+        {
+            fingers.Ready = false;
+            Say("grab finger restore unavailable; remaining avatar finger animation retained");
+        }
+    }
+
+    private static void AimGrabFinger(GrabFingerBone bone, Vector3 direction, float weight)
+    {
+        var current = bone.Bone.rotation;
+        var target = Quaternion.FromToRotation(current * bone.Direction, direction) * current;
+        bone.Bone.rotation = Quaternion.Slerp(current, target, weight);
+    }
+
+    private static void ApplyGrabFingers(Transform hand, GrabHandBasis basis, GrabFingers fingers,
+        SkateBoardPose frame, double weight)
+    {
+        if (fingers == null) return;
+        if (!fingers.Ready || !basis.Ready || hand == null || !frame.Initialized || weight <= 0)
+        { RestoreGrabFingers(fingers); return; }
+        try
+        {
+            if (!fingers.Saved)
+            {
+                for (var i = 0; i < fingers.Bones.Length; i++)
+                    fingers.Bones[i].EntryLocal = fingers.Bones[i].Bone.localRotation;
+                fingers.Saved = true;
+            }
+            for (var i = 0; i < fingers.Bones.Length; i++)
+                fingers.Bones[i].Bone.localRotation = fingers.Bones[i].EntryLocal;
+            var w = SkateRide.Clamp((float)weight, 0, 1);
+            var forward = hand.rotation * basis.Finger; var back = hand.rotation * basis.Back;
+            var across = Vector3.Cross(forward, back).normalized;
+            for (var i = 0; i < 12; i++)
+            {
+                var angle = fingers.Bones[i].Curl;
+                AimGrabFinger(fingers.Bones[i], forward * (float)Math.Cos(angle) - back * (float)Math.Sin(angle), w);
+            }
+            var scale = fingers.Reach / .065f; var angle20 = 20 * Math.PI / 180;
+            var normal = forward * -(float)Math.Cos(angle20) + back * (float)Math.Sin(angle20);
+            var outward = forward * (float)Math.Sin(angle20) + back * (float)Math.Cos(angle20);
+            var target = hand.position + forward * fingers.Reach - outward * (.031f * scale)
+                - normal * (.003f * scale) + across * (fingers.Radial * .008f * scale);
+            var root = hand.position + hand.rotation * fingers.ThumbBase;
+            var upper = fingers.Bones[12].Length; var lower = fingers.Bones[13].Length + fingers.Bones[14].Length;
+            var middle = Bend(root, target, upper, lower, across * fingers.Radial + back * .45f);
+            AimGrabFinger(fingers.Bones[12], middle - root, w);
+            AimGrabFinger(fingers.Bones[13], target - middle, w);
+            AimGrabFinger(fingers.Bones[14], target - middle, w);
+        }
+        catch (Exception e)
+        {
+            RestoreGrabFingers(fingers); fingers.Ready = false;
+            Say("grab finger posing unavailable: " + e.GetType().Name + "; avatar finger animation retained");
+        }
     }
 
     private static void Aim(Transform bone, Transform child, Vector3 want)
@@ -586,11 +833,19 @@ public static class RiderRig
 
     private static void ResetPresentation()
     {
+        RestoreGrabFingers(lGrabFingers); RestoreGrabFingers(rGrabFingers);
+        RestoreGrabHand(LHand, ref lGrabHand); RestoreGrabHand(RHand, ref rGrabHand);
+        lGrabFrame = rGrabFrame = default(SkateBoardPose); lGrabWeight = rGrabWeight = 0;
+        travelLookWeight = 0; motionLookFrame = false;
+        airLookFrame = false;
         SkateCapturedTricks.Reset();
         SkateFootContacts.Reset();
         footCalibrated = false; calibratedFootVersion = -1; FootSupportError = "";
         reportedFootStatus = reportedFootFit = null;
         grabSince = grabHold = -1f; plantBlend = chestLead = crouchSpeed = 0f; Crouch = 0.18f;
+        chargePosePop = -1; chargePoseEpoch = 0; chargePoseAmount = 0;
+        chargeOwnedGround = chargeSetupGrounded = false;
+        chargeNosePop = chargeEntryShown = false; chargeInitialPelvisOffset = null; chargeOwnerPlayer = null; ClearChargeEntry();
         contact = default(SkateRiderContactState);
         plantStyle = default(SkateHandplantState); plantId = -1; SkateBoard.HeldFrame = default(SkateBoardPose);
         pinLeft = pinRight = pinHips = false;
@@ -658,7 +913,11 @@ public static class RiderRig
 
     public static void Frame(Vector3 feet, Vector3 up, bool legsOnly, float frameSeconds)
     {
+        RestoreGrabFingers(lGrabFingers); RestoreGrabFingers(rGrabFingers);
         SkateCapturedTricks.ClearFrame();
+        lGrabFrame = rGrabFrame = default(SkateBoardPose); lGrabWeight = rGrabWeight = 0;
+        motionLookFrame = false;
+        airLookFrame = false;
         if (!Bound || failed) return;
         if (SkateRide.Handplant) up = Vector3.up;
         try
@@ -714,17 +973,46 @@ public static class RiderRig
             // The ollie's pitch about the tail lifts the deck's middle too; the legs fold by that as well.
             var pitchRise = SkateBoard.Axle * (float)Math.Abs(Math.Sin(SkateBoard.AirPitch * Math.PI / 180.0));
             var inAir = SkateRide.Jumped ? 0.2f + (SkateBoard.Pop + pitchRise) / (float)SkatePose.CrouchDrop : 0.45f;
+            inAir += .10f * SkateRide.TransitionAirTuck / (float)SkatePose.CrouchDrop;
+            inAir = Math.Max(inAir, .2f + .4f * SkateRide.TransitionLandingApproach);
             var shownGrab = mode == RideMode.Air && !wall && !SkateActions.Owns && !SkateOldschoolRide.Active ? ShownGrab : SkateGrabKind.None;
             if (shownGrab != SkateGrabKind.None) inAir += (0.95f - inAir) * (contact.Initialized ? (float)contact.GrabWeight : 1f);
-            // Measured riding height already leaves soft knees. An extra idle
-            // crouch made a rider who had stood up after landing squat again.
             var want = mode == RideMode.Air ? inAir : mode == RideMode.Grind ? GrindCrouch(SkateRide.GrindKind) : SkateRide.Braking ? 0.4f : 0f;
+            var ordinaryRolling = mode == RideMode.Ground && Math.Abs(SkateRide.Speed) > .5f &&
+                !wall && !bodyFlip && !SkateActions.Owns && !SkateOldschoolRide.Active &&
+                !SkateRide.GroundGrab.Active && !SkateRide.Handplant && PlantBlend <= .001f &&
+                !SkateRide.FootPlanted && SkateRide.PushPhase <= .001f && !SkateSurfaceRide.DropInMotion.Active;
+            if (ordinaryRolling) want = Math.Max(want, .18f);
+            var chargeRoute = OrdinaryFooting(true) && SkateKeys.ControlsActive && !wall && !bodyFlip && PlantBlend <= .001f &&
+                !SkateSurfaceRide.DropInMotion.Active;
+            bool preparationNose = false; double preparationCharge = 0;
+            bool padPreparation = mode == RideMode.Ground && SkateKeys.Pad &&
+                SkatePad.TryGroundPreparation(out preparationNose, out preparationCharge);
+            var ordinaryCharging = mode == RideMode.Ground && chargeRoute && (SkateKeys.Charging || padPreparation);
+            chargeSetupGrounded = chargeEntryShown = false;
+            // A fresh charge owns its setup, including after a captured landing.
+            if (ordinaryCharging && (!chargeOwnedGround || chargeOwnerPlayer != SkateRig.LocalT ||
+                chargeOwnerGoofy != SkateRide.Goofy || chargePoseEpoch != SkateKeys.InputEpoch || chargePosePop != SkateRide.Pops + 1))
+            {
+                // The held stick end is known now; PopKind still belongs to the last release.
+                chargeNosePop = padPreparation ? preparationNose : SkateKeys.Pad && SkatePad.RightY > 0; chargeInitialPelvisOffset = null;
+                chargeOwnerPlayer = SkateRig.LocalT; chargeOwnerGoofy = SkateRide.Goofy; ClearChargeEntry();
+                SkateCapturedTricks.Reset();
+            }
+            chargeOwnedGround = ordinaryCharging;
+            if (ordinaryCharging)
+            { chargePosePop = SkateRide.Pops + 1; chargePoseEpoch = SkateKeys.InputEpoch; chargePoseAmount = padPreparation ? (float)preparationCharge : SkateRide.Clamp(SkateKeys.Charge, 0, 1); }
+            else if (!chargeRoute || chargePoseEpoch != SkateKeys.InputEpoch ||
+                !(mode == RideMode.Air && SkateRide.Jumped && chargePosePop == SkateRide.Pops ||
+                mode == RideMode.Ground && (SkateKeys.JumpPressed || SkateRide.PresentationQueued) && chargePosePop == SkateRide.Pops + 1))
+            { chargePosePop = -1; chargePoseEpoch = 0; chargePoseAmount = 0; }
             if (wall) want = .55f;
             else if (SkateSurfaceRide.WallieWeight > 0) want = Math.Max(want, .25f + .55f * SkateSurfaceRide.WallieWeight);
             if (SkateOldschoolRide.Active && SkateOldschoolRide.Kind == SkateOldschoolKind.Caveman &&
                 (SkateOldschoolRide.Phase == SkateOldschoolPhase.Pickup || SkateOldschoolRide.Phase == SkateOldschoolPhase.Carrying)) want = .95f;
             // A right stick held back is the rider gathering for the pop; a trigger held is the crouch of a pump.
-            if (SkateKeys.Charging && mode == RideMode.Ground) want = Math.Max(want, 0.3f + 0.3f * SkateKeys.Charge);
+            if ((SkateKeys.Charging || ordinaryCharging) && mode == RideMode.Ground)
+                want = Math.Max(want, 0.4f + 0.4f * (ordinaryCharging ? chargePoseAmount : SkateKeys.Charge));
             if (mode == RideMode.Ground && SkateRide.PumpHeld > 0f) want = Math.Max(want, 0.25f + 0.45f * SkateRide.PumpHeld / SkateRide.PumpCharge);
             var since = now - SkateRide.LandAt;
             if (mode == RideMode.Ground && since < 0.35f) want += (1f - since / 0.35f) * SkateRide.Clamp(SkateRide.LandImpact / 8f, 0.2f, 1f) * 0.45f;
@@ -749,7 +1037,7 @@ public static class RiderRig
             var handplant = wall || bodyFlip ? 0 : PlantBlend;
             // The opposite foot slides away from the popped end, including when the tail leads.
             // The shared take-off description chooses that foot without changing the ride's inputs.
-            var noseSlide = !wall && !SkateOldschoolRide.Active && !SkateActions.Finger.Initialized && mode == RideMode.Air && SkateRide.Jumped && grab == SkateGrabKind.None && contact.Trick.FootPop ? SkateRide.Clamp(1f - SkateRide.VSpeed / SkateRide.OlliePop, 0f, 1f) * (1f - (float)contact.Catch) : 0f;
+            var noseSlide = !wall && !SkateOldschoolRide.Active && !SkateActions.Finger.Initialized && mode == RideMode.Air && SkateRide.Jumped && grab == SkateGrabKind.None && contact.Trick.FootPop ? SkateRide.Clamp(1f - SkateRide.VSpeed / SkateRide.LaunchPopImpulse, 0f, 1f) * (1f - (float)contact.Catch) : 0f;
             var groundGrab = !wall && (mode == RideMode.Ground || mode == RideMode.Air) && SkateRide.GroundGrab.Active;
             var pushing = mode == RideMode.Ground && !groundGrab && SkateRide.PushPhase > 0f;
             var deckFace = SkateBoard.OnFace(upV, SkateRide.Dir(SkateRide.DeckYaw));
@@ -786,6 +1074,7 @@ public static class RiderRig
                     if (Refusals++ == 0 || error != Error) Say("pose refused: " + error);
                     Error = error;
                     if (wall || bodyFlip) SkateRide.Bail();
+                    SkateRide.RefuseKickturnPose();
                     return;
                 }
                 if (WithoutPush++ == 0 || error != Error) Say("pose shown without the push: " + error);
@@ -848,7 +1137,24 @@ public static class RiderRig
                 { pose = shown; motion = next; }
                 else { motion = default(SkateRiderMotionState); if (motionError != MotionError) { MotionError = motionError; Say("secondary motion refused: " + motionError); } }
             }
-            SkateSurfaceRide.Record(pose, input.DeckFrame, wall || handplant > .001f ? SkateGrabKind.None : SurfaceGrab(pose, input.DeckFrame, grab));
+            var ordinaryLook = (mode == RideMode.Ground || mode == RideMode.Air) && !wall && !bodyFlip &&
+                !SkateActions.Owns && !SkateOldschoolRide.Active && !groundGrab && handplant <= .001f && !dropping;
+            var landingLook = SkateRide.ActionVelocity;
+            if (SkateRide.OnRamp && landingLook.y < 0)
+                landingLook -= SkateRide.BelowNormal * Vector3.Dot(landingLook, SkateRide.BelowNormal);
+            var lookWant = ordinaryLook && SkateRide.OnRamp ? SkateRide.Clamp(-Vector3.Dot(landingLook, V(input.BoardForward)) / 2f, 0, 1) : 0;
+            travelLookWeight = ordinaryLook ? travelLookWeight + SkateRide.Clamp(lookWant - travelLookWeight, -6 * dt, 6 * dt) : 0;
+            SkateRiderPose looked;
+            if (ordinaryLook && mode == RideMode.Air && SkateRider.TryReferenceGrabLook(Rig, input, pose, V(landingLook), out looked))
+            { pose = looked; motionLookFrame = true; }
+            if (ordinaryLook && travelLookWeight > 0 && SkateRider.TryTravelLook(Rig, input, pose, V(landingLook), travelLookWeight, out looked))
+            { pose = looked; motionLookFrame = true; }
+            if (ordinaryLook && mode == RideMode.Air && grab == SkateGrabKind.None && !SkateRide.FootPlanted)
+            {
+                if (SkateRider.TryAirLook(Rig, input, pose, V(landingLook), Math.Min(1, SkateRide.AirTime / .12f), out looked))
+                { pose = looked; airLookFrame = true; }
+            }
+            SkateSurfaceRide.Record(pose, input.DeckFrame, wall || handplant > .001f ? SkateGrabKind.None : SurfaceGrab(pose, input, grab));
             // In a handplant the board is against the feet, held: the board follows the pose, from
             // the first of the way up to the last of the way down.
             SkateBoard.Held = handplant > 0.001f;
@@ -939,12 +1245,58 @@ public static class RiderRig
                 pinRight |= (plantedContacts & SkateCaptureContacts.RightFoot) != 0;
             }
             FitProceduralFooting(ref pose, leftSole, rightSole);
+            // Neutral loading has no trick-family foreknowledge. Its observed
+            // charge survives only into this exact pop's short torso handoff.
+            double chargeFold = ordinaryCharging ? chargePoseAmount :
+                mode == RideMode.Air && SkateRide.Jumped && chargeRoute
+                ? ChargePoseSeed * (1 - SkateCaptureFootSupport.CatchPreparationWeight(SkateRide.AirTime, .08)) : 0;
+            if (chargeFold > 0)
+            {
+                SkateRiderPose charged; string chargeError;
+                var chargeCarrier = new SkateBoardPose(new SkateVector(plane.x, plane.y, plane.z),
+                    new SkateVector(fx, fy, fz), new SkateVector(ux, uy, uz));
+                if (ordinaryCharging && SkateFootContacts.Ready)
+                {
+                    SkateVector chargeLeftUp, chargeRightUp;
+                    if (!chargeInitialPelvisOffset.HasValue)
+                        chargeInitialPelvisOffset = SkateVector.Dot(pose.Pelvis - chargeCarrier.Origin, chargeCarrier.Up);
+                    if (SkateCaptureKickflipUpper.TryChargeSetup(Rig, pose, chargeCarrier,
+                        SkateBoard.PoseFor(SkateRig.LocalT), chargeFold, chargeNosePop,
+                        SkateFootContacts.LeftFitter, SkateFootContacts.RightFitter,
+                        out charged, out chargeLeftUp, out chargeRightUp, out chargeError, chargeInitialPelvisOffset))
+                    {
+                        Posed = pose = charged; leftSole = V(chargeLeftUp); rightSole = V(chargeRightUp);
+                        pinHips = pinLeft = pinRight = chargeSetupGrounded = true; FootSupportError = "";
+                        var entryCarrier = ChargeCarrier();
+                        chargeEntry = new SkateCaptureFrame(charged, entryCarrier, default(SkateCaptureRotation),
+                            chargeLeftUp, chargeRightUp, false, default(SkateCaptureEvent), default(SkateVector), default(SkateVector), default(SkateVector));
+                        chargeEntryCarrier = entryCarrier; chargeEntryPlayer = SkateRig.LocalT;
+                        chargeEntryGoofy = SkateRide.Goofy; chargeEntryPop = chargePosePop; chargeEntryEpoch = chargePoseEpoch;
+                    }
+                    else FootSupportError = "Charge setup: " + chargeError;
+                }
+                else if (SkateCaptureKickflipUpper.TryChargeFold(pose, chargeCarrier, chargeFold, out charged, out chargeError))
+                    Posed = pose = charged;
+                else FootSupportError = "Charge torso: " + chargeError;
+            }
+            chargeEntryShown = ApplyChargeEntry(chargeRoute, ordinaryCharging, ref pose, ref leftSole, ref rightSole);
+            if (chargeEntryShown) { Posed = pose; pinHips = pinLeft = pinRight = true; }
+            var kickturnPlayer = SkateRig.LocalT; var kickturnSide = SkateRide.KickturnSide;
+            var kickturnEpoch = SkateKeys.InputEpoch; var kickturnFootVersion = SkateFootContacts.Version;
+            var kickturnPosed = ApplyKickturnPose(ref pose, ref leftSole, ref rightSole);
+            if (kickturnPosed) { Posed = pose; pinHips = pinLeft = pinRight = true; }
             Shown = pose;
-            Ease(pose, plane, toToes, upV, new Vector3((float)fx, (float)fy, (float)fz), now, frameSeconds, pinL, pinR);
-            if (!wall && !bodyFlip && !SkateActions.Owns && !SkateOldschoolRide.Active && !dropping) Shape(upV);
+            Ease(pose, plane, toToes, upV, new Vector3((float)fx, (float)fy, (float)fz), now, frameSeconds, pinL, pinR, chargeSetupGrounded || chargeEntryShown || kickturnPosed);
+            if (!chargeSetupGrounded && !chargeEntryShown && !wall && !bodyFlip && !SkateActions.Owns && !SkateOldschoolRide.Active && !dropping) Shape(upV);
             // Pitch/grind balance shapes the free arm, never the hand already holding the board.
             if (pinL) { joint[LHandJ] = V(pose.LeftHand); joint[LElbowJ] = V(pose.LeftElbow); }
             if (pinR) { joint[RHandJ] = V(pose.RightHand); joint[RElbowJ] = V(pose.RightElbow); }
+            // Ease and Shape rebuild the head from the chest; restore the independent look afterward.
+            if (motionLookFrame || airLookFrame)
+            {
+                joint[HeadJ] = joint[NeckJ] + V(pose.Head - pose.Neck).normalized * (float)Rig.NeckToHeadLength;
+                joint[HeadForwardJ] = V(pose.HeadForward);
+            }
             if (pinL && !pinR) ReachFreeHand(RShoulderJ, RHandJ);
             if (pinR && !pinL) ReachFreeHand(LShoulderJ, LHandJ);
             if (bodyFlip)
@@ -961,8 +1313,9 @@ public static class RiderRig
             // Preserve procedural loading. A known approved capture crossfades only after the live pop,
             // using this frame's measured procedural pose as the transition fallback.
             SkateCaptureFrame captured;
-            if (SkateCapturedTricks.TryFrame(Rig, SkateRig.LocalT, pose, new SkateVector(leftSole.x, leftSole.y, leftSole.z), new SkateVector(rightSole.x, rightSole.y, rightSole.z), out captured))
+            if (!kickturnPosed && SkateCapturedTricks.TryFrame(Rig, SkateRig.LocalT, pose, new SkateVector(leftSole.x, leftSole.y, leftSole.z), new SkateVector(rightSole.x, rightSole.y, rightSole.z), out captured))
             {
+                airLookFrame = false;
                 Posed = Shown = captured.Pose; PosedPlane = V(captured.Board.Origin); Error = "";
                 pinHips = pinLeft = pinRight = true; motion = default(SkateRiderMotionState);
                 // Keep the SAME local basis as the normal route, including on capture exit mid-flip.
@@ -971,10 +1324,22 @@ public static class RiderRig
                 upV = V(captured.RiderUp); leftSole = V(captured.LeftSoleUp); rightSole = V(captured.RightSoleUp);
                 SkateSurfaceRide.Record(captured.Pose, captured.Board, SkateGrabKind.None);
             }
+            if (!wall && !bodyFlip && !SkateActions.Owns && !SkateOldschoolRide.Active && !SkateCapturedTricks.HasFrame)
+            {
+                SkateRider.TryGrabHandFrame(input, Shown, true, out lGrabFrame, out lGrabWeight);
+                SkateRider.TryGrabHandFrame(input, Shown, false, out rGrabFrame, out rGrabWeight);
+            }
             Apply(upV, legsOnly, leftSole, rightSole);
+            if (kickturnPosed) SkateRide.ConfirmKickturnPose(kickturnPlayer, kickturnSide, kickturnEpoch, kickturnFootVersion);
             Applied++;
         }
-        catch (Exception e) { failed = true; Say("pose threw " + e.GetType().Name + ": " + e.Message); }
+        catch (Exception e)
+        {
+            RestoreGrabFingers(lGrabFingers); RestoreGrabFingers(rGrabFingers);
+            RestoreGrabHand(LHand, ref lGrabHand); RestoreGrabHand(RHand, ref rGrabHand);
+            SkateRide.RefuseKickturnPose();
+            failed = true; Say("pose threw " + e.GetType().Name + ": " + e.Message);
+        }
     }
 
     // Reuse the measured production solver and the actual bone writer. The preview owns only
@@ -1020,12 +1385,20 @@ public static class RiderRig
     private static SkateVector WallLocal(SkateVector direction, SkateBoardPose support)
     { return new SkateVector(SkateVector.Dot(direction, support.Right), SkateVector.Dot(direction, support.Up), SkateVector.Dot(direction, support.Forward)); }
 
-    private static SkateGrabKind SurfaceGrab(SkateRiderPose pose, SkateBoardPose deck, SkateGrabKind kind)
+    private static SkateGrabKind SurfaceGrab(SkateRiderPose pose, SkateRiderInput input, SkateGrabKind kind)
     {
+        var deck = input.DeckFrame;
         if (kind == SkateGrabKind.None || !SkateGrabCatalog.Valid(kind) || !deck.Initialized || !SkateBoardPath.Valid(deck)) return SkateGrabKind.None;
         bool left, right;
-        SkateRider.GrabHands(SkateRide.Goofy ? SkateStance.Goofy : SkateStance.Regular, SkateRide.TailFirst, kind, out left, out right);
-        if ((!left && !right) || left && !SurfaceHand(pose.LeftHand, deck) || right && !SurfaceHand(pose.RightHand, deck)) return SkateGrabKind.None;
+        SkateRider.GrabHands(input.Stance, input.Switch, kind, out left, out right);
+        if (!left && !right) return SkateGrabKind.None;
+        if (SkateGrabCatalog.HasReferenceHand(kind))
+        {
+            SkateVector contact;
+            if (left && !SkateRider.TryReferenceGrabContact(Rig, input, pose, true, out contact) ||
+                right && !SkateRider.TryReferenceGrabContact(Rig, input, pose, false, out contact)) return SkateGrabKind.None;
+        }
+        else if (left && !SurfaceHand(pose.LeftHand, deck) || right && !SurfaceHand(pose.RightHand, deck)) return SkateGrabKind.None;
         return kind;
     }
 
@@ -1173,20 +1546,21 @@ public static class RiderRig
             Aim(spine[0], Neck, joint[NeckJ] - spine[0].position);
             Aim(Neck, Head, joint[HeadJ] - joint[NeckJ]);
             var chestForward = joint[ChestForwardJ]; var headForward = joint[HeadForwardJ];
-            var cf = chestForward - chestUp * Vector3.Dot(chestForward, chestUp); var hf = headForward - chestUp * Vector3.Dot(headForward, chestUp);
+            var lookUp = airLookFrame || motionLookFrame ? (joint[HeadJ] - joint[NeckJ]).normalized : chestUp;
+            var cf = chestForward - lookUp * Vector3.Dot(chestForward, lookUp); var hf = headForward - lookUp * Vector3.Dot(headForward, lookUp);
             if (cf.sqrMagnitude > 0.0001f && hf.sqrMagnitude > 0.0001f)
             {
                 cf = cf.normalized; hf = hf.normalized;
-                var turn = (float)(Math.Atan2(Vector3.Dot(Vector3.Cross(cf, hf), chestUp), Vector3.Dot(cf, hf)) * 180.0 / Math.PI);
+                var turn = (float)(Math.Atan2(Vector3.Dot(Vector3.Cross(cf, hf), lookUp), Vector3.Dot(cf, hf)) * 180.0 / Math.PI);
                 turn = SkateRide.Clamp(turn, -75f, 75f);
-                Neck.rotation = SkateRide.Turn(turn * 0.4f, chestUp) * Neck.rotation;
-                Head.rotation = SkateRide.Turn(turn * 0.6f, chestUp) * Head.rotation;
+                Neck.rotation = SkateRide.Turn(turn * 0.4f, lookUp) * Neck.rotation;
+                Head.rotation = SkateRide.Turn(turn * 0.6f, lookUp) * Head.rotation;
             }
             // With the chest folded far forward the rider would look at the board; the neck and the
             // head lift most of the way back toward where the board's up is.
             var foldAxis = Vector3.Cross(chestUp, up);
             var fold = (float)(Math.Atan2(foldAxis.magnitude, Vector3.Dot(chestUp, up)) * 180.0 / Math.PI);
-            if (!SkateCapturedTricks.HasFrame && fold > HeadLiftFrom && foldAxis.sqrMagnitude > 0.0001f)
+            if (!chargeSetupGrounded && !chargeEntryShown && !SkateCapturedTricks.HasFrame && !motionLookFrame && !airLookFrame && fold > HeadLiftFrom && foldAxis.sqrMagnitude > 0.0001f)
             {
                 var lift = SkateRide.Clamp((fold - HeadLiftFrom) * HeadLiftShare, 0f, HeadLiftMost);
                 Neck.rotation = SkateRide.Turn(lift * 0.35f, foldAxis) * Neck.rotation;
@@ -1196,8 +1570,12 @@ public static class RiderRig
             Limb(LUpper, LFore, LHand, joint[LHandJ], joint[LElbowJ], UpperArm, Forearm, "left hand");
             Limb(RUpper, RFore, RHand, joint[RHandJ], joint[RElbowJ], UpperArm, Forearm, "right hand");
         }
+        ApplyGrabHand(LHand, ref lGrabHand, lGrabFrame, legsOnly ? 0 : lGrabWeight);
+        ApplyGrabHand(RHand, ref rGrabHand, rGrabFrame, legsOnly ? 0 : rGrabWeight);
+        ApplyGrabFingers(LHand, lGrabHand, lGrabFingers, lGrabFrame, legsOnly ? 0 : lGrabWeight);
+        ApplyGrabFingers(RHand, rGrabHand, rGrabFingers, rGrabFrame, legsOnly ? 0 : rGrabWeight);
 
-        if (!SkateCapturedTricks.HasFrame && OrdinarySupportedFeet()) FitEasedFooting(leftSole, rightSole);
+        if (!chargeSetupGrounded && !chargeEntryShown && !SkateCapturedTricks.HasFrame && OrdinarySupportedFeet()) FitEasedFooting(leftSole, rightSole);
         Limb(LHip, LKnee, LFoot, joint[LAnkleJ], joint[LKneeJ], Thigh, Shin, "left ankle");
         Limb(RHip, RKnee, RFoot, joint[RAnkleJ], joint[RKneeJ], Thigh, Shin, "right ankle");
         var soleL = SkateBoard.Held ? SkateBoard.HeldUp : leftSole;
@@ -1218,6 +1596,28 @@ public static class RiderRig
             Say("feet: " + footStatus + (string.IsNullOrEmpty(FootSupportError) ? "" : " | fit refused: " + FootSupportError));
         }
         HeadPosed = Head.position;
+    }
+
+    private static bool ApplyKickturnPose(ref SkateRiderPose pose, ref Vector3 leftUp, ref Vector3 rightUp)
+    {
+        if (!SkateRide.Kickturning || SkateRide.KickturnSetup <= 0) return false;
+        Vector3 axle; RaycastHit ground; string error = "Kickturn measured support is unavailable.";
+        SkateRiderPose prepared; SkateVector lu, ru;
+        if (SkateRig.LocalT != null && SkateFootContacts.Ready && (SkateRig.LocalT.position - SkateRide.Position).sqrMagnitude <= .5625f &&
+            SkateRide.TryObservedGround(SkateRide.Position, out ground) && ground.m_Normal.y >= .9995f &&
+            SkateBoard.TryKickturnAxle(SkateRide.KickturnSide, out axle))
+        {
+            var deck = SkateBoard.PoseFor(SkateRig.LocalT);
+            var pivot = deck.Point(new SkateVector(axle.x, axle.y - DeckTop, axle.z));
+            if (SkateKickturnPose.TryApply(Rig, pose, deck, V(ground.m_Normal), pivot, SkateRide.KickturnSide,
+                SkateRide.KickturnSetup, V(leftUp), V(rightUp), SkateFootContacts.LeftFitter, SkateFootContacts.RightFitter,
+                out prepared, out lu, out ru, out error))
+            {
+                pose = prepared; leftUp = V(lu); rightUp = V(ru); FootSupportError = "";
+                return true;
+            }
+        }
+        FootSupportError = error; SkateRide.RefuseKickturnPose(); return false;
     }
 
     // Calibration is per visible shoe mesh. Carry that same model adaptation
@@ -1282,6 +1682,43 @@ public static class RiderRig
         { FootSupportError = "Eased shaped-deck support exceeds measured leg reach"; return; }
         joint[LAnkleJ] = V(la); joint[RAnkleJ] = V(ra); joint[LToeJ] += V(ls); joint[RToeJ] += V(rs);
         joint[LKneeJ] = V(lk); joint[RKneeJ] = V(rk); FootSupportError = "";
+    }
+
+    private static void ClearChargeEntry()
+    { chargeEntry = null; chargeEntryPlayer = null; chargeEntryPop = -1; chargeEntryEpoch = 0; }
+
+    // Same physical upright carrier as capture entry; visual board pitch/roll is not a foot anchor.
+    private static SkateBoardPose ChargeCarrier()
+    {
+        var up = SkateRide.ViewNormal;
+        return new SkateBoardPose(V(SkateBoard.Contact(SkateRig.LocalT) - Vector3.up * SkateBoard.Pop),
+            V(SkateBoard.OnFace(up, SkateRide.Dir(SkateRide.NoseYaw))), V(up));
+    }
+
+    private static bool ApplyChargeEntry(bool route, bool charging, ref SkateRiderPose pose, ref Vector3 left, ref Vector3 right)
+    {
+        if (!chargeEntry.HasValue) return false;
+        var mode = SkateRide.Mode;
+        bool queued = mode == RideMode.Ground && (SkateKeys.JumpPressed || SkateRide.PresentationQueued) && chargeEntryPop == SkateRide.Pops + 1;
+        bool air = mode == RideMode.Air && SkateRide.Jumped && chargeEntryPop == SkateRide.Pops;
+        if (!route || chargeEntryPlayer != SkateRig.LocalT || chargeEntryGoofy != SkateRide.Goofy ||
+            chargeEntryEpoch != SkateKeys.InputEpoch || !(charging || queued || air))
+        { ClearChargeEntry(); return false; }
+        if (charging) return false;
+        double elapsed = air ? Math.Max(0, Time.realtimeSinceStartup - SkateRide.ModeAt) : 0;
+        if (elapsed >= .1) { ClearChargeEntry(); return false; }
+        var carrier = ChargeCarrier();
+        var from = SkateCapturePlayback.Transport(chargeEntry.Value, chargeEntryCarrier, carrier);
+        if (!from.Board.Initialized) { ClearChargeEntry(); return false; }
+        double u = elapsed / .1, weight = u * u * u * (10 + u * (-15 + 6 * u));
+        var target = new SkateCaptureFrame(pose, carrier, default(SkateCaptureRotation), V(left), V(right), false,
+            default(SkateCaptureEvent), default(SkateVector), default(SkateVector), default(SkateVector));
+        SkateCaptureFrame shown; string error;
+        if (weight == 0) shown = from;
+        else if (!SkateCapturePlayback.TryBlend(Rig, from.Pose, from.LeftSoleUp, from.RightSoleUp,
+            target, weight, out shown, out error))
+        { FootSupportError = "Charge entry: " + error; ClearChargeEntry(); return false; }
+        pose = shown.Pose; left = V(shown.LeftSoleUp); right = V(shown.RightSoleUp); return true;
     }
 
     private static bool OrdinaryFooting(bool allowAir)

@@ -14,8 +14,14 @@ and playing from it are still open; see the [status](#status).
 
 ## What the friend needs
 
-- Windows, Rust bought on Steam and installed in Steam's own library on `C:` (the launcher knows
-  only `C:\Program Files (x86)\Steam\steamapps\common\Rust`), Steam signed in.
+- Windows, Rust bought on Steam and installed through Steam, Steam signed in. Steam's own folder
+  and Rust's library may be on any drive: the installer and the launcher read where Steam is from
+  the registry and where Rust is from Steam's `libraryfolders.vdf` and Rust's own manifest, and try
+  Steam's own library on `C:` first (a legacy pack, made from the pinned 0.18.40 release, still knows
+  only `C:\Program Files (x86)\Steam\steamapps\common\Rust`). The lookup's preflight was run on
+  the owner's Windows PC on 31 October (reported on 1 November; Codex: Windows PowerShell 5.1 and PowerShell 7.6, nine dummy
+  cases each, all stopping where expected before anything is written; a legacy pack refused the
+  non-standard library, the current script found it). No real pack, no installation yet.
 - The same Rust build as the owner. The pack is made for one Steam build; after a Rust update
   the launcher refuses to start and the owner makes a new pack.
 - An Xbox controller (XInput) for the controls as in the skate. games. The keyboard works too
@@ -35,6 +41,11 @@ commit of a development candidate):
 ```powershell
 zz pack
 ```
+
+When the installed candidate session supports Steam discovery, `pack` uses its
+helper to find Rust in Steam's own or another listed library, including a custom
+install-folder name. Legacy sessions still require the default library on `C:`.
+Packing still requires the installed launcher and interop to match that Rust build.
 
 It writes `Downloads\RustSkate-<commit>-build<build>.zip` from `Downloads\claude-loader-probe`:
 
@@ -75,14 +86,15 @@ and is not published; nothing of it belongs in this repository.
 ## The friend: installing and playing
 
 1. Unpack the zip anywhere (right-click, Extract All) and open the unpacked folder.
-2. In Steam: Games > Add a Non-Steam Game to My Library > Browse, pick
-   `C:\Program Files (x86)\Steam\steamapps\common\Rust\RustClient.exe`, add it and keep its name,
-   `RustClient`. On its page in the library, under the controller icon, choose the layout template
+2. In Steam: Games > Add a Non-Steam Game to My Library > Browse, pick `RustClient.exe` in the Rust
+   folder (usually `C:\Program Files (x86)\Steam\steamapps\common\Rust`; the installer names the
+   folder it found when it is another one), add it and keep its name, `RustClient`. On its page in the library, under the controller icon, choose the layout template
    "Keyboard (WASD) and Mouse". The launcher starts Rust through this shortcut so that the
    controller works on foot as well as on the board ([why](README.md#the-controller)); with the
    "Gamepad" layout the controller does nothing in Rust.
-3. Double-click `Install Rust Skate.cmd`. It checks that the folder is a pack, that Rust is in
-   Steam's own library and is the build the pack was made for, that Rust is not running, that no
+3. Double-click `Install Rust Skate.cmd`. It checks that the folder is a pack, that Rust is
+   installed through Steam (in Steam's own library on `C:`, or in another Steam library) and is
+   the build the pack was made for, that Rust is not running, that no
    earlier session left the mod in the Rust folder, that the pack is complete (its loader, interop
    set, runtime, plugin, launcher scripts, declared icons and sound set), and the free space; then
    it copies the pack to `Downloads\claude-loader-probe` and puts two files on the desktop:
@@ -94,7 +106,9 @@ and is not published; nothing of it belongs in this repository.
    "Legacy launcher" instead of the icon and sound lines.
 4. Start **Rust Skate** from the desktop and keep its window open while playing. Steam is started
    when it is not running. In Rust's main menu press `F1` and type `connect <address>` (the
-   window shows the address when it was packed in), then `Enter`. The window's first lines are
+   window shows the address when it was packed in, and so does the mod's own line at the top left
+   of the main menu, "To join the server: press F1, type connect ...", until you have been on the
+   server once; not yet seen on any PC), then `Enter`. The window's first lines are
    the launcher's own checks of the Rust folder and the staging folder; the same checks without
    starting Rust: `launcher\skate.ps1 -Diagnostics` in `Downloads\claude-loader-probe` (not in a
    legacy pack, whose launcher has no such switch).
@@ -102,8 +116,9 @@ and is not published; nothing of it belongs in this repository.
    again gets you off. `A` pushes, the left stick steers, `B` brakes, the right stick held back and
    flicked forward is an ollie, flicked to a forward diagonal a kickflip or heelflip, `LT`/`RT` held
    in the air a grab. The first seconds on the board show the controls; hold `Back` on the
-   controller while on the board, or `H` on the keyboard at any time, to see them again. The whole
-   table is in the [client README](README.md#controls).
+   controller while on the board for every controller trick (four pages, D-pad left/right; the
+   first shows each flick trick as its name and a stick arrow), or `H` on the keyboard for every key (one page on the board, the line on how to get on when on
+   foot). The whole table is in the [client README](README.md#controls).
 6. Quit Rust the normal way. The window ends with "Done. The Rust folder is back to normal." If it
    does not, or the PC went off while playing, run **Rust Skate - remove mod files** before
    starting Rust normally: a loader left in the Rust folder would be loaded by a normal start too.
@@ -120,7 +135,11 @@ and the sounds follow the pack: a pack without them takes an older address or so
 
 - Code present: `tools/pack.ps1`, `tools/install.ps1`, the launcher's messages for a friend
   (`tools/skate.ps1`), the sound-pack, icon, capture-pair and candidate-receipt handling that
-  #569 and #575 added to them.
+  #569 and #575 added to them, and the lookup of Steam and Rust's library on the friend's PC
+  (`Get-SkateRustFolder` in `tools/diagnostics.ps1`, used by the installer, `skate.ps1`,
+  `session.ps1` and `clean.ps1`; the owner's `C:` paths come first and stay as they were), and the
+  main-menu line with the `connect` command (`session.ps1` writes the packed address beside the
+  plugin as `skate_server.txt`; `SkateHud.cs` shows it until the rider is first ready in a world).
 - Checked outside the game: `pack.ps1` and `install.ps1` were run on Linux against a stand-in
   folder tree with the Windows paths swapped (the zip holds the expected files and nothing else
   from `play\`, `pack.txt` carries the build, the installer copies the tree, writes the desktop
@@ -136,6 +155,11 @@ and the sounds follow the pack: a pack without them takes an older address or so
   candidate cannot be ridden either until that is solved; a pack from the pinned release rides
   the older 0.18.40 plugin. The size of a real pack, Steam Input on the friend's shortcut and two
   clients on the owner's server are all still to be seen.
-- Known limits: Rust in a Steam library other than `C:` is refused, the Steam shortcut is made by
+- Known limits: the lookup of Steam and of Rust's library (registry, `libraryfolders.vdf`,
+  manifest) has only been exercised as a preflight against dummy fixtures on the owner's PC
+  (Windows PowerShell 5.1 and 7.6, 31 October, reported on 1 November, private receipt), never against a real second PC;
+  the main-menu `connect` line is client source that has not been seen in the game; a pack made
+  from the pinned 0.18.40
+  release still refuses Rust outside Steam's own library on `C:`. The Steam shortcut is made by
   hand, and the owner's server must accept the second rider (its ShortcutSkate plugin, or its
   speed checks turned off; see [playing it](README.md#playing-it-the-owners-launcher)).

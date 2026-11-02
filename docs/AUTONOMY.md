@@ -50,6 +50,17 @@ remaining limits. Temporary probes and logs belong in ignored `context/` and nee
 no separate permission per check. The existing named-owner-approval policy for
 new permanent tests in `crates/approved_tests` remains unchanged.
 
+## Visible result over source fidelity (owner, 28 October 2026)
+
+For rider and board animation, the owner judges what he sees. When a capture
+source is unreliable (depth along the camera axis, roll, a single camera angle,
+occlusion), a believable pose wins over fidelity to that source. Authored
+corrections and priors are allowed; label them as authored in the clip metadata
+so they never count as measured motion. A visual issue is fixed only when the
+viewer shows it visibly better next to the source frame. A bound, measurement or
+proof that changes nothing on screen does not close it. When in doubt, choose
+the correction that is visible.
+
 Keep `TODO.md` honest about code present, headless verification, graphical
 verification and release readiness. A compiler check or software-GPU run proves
 only its stated scope. Deliver a release only after the agreed product criteria

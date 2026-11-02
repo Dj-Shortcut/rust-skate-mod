@@ -6,6 +6,7 @@ Raw-JSON retarget needs NumPy; local inference additionally needs MediaPipe and
 OpenCV plus an explicitly supplied local PoseLandmarker .task model.
 """
 import argparse
+import copy
 import hashlib
 import gzip
 import importlib.metadata
@@ -26,6 +27,16 @@ MAX_JSON = 512*1024*1024
 ROOT = Path(__file__).resolve().parent
 ID = re.compile(r'[a-z0-9][a-z0-9_-]{0,63}\Z')
 RESERVED = {'con','prn','aux','nul'} | {p+str(i) for p in ('com','lpt') for i in range(1,10)}
+SHARED_SOURCE_VARIANTS = {
+    'switch-double-heelflip': ('switch-heelflip', -720),
+    'switch-triple-heelflip': ('switch-heelflip', -1080),
+    'nollie-double-heelflip': ('nollie-heelflip', -720),
+    'nollie-triple-heelflip': ('nollie-heelflip', -1080),
+    'fakie-double-kickflip': ('fakie-kickflip', 720),
+    'fakie-triple-kickflip': ('fakie-kickflip', 1080),
+}
+BASE_SOURCE_KINDS = {'switch-heelflip','nollie-heelflip','fakie-kickflip',
+                     'nollie-backside-180-heelflip','nollie-360-flip'}
 ACTOR_BOUNDS=dict(minimumBodyHeightPx=140.,maximumHintDistancePx=220.,maximumPreviousHipDistancePx=110.,minimumBestVsSecondCostMarginPx=25.,minimumMeanHipPresence=.7,maximumFeetHintErrorPx=70.)
 
 def digest(path):
@@ -271,15 +282,62 @@ def batch(args):
     atomic(out/'batch-report.json',json_bytes(report));print(json.dumps(dict(succeeded=len(clips),failed=failed,packUpdated=updated)),flush=True)
     return 1 if failed else 0
 
+def compose(args):
+    """Share body/flick/contact observations; the live game owns extra board turns."""
+    manifest=read_json(args.manifest);out=args.output.resolve();base=args.manifest.resolve().parent
+    if not isinstance(manifest,dict) or set(manifest)!={'version','sources','variants'} or type(manifest['version']) is not int or manifest['version']!=1:
+        raise ValueError('Composition manifest requires version1, sources and variants')
+    paths=manifest['sources'];variants=manifest['variants']
+    if not isinstance(paths,dict) or not paths or not set(paths)<=BASE_SOURCE_KINDS:
+        raise ValueError('Composition sources must name the supported per-stance source families')
+    if (not isinstance(variants,list) or not variants or any(not isinstance(v,str) or v not in SHARED_SOURCE_VARIANTS for v in variants)
+            or len(set(variants))!=len(variants)):
+        raise ValueError('Composition variants must be unique supported double/triple movement names')
+    sources={};source_records=[]
+    for kind,value in paths.items():
+        path=local_path(value,base);before=digest(path);clip=read_json(path)
+        if before!=digest(path):raise ValueError('Composition source changed while reading: '+kind)
+        encode_pack([clip]) # The same bounded transport/kinematic gate as a converted clip.
+        stem=clip['metadata']['id']
+        if not ID.fullmatch(stem) or stem in RESERVED:raise ValueError('Composition source id must be a safe lowercase filename stem')
+        if clip['metadata']['movementKind']!=kind:
+            raise ValueError('Composition source movement does not match its declared family: '+kind)
+        sources[kind]=clip;source_records.append(dict(family=kind,path=str(path),sha256=before,id=clip['metadata']['id']))
+    clips=[];records=[]
+    for name in variants:
+        family,degrees=SHARED_SOURCE_VARIANTS[name]
+        if family not in sources:raise ValueError('Missing composition source family: '+family)
+        source=sources[family];clip=copy.deepcopy(source);metadata=clip['metadata']
+        metadata.update(id=name,label=name+' [SHARED SOURCE; UNREVIEWED]',movementKind=name,reviewed=False,
+            sourceFamily=family,derivedFromClipId=source['metadata']['id'],requestedFlipDegrees=degrees,
+            derivation='shared-source-presentation',
+            compositionLimit='Shared filmed body/flick/contact data, not separately filmed multi-flip mocap. Live game board rotation, landing and scoring remain authoritative. Each variant needs its own visual review and exact owner-approved pack entry.')
+        clips.append(clip);records.append(dict(id=name,sourceFamily=family,derivedFromClipId=metadata['derivedFromClipId'],requestedFlipDegrees=degrees,reviewed=False))
+    if args.include_base:clips=list(sources.values())+clips
+    # Validate the complete candidate before touching the prior pack or JSONs.
+    packed=encode_pack(clips)
+    for clip in clips:atomic(out/'jobs'/(clip['metadata']['id']+'.json'),json_bytes(clip))
+    atomic(out/'skate_captures.skmc',packed)
+    report=dict(format='skate-capture-composition/1',manifestSha256=digest(args.manifest),codeSha256=code_key(),
+        sources=source_records,variants=records,includedBaseClips=bool(args.include_base),clipCount=len(clips),
+        packUpdated=True,packSha256=hashlib.sha256(packed).hexdigest(),
+        limits='Unreviewed derived presentations; composition does not approve variants or establish visual/native acceptance. Source frames, board track and events are unchanged.')
+    atomic(out/'compose-report.json',json_bytes(report))
+    print(json.dumps(dict(derived=len(records),clips=len(clips),packUpdated=True)),flush=True)
+    return 0
+
 def main(argv=None):
     p=argparse.ArgumentParser(description=__doc__);sub=p.add_subparsers(dest='command',required=True)
     b=sub.add_parser('batch',help='Process independent declarative local capture jobs')
     b.add_argument('manifest',type=Path);b.add_argument('--output',type=Path,required=True);b.add_argument('--model',type=Path)
     b.add_argument('--model-sha256');b.add_argument('--resume',action='store_true');b.add_argument('--partial-pack',action='store_true',help='Explicitly write successful clips even when another job fails (exit remains1)')
+    c=sub.add_parser('compose',help='Build separately reviewable variants from retained per-stance source clips; no new mocap or automatic approval')
+    c.add_argument('manifest',type=Path);c.add_argument('--output',type=Path,required=True)
+    c.add_argument('--include-base',action='store_true',help='Include every declared source clip alongside the derived entries')
     a=p.parse_args(argv)
-    try:return batch(a)
-    except (ValueError,OSError,KeyError,TypeError,RuntimeError,np.linalg.LinAlgError,MemoryError) as error:
-        atomic(a.output/'batch-failure.json',json_bytes(dict(status='failed',errorType=type(error).__name__,error=str(error))))
+    try:return compose(a) if a.command=='compose' else batch(a)
+    except (ValueError,OSError,KeyError,TypeError,IndexError,OverflowError,RuntimeError,np.linalg.LinAlgError,MemoryError) as error:
+        atomic(a.output/(a.command+'-failure.json'),json_bytes(dict(status='failed',errorType=type(error).__name__,error=str(error))))
         print('capture pipeline failed: '+str(error),file=sys.stderr);return 2
 
 if __name__=='__main__':raise SystemExit(main())

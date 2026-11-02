@@ -143,6 +143,9 @@ public class SkateRig : MonoBehaviour
     private static LateDriver late;
     private static float offAt = -99f, lastFrame;
     private static bool wasOn;
+    private static int flickPitchPop = -1;
+    private static bool flickPitchEligible, flickPitchActive;
+    private static float flickOrdinaryPitch, flickPitchOutput;
     private float holsterSaidAt = -99f; private int restoreSlot = -1;
     private string lastHolster = "";
     private float nextTick, nextLog, lateRetryAt, nextHeldRestoreAt, lastJumpTap = -1f, crouchSince = -1f;
@@ -198,12 +201,21 @@ public class SkateRig : MonoBehaviour
         }
     }
 
+    // The detectCollisions getter is an unstripping stub in this client and throws; the engine call
+    // behind it is there and takes the native Unity object, not the IL2CPP wrapper. The setter works.
+    private static bool Collides(Rigidbody body)
+    {
+        var native = body.GetCachedPtr();
+        if (native == IntPtr.Zero) throw new InvalidOperationException("rigidbody has no native object");
+        return Rigidbody.get_detectCollisions_Injected(native);
+    }
+
     private static bool ProxyCurrent(RootProxyLease p)
     {
         return p != null && Local == p.Player && LocalT == p.Root && Body == p.Physical && Walk == p.Movement && AwakeAt == p.Life &&
             Local != null && Local.lifestate == BaseCombatEntity.LifeState.Alive && LocalT != null && LocalT == Local.transform && LocalT.parent == null &&
-            Body != null && !Body.isKinematic && Body.detectCollisions && Body.transform == p.Frame && p.Frame.parent == p.Parent && !p.Frame.IsChildOf(LocalT) &&
-            Walk != null && Walk.enabled && Walk.transform == p.Frame && p.Proxy != null && p.Proxy.transform == LocalT && p.Proxy.isKinematic && !p.Proxy.detectCollisions;
+            Body != null && !Body.isKinematic && Collides(Body) && Body.transform == p.Frame && p.Frame.parent == p.Parent && !p.Frame.IsChildOf(LocalT) &&
+            Walk != null && Walk.enabled && Walk.transform == p.Frame && p.Proxy != null && p.Proxy.transform == LocalT && p.Proxy.isKinematic && !Collides(p.Proxy);
     }
 
     [HideFromIl2Cpp]
@@ -253,7 +265,7 @@ public class SkateRig : MonoBehaviour
             step = "physical body mode";
             if (Body.isKinematic) throw new InvalidOperationException("player is not ready");
             step = "physical collision flag";
-            if (!Body.detectCollisions) throw new InvalidOperationException("player is not ready");
+            if (!Collides(Body)) throw new InvalidOperationException("player is not ready");
             step = "physical body transform";
             var frame = Body.transform;
             step = "root Rigidbody lookup";
@@ -285,7 +297,7 @@ public class SkateRig : MonoBehaviour
             if (!ProxyFinite(position) || !ProxyFinite(velocity) || !ProxyFinite(world) || !ProxyFinite(rotation) || !ProxyFinite(LocalT.position) || (LocalT.position - position).sqrMagnitude > 1f)
                 throw new InvalidOperationException("player proxy is too far from the body");
             step = "root proxy collision flag";
-            var originalCollisions = proxy.detectCollisions;
+            var originalCollisions = Collides(proxy);
             step = "root proxy parent";
             var parent = frame.parent;
             rootProxy = new RootProxyLease { Player = Local, Root = LocalT, Proxy = proxy, Physical = Body, Movement = Walk,
@@ -351,8 +363,8 @@ public class SkateRig : MonoBehaviour
             {
                 if (p.Proxy.transform != p.Root) throw new InvalidOperationException("player proxy identity changed");
                 // A different value is already the original one; do not overwrite another owner.
-                if (!p.Proxy.detectCollisions) p.Proxy.detectCollisions = p.OriginalCollisions;
-                if (p.Proxy.detectCollisions != p.OriginalCollisions) throw new InvalidOperationException("collision restoration did not verify");
+                if (!Collides(p.Proxy)) p.Proxy.detectCollisions = p.OriginalCollisions;
+                if (Collides(p.Proxy) != p.OriginalCollisions) throw new InvalidOperationException("collision restoration did not verify");
             }
             var gone = p.Proxy == null;
             rootProxy = null;
@@ -704,7 +716,8 @@ public class SkateRig : MonoBehaviour
         // itself is turned by the right stick's flicks and says nothing.
         if (!SkateKeys.Scripted) SkateKeys.LookYaw = SkateKeys.Pad && SkateRide.On ? SkateRide.Yaw + SkateKeys.Steer * 35f : SkateCamera.LookYaw;
         var grinding = SkateRide.On && SkateRide.Mode == RideMode.Grind;
-        SkateBoard.Tip += ((!SkateRide.On || grinding ? 0f : SkateRide.Manual ? 1f : SkateRide.NoseManual ? -1f : 0f) - SkateBoard.Tip) * SkateRide.Clamp(frame * 9f, 0f, 1f);
+        if (SkateRide.Kickturning) SkateBoard.Tip = SkateRide.KickturnTip;
+        else SkateBoard.Tip += ((!SkateRide.On || grinding ? 0f : SkateRide.Manual ? 1f : SkateRide.NoseManual ? -1f : 0f) - SkateBoard.Tip) * SkateRide.Clamp(frame * 9f, 0f, 1f);
         double gp = 0, gr = 0, gc;
         if (grinding) Shortcut.RustMod.SkateRider.GrindDeck(SkateRide.GrindKind, out gp, out gr, out gc);
         SkateBoard.GrindPitch += ((float)gp - SkateBoard.GrindPitch) * SkateRide.Clamp(frame * 12f, 0f, 1f);
@@ -716,19 +729,21 @@ public class SkateRig : MonoBehaviour
         // An ollie pitches the board: nose up as it climbs, level at the top, nose a little down as
         // it falls; not held in a grab or a handplant, where the hands have the board.
         var ollie = SkateRide.On && SkateRide.Mode == RideMode.Air && SkateRide.Jumped && !SkateRide.Grabbing && !SkateRide.Handplant && !SkateOldschoolRide.Active && !SkateSurfaceRide.DisplayWall;
-        var climb = SkateRide.Clamp(SkateRide.VSpeed / SkateRide.OlliePop, -1f, 1f);
+        var climb = SkateRide.Clamp(SkateRide.VSpeed / SkateRide.LaunchPopImpulse, -1f, 1f);
         var airPitch = ollie ? (climb > 0f ? SkateBoard.OllieNoseUp : SkateBoard.OllieNoseDown) * climb : 0f;
         if (SkateRide.BoardPath.Known || SkateOldschoolRide.Active) airPitch = 0f;
-        SkateBoard.AirPitch += (airPitch - SkateBoard.AirPitch) * SkateRide.Clamp(frame * 14f, 0f, 1f);
+        StepAirPitch(airPitch, frame, ollie);
         // In a jump the knees come up: the board rises toward the rider around the top and is back
         // at the legs' full reach when it moves at take-off speed, going up or coming down. The
         // player itself is where the game has it; only the board and the feet are drawn higher.
         var rise = 0f;
         if (SkateRide.On && SkateRide.Mode == RideMode.Air && SkateRide.Jumped && !SkateRide.Frozen && !SkateOldschoolRide.Active && !SkateSurfaceRide.DisplayWall)
         {
-            var v = SkateRide.VSpeed / SkateRide.OlliePop;
-            rise = SkateBoard.PopMost * SkateRide.Clamp(1f - v * v, 0f, 1f);
+            var v = SkateRide.VSpeed / SkateRide.LaunchPopImpulse;
+            rise = SkateRide.AirPopLift * SkateRide.Clamp(1f - v * v, 0f, 1f);
         }
+        rise += .10f * SkateRide.TransitionAirTuck;
+        if (SkateCapturedBoardPaths.OwnsNativePop) rise = 0f;
         // A grab pulls the board up further, to the rider's hands, as the body folds into it.
         if (SkateRide.On && SkateRide.Mode == RideMode.Air) rise += SkateBoard.GrabRise * SkateBoard.GrabFold;
         SkateBoard.Pop += (rise - SkateBoard.Pop) * SkateRide.Clamp(frame * 18f, 0f, 1f);
@@ -737,7 +752,7 @@ public class SkateRig : MonoBehaviour
         {
             var feet = at; var up = SkateRide.ViewNormal; var tilted = up;
             SkateBoard.Tilt(ref feet, ref tilted);
-            var t2 = SkateClock.Now(); RiderRig.Frame(feet, up, !third, frame); SkateClock.Add(SkateClock.Rider, t2);
+            var t2 = SkateClock.Now(); RiderRig.Frame(feet, SkateRide.RiderViewNormal, !third, frame); SkateClock.Add(SkateClock.Rider, t2);
         }
         // Held board placement is produced by this frame's solved pose.
         if (board != null)
@@ -755,6 +770,18 @@ public class SkateRig : MonoBehaviour
         catch (Exception e) { if (!watchFailed) { watchFailed = true; Say("watch threw " + e.GetType().Name + ": " + e.Message); } }
     }
     private static bool watchFailed;
+
+    private static void StepAirPitch(float ordinaryTarget, float frame, bool ollie)
+    {
+        // The coupled source-keyed route owns its complete displayed board.
+        // Legacy captures retain ordinary native pop pitch; the unreviewed
+        // 55-degree prototype must not pull their contacts beyond measured reach.
+        var ordinaryFrom = flickPitchActive && SkateBoard.AirPitch == flickPitchOutput
+            ? flickOrdinaryPitch : SkateBoard.AirPitch;
+        flickOrdinaryPitch = ordinaryFrom + (ordinaryTarget - ordinaryFrom) * SkateRide.Clamp(frame * 14f, 0f, 1f);
+        flickPitchPop = -1; flickPitchEligible = flickPitchActive = false;
+        SkateBoard.AirPitch = flickPitchOutput = flickOrdinaryPitch;
+    }
 
     private void OnApplicationFocus(bool focused) { if (!focused) SkatePieces.CancelFocus(); }
 

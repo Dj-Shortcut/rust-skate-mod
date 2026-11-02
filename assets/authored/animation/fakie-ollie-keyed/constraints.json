@@ -1,0 +1,385 @@
+{
+  "format": "authored-fakie-ollie-controls/1",
+  "id": "fakie-ollie-source-keyed-v1",
+  "movementKind": "fakie-ollie",
+  "sourceBodySha256": "4e461986d62abf099106a8604c3a22dd0b7d8142f203f6d110df3363d74c6a2f",
+  "geometrySha256": "806a59f06a0f28eb0a81550675e2cff391bf27b286f788690b65ed857794d4c5",
+  "baseSamplerSha256": "98ac9495fd5db440194e7f3438d9c4791f30b7fe4a65fcb4c8f6944a305945ac",
+  "sourceUrl": "https://www.youtube.com/watch?v=P4CflPS6YwQ&t=73",
+  "sourceAuthor": "The Berrics",
+  "sourceVideoSha256": "a1d1f42eedc478da3f5eee30df271052940c8569755ca6cdfb1c3b7b15dc630d",
+  "fullSourceVideoSha256": null,
+  "sourceFps": 29.97002997002997,
+  "sourceCacheOriginalOffsetSeconds": 64.0,
+  "sourceContainerFirstPts": 990,
+  "sourceTimeBase": [
+    1,
+    30000
+  ],
+  "firstSourceFrame": 274,
+  "lastSourceFrame": 347,
+  "filmedStance": "regular",
+  "pop": 304,
+  "frontRelease": 306,
+  "tailStrike": 309,
+  "tailRelease": 311.5,
+  "pressEnd": 314,
+  "firstCatch": 319,
+  "catch": 319,
+  "land": 321,
+  "recovery": 337,
+  "reference": {
+    "gravity": 8.0,
+    "flightSeconds": 0.6,
+    "wheelClearance": 0.005
+  },
+  "pitchKeys": [
+    [
+      274,
+      0
+    ],
+    [
+      304,
+      0
+    ],
+    [
+      306,
+      -12
+    ],
+    [
+      309,
+      -46
+    ],
+    [
+      310,
+      -46
+    ],
+    [
+      311.5,
+      -30
+    ],
+    [
+      314,
+      -10
+    ],
+    [
+      316,
+      -2
+    ],
+    [
+      318,
+      0
+    ],
+    [
+      347,
+      0
+    ]
+  ],
+  "setupFeet": {
+    "Left": {
+      "x": -0.03,
+      "z": 0.06,
+      "yaw": 60
+    },
+    "Right": {
+      "x": -0.025,
+      "z": -0.325,
+      "yaw": 85
+    }
+  },
+  "catchFeet": {
+    "Left": {
+      "x": -0.025,
+      "z": 0.24,
+      "yaw": 65
+    },
+    "Right": {
+      "x": -0.025,
+      "z": -0.24,
+      "yaw": 85
+    }
+  },
+  "guide": {
+    "start": 305.5,
+    "full": 307.5,
+    "release": 312.5,
+    "end": 314.5,
+    "deckKeys": [
+      [
+        305.5,
+        -0.03,
+        0.1
+      ],
+      [
+        307.5,
+        -0.055,
+        0.18
+      ],
+      [
+        309,
+        -0.07,
+        0.27
+      ],
+      [
+        312.5,
+        -0.075,
+        0.29
+      ]
+    ],
+    "shoeLocal": [
+      -0.04219660068,
+      -0.04039648743,
+      0.08992672899
+    ],
+    "instepSurfaceNormalLocal": [
+      -0.97935,
+      0.19878,
+      0.03674
+    ],
+    "toeHeadingDegrees": 60,
+    "provenance": "Own original Left dark outer-upper shoe patch guides toward board+noseZ, with no off-edge flip. This remains noseward even when Fakie velocity points toward-tailZ; outsole is not the guide."
+  },
+  "frontFreeKeys": [
+    [
+      312.5,
+      -0.045,
+      0.22,
+      0.29
+    ],
+    [
+      314,
+      -0.04,
+      0.205,
+      0.28
+    ],
+    [
+      316,
+      -0.03,
+      0.205,
+      0.26
+    ],
+    [
+      319,
+      -0.025,
+      0.205,
+      0.24
+    ]
+  ],
+  "rearFreeKeys": [
+    [
+      311.5,
+      -0.025,
+      0.2,
+      -0.31
+    ],
+    [
+      314,
+      -0.025,
+      0.205,
+      -0.28
+    ],
+    [
+      316,
+      -0.025,
+      0.205,
+      -0.25
+    ],
+    [
+      319,
+      -0.025,
+      0.205,
+      -0.24
+    ]
+  ],
+  "pelvisKeys": [
+    [
+      274,
+      -0.08,
+      0.86,
+      -0.02
+    ],
+    [
+      290,
+      -0.09,
+      0.76,
+      -0.02
+    ],
+    [
+      299,
+      -0.1,
+      0.62,
+      -0.03
+    ],
+    [
+      304,
+      -0.09,
+      0.65,
+      -0.03
+    ],
+    [
+      306,
+      -0.07,
+      0.72,
+      -0.025
+    ],
+    [
+      309,
+      -0.05,
+      0.64,
+      -0.02
+    ],
+    [
+      311.5,
+      -0.065,
+      0.56,
+      -0.01
+    ],
+    [
+      312.5,
+      -0.08,
+      0.55,
+      0
+    ],
+    [
+      314,
+      -0.08,
+      0.55,
+      0.01
+    ],
+    [
+      315,
+      -0.08,
+      0.55,
+      0.01
+    ],
+    [
+      317,
+      -0.08,
+      0.66,
+      0.01
+    ],
+    [
+      319,
+      -0.08,
+      0.76,
+      0
+    ],
+    [
+      321,
+      -0.08,
+      0.74,
+      0
+    ],
+    [
+      324,
+      -0.085,
+      0.69,
+      0
+    ],
+    [
+      329,
+      -0.08,
+      0.79,
+      0
+    ],
+    [
+      337,
+      -0.075,
+      0.87,
+      0
+    ],
+    [
+      347,
+      -0.075,
+      0.88,
+      0
+    ]
+  ],
+  "recoveryWindow": [
+    326,
+    337
+  ],
+  "recoverySourceFrame": 343,
+  "maximumReachShare": 0.998,
+  "minimumAirSoleClearance": 0.018,
+  "gazeKeys": [
+    [
+      274,
+      0.5,
+      -0.45,
+      -0.45
+    ],
+    [
+      304,
+      0.5,
+      -0.7,
+      -0.4
+    ],
+    [
+      314,
+      0.5,
+      -0.65,
+      -0.45
+    ],
+    [
+      321,
+      0.5,
+      -0.6,
+      -0.45
+    ],
+    [
+      337,
+      0.3,
+      -0.1,
+      -1.0
+    ],
+    [
+      347,
+      0.3,
+      -0.1,
+      -1.0
+    ]
+  ],
+  "kneePlane": {
+    "forward": [
+      1.0,
+      0,
+      0.1
+    ],
+    "sourceStatus": "Authored coherent toe-side knee planes; unreliable monocular leg depth is not followed into a knee flip."
+  },
+  "nativeSignature": {
+    "pop": "Ollie",
+    "switch": true,
+    "tailLeads": true,
+    "flip": 0,
+    "shove": 0,
+    "spin": 0,
+    "body": 0
+  },
+  "provenance": "Own actual landed fakie-ollie by the same black-cap/gray-shorts P4C rider on flat concrete, not a different trick body. Source torso/arm vectors retained with explicit camera/depth/hip-shoulder/knee/head reconstruction, own tail pressure and front outer-upper guide, compact grip-up Air, soft landing and same-take upright recovery. Raw327 is a rejected post-Land observation; interpolation between own326/328 is authored and remains declared. No raw approval or native acceptance. Owner Pop-arm correction is explicitly authored in popBalance; procedural pre-Pop head is outside source selection.",
+  "uncertainty": "Single panning camera, hats/legs/deck overlap and low-visibility hands/feet. Source global frames/PTS/full-video hash unknown after bounded transcode. Exact contact, source camera yaw/depth, shoe roll and canonical axes are authored, not measured3D.",
+  "sourceRootMotion": "Source carrier translation/jump removed once; canonical+Z stays the board nose. Actual native NoseYaw/velocity carries the action once, including backwards Fakie. No travel-axis body rotation or second baked jump.",
+  "phaseClockLimit": "Own bounded preview extension304, front sole306, tailStrike309, canonicalRight tailrelease311.5, distinctlaterfreeAir314, catch319, sourceLand321, upright337; actual physical landing/scoring lead.",
+  "popBalance": {
+    "window": [
+      304.5,
+      307.5,
+      310.5,
+      314
+    ],
+    "Left": {
+      "upper": [
+        0.12,
+        -0.06,
+        -0.99
+      ],
+      "fore": [
+        0.58,
+        -0.12,
+        -0.8
+      ]
+    },
+    "provenance": "Authored owner correction: canonical Left/nose-side arm winds out at shoulder height or lower during Pop, with a bent elbow. Smoothly ends at free Air314; original source torso, other arm, feet, board, catch and recovery unchanged. Torso-local [forward,up,anatomical-right]; no source stance swap."
+  }
+}

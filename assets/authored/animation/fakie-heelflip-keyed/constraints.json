@@ -1,0 +1,469 @@
+{
+  "format": "original-authored-fakie-heelflip-constraints/1",
+  "id": "fakie-heelflip-source-keyed-v1",
+  "movementKind": "fakie-heelflip",
+  "firstSourceFrame": 2707,
+  "lastSourceFrame": 2772,
+  "sourceFps": 29.97002997002997,
+  "sampleHz": 120,
+  "sourceBodySha256": "eaa4726241d0649e27c9499473494ceb6a093153273924ccd9f2932541c156b0",
+  "signature": {
+    "pop": "Ollie",
+    "switch": true,
+    "tailLeads": true,
+    "flip": -360,
+    "shove": 0,
+    "spin": 0
+  },
+  "sourceRootMotion": {
+    "popFrame": 2714,
+    "landFrame": 2733,
+    "referenceFlight": 0.6,
+    "gravity": 8,
+    "normalization": "Subtract the one reference ballistic carrier from joints and board; the real game owns charged flight."
+  },
+  "anatomicalRoles": {
+    "canonicalStance": "regular",
+    "nose": "+Z",
+    "travel": "-Z, supplied by the real Fakie controller route",
+    "popFoot": "Right, tail at -Z",
+    "heelFlickFoot": "Left, heel against toe-side nose edge"
+  },
+  "tailStrikeFrame": 2716.6,
+  "frontReleaseFrame": 2716.2,
+  "rearReleaseFrame": 2717.9,
+  "pressEndFrame": 2718.2,
+  "heelContact": {
+    "start": 2716.2,
+    "full": 2717.1,
+    "end": 2717.6,
+    "shoeLocal": [
+      0,
+      -0.075,
+      -0.07
+    ],
+    "deckLocal": [
+      0.0805,
+      0.0325,
+      0.36
+    ],
+    "yaw": 75,
+    "pitch": -8,
+    "roll": 12
+  },
+  "boardPitch": [
+    [
+      2707,
+      0
+    ],
+    [
+      2714,
+      0
+    ],
+    [
+      2716.6,
+      54
+    ],
+    [
+      2717.3,
+      36
+    ],
+    [
+      2718.2,
+      14
+    ],
+    [
+      2721,
+      5
+    ],
+    [
+      2726,
+      0
+    ],
+    [
+      2772,
+      0
+    ]
+  ],
+  "boardRoll": [
+    [
+      2707,
+      0
+    ],
+    [
+      2717.5,
+      0
+    ],
+    [
+      2719,
+      -35
+    ],
+    [
+      2721,
+      -100
+    ],
+    [
+      2724,
+      -205
+    ],
+    [
+      2727,
+      -320
+    ],
+    [
+      2729,
+      -358
+    ],
+    [
+      2730,
+      -360
+    ],
+    [
+      2772,
+      -360
+    ]
+  ],
+  "boardHeight": [
+    [
+      2707,
+      0.092
+    ],
+    [
+      2714,
+      0.092
+    ],
+    [
+      2716.6,
+      0.17
+    ],
+    [
+      2718.2,
+      0.29
+    ],
+    [
+      2722,
+      0.52
+    ],
+    [
+      2724,
+      0.56
+    ],
+    [
+      2727,
+      0.45
+    ],
+    [
+      2730,
+      0.25
+    ],
+    [
+      2733,
+      0.092
+    ],
+    [
+      2772,
+      0.092
+    ]
+  ],
+  "pelvisRelativeToBoard": [
+    [
+      2707,
+      -0.035,
+      0.64,
+      -0.11
+    ],
+    [
+      2714,
+      -0.015,
+      0.74,
+      -0.08
+    ],
+    [
+      2716.6,
+      0.015,
+      0.62,
+      -0.025
+    ],
+    [
+      2718.2,
+      0.025,
+      0.61,
+      0.005
+    ],
+    [
+      2722,
+      -0.025,
+      0.7,
+      0
+    ],
+    [
+      2726,
+      -0.035,
+      0.7,
+      -0.025
+    ],
+    [
+      2730,
+      -0.035,
+      0.73,
+      -0.045
+    ],
+    [
+      2733,
+      -0.02,
+      0.67,
+      -0.025
+    ],
+    [
+      2735,
+      -0.02,
+      0.63,
+      -0.025
+    ],
+    [
+      2741,
+      -0.02,
+      0.72,
+      -0.015
+    ],
+    [
+      2758,
+      -0.025,
+      0.79,
+      0
+    ],
+    [
+      2772,
+      -0.025,
+      0.79,
+      0
+    ]
+  ],
+  "feet": {
+    "Left": {
+      "load": [
+        0.015,
+        0.045,
+        80
+      ],
+      "catch": [
+        -0.025,
+        0.23,
+        70
+      ],
+      "free": [
+        [
+          2717.6,
+          0.18,
+          0.34,
+          0.29
+        ],
+        [
+          2720,
+          0.17,
+          0.36,
+          0.27
+        ],
+        [
+          2724,
+          0.09,
+          0.32,
+          0.25
+        ],
+        [
+          2727,
+          0.015,
+          0.28,
+          0.245
+        ],
+        [
+          2728.5,
+          -0.025,
+          0.22,
+          0.23
+        ],
+        [
+          2772,
+          -0.025,
+          0.22,
+          0.23
+        ]
+      ]
+    },
+    "Right": {
+      "load": [
+        0.025,
+        -0.34,
+        85
+      ],
+      "catch": [
+        0.025,
+        -0.23,
+        85
+      ],
+      "free": [
+        [
+          2718.2,
+          0.025,
+          0.18,
+          -0.31
+        ],
+        [
+          2720,
+          0.025,
+          0.26,
+          -0.26
+        ],
+        [
+          2724,
+          0.015,
+          0.28,
+          -0.22
+        ],
+        [
+          2727,
+          0.025,
+          0.24,
+          -0.225
+        ],
+        [
+          2728.5,
+          0.025,
+          0.22,
+          -0.23
+        ],
+        [
+          2772,
+          0.025,
+          0.22,
+          -0.23
+        ]
+      ]
+    }
+  },
+  "events": [
+    {
+      "frame": 2707,
+      "phase": "load",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 2714,
+      "phase": "pop",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 2716.2,
+      "phase": "pop",
+      "contacts": [
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 2717.9,
+      "phase": "air",
+      "contacts": []
+    },
+    {
+      "frame": 2718.2,
+      "phase": "air",
+      "contacts": []
+    },
+    {
+      "frame": 2730,
+      "phase": "catch",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 2733,
+      "phase": "land",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 2741,
+      "phase": "recovery",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    }
+  ],
+  "hybrid": {
+    "popContact": {
+      "deckHalfWidth": 0.102,
+      "capBase": 0.288,
+      "capLength": 0.112,
+      "kickStart": 0.245,
+      "kickSpan": 0.155,
+      "kickRise": 0.05,
+      "concave": 0.008,
+      "soleLocalY": -0.0948,
+      "soleRows": [
+        [
+          -0.073,
+          0.031
+        ],
+        [
+          -0.04,
+          0.045
+        ],
+        [
+          0.04,
+          0.046
+        ],
+        [
+          0.121,
+          0.043
+        ],
+        [
+          0.164,
+          0.027
+        ]
+      ]
+    }
+  },
+  "provenance": "Explicit owner-authorized authored Fakie Heelflip derived from reviewed Fakie Kickflip body and original heel contact/negative board roll. No independent filmed Fakie Heelflip is claimed. The Pop/Flick canonical Left lead arm has an authored lower/forward bent balance; no other body/contact/board timing changes.",
+  "uncertainty": "Single-camera FK upper-body estimates are reused as shared motion, not genuine heel-source observations. Lower body, heel guide, board rotation, pelvis, hidden depth, contact timing and recovery are original authored reconstruction.",
+  "reachShare": {
+    "press": 0.92,
+    "free": 0.995
+  },
+  "supportReference": {
+    "path": "assets/authored/animation/heelflip-keyed/heel-constraints.json",
+    "sha256": "0b1eabab51af98da815d523d991eea19ef8594426f2a5ede5ebb8f88d88137db",
+    "field": "hybrid.support"
+  },
+  "popLeadArmBalance": {
+    "side": "Left",
+    "window": [
+      2713,
+      2714.5,
+      2717.6,
+      2721
+    ],
+    "upper": [
+      0.38,
+      0.05,
+      0.92
+    ],
+    "fore": [
+      0.92,
+      -0.36,
+      -0.12
+    ],
+    "space": "Canonical anatomical board frame: +X body-forward, +Y up, +Z front/Left side; independent of backward Fakie velocity.",
+    "provenance": "Authored short Pop/Flick lead-arm correction: bent elbow, hand lower and forward. Other arm/body/feet/board unchanged; original accepted arm resumes by source2721, before the shown Air2724."
+  }
+}

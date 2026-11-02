@@ -1,0 +1,598 @@
+{
+  "format": "own-source-fs180-constraints/1",
+  "id": "fs-180-source-keyed-v1",
+  "movementKind": "fs-180",
+  "firstSourceFrame": 42,
+  "lastSourceFrame": 105,
+  "sourceFps": 29.97002997002997,
+  "sampleHz": 120,
+  "sourceBodySha256": "a96c5d24cb5157d0141988cf98bf271a9bb6ceebe1f7adb50bd45a01d6654ed7",
+  "signature": {
+    "pop": "Ollie",
+    "switch": false,
+    "tailLeads": false,
+    "flip": 0,
+    "shove": 0,
+    "spin": 180,
+    "body": 0
+  },
+  "geometryReference": {
+    "path": "assets/authored/animation/treflip-keyed/constraints.json",
+    "geometryDataSha256": "21e757c6dd6e170558c6ee2f570cbdbb282f68e30f873dc3f5f0596402cd7da3",
+    "scope": "Original shared board/sole/instep mesh only; no other trick body read."
+  },
+  "popFrame": 54,
+  "tailStrikeFrame": 56.4,
+  "frontReleaseFrame": 55.5,
+  "rearReleaseFrame": 58.4,
+  "pressEndFrame": 60,
+  "catchFrame": 70,
+  "landFrame": 75,
+  "recoveryFrame": 84,
+  "sourceRootMotion": {
+    "popFrame": 54,
+    "landFrame": 75,
+    "referenceFlight": 0.6,
+    "gravity": 8,
+    "normalization": "Remove one reference upright carrier from the complete normalized pose/board. Native physics adds the actual carrier once."
+  },
+  "sourceBoardYaw": [
+    [
+      42,
+      0
+    ],
+    [
+      54,
+      0
+    ],
+    [
+      56.4,
+      -15
+    ],
+    [
+      58.4,
+      -40
+    ],
+    [
+      60,
+      -65
+    ],
+    [
+      64,
+      -115
+    ],
+    [
+      68,
+      -158
+    ],
+    [
+      70,
+      -177
+    ],
+    [
+      72,
+      -180
+    ],
+    [
+      105,
+      -180
+    ]
+  ],
+  "sourceYawContract": "Canonical Regular source board heading0 to -180. This estimated complete heading is removed from ALL scene points/directions/soles/board; live NoseYaw actualSpin supplies the one real turn.",
+  "boardPitch": [
+    [
+      42,
+      0
+    ],
+    [
+      54,
+      0
+    ],
+    [
+      56.4,
+      48
+    ],
+    [
+      58.4,
+      24
+    ],
+    [
+      60,
+      10
+    ],
+    [
+      64,
+      0
+    ],
+    [
+      105,
+      0
+    ]
+  ],
+  "boardHeight": [
+    [
+      42,
+      0.092
+    ],
+    [
+      54,
+      0.092
+    ],
+    [
+      56.4,
+      0.18
+    ],
+    [
+      58.4,
+      0.27
+    ],
+    [
+      60,
+      0.36
+    ],
+    [
+      64,
+      0.52
+    ],
+    [
+      67,
+      0.46
+    ],
+    [
+      70,
+      0.32
+    ],
+    [
+      73,
+      0.17
+    ],
+    [
+      75,
+      0.092
+    ],
+    [
+      105,
+      0.092
+    ]
+  ],
+  "pelvisRelativeToBoard": [
+    [
+      42,
+      -0.035,
+      0.72,
+      -0.07
+    ],
+    [
+      49,
+      -0.035,
+      0.64,
+      -0.1
+    ],
+    [
+      54,
+      -0.02,
+      0.71,
+      -0.065
+    ],
+    [
+      56.4,
+      -0.01,
+      0.61,
+      -0.02
+    ],
+    [
+      58.4,
+      -0.01,
+      0.57,
+      0
+    ],
+    [
+      60,
+      -0.02,
+      0.55,
+      0
+    ],
+    [
+      64,
+      -0.025,
+      0.62,
+      0
+    ],
+    [
+      70,
+      -0.025,
+      0.66,
+      0
+    ],
+    [
+      75,
+      -0.025,
+      0.63,
+      0
+    ],
+    [
+      77,
+      -0.025,
+      0.62,
+      0
+    ],
+    [
+      84,
+      -0.025,
+      0.73,
+      0
+    ],
+    [
+      98,
+      -0.025,
+      0.79,
+      0
+    ],
+    [
+      105,
+      -0.025,
+      0.79,
+      0
+    ]
+  ],
+  "torsoFold": [
+    [
+      42,
+      22
+    ],
+    [
+      49,
+      32
+    ],
+    [
+      54,
+      18
+    ],
+    [
+      56.4,
+      8
+    ],
+    [
+      60,
+      20
+    ],
+    [
+      64,
+      30
+    ],
+    [
+      70,
+      20
+    ],
+    [
+      75,
+      30
+    ],
+    [
+      80,
+      24
+    ],
+    [
+      90,
+      12
+    ],
+    [
+      105,
+      12
+    ]
+  ],
+  "instep": {
+    "start": 55.5,
+    "full": 56.6,
+    "end": 58.0,
+    "releaseEnd": 60.0,
+    "yaw": 62,
+    "deckPath": [
+      [
+        55.5,
+        -0.035,
+        0.2
+      ],
+      [
+        56.6,
+        -0.025,
+        0.265
+      ],
+      [
+        58.0,
+        -0.02,
+        0.285
+      ]
+    ],
+    "contactSemantics": "Front sole-support clears at55.5; the outer-upper shoe guides the griptape through58, without a heel-side/off-edge flick or board roll."
+  },
+  "feet": {
+    "Left": {
+      "load": [
+        -0.03,
+        0.12,
+        62
+      ],
+      "catch": [
+        -0.025,
+        0.23,
+        65
+      ],
+      "free": [
+        [
+          58,
+          -0.02,
+          0.16,
+          0.27
+        ],
+        [
+          60,
+          -0.025,
+          0.15,
+          0.25
+        ],
+        [
+          64,
+          -0.035,
+          0.145,
+          0.235
+        ],
+        [
+          68,
+          -0.025,
+          0.14,
+          0.23
+        ],
+        [
+          70,
+          -0.025,
+          0.12,
+          0.23
+        ],
+        [
+          105,
+          -0.025,
+          0.12,
+          0.23
+        ]
+      ]
+    },
+    "Right": {
+      "load": [
+        0.025,
+        -0.34,
+        85
+      ],
+      "catch": [
+        0.025,
+        -0.23,
+        85
+      ],
+      "free": [
+        [
+          58.4,
+          0.025,
+          0.12,
+          -0.31
+        ],
+        [
+          60,
+          0.025,
+          0.145,
+          -0.25
+        ],
+        [
+          64,
+          0.025,
+          0.14,
+          -0.235
+        ],
+        [
+          68,
+          0.025,
+          0.14,
+          -0.23
+        ],
+        [
+          70,
+          0.025,
+          0.12,
+          -0.23
+        ],
+        [
+          105,
+          0.025,
+          0.12,
+          -0.23
+        ]
+      ]
+    }
+  },
+  "reachShare": {
+    "press": 0.91,
+    "free": 0.985
+  },
+  "rightArmReconstruction": {
+    "upper": [
+      [
+        42,
+        0.1,
+        -0.9,
+        -0.2
+      ],
+      [
+        54,
+        -0.1,
+        0.2,
+        -0.95
+      ],
+      [
+        60,
+        -0.15,
+        -0.15,
+        -0.98
+      ],
+      [
+        64,
+        -0.15,
+        -0.2,
+        -0.97
+      ],
+      [
+        70,
+        0.25,
+        -0.55,
+        -0.8
+      ],
+      [
+        75,
+        0.2,
+        -0.8,
+        -0.35
+      ],
+      [
+        90,
+        0.1,
+        -0.95,
+        -0.25
+      ],
+      [
+        105,
+        0.1,
+        -0.95,
+        -0.25
+      ]
+    ],
+    "fore": [
+      [
+        42,
+        0.1,
+        -0.95,
+        -0.1
+      ],
+      [
+        54,
+        0.4,
+        -0.1,
+        -0.91
+      ],
+      [
+        60,
+        0.4,
+        -0.55,
+        -0.65
+      ],
+      [
+        64,
+        0.4,
+        -0.6,
+        -0.5
+      ],
+      [
+        70,
+        0.4,
+        -0.7,
+        0.2
+      ],
+      [
+        75,
+        0.4,
+        -0.8,
+        0.1
+      ],
+      [
+        90,
+        0.05,
+        -0.99,
+        0
+      ],
+      [
+        105,
+        0.05,
+        -0.99,
+        0
+      ]
+    ],
+    "provenance": "Far/right wrist model confidence is below.5 on most source frames. Own visible balance gesture is reconstructed with a bent elbow; this is not trusted measured depth."
+  },
+  "leftCatchReconstruction": {
+    "window": [
+      67,
+      70,
+      78,
+      84
+    ],
+    "upper": [
+      0.35,
+      -0.4,
+      0.85
+    ],
+    "fore": [
+      0.8,
+      0.18,
+      0.1
+    ],
+    "provenance": "Authored owner improvement: canonical Left/nose-side hand opens outward/forward for balance at Catch/Land rather than folding against the chest. Existing window67..84 and upper-arm/elbow are unchanged; fixed forearm length and believable bend are preserved. Body-local [facing,up,anatomical-left], independent of travel/native turn. No new captured confidence."
+  },
+  "events": [
+    {
+      "frame": 42,
+      "phase": "load",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 54,
+      "phase": "pop",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 55.5,
+      "phase": "pop",
+      "contacts": [
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 58.4,
+      "phase": "air",
+      "contacts": []
+    },
+    {
+      "frame": 60,
+      "phase": "air",
+      "contacts": []
+    },
+    {
+      "frame": 70,
+      "phase": "catch",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 75,
+      "phase": "land",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 84,
+      "phase": "recovery",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    }
+  ],
+  "provenance": "Independent filmed plain FS180: red beanie/94 jersey own P4C take. Own source torso/arm directions; declared authored scene heading, camera/depth, fixed lower body, griptape-side upper shoe guide, hidden right arm, catch balance and recovery. Source heading is removed everywhere before actual native spin yaw is applied once. Owner-requested Catch/Land balance refinement changes only the canonical Left forearm direction inside the existing67..84 window; the other arm, head/torso, feet, board, source clock and earlier/later poses are preserved.",
+  "uncertainty": "Source/model yaw is not calibrated; explicit sourceBoardYaw/hipYaw controls reconstruct complete heading. Raw four post-land ambiguous frames86,93-95 remain missing detections and are only labelled interpolations. Foot/board contact and hidden limb depth are authored, not measured."
+}

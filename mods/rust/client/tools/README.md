@@ -38,7 +38,10 @@ plugin), `launcher\` (the owner's launcher), `sounds\` (the owner's private soun
 ([which](../../../../docs/RUST-SKATE-AUDIO.md)); `session` copies them in, `pack` carries them to a
 friend, and they are never committed), `run-<tag>-<time>\` (one folder per session with its
 logs and the loader files taken back out of the Rust folder) and `server.txt` (the address of the
-private test server as `ip:port`; it is read by `ping` and `session` and is never committed).
+private test server as `ip:port`; it is read by `ping` and `session` and is never committed;
+`session` also writes its first line beside the plugin as `BepInEx\plugins\skate_server.txt`, which
+the plugin shows in the main menu as the `connect` command to type after `F1`, until the rider is
+first ready in a world; it leaves the Rust folder with the loader).
 
 ## Starting
 
@@ -82,8 +85,8 @@ PC reliably from a distance.
 | `survey` | Lists what the interop set of the installed build offers for given type names. |
 | `launcher` | Installs or updates the owner's launcher from [`release.txt`](release.txt), or an explicit full-SHA `$pcandidate` without changing that release pin. |
 | `launchertest` | Starts the installed launcher, kills it while Rust runs, closes Rust and reports whether the Rust folder was cleaned all the same. |
-| `pack` | Zips the installed launcher for a friend: the loader, the interop set of the installed build, the changed runtime, the released plugin with its models, the launcher's scripts, the 18 files of `sounds\` (unless `$psounds` is 0; an incomplete `sounds\` refuses the pack, a missing one is packed without sounds and said) and (unless `$pserver` is 0) `server.txt`, with `install.ps1` of the branch as its installer. Refuses without a launcher prepared for the installed build. [What the friend does](../FRIEND.md). Not yet run on the owner's PC. |
-| `install` | Not a `zz` script: the friend's installer, carried inside the pack and started there by `Install Rust Skate.cmd`. Checks Steam, Rust's default library, the matching Rust build, free space and the `RustClient` shortcut; copies the pack to `Downloads\claude-loader-probe` and writes the two desktop files. |
+| `pack` | Zips the installed launcher for a friend: the loader, the interop set of the installed build, the changed runtime, the released plugin with its models, the launcher's scripts, the 18 files of `sounds\` (unless `$psounds` is 0; an incomplete `sounds\` refuses the pack, a missing one is packed without sounds and said) and (unless `$pserver` is 0) `server.txt`, with `install.ps1` of the branch as its installer. A selected session with Steam discovery also finds Rust in other Steam libraries; legacy sessions retain their default-C: requirement. Refuses without a launcher prepared for the installed build. [What the friend does](../FRIEND.md). Not yet run on the owner's PC. |
+| `install` | Not a `zz` script: the friend's installer, carried inside the pack and started there by `Install Rust Skate.cmd`. Checks Steam's own and listed libraries (default C: only for a legacy pack), the matching Rust build, free space and the `RustClient` shortcut; copies the pack to `Downloads\claude-loader-probe` and writes the two desktop files. |
 | `ping` | Whether the private test server answers on its game port. |
 | `user` | Opens a PowerShell window without administrator rights, with `zz` loaded, for when the window at hand is an administrator's. |
 | `ref` | Points `zz` and `zg` at another branch: `$pto` holds its name without the dashes and slashes, which cannot be typed from a distance (`sv pto claudeloaderprobe`). |
@@ -182,6 +185,20 @@ moves to another Unity version needs both changed, and the base libraries for th
    source (otherwise `sounds\`) holds the 18 WAV files. Set `$psoundpath` to an existing complete
    folder before installation to retain that source without another permanent copy. The launcher
    stages only those eighteen names on each start; it does not build or fetch audio.
+   `diagnostics.ps1` also says where Steam and Rust are (`Get-SkateRustFolder`: Steam's
+   registry entry first (HKCU, then both HKLM locations), falling back to `C:`, and
+   `libraryfolders.vdf`); `skate.ps1`,
+   `session.ps1`, `clean.ps1` and the friend's installer take their Rust folder from it, so that a
+   friend's Rust may be on another drive. `zz session` with an installed launcher older than that
+   function keeps the `C:` paths. Discovery validates the AppState app id, build id and
+   single-component install folder; unreadable metadata and absent drives are skipped.
+   Steam shortcuts must target the selected client, including its library and custom folder.
+   Cleanup receipts record the Rust folder; a receipt for another library is preserved and
+   cannot authorize cleanup. Legacy receipts are accepted only for the historical C: folder.
+   A failed discovery leaves the cleanup receipt intact. UTF-8 metadata and both old
+   and new library index formats are supported. Headless PowerShell regression coverage:
+   `crates/approved_tests/skate/SkateSteamDiscoveryScenario.ps1`; Windows CI runs both
+   Windows PowerShell 5.1 and PowerShell 7. A real second-drive installation is still unverified.
 4. `zz launchertest`.
 
 ## Settings

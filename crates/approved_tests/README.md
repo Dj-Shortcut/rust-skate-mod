@@ -59,3 +59,11 @@ The owner approved `skate_trick_grind_names` by name on 12 October 2026 in the c
 ## Running
 
 Every scenario is a C# or Python runner under [skate/](skate/README.md); that README has the build and run commands. They need the .NET 8 SDK and genuine Rust managed references, so CI runs only `skate_server_plugin_install`.
+
+The owner explicitly requested focused regressions for PR #621 on 30 October 2026.
+`skate_steam_discovery` (`skate/SkateSteamDiscoveryScenario.ps1`) executes the
+production PowerShell discovery helpers with fixture-backed registry/file visibility,
+parses the five affected scripts and reads a real UTF-8 metadata file. On Windows it
+also discovers an isolated real filesystem fixture and checks an absent drive.
+CI runs it under Windows PowerShell 5.1 and PowerShell 7. It does not install or
+launch Steam/Rust; a real second-drive pack/install/play/clean journey remains open.

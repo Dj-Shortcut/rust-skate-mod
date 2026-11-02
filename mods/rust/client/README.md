@@ -188,7 +188,7 @@ first, or goofy, they are the other way round.
 | Held at the back left or back right, flicked straight across to the opposite front | Varial kickflip, varial heelflip |
 | From the left or right rolled round to the back, then flicked to the opposite front | 360 flip, laser flip |
 | From the right or left rolled round to the back, then flicked to the same front | 360 Hardflip, 360 Inward Heelflip |
-| Held back, rolled 45 to 60 degrees to the right or left, flicked straight forward | Hardflip, inward heelflip (rolled less than 40 degrees it stays an ollie) |
+| Held back, hooked 45 to 60 degrees to the right or left, flicked straight forward or to the forward diagonal of that side | Hardflip, inward heelflip (hooked less than 40 degrees it stays an ollie or plain flip) |
 | Hold LB with a popped right-stick gesture, without triggers or a shove | Impossible |
 | Hold RB with the same gesture | Front Foot Impossible (forward setup: Nollie Back Foot Impossible) |
 | Hold LB and RB with the same gesture | Underflip |
@@ -323,7 +323,8 @@ The four diagonal positions extend those rows: `RB+LT` selects Frontside/Backsid
 on the upper diagonals and Shifty Crail on the lower ones; `RB+RT` selects Shifty Nose and
 Shifty Seatbelt. With both triggers, the upper diagonals select Stale Frontside/Backside Tuck
 Knee and the lower ones Stale Nosebone/Tailbone. Left/right are mirrored for goofy/fakie.
-Hold `Back` and tap D-pad Left/Right for the basic, extended grab and handplant control pages.
+Hold `Back` and tap D-pad Left/Right for the flick cards (each flick trick as its name and a
+stick arrow), the other controller tricks, and the extended grab and handplant control pages.
 
 These grabs share authored board/hand/foot definitions, including both hands at the nose and
 both feet on the tail for Rocket Air, and explicit foot release for one-foot/no-foot variants.
@@ -419,7 +420,7 @@ line carrying `SKATE-PROBE` as an `INBOX` line. It acts on nothing; it shows whe
 | `X` | | Tap: body varial, the rider's half round without the board; the landing is switch |
 | `Ctrl` or `C` | Held for a moment: get off | Held: grab |
 | `L` | View from behind or the game's first person | |
-| `H` held | The controls: on the board the panel at the bottom left, on foot the line that says how to get on and which stance is set. Held, never tapped, so a stray press leaves nothing on the screen. Not yet seen in game. | |
+| `H` held | The controls: on the board a page at the top left with every row of this table (the first nine seconds on the board show a short panel at the bottom left by themselves), on foot the line that says how to get on and which stance is set. Held, never tapped, so a stray press leaves nothing on the screen. Not yet seen in game. | |
 | `F2` held for a second (on foot; on a Mac keyboard `fn`+`F2`; `Back`+`Y` held on the controller) | Stance: regular (left foot forward, the right foot pushes) or goofy, the mirror image. A tap changes nothing: a stray press of Y in the menu, or of J, used to switch the stance unseen; J is the game's own clan key, whose screen frees the cursor, so the switch has its own key. Kept in `skate-stance.txt` in the game's own data folder (`AppData\LocalLow\Facepunch Studios LTD\Rust`) for the next start; the hint on foot names the current one. | |
 
 Coming down over an edge while moving along it starts a grind. A turn is called frontside when it
@@ -609,6 +610,11 @@ compiled, not seen in the game.
 
 The plugin reads a comma-separated list from `BepInEx\plugins\steps.txt` when it loads; without the
 file it runs `skate`. Runtime steps share one rig; the last scenario step selects the scenario.
+Beside it, `BepInEx\plugins\skate_server.txt` (written by `session` from the staging folder's
+`server.txt`, when there is one) holds the server address: the main menu's "Skate mod loaded" line
+then also says "To join the server: press F1, type connect <address> then Enter", until the rider
+has been ready in a world once. The file is read once, its first line only, and only a plain host
+name or `ip:port` is shown; the address is never logged. Not yet seen in the game.
 
 | Step | Effect |
 | --- | --- |
@@ -723,8 +729,12 @@ server address) with an installer; a friend unpacks it, makes the `RustClient` S
 runs `Install Rust Skate.cmd`, and plays from the same two desktop files as the owner. Steps,
 limits and what has and has not been seen are in [FRIEND.md](FRIEND.md). The pack plays what the
 owner's launcher is prepared with: the pinned release (0.18.40, whose own scripts carry no sound
-pack, icons or captures) or an installed candidate. Code present, dry-run on stand-in files and
-fixture-checked with PowerShell 7 outside the game only; no pack has been made on the owner's PC
-or installed on a second PC yet.
+pack, icons or captures) or an installed candidate. The installer and the launcher look for Steam
+in the registry and for Rust in Steam's `libraryfolders.vdf`, so a friend's Rust may be on another
+drive; the owner's `C:` paths are tried first and stay as they were. Code present, dry-run on
+stand-in files and fixture-checked with PowerShell 7 outside the game; the library lookup's
+preflight ran on the owner's Windows PC on 31 October, reported on 1 November (Windows PowerShell 5.1 and 7.6, dummy
+fixtures, nothing written); no pack has been made on the owner's PC or installed on a second PC
+yet.
 
 The .41 development client fixes the native skate-wheel text failure without using the stripped `GUIStyle.wordWrap` setter. With the ordinary building plan, the preview also shows the complete required support footprint and a top view for large pieces. Amber cells describe requirements; the server still checks the site and payment. Supported ledges use their authored low/high top-to-support height, while legacy elevated plates retain their recognition path. Native wheel, placement and riding results remain separate acceptance checks in `TODO.md`.

@@ -1,0 +1,666 @@
+{
+  "format": "skate-rig-only-review-media/1",
+  "trick": "Fakie FS Pop Shove-it",
+  "sourceCodeRevision": "98757ed135751383c5ec0aec82d339d83c0cb84e",
+  "runtimeRouteRevision": "98757ed135751383c5ec0aec82d339d83c0cb84e",
+  "sourcePackSha256": "a145ce83197cb41e67d1d33bb284f4b69ade2a4647318b80bc96185fb8c81725",
+  "rawReviewed": false,
+  "offlineReviewed": false,
+  "nativeGame": false,
+  "viewer": "http://127.0.0.1:63761/a5-fakie-fs-balance/",
+  "defaultPhysicalStance": "regular",
+  "sourceUrl": "https://www.youtube.com/watch?v=tL8Ey9GS0xQ&t=217",
+  "sourceVideoSha256": "220a8f31da226010bb44afa81882f684744ab2071458279eb937cf68b95fee48",
+  "sourceBodyControlSha256": "e760bfd7924d06cb0c16f9b73413779268d6ae9d32aeddba628f0ef41d388fee",
+  "sourceFrameSpace": "Existing181\u2013219s cache. Genuine1084\u20131138, PTS1001*frame /30000, fps30000/1001. Original full-video frames/hash unknown.",
+  "sourceLimit": "Own49/55 VIDEO,6prepop gaps reconstructed. Filmed physicalRegular Leftnose/Righttail, zero reflection/swap; tattooRight verifies anatomy. Camera/depth/root/shoes/gaze/contacts authored. Source pixels unmirrored and private.",
+  "authoredRecoverySuffix": {
+    "lastGenuineFrame": 1138,
+    "authoredControlEnd": 1170,
+    "sameOwnUprightReference": 1090,
+    "referenceVideoHold": 1138
+  },
+  "sourceFacingCamera": {
+    "canonicalOffset": [
+      -0.97,
+      0.12,
+      -0.243
+    ],
+    "radius": 4.5,
+    "scope": "Same fixed approximate source view as rejected baseline; no pose/heading rotation or per-frame camera changes"
+  },
+  "bodySideCamera": {
+    "initialNoseAxisCoefficient": 4.8,
+    "initialRightCoefficient": 0.18,
+    "up": 0.9,
+    "targetHeight": 1.1,
+    "scope": "Fixed body-side witness for both old/new; source-view foreshortening remains visible"
+  },
+  "correction": {
+    "kneeReserveEnvelope": [
+      1111,
+      1118
+    ],
+    "scope": "One coherent source-reference Y envelope lowers only last over-tall Rise through strike/Scoop, retains upward extension, collects with knee reserve, and rejoins exact lower1118+. Existing source and runtime reach limits unchanged.",
+    "leftAuthoredBalanceWindow": [
+      1114.2,
+      1121.4
+    ],
+    "rightAuthoredBalanceWindow": [
+      1114.2,
+      1118
+    ],
+    "armScope": "Bent elbow-down/forearm-return shoulder-height balance under owner rule, intentionally authored instead of genuine raised source diagonals. MainAir1122+ whole pose exact.",
+    "invariants": [
+      "Own captured-body data unchanged",
+      "Feet, board, event/source clocks unchanged",
+      "Lower-body1118+ exact",
+      "Whole mainAir1122+ and Catch/Land/recovery exact",
+      "All C# unchanged from compiled main2ac4475fe5a016e706822057a90b138bf5aceb8f",
+      "Native traces byte-identical to rejected baseline",
+      "Original skin/inverse binds/13-part board and guards unchanged"
+    ]
+  },
+  "presentation": {
+    "popFirstGenuineRise": 1110,
+    "riseComparison": 1114,
+    "frontRelease": 1115.3,
+    "tailStrike": 1115.8,
+    "tailRelease": 1116.7,
+    "freeAir": 1118,
+    "mainAir": 1122,
+    "firstCatch": 1126,
+    "bothCatch": 1127,
+    "land": 1129,
+    "entryFlightFraction": 0.125,
+    "groundPress": "Existing exact-family closest measured-pelvis fit, exact foot/board targets, original leg lengths/reach/floor/shoe guards; no gameplay or solver change in this repair"
+  },
+  "managedRoute": {
+    "cases": 4,
+    "normalAir": [
+      36,
+      36
+    ],
+    "lowAir": [
+      34,
+      34
+    ],
+    "realPadPopsPerCase": 1,
+    "signature": "Ollie,true,true,flip0,shove+180,spin0,body0",
+    "sourceBoardYaw": -180,
+    "ordinaryGroundCaptureOffAt": 4,
+    "nativeTracesUnchanged": true,
+    "scope": "Actual managed Pad/32Hz Step/Land/scorer and60Hz body with controlled bindings/ground; native Rust not run"
+  },
+  "replay": {
+    "status": "passed-controlled-browser",
+    "speeds": [
+      1,
+      0.25
+    ],
+    "cases": [
+      {
+        "profile": "normal",
+        "physicalStance": "regular",
+        "phases": 7,
+        "replay": [
+          {
+            "rate": 1,
+            "end": 4,
+            "samples": 41
+          },
+          {
+            "rate": 0.25,
+            "end": 4,
+            "samples": 106
+          }
+        ]
+      },
+      {
+        "profile": "normal",
+        "physicalStance": "goofy",
+        "phases": 7,
+        "replay": [
+          {
+            "rate": 1,
+            "end": 4,
+            "samples": 41
+          },
+          {
+            "rate": 0.25,
+            "end": 4,
+            "samples": 106
+          }
+        ]
+      },
+      {
+        "profile": "low",
+        "physicalStance": "regular",
+        "phases": 7,
+        "replay": [
+          {
+            "rate": 1,
+            "end": 4,
+            "samples": 41
+          },
+          {
+            "rate": 0.25,
+            "end": 4,
+            "samples": 105
+          }
+        ]
+      },
+      {
+        "profile": "low",
+        "physicalStance": "goofy",
+        "phases": 7,
+        "replay": [
+          {
+            "rate": 1,
+            "end": 4,
+            "samples": 41
+          },
+          {
+            "rate": 0.25,
+            "end": 4,
+            "samples": 105
+          }
+        ]
+      }
+    ],
+    "decodedReferencePhaseChecks": 28,
+    "sourceAndBodySideSameTimeChecks": 24,
+    "feetChecks": 12,
+    "consoleRuntimeErrors": 0,
+    "referenceHeldAfterGenuine1138": true,
+    "scope": "Four complete4s actual frozen rig runs plus phase/contact/transition inspection; Claude/native gates remain separate"
+  },
+  "before": {
+    "sourcePackSha256": "0ef0eaaa2535c7bc69a42e3ea213baccac065ff8e67b58948045e5d2e5b4b197",
+    "runtimeRevision": "6b0426af293c502ec4e0badbdfe6f7097fb1df42",
+    "sourceMoments": [
+      1114,
+      1115.8,
+      1116.7
+    ],
+    "physicalCases": 4,
+    "sourcePixels": false,
+    "sameCameraCrop": true,
+    "scope": "Rejected same-time original-rig poses retained; firstRisePop1110 is separate and does not replace the strike/Scoop witness"
+  },
+  "items": [
+    {
+      "id": "fakie-fs-pop-shove-it-source-keyed-v1",
+      "physicalStance": "regular",
+      "technicalRequestedNativeStance": "goofy",
+      "profile": "low",
+      "sourceRelationship": "direct filmed Regular",
+      "sha256": "bfa48f721fc79b4ff8746dc92f13a5788c99801b1634ced85c40e4d2bb1eff64",
+      "inputSha256": "2e906fbd97b266ff95f58d158b4b7a20f21af39a9a8dff8bd2aa592400e97af7",
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+      "maximumJointErrorM": 7.514171754896996e-06,
+      "physicalPreview": {
+        "profile": "low",
+        "requestedStance": "goofy",
+        "physicalPreviewStance": "regular",
+        "leadFoot": "Left",
+        "at": 0.8333333333333334,
+        "leadDistance": 0.36530531656887755,
+        "leftFoot": [
+          0.04519095098852055,
+          0.1951164828550155,
+          -3.1188113452993003
+        ],
+        "rightFoot": [
+          0.04001006045316618,
+          0.2262186999611047,
+          -3.484116661868178
+        ],
+        "deckForward": [
+          -2.4492937051703357e-16,
+          0.0,
+          1.0
+        ],
+        "toeSideDot": -0.8332834758651924,
+        "glbDeckForwardDot": 1.0,
+        "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+        "note": "Actual animated GLB foot-bone world positions against its recorded DeckForward; frozen proxy anatomy, not a global native-handedness claim"
+      },
+      "phaseMoments": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.85,
+        "Rise": 0.9666666666666667,
+        "Strike": 1.0166666666666666,
+        "Scoop": 1.0333333333333334,
+        "Air": 1.2,
+        "Catch": 1.3333333333333333,
+        "Land": 1.4166666666666667,
+        "Rollaway": 2.466666666666667,
+        "End": 4.0
+      },
+      "sourceEvents": [
+        {
+          "t": 0.0,
+          "phase": 1,
+          "contacts": 3
+        },
+        {
+          "t": 0.8675333333333334,
+          "phase": 2,
+          "contacts": 3
+        },
+        {
+          "t": 1.0443766666666652,
+          "phase": 2,
+          "contacts": 2
+        },
+        {
+          "t": 1.0910900000000014,
+          "phase": 2,
+          "contacts": 0
+        },
+        {
+          "t": 1.1344666666666667,
+          "phase": 3,
+          "contacts": 0
+        },
+        {
+          "t": 1.4014,
+          "phase": 4,
+          "contacts": 1
+        },
+        {
+          "t": 1.4347666666666667,
+          "phase": 4,
+          "contacts": 3
+        },
+        {
+          "t": 1.5015,
+          "phase": 5,
+          "contacts": 3
+        },
+        {
+          "t": 2.7027,
+          "phase": 6,
+          "contacts": 3
+        }
+      ]
+    },
+    {
+      "id": "fakie-fs-pop-shove-it-source-keyed-v1",
+      "physicalStance": "regular",
+      "technicalRequestedNativeStance": "goofy",
+      "profile": "normal",
+      "sourceRelationship": "direct filmed Regular",
+      "sha256": "be2dcff923cf42dbbf06b17702d63eb5d8bfd99eb8413777060a1d0afc3ff4ef",
+      "inputSha256": "aed36fe91cb00e58dcc8db65e6707228ef40dfd7b84e8fdacd3123a493dbe3dc",
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+      "maximumJointErrorM": 7.082928056837925e-06,
+      "physicalPreview": {
+        "profile": "normal",
+        "requestedStance": "goofy",
+        "physicalPreviewStance": "regular",
+        "leadFoot": "Left",
+        "at": 0.8333333333333334,
+        "leadDistance": 0.3653040866192816,
+        "leftFoot": [
+          0.045191338601003744,
+          0.19511679749739452,
+          -3.1188141441835935
+        ],
+        "rightFoot": [
+          0.0400104097510242,
+          0.2262183944813263,
+          -3.484118230802875
+        ],
+        "deckForward": [
+          -2.4492937051703357e-16,
+          0.0,
+          1.0
+        ],
+        "toeSideDot": -0.8332849205209324,
+        "glbDeckForwardDot": 1.0,
+        "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+        "note": "Actual animated GLB foot-bone world positions against its recorded DeckForward; frozen proxy anatomy, not a global native-handedness claim"
+      },
+      "phaseMoments": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.85,
+        "Rise": 0.9666666666666667,
+        "Strike": 1.0333333333333334,
+        "Scoop": 1.05,
+        "Air": 1.2166666666666666,
+        "Catch": 1.3833333333333333,
+        "Land": 1.45,
+        "Rollaway": 2.5833333333333335,
+        "End": 4.0
+      },
+      "sourceEvents": [
+        {
+          "t": 0.0,
+          "phase": 1,
+          "contacts": 3
+        },
+        {
+          "t": 0.8675333333333334,
+          "phase": 2,
+          "contacts": 3
+        },
+        {
+          "t": 1.0443766666666652,
+          "phase": 2,
+          "contacts": 2
+        },
+        {
+          "t": 1.0910900000000014,
+          "phase": 2,
+          "contacts": 0
+        },
+        {
+          "t": 1.1344666666666667,
+          "phase": 3,
+          "contacts": 0
+        },
+        {
+          "t": 1.4014,
+          "phase": 4,
+          "contacts": 1
+        },
+        {
+          "t": 1.4347666666666667,
+          "phase": 4,
+          "contacts": 3
+        },
+        {
+          "t": 1.5015,
+          "phase": 5,
+          "contacts": 3
+        },
+        {
+          "t": 2.7027,
+          "phase": 6,
+          "contacts": 3
+        }
+      ]
+    },
+    {
+      "id": "fakie-fs-pop-shove-it-source-keyed-v1",
+      "physicalStance": "goofy",
+      "technicalRequestedNativeStance": "regular",
+      "profile": "low",
+      "sourceRelationship": "mirrored rig, original source unmirrored",
+      "sha256": "d741c11e93f401d0f52c014adf46b72b7686a79fc6fdd0ab3d8d2089acf9bc3a",
+      "inputSha256": "20bf138b3cd4c3a8af2019fa759ee4b6a1ea70810c262b1d8346b4ac6c8bb620",
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+      "maximumJointErrorM": 1.1342837897348514e-05,
+      "physicalPreview": {
+        "profile": "low",
+        "requestedStance": "regular",
+        "physicalPreviewStance": "goofy",
+        "leadFoot": "Right",
+        "at": 0.8333333333333334,
+        "leadDistance": -0.36528732084142,
+        "leftFoot": [
+          -0.039983203562056126,
+          0.22620938425473072,
+          -3.4841008006266336
+        ],
+        "rightFoot": [
+          -0.04520263710602422,
+          0.1951228317682621,
+          -3.1188134797852136
+        ],
+        "deckForward": [
+          -2.4492937051703357e-16,
+          0.0,
+          1.0
+        ],
+        "toeSideDot": 0.833283226570602,
+        "glbDeckForwardDot": 1.0,
+        "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+        "note": "Actual animated GLB foot-bone world positions against its recorded DeckForward; frozen proxy anatomy, not a global native-handedness claim"
+      },
+      "phaseMoments": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.85,
+        "Rise": 0.9666666666666667,
+        "Strike": 1.0166666666666666,
+        "Scoop": 1.0333333333333334,
+        "Air": 1.2,
+        "Catch": 1.3333333333333333,
+        "Land": 1.4166666666666667,
+        "Rollaway": 2.466666666666667,
+        "End": 4.0
+      },
+      "sourceEvents": [
+        {
+          "t": 0.0,
+          "phase": 1,
+          "contacts": 3
+        },
+        {
+          "t": 0.8675333333333334,
+          "phase": 2,
+          "contacts": 3
+        },
+        {
+          "t": 1.0443766666666652,
+          "phase": 2,
+          "contacts": 2
+        },
+        {
+          "t": 1.0910900000000014,
+          "phase": 2,
+          "contacts": 0
+        },
+        {
+          "t": 1.1344666666666667,
+          "phase": 3,
+          "contacts": 0
+        },
+        {
+          "t": 1.4014,
+          "phase": 4,
+          "contacts": 1
+        },
+        {
+          "t": 1.4347666666666667,
+          "phase": 4,
+          "contacts": 3
+        },
+        {
+          "t": 1.5015,
+          "phase": 5,
+          "contacts": 3
+        },
+        {
+          "t": 2.7027,
+          "phase": 6,
+          "contacts": 3
+        }
+      ]
+    },
+    {
+      "id": "fakie-fs-pop-shove-it-source-keyed-v1",
+      "physicalStance": "goofy",
+      "technicalRequestedNativeStance": "regular",
+      "profile": "normal",
+      "sourceRelationship": "mirrored rig, original source unmirrored",
+      "sha256": "a998edc7195b31ed615f1cebf21b08e728ff30179f171a5cd9932f49abd3db85",
+      "inputSha256": "a4866093ebba98d64fa4eb3fe21f0efc90d47b8cc78a31932cff06a375310b3a",
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+      "maximumJointErrorM": 7.74380243995665e-06,
+      "physicalPreview": {
+        "profile": "normal",
+        "requestedStance": "regular",
+        "physicalPreviewStance": "goofy",
+        "leadFoot": "Right",
+        "at": 0.8333333333333334,
+        "leadDistance": -0.36528566502652415,
+        "leftFoot": [
+          -0.039984456956499485,
+          0.22620979736823804,
+          -3.4841020015284756
+        ],
+        "rightFoot": [
+          -0.045203353698747714,
+          0.19512290912539437,
+          -3.1188163365019514
+        ],
+        "deckForward": [
+          -2.4492937051703357e-16,
+          0.0,
+          1.0
+        ],
+        "toeSideDot": 0.8332835334516423,
+        "glbDeckForwardDot": 1.0,
+        "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+        "note": "Actual animated GLB foot-bone world positions against its recorded DeckForward; frozen proxy anatomy, not a global native-handedness claim"
+      },
+      "phaseMoments": {
+        "Load": 0.8166666666666667,
+        "Pop": 0.85,
+        "Rise": 0.9666666666666667,
+        "Strike": 1.0333333333333334,
+        "Scoop": 1.05,
+        "Air": 1.2166666666666666,
+        "Catch": 1.3833333333333333,
+        "Land": 1.45,
+        "Rollaway": 2.5833333333333335,
+        "End": 4.0
+      },
+      "sourceEvents": [
+        {
+          "t": 0.0,
+          "phase": 1,
+          "contacts": 3
+        },
+        {
+          "t": 0.8675333333333334,
+          "phase": 2,
+          "contacts": 3
+        },
+        {
+          "t": 1.0443766666666652,
+          "phase": 2,
+          "contacts": 2
+        },
+        {
+          "t": 1.0910900000000014,
+          "phase": 2,
+          "contacts": 0
+        },
+        {
+          "t": 1.1344666666666667,
+          "phase": 3,
+          "contacts": 0
+        },
+        {
+          "t": 1.4014,
+          "phase": 4,
+          "contacts": 1
+        },
+        {
+          "t": 1.4347666666666667,
+          "phase": 4,
+          "contacts": 3
+        },
+        {
+          "t": 1.5015,
+          "phase": 5,
+          "contacts": 3
+        },
+        {
+          "t": 2.7027,
+          "phase": 6,
+          "contacts": 3
+        }
+      ]
+    }
+  ],
+  "privateReceiptSha256": {
+    "ROUTES.private.json": "f78f1e9a6470e5ebe498280db08aa51a0b288e519ab2353d48a306f2ee104008",
+    "ACTUAL-BALANCE-SCOPE.private.json": "19294f1b6d0b55e5018e05f2c49fa106b50e9e68d07d1e8313b4ca207e8653da",
+    "ACTUAL-PROJECTION-ARM-ONLY.private.json": "59f3d3ec1414ea22f515b2b7484cfb27e049e6c010cb36f1ff293a171407382f",
+    "browser-final-a145/result.private.json": "0b554826ef88d1dcf2d337225c8cc63a000d8370fbfc0cc306fa3e97f4e712ac",
+    "browser-source-side-a145/result.private.json": "b694b7f4be93c29961245a9b5c826443de1bfdb7f091f882ce0d2227a12dfef0",
+    "browser-feet-a145/result.private.json": "7a366e13267613010f7d72c78a85cc2049273261359ab6400d0e2d68704d3de6",
+    "PUBLIC-BEFORE-AFTER.private.json": "3d1177234367629ced02977552a2cd117d538143d331b4c3f0818f3f155d0482"
+  },
+  "files": [
+    {
+      "file": "low-goofy-balance-before-after.jpg",
+      "sha256": "6280f5f97515fec27eeef4ab4126cd3f9db78d386b12a3eed8241593219920fd"
+    },
+    {
+      "file": "low-goofy-body-side-balance-before-after.jpg",
+      "sha256": "30febf78f3bc8879a6f71494ed3210ed26b89f93e7aa1b3ec6a493936056bb33"
+    },
+    {
+      "file": "low-goofy-contacts.jpg",
+      "sha256": "84fda808b0bce7faf39bdaf00e771e6e108c14f38e49e9c3110856813ac0de2d"
+    },
+    {
+      "file": "low-goofy-phases.jpg",
+      "sha256": "73769880da83934f203eb3946c251fae468008cf658793b8f344a241e3763acf"
+    },
+    {
+      "file": "low-regular-balance-before-after.jpg",
+      "sha256": "468abb807f1fc3329bee7e4aeb238a172ed1ec6d9c524e949ad3dc207ace9409"
+    },
+    {
+      "file": "low-regular-body-side-balance-before-after.jpg",
+      "sha256": "5803409d4a947e81c1038d785fc951d22955e90e7b7f6a825b83d2b9a174070b"
+    },
+    {
+      "file": "low-regular-contacts.jpg",
+      "sha256": "cbaff043a569f5b854e6be7d8e03aaedb0116322d0dcaff844c58409c88ae5bb"
+    },
+    {
+      "file": "low-regular-phases.jpg",
+      "sha256": "180e4137c4b9a162533b05284037e0437940e04789962d0cbcfc859aee9f4115"
+    },
+    {
+      "file": "normal-goofy-balance-before-after.jpg",
+      "sha256": "9fe444a505ddb07cd95d37a99f192a4a845bf358c0af5e428ee3d4d8fa9530c7"
+    },
+    {
+      "file": "normal-goofy-body-side-balance-before-after.jpg",
+      "sha256": "8f1ddec7f8d4046934c167bb91642127ad9d19d222b1915eafbdda8882e26290"
+    },
+    {
+      "file": "normal-goofy-contacts.jpg",
+      "sha256": "42a05fc0f2b9d399be25d890afa0cadd69596112ca46e4fd142d362cb6eb9b9e"
+    },
+    {
+      "file": "normal-goofy-phases.jpg",
+      "sha256": "68c3f01122ad5ef7d6905081737c272c1067073a07f13ebf98d4013c4fd1c86a"
+    },
+    {
+      "file": "normal-regular-balance-before-after.jpg",
+      "sha256": "533991d62a2f8a80816242932562cd64a2262da1dc60bc95d656fb462b4e3687"
+    },
+    {
+      "file": "normal-regular-body-side-balance-before-after.jpg",
+      "sha256": "743161390f8dd1720302b881f1c04e1014eda590eb8f3b36d689495e92bedf35"
+    },
+    {
+      "file": "normal-regular-contacts.jpg",
+      "sha256": "3fc9311f6ad147bf51e73c1c0a36e708183c94b0fb04b389981f2bc43341e89d"
+    },
+    {
+      "file": "normal-regular-phases.jpg",
+      "sha256": "ff4327d31d1e57a5a4b8f968a2ddd410d886dc16fc2b32906045e7e3c5cee770"
+    }
+  ],
+  "sourcePoseSha256": "87e364bba8ded9f4fde8796583d92baf592f512316cdcd56dc78f019ffb2b637",
+  "sourceConstraintsSha256": "14036ce57345d325801ba0fb0bc0e8165fc49d7685de28378c4a51df0a286e8e",
+  "sourceBakerSha256": "e71138fe2e96fe302266e5b52529afee203131ff98cef91c321c93f6bcb05737",
+  "postMainComposition": {
+    "main": "44471a5a75b513671a99946285b292e9410aef13",
+    "mergeCommit": "b26dcb1bb29f2a3351873f4038bada4a1645a87f",
+    "allClientSharedCSharpByteExactToRendered987": true,
+    "currentBakerReproducesRenderedRaw": "a145ce83197cb41e67d1d33bb284f4b69ade2a4647318b80bc96185fb8c81725",
+    "independentStillReviewer": "A second agent viewed all8 current sheets plus source/bodySide beforeafters; scoped still PASS, no independent playback or Claude/native approval."
+  }
+}

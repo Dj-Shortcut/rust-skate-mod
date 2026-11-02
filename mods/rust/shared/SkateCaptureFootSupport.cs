@@ -12,11 +12,79 @@ namespace Shortcut.RustMod
         // to shorten an otherwise exact board contact. Also avoids a singular
         // perfectly straight knee in the independent skin evaluator.
         public const double ReachShare = .998;
+        public const double LandingImpactSeconds = .15, LandingReleaseSeconds = .30;
+        public const double LandingPriorInternalDegrees = 127.5, LandingMaximumDropShare = .14 / .87;
+        public const double CatchPreparationSeconds = .04, CatchPriorInternalDegrees = 145;
+        public const double SupportedCatchPreparationSeconds = .12;
+        public const string LandingPriorProvenance = "Authored minimum catch preparation and landing absorption; fixed feet and canonical rig, not measured capture.";
+        public const string SupportedTorsoProvenance = "Authored BS180 supported torso cleanup for ambiguous source lean; not measured capture.";
+        public const string SupportedKneeProvenance = "Authored BS180 supported crouch; 100-degree internal knee target and toe-directed bend planes, not measured capture.";
+        public const string CatchRiseProvenance = "Authored capture catch rise limit; fixed current feet, not measured capture.";
+        public const string LandingPlacementProvenance = "Authored Switch Heelflip and Nollie 360 Flip catch placement on measured bolt-region footprints; not measured source motion.";
+        public const string KickflipTuckProvenance = "Authored normal Kickflip rear pickup after pop, front release at the live flick edge, paired tuck above measured bolt/shoe footprints and return to source catch; original source contact bits are retained, not asserted live contact.";
+        private static SkateVector[] kickflipBoardEnvelope;
+        private static int[] kickflipBoardTriangles;
+        private SkateVector[] kickflipProjected;
+        private readonly SkateVector[] kickflipClipA = new SkateVector[8], kickflipClipB = new SkateVector[8];
+        private readonly double[] kickflipMinX = new double[2], kickflipMaxX = new double[2],
+            kickflipMinZ = new double[2], kickflipMaxZ = new double[2];
+        private readonly SkateVector[] kickflipCatch = new SkateVector[2], kickflipForward = new SkateVector[2];
+        private double kickflipAnkleHeight;
         private readonly SkateCaptureClip clip;
         private readonly SkateStance stance;
         private readonly SkateDeckFootFitter left, right;
         private readonly double[] release = new double[2], caught = new double[2];
         private readonly SkateVector[] releasedLocal = new SkateVector[2], caughtLocal = new SkateVector[2];
+        public const string EntryPlacementProvenance = "Authored early source-contact retarget from observed ordinary charge footprints; not measured video contact.";
+        private bool entryPlacement;
+        private readonly double[] entryCentre = new double[2], entryReleaseDelta = new double[2];
+        private readonly SkateVector[] entryReleaseVector = new SkateVector[2];
+        private SkateBoardPose entryCarrier;
+        public void ClearEntryPlacement() { entryPlacement = false; entryCarrier = default(SkateBoardPose); }
+        public void SetEntryCarrier(SkateBoardPose carrier) { entryCarrier = carrier; }
+        public bool TryBeginEntryPlacement(SkateRiderRig rig, SkateRiderPose localPose,
+            SkateVector leftUp, SkateVector rightUp, out string error)
+        {
+            ClearEntryPlacement(); error = null;
+            var upright = new SkateBoardPose(default(SkateVector), new SkateVector(0, 0, 1), new SkateVector(0, 1, 0));
+            for (int side = 0; side < 2; side++)
+            {
+                SkateBoardPose observed;
+                if (!TryFootFrame(side == 0 ? localPose.LeftAnkle : localPose.RightAnkle,
+                    side == 0 ? localPose.LeftToe : localPose.RightToe, side == 0 ? leftUp : rightUp, out observed))
+                { error = "Observed charge has no measured shoe frame."; return false; }
+                entryCentre[side] = FootCentre(side, observed, upright);
+                if (!Finite(entryCentre[side]) || Math.Abs(entryCentre[side]) > .42)
+                { error = "Observed charge footprint is outside the authored deck span."; return false; }
+                SkateCaptureFrame source; SkateBoardPose foot;
+                if (!SkateCaptureSampler.TrySample(clip, Math.Max(0, release[side] - .0000001), rig, stance, out source, out error) ||
+                    !TryFootFrame(side == 0 ? source.Pose.LeftAnkle : source.Pose.RightAnkle,
+                        side == 0 ? source.Pose.LeftToe : source.Pose.RightToe,
+                        side == 0 ? source.LeftSoleUp : source.RightSoleUp, out foot)) return false;
+                entryReleaseDelta[side] = entryCentre[side] - FootCentre(side, foot, source.Board);
+                if (!Finite(entryReleaseDelta[side]) || Math.Abs(entryReleaseDelta[side]) > .35)
+                { error = "Observed charge retarget exceeds bounded horizontal travel."; return false; }
+                var along = clip.MovementKind == "nollie-backside-180-heelflip"
+                    ? new SkateVector(source.Board.Forward.X, 0, source.Board.Forward.Z) : new SkateVector(0, 0, 1);
+                if (along.LengthSquared < .000001) { error = "Entry release carrier is ambiguous."; return false; }
+                var from = new SkateBoardPose(source.Board.Origin, along * (1 / along.Length), new SkateVector(0, 1, 0));
+                entryReleaseVector[side] = Local(source.Board.Forward * entryReleaseDelta[side], from);
+            }
+            entryPlacement = true; return true;
+        }
+        private double FootCentre(int side, SkateBoardPose foot, SkateBoardPose board)
+        {
+            var profile = (side == 0 ? left : right).Profile;
+            double min = double.PositiveInfinity, max = double.NegativeInfinity;
+            for (int n = 0; n < profile.VertexCount; n++)
+            { double z = SkateVector.Dot(foot.Point(profile.Vertex(n)) - board.Origin, board.Forward); min = Math.Min(min, z); max = Math.Max(max, z); }
+            return (min + max) * .5;
+        }
+
+        private readonly SkateBoardPose[] landingPlacement = new SkateBoardPose[2];
+        private readonly SkateVector[] landingToe = new SkateVector[2];
+        private readonly SkateBoardPose[] freeLanding = new SkateBoardPose[2];
+        private readonly SkateVector[] freeLandingToe = new SkateVector[2];
         private SkateCaptureFootSupport(SkateCaptureClip source, SkateStance side, SkateDeckFootFitter l, SkateDeckFootFitter r)
         { clip = source; stance = side; left = l; right = r; }
         internal bool Matches(SkateCaptureClip source, SkateStance side) { return ReferenceEquals(clip, source) && stance == side; }
@@ -29,9 +97,6 @@ namespace Shortcut.RustMod
         {
             double span = Math.Min(.08, (caught[side] - release[side]) * .25);
             if (span <= 0 || sourceTime < release[side] || sourceTime > caught[side]) return 0;
-            // The coupled body-spin/flip track keeps its free shoe space in
-            // the full deck frame while the body's upright carrier stays fixed.
-            if (clip.MovementKind == "nollie-backside-180-heelflip") return 1;
             double edge = Math.Min(sourceTime - release[side], caught[side] - sourceTime);
             if (edge >= span) return 0;
             double u = Math.Max(0, edge / span);
@@ -59,6 +124,10 @@ namespace Shortcut.RustMod
                 }
                 if (!foundRelease || !foundCatch || pending.caught[foot] <= pending.release[foot])
                 { error = "Captured support needs each foot's release and catch."; return false; }
+            }
+            if (!pending.PrepareLandingPlacement(rig, out error)) return false;
+            for (int foot = 0; foot < 2; foot++)
+            {
                 SkateCaptureFrame frame;
                 // Stay on the attached side of the observed release. Never alter
                 // an event mask to obtain a convenient contact reconstruction.
@@ -67,10 +136,251 @@ namespace Shortcut.RustMod
                     !pending.Boundary(frame, foot, out pending.releasedLocal[foot], out error))
                 { error = "Foot " + foot + " at source release: " + error; return false; }
                 if (!SkateCaptureSampler.TrySample(pending.clip, pending.caught[foot], rig, stance, out frame, out error) ||
+                    !pending.TryPlaceCatch(rig, pending.caught[foot], frame, out frame, out error) ||
                     !pending.Boundary(frame, foot, out pending.caughtLocal[foot], out error))
                 { error = "Foot " + foot + " at source catch: " + error; return false; }
+                if (pending.clip.MovementKind == "kickflip")
+                {
+                    SkateBoardPose caughtFoot;
+                    if (!TryFootFrame(foot == 0 ? frame.Pose.LeftAnkle : frame.Pose.RightAnkle,
+                        foot == 0 ? frame.Pose.LeftToe : frame.Pose.RightToe,
+                        foot == 0 ? frame.LeftSoleUp : frame.RightSoleUp, out caughtFoot))
+                    { error = "Kickflip catch has no measured shoe frame."; return false; }
+                    pending.kickflipCatch[foot] = caughtFoot.Origin + caughtFoot.Rotate(pending.caughtLocal[foot]) - frame.Board.Origin;
+                    pending.kickflipForward[foot] = caughtFoot.Forward;
+                    var profile = (foot == 0 ? left : right).Profile;
+                    pending.kickflipMinX[foot] = pending.kickflipMinZ[foot] = double.PositiveInfinity;
+                    pending.kickflipMaxX[foot] = pending.kickflipMaxZ[foot] = double.NegativeInfinity;
+                    for (int n = 0; n < profile.VertexCount; n++)
+                    {
+                        var point = profile.Vertex(n);
+                        pending.kickflipMinX[foot] = Math.Min(pending.kickflipMinX[foot], point.X);
+                        pending.kickflipMaxX[foot] = Math.Max(pending.kickflipMaxX[foot], point.X);
+                        pending.kickflipMinZ[foot] = Math.Min(pending.kickflipMinZ[foot], point.Z);
+                        pending.kickflipMaxZ[foot] = Math.Max(pending.kickflipMaxZ[foot], point.Z);
+                    }
+                    // Calibrate the measured shoe in the upright return frame,
+                    // not at the source ankle's camera-dependent sole tilt.
+                    var up = new SkateVector(0, 1, 0);
+                    var reference = new SkateBoardPose(frame.Board.Origin, new SkateVector(0, 0, 1), up);
+                    var anchor = pending.kickflipCatch[foot];
+                    // This calibration is upright, even when the source Catch
+                    // sole has a small pitch. Keep its heading, not that pitch.
+                    var along = caughtFoot.Forward - up * SkateVector.Dot(caughtFoot.Forward, up);
+                    if (!Finite(along.LengthSquared) || along.LengthSquared < .000001)
+                    { error = "Catch calibration has no upright heading."; return false; }
+                    var calibration = new SkateBoardPose(reference.Point(new SkateVector(anchor.X, .10, anchor.Z)), along * (1 / along.Length), up);
+                    double amount;
+                    if (!pending.Fit(foot, reference, calibration, out amount, out error)) return false;
+                    pending.kickflipAnkleHeight = Math.Max(pending.kickflipAnkleHeight, .10 + amount);
+                }
             }
+            if (pending.clip.MovementKind == "kickflip" && kickflipBoardEnvelope == null)
+            {
+                var mesh = SkateBoardMesh.CreateDetailed(); var points = new SkateVector[mesh.Positions.Length / 3];
+                for (int n = 0; n < points.Length; n++)
+                    points[n] = new SkateVector(mesh.Positions[n * 3], mesh.Positions[n * 3 + 1] - .092, mesh.Positions[n * 3 + 2]);
+                kickflipBoardTriangles = (int[])mesh.Triangles.Clone();
+                kickflipBoardEnvelope = points;
+            }
+            if (pending.clip.MovementKind == "kickflip")
+                pending.kickflipProjected = new SkateVector[kickflipBoardEnvelope.Length];
             support = pending; return true;
+        }
+
+        private static SkateVector Local(SkateVector value, SkateBoardPose board)
+        { return new SkateVector(SkateVector.Dot(value, board.Right), SkateVector.Dot(value, board.Up), SkateVector.Dot(value, board.Forward)); }
+
+        private bool PrepareLandingPlacement(SkateRiderRig rig, out string error)
+        {
+            error = null;
+            if (clip.MovementKind != "switch-heelflip" && clip.MovementKind != "nollie-360-flip") return true;
+            for (int side = 0; side < 2; side++)
+            {
+                SkateCaptureFrame frame;
+                if (!SkateCaptureSampler.TrySample(clip, caught[side], rig, stance, out frame, out error)) return false;
+                var ankle = side == 0 ? frame.Pose.LeftAnkle : frame.Pose.RightAnkle;
+                var toe = side == 0 ? frame.Pose.LeftToe : frame.Pose.RightToe;
+                var other = side == 0 ? frame.Pose.RightAnkle : frame.Pose.LeftAnkle;
+                bool front = SkateVector.Dot(ankle - other, frame.Board.Forward) > 0;
+                double facing = SkateVector.Dot(frame.Pose.PelvisForward, frame.Board.Right);
+                if (Math.Abs(facing) < .25) facing = SkateVector.Dot(toe - ankle, frame.Board.Right);
+                if (Math.Abs(facing) < .000001) { error = "Landing toe side is ambiguous."; return false; }
+                var forward = frame.Board.Right * Math.Sign(facing) * (front ? Math.Cos(Math.PI / 9) : 1) +
+                    frame.Board.Forward * (front ? Math.Sin(Math.PI / 9) : 0);
+                var foot = new SkateBoardPose(ankle, forward, frame.Board.Up);
+                SkateBoardPose target;
+                if (!(side == 0 ? left : right).TryCenteredPlacement(frame.Board, foot, front ? .18 : -.18,
+                    out target, out error)) return false;
+                landingPlacement[side] = new SkateBoardPose(Local(target.Origin - frame.Board.Origin, frame.Board),
+                    Local(target.Forward, frame.Board), Local(target.Up, frame.Board));
+                double down = SkateVector.Dot(toe - ankle, frame.Board.Up) / rig.FootLength;
+                down = Math.Max(-.95, Math.Min(.95, down));
+                landingToe[side] = Local(forward * Math.Sqrt(1 - down * down) + frame.Board.Up * down, frame.Board);
+                // A free shoe approaches the future catch frame, not the frame
+                // of the deck that is still flipping under it.
+                freeLanding[side] = new SkateBoardPose(target.Origin - frame.Board.Origin, target.Forward, target.Up);
+                freeLandingToe[side] = frame.Board.Rotate(landingToe[side]);
+            }
+            return true;
+        }
+
+        // Approach the new catch anchors while the feet are still free. Land
+        // must not teleport a shoe to a new place before caching its contact.
+        internal bool TryPlaceCatch(SkateRiderRig rig, double sourceTime, SkateCaptureFrame frame,
+            out SkateCaptureFrame placed, out string error)
+        {
+            placed = frame; error = null;
+            if (!landingPlacement[0].Initialized && !landingPlacement[1].Initialized) return true;
+            var la = frame.Pose.LeftAnkle; var lt = frame.Pose.LeftToe; var ra = frame.Pose.RightAnkle; var rt = frame.Pose.RightToe;
+            var lu = frame.LeftSoleUp; var ru = frame.RightSoleUp; bool changed = false;
+            for (int side = 0; side < 2; side++)
+            {
+                double start = Math.Max(release[side], caught[side] - .18);
+                if (!landingPlacement[side].Initialized || sourceTime <= start) continue;
+                double u = Math.Max(0, Math.Min(1, (sourceTime - start) / (caught[side] - start)));
+                double weight = u * u * u * (10 + u * (-15 + 6 * u));
+                var ankle = side == 0 ? la : ra; var toe = side == 0 ? lt : rt; var sole = side == 0 ? lu : ru;
+                bool free = (frame.Observation.Contacts & (SkateCaptureContacts)(1 << side)) == 0;
+                var target = free ? frame.Board.Origin + freeLanding[side].Origin : frame.Board.Point(landingPlacement[side].Origin);
+                var direction = (toe - ankle) * ((1 - weight) / rig.FootLength) +
+                    (free ? freeLandingToe[side] : frame.Board.Rotate(landingToe[side])) * weight;
+                var up = sole * (1 - weight) +
+                    (free ? freeLanding[side].Up : frame.Board.Rotate(landingPlacement[side].Up)) * weight;
+                if (direction.LengthSquared < .000001 || up.LengthSquared < .000001)
+                { error = "Authored catch approach has an ambiguous foot orientation."; return false; }
+                double freeHeight = ankle.Y;
+                ankle += (target - ankle) * weight;
+                // Keep free-foot height while centring horizontally and give
+                // that approach a bounded lift above the turning deck. Both
+                // the lift and its velocity return to zero at the real catch.
+                if (free) ankle = new SkateVector(ankle.X,
+                    freeHeight + Math.Min(.20, .16 * rig.ThighLength / .44) * 4 * weight * (1 - weight), ankle.Z);
+                toe = ankle + direction * (rig.FootLength / direction.Length); up *= 1 / up.Length;
+                if (side == 0) { la = ankle; lt = toe; lu = up; } else { ra = ankle; rt = toe; ru = up; }
+                changed = true;
+            }
+            if (!changed) return true;
+            SkateRiderPose pose;
+            if (!TrySetFeet(rig, frame.Pose, la, lt, ra, rt, true, out pose, out error)) return false;
+            placed = new SkateCaptureFrame(pose, frame.Board, frame.Rotation, lu, ru, frame.HasEvent, frame.Observation,
+                frame.PelvisCorrection + pose.Pelvis - frame.Pose.Pelvis, frame.LeftHandCorrection, frame.RightHandCorrection, frame.RiderUp);
+            return true;
+        }
+
+        // Run after ordinary capture/conform and before the front-foot flick
+        // owner. That owner can return toward this compact pair without moving
+        // the rear foot back onto a deck which has already started to flip.
+        public bool TryKickflipTuck(SkateRiderRig rig, SkateCaptureFrame frame, double sourceTime,
+            double elapsedSeconds, SkateBoardPose uprightCarrier, out SkateCaptureFrame tucked, out string error)
+        {
+            tucked = frame; error = null;
+            if (clip.MovementKind != "kickflip") return true;
+            if (!Finite(sourceTime) || sourceTime < 0 || sourceTime > clip.Duration ||
+                !Finite(rig.FootLength) || rig.FootLength <= 0 || !Finite(elapsedSeconds) || elapsedSeconds < 0 || !uprightCarrier.Initialized ||
+                !SkateBoardPath.Valid(uprightCarrier) || !frame.Board.Initialized || !SkateBoardPath.Valid(frame.Board))
+            { error = "Invalid authored Kickflip free-flight carrier or clock."; return false; }
+            if (elapsedSeconds <= .02 || sourceTime >= Math.Max(caught[0], caught[1])) return true;
+            var up = uprightCarrier.Up; var forward = uprightCarrier.Forward; var right = uprightCarrier.Right;
+            // Clip every triangle of the full rigid reference board against
+            // the measured shoes' horizontal bounds at their bolt targets.
+            // A high nose outside either footprint must not raise both feet;
+            // a face crossing a footprint still counts without a vertex inside.
+            double top = double.NegativeInfinity;
+            for (int side = 0; side < 2; side++)
+            {
+                var anchor = kickflipCatch[side];
+                var target = right * Math.Max(-.055, Math.Min(.055, anchor.X)) + forward * (anchor.Z >= 0 ? .18 : -.18);
+                SkateBoardPose footprint;
+                if (!TryFootFrame(target, target + uprightCarrier.Rotate(kickflipForward[side]), up, out footprint))
+                { error = "Authored Kickflip footprint is ambiguous."; return false; }
+                top = Math.Max(top, KickflipBoardTop(frame.Board, footprint, side));
+            }
+            double height = Math.Max(0, top) + kickflipAnkleHeight + .05;
+            var la = frame.Pose.LeftAnkle; var ra = frame.Pose.RightAnkle;
+            var lt = frame.Pose.LeftToe; var rt = frame.Pose.RightToe;
+            var lu = frame.LeftSoleUp; var ru = frame.RightSoleUp;
+            for (int side = 0; side < 2; side++)
+            {
+                double untilCatch = caught[side] - sourceTime;
+                // The tail pop releases the rear foot before the front instep
+                // flick. These are authored presentation releases, not source
+                // contact events. Both converge to the same compact Air pair.
+                bool front = kickflipCatch[side].Z >= 0;
+                double weight = CatchPreparationWeight(elapsedSeconds - (front ? SkateFlipFlick.EdgeReleaseSeconds : .02),
+                    front ? .05 : .08) * CatchPreparationWeight(untilCatch, .10);
+                if (weight <= 0) continue;
+                var oldAnkle = side == 0 ? la : ra; var oldToe = side == 0 ? lt : rt;
+                var oldUp = side == 0 ? lu : ru;
+                var anchor = kickflipCatch[side];
+                var target = frame.Board.Origin + right * Math.Max(-.055, Math.Min(.055, anchor.X)) +
+                    forward * (anchor.Z >= 0 ? .18 : -.18) + up * height;
+                var ankle = oldAnkle + (target - oldAnkle) * weight;
+                var sole = oldUp * (1 - weight) + up * weight;
+                var direction = (oldToe - oldAnkle) * ((1 - weight) / rig.FootLength) +
+                    uprightCarrier.Rotate(kickflipForward[side]) * weight;
+                SkateBoardPose foot;
+                if (!TryFootFrame(ankle, ankle + direction, sole, out foot))
+                { error = "Authored Kickflip pair has an ambiguous shoe frame."; return false; }
+                // Near the real Catch the deck is upright again. Preserve the
+                // existing positive-only measured fit through that final return;
+                // steep/inverted projections retain their existing refusal.
+                double amount; string ignored;
+                if (Fit(side, frame.Board, foot, out amount, out ignored) && amount > 0)
+                    ankle += frame.Board.Up * amount;
+                var toe = ankle + foot.Forward * rig.FootLength;
+                if (side == 0) { la = ankle; lt = toe; lu = foot.Up; }
+                else { ra = ankle; rt = toe; ru = foot.Up; }
+            }
+            SkateRiderPose pose;
+            if (!TrySetFeet(rig, frame.Pose, la, lt, ra, rt, false, out pose, out error)) return false;
+            tucked = new SkateCaptureFrame(pose, frame.Board, frame.Rotation, lu, ru,
+                frame.HasEvent, frame.Observation, frame.PelvisCorrection,
+                frame.LeftHandCorrection, frame.RightHandCorrection, frame.RiderUp);
+            return true;
+        }
+
+        private double KickflipBoardTop(SkateBoardPose board, SkateBoardPose footprint, int side)
+        {
+            for (int n = 0; n < kickflipBoardEnvelope.Length; n++)
+            {
+                var p = board.Rotate(kickflipBoardEnvelope[n]) - footprint.Origin;
+                kickflipProjected[n] = new SkateVector(SkateVector.Dot(p, footprint.Right),
+                    SkateVector.Dot(p, footprint.Up), SkateVector.Dot(p, footprint.Forward));
+            }
+            double top = double.NegativeInfinity;
+            for (int n = 0; n < kickflipBoardTriangles.Length; n += 3)
+            {
+                kickflipClipA[0] = kickflipProjected[kickflipBoardTriangles[n]];
+                kickflipClipA[1] = kickflipProjected[kickflipBoardTriangles[n + 1]];
+                kickflipClipA[2] = kickflipProjected[kickflipBoardTriangles[n + 2]];
+                int count = ClipKickflipFootprint(kickflipClipA, 3, kickflipClipB, true, kickflipMinX[side], true);
+                count = ClipKickflipFootprint(kickflipClipB, count, kickflipClipA, true, kickflipMaxX[side], false);
+                count = ClipKickflipFootprint(kickflipClipA, count, kickflipClipB, false, kickflipMinZ[side], true);
+                count = ClipKickflipFootprint(kickflipClipB, count, kickflipClipA, false, kickflipMaxZ[side], false);
+                for (int p = 0; p < count; p++) top = Math.Max(top, kickflipClipA[p].Y);
+            }
+            return top;
+        }
+
+        // Sutherland-Hodgman in the footprint plane, interpolating height at
+        // every cut. A triangle clipped by a rectangle has at most seven points.
+        private static int ClipKickflipFootprint(SkateVector[] input, int count, SkateVector[] output,
+            bool xAxis, double edge, bool greater)
+        {
+            if (count == 0) return 0;
+            int written = 0; var previous = input[count - 1];
+            double before = (xAxis ? previous.X : previous.Z) - edge;
+            bool wasInside = greater ? before >= 0 : before <= 0;
+            for (int n = 0; n < count; n++)
+            {
+                var point = input[n]; double after = (xAxis ? point.X : point.Z) - edge;
+                bool inside = greater ? after >= 0 : after <= 0;
+                if (inside != wasInside) output[written++] = previous + (point - previous) * (before / (before - after));
+                if (inside) output[written++] = point;
+                previous = point; before = after; wasInside = inside;
+            }
+            return written;
         }
 
         private bool Boundary(SkateCaptureFrame frame, int side, out SkateVector local, out string error)
@@ -105,9 +415,16 @@ namespace Shortcut.RustMod
             correction = default(SkateVector); error = null;
             if (attached)
             {
-                double offset;
+                double offset; var shift = default(SkateVector);
+                if (entryPlacement && t < release[side])
+                {
+                    double z = entryCentre[side] - FootCentre(side, foot, board);
+                    if (!Finite(z) || Math.Abs(z) > .35) { error = "Early source contact exceeds observed charge travel."; return false; }
+                    shift = board.Forward * z;
+                    foot = new SkateBoardPose(foot.Origin + shift, foot.Forward, foot.Up);
+                }
                 if (!Fit(side, board, foot, out offset, out error)) return false;
-                correction = board.Up * offset; return true;
+                correction = shift + board.Up * offset; return true;
             }
             // Carry model-specific calibration through the free-foot interval.
             // Abruptly removing it at release would jump an ankle by centimetres.
@@ -117,7 +434,20 @@ namespace Shortcut.RustMod
             double u = (t - release[side]) / (caught[side] - release[side]);
             u = u * u * u * (10 + u * (-15 + 6 * u));
             var local = releasedLocal[side] * (1 - u) + caughtLocal[side] * u;
-            correction = foot.Rotate(local); return true;
+            correction = foot.Rotate(local);
+            if (entryPlacement)
+            {
+                double span = Math.Min(.08, (caught[side] - release[side]) * .5);
+                if (span > 0 && t < release[side] + span)
+                {
+                    if (!entryCarrier.Initialized) { error = "Entry release has no current upright carrier."; return false; }
+                    double fade = 1 - CatchPreparationWeight(t - release[side], span);
+                    double boundary = FreeBoundaryWeight(side, t);
+                    correction += (board.Forward * (entryReleaseDelta[side] * boundary) +
+                        entryCarrier.Rotate(entryReleaseVector[side]) * (1 - boundary)) * fade;
+                }
+            }
+            return true;
         }
 
         private bool Fit(int side, SkateBoardPose board, SkateBoardPose foot, out double offset, out string error)
@@ -209,6 +539,155 @@ namespace Shortcut.RustMod
             return true;
         }
 
+        public static double CatchPreparationWeight(double secondsSinceCatch, double blendSeconds = CatchPreparationSeconds)
+        {
+            if (!Finite(secondsSinceCatch) || !Finite(blendSeconds) || blendSeconds <= 0) return double.NaN;
+            double u = Math.Max(0, Math.Min(1, secondsSinceCatch / blendSeconds));
+            return Math.Max(0, Math.Min(1, u * u * u * (10 + u * (-15 + 6 * u))));
+        }
+
+        public static bool TryCatchPreparation(SkateRiderRig rig, SkateRiderPose body, SkateVector supportUp,
+            double weight, out SkateRiderPose pose, out SkateVector pelvisShift, out string error,
+            double internalDegrees = CatchPriorInternalDegrees, bool toeDirectedKnees = false)
+        {
+            if (!Finite(weight) || weight < 0 || weight > 1 || !ValidKneeLimit(internalDegrees))
+            { pose = body; pelvisShift = default(SkateVector); error = "Invalid authored catch preparation weight."; return false; }
+            return TryKneeAbsorption(rig, body, supportUp, (180 - internalDegrees) * weight,
+                out pose, out pelvisShift, out error, toeDirectedKnees ? weight : 0);
+        }
+
+        public static double ReachedCatchPreparationWeight(SkateRiderRig rig, SkateRiderPose body, double requestedWeight,
+            double internalDegrees = CatchPriorInternalDegrees)
+        {
+            // A strongly offset hip can hit the drop cap before the requested
+            // angle. Carry the reached floor into Land, not that unreachable goal.
+            double distanceSquared = Math.Max((body.LeftHip - body.LeftAnkle).LengthSquared,
+                (body.RightHip - body.RightAnkle).LengthSquared);
+            double denominator = 2 * rig.ThighLength * rig.ShinLength;
+            if (!Finite(distanceSquared) || !Finite(denominator) || denominator <= 0 || !Finite(requestedWeight) ||
+                !ValidKneeLimit(internalDegrees) || internalDegrees >= 180) return 0;
+            double cosine = (rig.ThighLength * rig.ThighLength + rig.ShinLength * rig.ShinLength - distanceSquared) / denominator;
+            double reachedDegrees = Math.Acos(Math.Max(-1, Math.Min(1, cosine))) * 180 / Math.PI;
+            return Math.Max(0, Math.Min(requestedWeight, (180 - reachedDegrees) / (180 - internalDegrees)));
+        }
+
+        public static bool TryLimitCatchRise(SkateRiderRig rig, SkateRiderPose body, SkateVector referencePelvis,
+            SkateVector supportUp, out SkateRiderPose pose, out SkateVector pelvisShift, out string error)
+        {
+            pose = body; pelvisShift = default(SkateVector); error = null;
+            if (!Finite(referencePelvis.LengthSquared) || !Finite(body.Pelvis.LengthSquared) ||
+                !Finite(supportUp.LengthSquared) || supportUp.LengthSquared < .5 ||
+                !Finite(rig.ThighLength) || !Finite(rig.ShinLength) || rig.ThighLength <= 0 || rig.ShinLength <= 0)
+            { error = "Invalid authored catch rise frame."; return false; }
+            var up = supportUp * (1 / supportUp.Length);
+            double rise = SkateVector.Dot(body.Pelvis - referencePelvis, up);
+            if (rise <= 0) return true;
+            double safe = Math.Min(SkateVector.Dot(body.LeftHip - body.LeftAnkle, up),
+                SkateVector.Dot(body.RightHip - body.RightAnkle, up));
+            double down = Math.Min(rise, Math.Min((rig.ThighLength + rig.ShinLength) * LandingMaximumDropShare, Math.Max(0, safe)));
+            if (down <= 0) return true;
+            var shift = up * -down;
+            var forward = new SkateVector(0, 0, 1); var worldUp = new SkateVector(0, 1, 0);
+            SkateRiderPose lowered;
+            if (!SkateRider.TryTransformPose(body, new SkateBoardPose(default(SkateVector), forward, worldUp),
+                new SkateBoardPose(shift, forward, worldUp), out lowered) ||
+                !TrySetFeet(rig, lowered, body.LeftAnkle, body.LeftToe, body.RightAnkle, body.RightToe, false, out pose, out error))
+            { if (error == null) error = "Authored catch rise exceeds supported reach."; return false; }
+            pelvisShift = shift; return true;
+        }
+
+        public static bool TryLandingAbsorption(SkateRiderRig rig, SkateRiderPose body, SkateVector supportUp,
+            double secondsSinceLand, out SkateRiderPose pose, out SkateVector pelvisShift, out string error,
+            double catchPreparationWeight = 0, double catchInternalDegrees = CatchPriorInternalDegrees,
+            double landingInternalDegrees = LandingPriorInternalDegrees, bool toeDirectedKnees = false)
+        {
+            pose = body; pelvisShift = default(SkateVector); error = null;
+            if (!Finite(secondsSinceLand) || !Finite(catchPreparationWeight) || catchPreparationWeight < 0 || catchPreparationWeight > 1 ||
+                !ValidKneeLimit(catchInternalDegrees) || !ValidKneeLimit(landingInternalDegrees))
+            { error = "Invalid authored landing absorption frame."; return false; }
+            if (secondsSinceLand < 0 || secondsSinceLand >= LandingImpactSeconds + LandingReleaseSeconds) return true;
+            double u = secondsSinceLand <= LandingImpactSeconds ? secondsSinceLand / LandingImpactSeconds :
+                1 - (secondsSinceLand - LandingImpactSeconds) / LandingReleaseSeconds;
+            double weight = Math.Max(0, Math.Min(1, u * u * u * (10 + u * (-15 + 6 * u))));
+            double flex = (180 - landingInternalDegrees) * weight;
+            if (secondsSinceLand <= LandingImpactSeconds)
+                flex += (180 - catchInternalDegrees) * catchPreparationWeight * (1 - weight);
+            flex = Math.Max(0, Math.Min(80, flex));
+            return TryKneeAbsorption(rig, body, supportUp, flex, out pose, out pelvisShift, out error,
+                toeDirectedKnees ? weight : 0);
+        }
+
+        private static bool ValidKneeLimit(double degrees) { return Finite(degrees) && degrees >= 100 && degrees <= 180; }
+
+        // An angular minimum is idempotent: the prepared catch already present
+        // in the impact blend is not compressed again at the Land boundary.
+        private static bool TryKneeAbsorption(SkateRiderRig rig, SkateRiderPose body, SkateVector supportUp,
+            double flexDegrees, out SkateRiderPose pose, out SkateVector pelvisShift, out string error, double toePlaneWeight = 0)
+        {
+            pose = body; pelvisShift = default(SkateVector); error = null;
+            if (!Finite(flexDegrees) || flexDegrees < 0 || flexDegrees > 80 || !Finite(toePlaneWeight) || toePlaneWeight < 0 || toePlaneWeight > 1 ||
+                !Finite(supportUp.LengthSquared) || supportUp.LengthSquared < .5 ||
+                !Finite(rig.ThighLength) || !Finite(rig.ShinLength) || rig.ThighLength <= 0 || rig.ShinLength <= 0)
+            { error = "Invalid authored knee absorption frame."; return false; }
+            if (flexDegrees <= 0) return true;
+            var up = supportUp * (1 / supportUp.Length);
+            double flex = flexDegrees * Math.PI / 180;
+            double radius = Math.Sqrt(rig.ThighLength * rig.ThighLength + rig.ShinLength * rig.ShinLength +
+                2 * rig.ThighLength * rig.ShinLength * Math.Cos(flex));
+            double leftDown, rightDown, leftSafe, rightSafe;
+            if (!LandingDrop(body.LeftHip - body.LeftAnkle, up, radius, out leftDown, out leftSafe) ||
+                !LandingDrop(body.RightHip - body.RightAnkle, up, radius, out rightDown, out rightSafe))
+            { error = "Authored landing absorption has invalid leg targets."; return false; }
+            double bound = (rig.ThighLength + rig.ShinLength) * LandingMaximumDropShare;
+            double down = Math.Min(Math.Max(leftDown, rightDown), Math.Min(bound, Math.Min(leftSafe, rightSafe)));
+            if (down <= 0 && toePlaneWeight <= 0) return true;
+            var shift = up * -down; var lh = body.LeftHip + shift; var rh = body.RightHip + shift;
+            SkateVector lk, rk, lp, rp;
+            if (!TryBendPlane(body.LeftHip, body.LeftKnee, body.LeftAnkle, lh, body.LeftAnkle, out lp) ||
+                !TryBendPlane(body.RightHip, body.RightKnee, body.RightAnkle, rh, body.RightAnkle, out rp))
+            { error = "Authored landing absorption has an ambiguous knee plane."; return false; }
+            if (toePlaneWeight > 0)
+            {
+                var right = SkateBoardPath.Cross(body.PelvisUp, body.PelvisForward);
+                var lt = body.LeftToe - body.LeftAnkle; var rt = body.RightToe - body.RightAnkle;
+                lt -= up * SkateVector.Dot(lt, up); rt -= up * SkateVector.Dot(rt, up);
+                if (right.LengthSquared < 1e-12 || lt.LengthSquared < 1e-12 || rt.LengthSquared < 1e-12)
+                { error = "Authored supported knee guide is ambiguous."; return false; }
+                right *= 1 / right.Length; lt *= 1 / lt.Length; rt *= 1 / rt.Length;
+                var la = body.LeftAnkle - lh; var ra = body.RightAnkle - rh;
+                var leftGuide = lt - right * .15; var rightGuide = rt + right * .15;
+                leftGuide -= la * (SkateVector.Dot(leftGuide, la) / la.LengthSquared);
+                rightGuide -= ra * (SkateVector.Dot(rightGuide, ra) / ra.LengthSquared);
+                if (leftGuide.LengthSquared < 1e-12 || rightGuide.LengthSquared < 1e-12)
+                { error = "Authored supported knee guide is parallel to the leg."; return false; }
+                lp = TurnDirection(lp, leftGuide, toePlaneWeight, la);
+                rp = TurnDirection(rp, rightGuide, toePlaneWeight, ra);
+            }
+            if (!SkateOllieStyles.TryLimb(lh, body.LeftAnkle, rig.ThighLength, rig.ShinLength, lp, out lk, out error) ||
+                !SkateOllieStyles.TryLimb(rh, body.RightAnkle, rig.ThighLength, rig.ShinLength, rp, out rk, out error))
+            { if (error == null) error = "Authored landing absorption has an ambiguous knee plane."; return false; }
+            pose = new SkateRiderPose(body.Pelvis + shift, lh, rh, lk, rk,
+                body.LeftAnkle, body.RightAnkle, body.LeftToe, body.RightToe,
+                body.Chest + shift, body.Neck + shift, body.Head + shift,
+                body.LeftShoulder + shift, body.RightShoulder + shift, body.LeftElbow + shift, body.RightElbow + shift,
+                body.LeftHand + shift, body.RightHand + shift,
+                body.PelvisForward, body.PelvisUp, body.ChestForward, body.ChestUp, body.HeadForward);
+            pelvisShift = shift; return true;
+        }
+
+        private static bool LandingDrop(SkateVector hipFromAnkle, SkateVector up, double radius, out double down, out double safe)
+        {
+            down = safe = 0;
+            if (!Finite(hipFromAnkle.LengthSquared)) return false;
+            double vertical = SkateVector.Dot(hipFromAnkle, up);
+            if (vertical <= 0) return true;
+            safe = vertical;
+            if (hipFromAnkle.LengthSquared <= radius * radius) return true;
+            double tangentSquared = Math.Max(0, hipFromAnkle.LengthSquared - vertical * vertical);
+            down = Math.Max(0, vertical - Math.Sqrt(Math.Max(0, radius * radius - tangentSquared)));
+            return true;
+        }
+
         public static bool TryBendPlane(SkateVector sourceHip, SkateVector sourceKnee, SkateVector sourceAnkle,
             SkateVector targetHip, SkateVector targetAnkle, out SkateVector bend)
         {
@@ -242,7 +721,8 @@ namespace Shortcut.RustMod
         // depth jitter must not twist a planted knee around its hip/ankle axis.
         // Feet and torso are unchanged; optional head transport follows the gaze.
         public static bool TryGroundRecovery(SkateRiderRig rig, SkateRiderPose impact, SkateRiderPose ordinary,
-            SkateRiderPose body, SkateVector supportUp, double weight, double gazeWeight, out SkateRiderPose pose, out string error, bool followHeadGaze = false)
+            SkateRiderPose body, SkateVector supportUp, double weight, double gazeWeight, out SkateRiderPose pose, out string error,
+            bool followHeadGaze = false, bool keepSourceGaze = false)
         {
             pose = body; error = null;
             if (!Finite(weight) || weight < 0 || weight > 1 || !Finite(gazeWeight) || gazeWeight < 0 || gazeWeight > 1 ||
@@ -261,7 +741,10 @@ namespace Shortcut.RustMod
                     TurnDirection(la, lb, weight, body.LeftAnkle - body.LeftHip), out lk, out error) ||
                 !SkateOllieStyles.TryLimb(body.RightHip, body.RightAnkle, rig.ThighLength, rig.ShinLength,
                     TurnDirection(ra, rb, weight, body.RightAnkle - body.RightHip), out rk, out error)) return false;
-            var gaze = RecoveryGaze(impact.HeadForward, ordinary.HeadForward, body.ChestForward, supportUp, gazeWeight);
+            // Body already includes the clip's bounded recovery-to-ordinary blend.
+            // Keep its authored gaze when early travel-facing recovery is inappropriate.
+            var gaze = keepSourceGaze ? body.HeadForward :
+                RecoveryGaze(impact.HeadForward, ordinary.HeadForward, body.ChestForward, supportUp, gazeWeight);
             if (!Finite(gaze.LengthSquared) || Math.Abs(gaze.LengthSquared - 1) > .00001)
             { error = "Supported recovery gaze is degenerate."; return false; }
             var head = body.Head;
@@ -288,6 +771,45 @@ namespace Shortcut.RustMod
                 gaze);
             return true;
         }
+
+        public static bool TrySupportedTorso(SkateRiderPose body, SkateVector supportUp, double secondsSinceCatch,
+            out SkateRiderPose pose, out string error)
+        {
+            pose = body; error = null;
+            var torso = body.Neck - body.Pelvis;
+            if (!Finite(secondsSinceCatch) || !Finite(torso.LengthSquared) || torso.LengthSquared < 1e-12 ||
+                !Finite(supportUp.LengthSquared) || supportUp.LengthSquared < .5)
+            { error = "Invalid authored supported torso frame."; return false; }
+            var from = torso * (1 / torso.Length); var up = supportUp * (1 / supportUp.Length);
+            double angle = Math.Acos(Math.Max(-1, Math.Min(1, SkateVector.Dot(from, up))));
+            double u = Math.Max(0, Math.Min(1, secondsSinceCatch / .12));
+            double weight = u * u * u * (10 + u * (-15 + 6 * u));
+            double turn = Math.Min(25 * Math.PI / 180, Math.Max(0, angle - 30 * Math.PI / 180)) * weight;
+            if (turn <= 0) return true;
+            var axis = SkateBoardPath.Cross(from, up);
+            if (axis.LengthSquared < 1e-12)
+            { error = "Authored supported torso swing is ambiguous."; return false; }
+            axis *= 1 / axis.Length;
+            double c = Math.Cos(turn), s = Math.Sin(turn);
+            var chest = body.Pelvis + SwingVector(body.Chest - body.Pelvis, axis, c, s);
+            var neck = body.Pelvis + SwingVector(body.Neck - body.Pelvis, axis, c, s);
+            // Rotate the upper-body chain as a unit. Keep the source pelvis
+            // heading, all leg/foot points and the already solved world gaze.
+            pose = new SkateRiderPose(body.Pelvis, body.LeftHip, body.RightHip, body.LeftKnee, body.RightKnee,
+                body.LeftAnkle, body.RightAnkle, body.LeftToe, body.RightToe, chest, neck, neck + body.Head - body.Neck,
+                body.Pelvis + SwingVector(body.LeftShoulder - body.Pelvis, axis, c, s),
+                body.Pelvis + SwingVector(body.RightShoulder - body.Pelvis, axis, c, s),
+                body.Pelvis + SwingVector(body.LeftElbow - body.Pelvis, axis, c, s),
+                body.Pelvis + SwingVector(body.RightElbow - body.Pelvis, axis, c, s),
+                body.Pelvis + SwingVector(body.LeftHand - body.Pelvis, axis, c, s),
+                body.Pelvis + SwingVector(body.RightHand - body.Pelvis, axis, c, s),
+                body.PelvisForward, body.PelvisUp, SwingVector(body.ChestForward, axis, c, s),
+                SwingVector(body.ChestUp, axis, c, s), body.HeadForward);
+            return true;
+        }
+
+        private static SkateVector SwingVector(SkateVector v, SkateVector axis, double c, double s)
+        { return v * c + SkateBoardPath.Cross(axis, v) * s + axis * (SkateVector.Dot(axis, v) * (1 - c)); }
 
         private static SkateVector TurnDirection(SkateVector a, SkateVector b, double weight, SkateVector legAxis)
         {

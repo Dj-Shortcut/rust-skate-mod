@@ -11,11 +11,15 @@ from pathlib import Path
 import sys
 
 from capture_math import encode_pack
-from capture_pipeline import ID, RESERVED, atomic, digest, json_bytes, read_json
+from capture_pipeline import (BASE_SOURCE_KINDS, ID, RESERVED, SHARED_SOURCE_VARIANTS,
+                              atomic, digest, json_bytes, read_json)
 
 
 PACK = 'skate_captures.skmc'
 APPROVAL = 'skate_captures.approved.txt'
+COMPOSITION_LIMIT = ('Shared filmed body/flick/contact data, not separately filmed multi-flip mocap. '
+                     'Live game board rotation, landing and scoring remain authoritative. '
+                     'Each variant needs its own visual review and exact owner-approved pack entry.')
 
 
 def local_evidence(entry, base):
@@ -31,16 +35,101 @@ def local_evidence(entry, base):
     return dict(path=str(path.resolve()), sha256=entry['sha256'])
 
 
+def composition_clips(report, batch_dir):
+    keys = {'format', 'manifestSha256', 'codeSha256', 'sources', 'variants',
+            'includedBaseClips', 'clipCount', 'packUpdated', 'packSha256', 'limits'}
+    def sha(value):
+        return isinstance(value, str) and len(value) == 64 and all(c in '0123456789abcdef' for c in value)
+    if (not isinstance(report, dict) or set(report) != keys
+            or report['format'] != 'skate-capture-composition/1'
+            or report['packUpdated'] is not True or type(report['includedBaseClips']) is not bool
+            or type(report['clipCount']) is not int
+            or not all(sha(report[k]) for k in ('manifestSha256', 'codeSha256', 'packSha256'))
+            or not isinstance(report['limits'], str) or not report['limits'].strip()
+            or not isinstance(report['sources'], list) or not 1 <= len(report['sources']) <= len(BASE_SOURCE_KINDS)
+            or not isinstance(report['variants'], list) or not 1 <= len(report['variants']) <= len(SHARED_SOURCE_VARIANTS)):
+        raise ValueError('Approval requires a complete composition/1 report')
+    sources, source_ids, evidence = {}, set(), []
+    for entry in report['sources']:
+        if (not isinstance(entry, dict) or set(entry) != {'family', 'path', 'sha256', 'id'}
+                or not isinstance(entry['family'], str) or entry['family'] not in BASE_SOURCE_KINDS
+                or entry['family'] in sources or not isinstance(entry['id'], str)
+                or not ID.fullmatch(entry['id']) or entry['id'] in RESERVED or entry['id'] in source_ids):
+            raise ValueError('Invalid or duplicate composition source')
+        verified = local_evidence(dict(path=entry['path'], sha256=entry['sha256']), batch_dir)
+        source = read_json(Path(verified['path']))
+        if (digest(Path(verified['path'])) != entry['sha256']
+                or source['metadata']['id'] != entry['id'] or source['metadata']['movementKind'] != entry['family']):
+            raise ValueError('Composition source changed or differs from its declared family/id')
+        encode_pack([source])
+        sources[entry['family']] = source
+        source_ids.add(entry['id'])
+        evidence.append(dict(family=entry['family'], id=entry['id'], **verified))
+    expected = list(sources.values()) if report['includedBaseClips'] else []
+    variants = set()
+    for entry in report['variants']:
+        if (not isinstance(entry, dict)
+                or set(entry) != {'id', 'sourceFamily', 'derivedFromClipId', 'requestedFlipDegrees', 'reviewed'}
+                or not isinstance(entry['id'], str) or entry['id'] not in SHARED_SOURCE_VARIANTS
+                or entry['id'] in variants or entry['reviewed'] is not False
+                or type(entry['requestedFlipDegrees']) is not int):
+            raise ValueError('Invalid or duplicate composition variant')
+        family, degrees = SHARED_SOURCE_VARIANTS[entry['id']]
+        if (entry['sourceFamily'] != family or family not in sources
+                or entry['requestedFlipDegrees'] != degrees
+                or entry['derivedFromClipId'] != sources[family]['metadata']['id']):
+            raise ValueError('Composition variant does not match its source recipe')
+        clip = copy.deepcopy(sources[family])
+        clip['metadata'].update(id=entry['id'], label=entry['id'] + ' [SHARED SOURCE; UNREVIEWED]',
+            movementKind=entry['id'], reviewed=False, sourceFamily=family,
+            derivedFromClipId=entry['derivedFromClipId'], requestedFlipDegrees=degrees,
+            derivation='shared-source-presentation', compositionLimit=COMPOSITION_LIMIT)
+        expected.append(clip)
+        variants.add(entry['id'])
+    if report['clipCount'] != len(expected):
+        raise ValueError('Composition clip count differs from its sources and variants')
+    records, expected_by_id = [], {}
+    for clip in expected:
+        stem = clip['metadata']['id']
+        if stem in expected_by_id:
+            raise ValueError('Composition source and variant ids overlap')
+        expected_by_id[stem] = clip
+        records.append(dict(id=stem, status='completed', clip='jobs/' + stem + '.json'))
+    return records, expected_by_id, evidence
+
+
+def approval_report(batch_dir):
+    # A reused output directory may contain the previous producer's report.
+    # Choose the one report bound to the current pack; never fall back after
+    # validation fails or infer which equally-current provenance to trust.
+    paths = [batch_dir / name for name in ('batch-report.json', 'compose-report.json') if (batch_dir / name).is_file()]
+    if not paths:
+        raise ValueError('Approval needs batch-report.json or compose-report.json')
+    reports = [(path, read_json(path)) for path in paths]
+    if len(reports) > 1:
+        pack_hash = digest(batch_dir / PACK)
+        reports = [(path, report) for path, report in reports if isinstance(report, dict) and report.get('packSha256') == pack_hash]
+    if len(reports) != 1:
+        raise ValueError('Approval requires one unambiguous report matching the current pack')
+    return reports[0]
+
+
 def approve(batch_dir, review_path, output):
     batch_dir = batch_dir.resolve(strict=True)
     review_path = review_path.resolve(strict=True)
     output = output.resolve()
     if output == batch_dir:
         raise ValueError('Stage into a separate directory; keep the original batch')
-    report_path = batch_dir / 'batch-report.json'
-    report = read_json(report_path)
-    records = report.get('jobs')
-    if (report.get('format') != 'skate-capture-batch/1' or report.get('failed') != 0
+    report_path, report = approval_report(batch_dir)
+    composed = report_path.name == 'compose-report.json'
+    expected = None
+    if composed:
+        records, expected, sources = composition_clips(report, batch_dir)
+        provenance = dict(originalCompositionSha256=digest(report_path), compositionSources=sources)
+    else:
+        records = report.get('jobs')
+        provenance = dict(originalBatchSha256=digest(report_path))
+    if not composed and (report.get('format') != 'skate-capture-batch/1' or report.get('failed') != 0
             or report.get('partialPack') is not False or report.get('packUpdated') is not True
             or not isinstance(records, list) or not 1 <= len(records) <= 256
             or report.get('succeeded') != len(records)):
@@ -53,9 +142,14 @@ def approve(batch_dir, review_path, output):
                 or record.get('clip') != 'jobs/' + stem + '.json'):
             raise ValueError('Invalid or duplicate batch clip record')
         path = batch_dir / record['clip']
+        before = digest(path) if composed else None
         clip = read_json(path)
+        if composed and before != digest(path):
+            raise ValueError('Composition clip changed while reading: ' + stem)
         if clip['metadata']['id'] != stem:
             raise ValueError('Batch clip id differs from its record')
+        if composed and clip != expected[stem]:
+            raise ValueError('Composed clip differs from its exact source derivation: ' + stem)
         clips.append(clip)
         originals[stem] = dict(clipSha256=digest(path))
     original_bytes = encode_pack(clips)
@@ -92,7 +186,7 @@ def approve(batch_dir, review_path, output):
                 + ''.join('clip=' + stem + '\n' for stem in ids)).encode('utf-8')
     if len(approval) > 32768:
         raise ValueError('Approval exceeds the runtime byte bound')
-    receipt = dict(format='skate-capture-staging/1', originalBatchSha256=digest(report_path),
+    receipt = dict(format='skate-capture-staging/1', **provenance,
                    originalPackSha256=original_hash, reviewSha256=digest(review_path),
                    reviewer=review['reviewer'], scope=review['scope'], packSha256=pack_hash,
                    approvedIds=ids, review=[accepted[stem] for stem in ids],

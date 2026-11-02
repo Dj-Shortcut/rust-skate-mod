@@ -1,0 +1,83 @@
+using System;
+
+namespace Shortcut.RustMod
+{
+    // Presentation recipes only. Each derived movement still needs its own
+    // reviewed pack entry and exact owner-approved id; a source never approves it.
+    public readonly struct SkateCaptureVariant
+    {
+        public readonly string MovementKind, SourceMovementKind;
+        public readonly SkateCaptureTrickSignature Signature;
+        public bool Derived { get { return MovementKind != SourceMovementKind; } }
+        internal SkateCaptureVariant(string kind, string source, SkatePopKind pop, bool sw, bool tail,
+            double flip, double shove = 0, double spin = 0)
+        { MovementKind = kind; SourceMovementKind = source; Signature = new SkateCaptureTrickSignature(pop, sw, tail, flip, shove, spin, 0); }
+    }
+
+    public static class SkateCaptureVariants
+    {
+        public static int Count { get { return Entries.Length; } }
+        private static readonly SkateCaptureVariant[] Entries = {
+            new SkateCaptureVariant("switch-heelflip", "switch-heelflip", SkatePopKind.Ollie, true, false, -360),
+            new SkateCaptureVariant("nollie-heelflip", "nollie-heelflip", SkatePopKind.Nollie, false, false, -360),
+            new SkateCaptureVariant("fakie-kickflip", "fakie-kickflip", SkatePopKind.Ollie, true, true, 360),
+            new SkateCaptureVariant("nollie-backside-180-heelflip", "nollie-backside-180-heelflip", SkatePopKind.Nollie, false, false, -360, 0, -180),
+            new SkateCaptureVariant("nollie-360-flip", "nollie-360-flip", SkatePopKind.Nollie, false, false, 360, -360),
+            new SkateCaptureVariant("switch-double-heelflip", "switch-heelflip", SkatePopKind.Ollie, true, false, -720),
+            new SkateCaptureVariant("switch-triple-heelflip", "switch-heelflip", SkatePopKind.Ollie, true, false, -1080),
+            new SkateCaptureVariant("nollie-double-heelflip", "nollie-heelflip", SkatePopKind.Nollie, false, false, -720),
+            new SkateCaptureVariant("nollie-triple-heelflip", "nollie-heelflip", SkatePopKind.Nollie, false, false, -1080),
+            new SkateCaptureVariant("fakie-double-kickflip", "fakie-kickflip", SkatePopKind.Ollie, true, true, 720),
+            new SkateCaptureVariant("fakie-triple-kickflip", "fakie-kickflip", SkatePopKind.Ollie, true, true, 1080),
+            new SkateCaptureVariant("kickflip", "kickflip", SkatePopKind.Ollie, false, false, 360),
+            new SkateCaptureVariant("double-kickflip", "kickflip", SkatePopKind.Ollie, false, false, 720),
+            new SkateCaptureVariant("heelflip", "heelflip", SkatePopKind.Ollie, false, false, -360),
+            new SkateCaptureVariant("360-flip", "360-flip", SkatePopKind.Ollie, false, false, 360, -360),
+            new SkateCaptureVariant("bs-pop-shove-it", "bs-pop-shove-it", SkatePopKind.Ollie, false, false, 0, -180),
+            new SkateCaptureVariant("fs-pop-shove-it", "fs-pop-shove-it", SkatePopKind.Ollie, false, false, 0, 180),
+            new SkateCaptureVariant("hardflip", "hardflip", SkatePopKind.Ollie, false, false, 360, 180),
+            new SkateCaptureVariant("varial-kickflip", "varial-kickflip", SkatePopKind.Ollie, false, false, 360, -180),
+            new SkateCaptureVariant("fs-360-shove-it", "fs-360-shove-it", SkatePopKind.Ollie, false, false, 0, 360),
+            new SkateCaptureVariant("bs-360-shove-it", "bs-360-shove-it", SkatePopKind.Ollie, false, false, 0, -360),
+            new SkateCaptureVariant("nollie-kickflip", "nollie-kickflip", SkatePopKind.Nollie, false, false, 360),
+            new SkateCaptureVariant("switch-kickflip", "switch-kickflip", SkatePopKind.Ollie, true, false, 360),
+            new SkateCaptureVariant("fakie-heelflip", "fakie-heelflip", SkatePopKind.Ollie, true, true, -360),
+            new SkateCaptureVariant("inward-heelflip", "inward-heelflip", SkatePopKind.Ollie, false, false, -360, -180),
+            new SkateCaptureVariant("ollie", "ollie", SkatePopKind.Ollie, false, false, 0, 0, 0),
+            new SkateCaptureVariant("fs-180", "fs-180", SkatePopKind.Ollie, false, false, 0, 0, 180),
+            new SkateCaptureVariant("bs-180", "bs-180", SkatePopKind.Ollie, false, false, 0, 0, -180),
+            new SkateCaptureVariant("nollie-ollie", "nollie-ollie", SkatePopKind.Nollie, false, false, 0, 0, 0),
+            new SkateCaptureVariant("fakie-ollie", "fakie-ollie", SkatePopKind.Ollie, true, true, 0, 0, 0),
+            new SkateCaptureVariant("switch-ollie", "switch-ollie", SkatePopKind.Ollie, true, false, 0, 0, 0),
+            new SkateCaptureVariant("fakie-fs180", "fakie-fs180", SkatePopKind.Ollie, true, true, 0, 0, 180),
+            new SkateCaptureVariant("fakie-bs180", "fakie-bs180", SkatePopKind.Ollie, true, true, 0, 0, -180),
+            new SkateCaptureVariant("nollie-bs-pop-shove-it", "nollie-bs-pop-shove-it", SkatePopKind.Nollie, false, false, 0, -180),
+            new SkateCaptureVariant("switch-bs-pop-shove-it", "switch-bs-pop-shove-it", SkatePopKind.Ollie, true, false, 0, -180),
+            new SkateCaptureVariant("fakie-bs-pop-shove-it", "fakie-bs-pop-shove-it", SkatePopKind.Ollie, true, true, 0, -180),
+            new SkateCaptureVariant("nollie-fs-pop-shove-it", "nollie-fs-pop-shove-it", SkatePopKind.Nollie, false, false, 0, 180),
+            new SkateCaptureVariant("switch-fs-pop-shove-it", "switch-fs-pop-shove-it", SkatePopKind.Ollie, true, false, 0, 180),
+            new SkateCaptureVariant("fakie-fs-pop-shove-it", "fakie-fs-pop-shove-it", SkatePopKind.Ollie, true, true, 0, 180)
+        };
+        public static SkateCaptureVariant Get(int index)
+        { return index >= 0 && index < Entries.Length ? Entries[index] : default(SkateCaptureVariant); }
+        public static int IndexOf(string movementKind)
+        {
+            for (int n = 0; n < Entries.Length; n++) if (Entries[n].MovementKind == movementKind) return n;
+            return -1;
+        }
+        public static string MovementKind(SkateCaptureTrickSignature signature)
+        {
+            for (int n = 0; n < Entries.Length; n++) if (Entries[n].Signature.Same(signature)) return Entries[n].MovementKind;
+            return null;
+        }
+        public static string SourceMovementKind(string movementKind)
+        { int index = IndexOf(movementKind); return index < 0 ? movementKind : Entries[index].SourceMovementKind; }
+        public static bool IsFlipExtension(SkateCaptureTrickSignature from, SkateCaptureTrickSignature to)
+        {
+            int a = IndexOf(MovementKind(from)), b = IndexOf(MovementKind(to));
+            if (a < 0 || b < 0 || Entries[a].SourceMovementKind != Entries[b].SourceMovementKind) return false;
+            return Math.Abs(to.Flip) > Math.Abs(from.Flip) && Math.Sign(from.Flip) == Math.Sign(to.Flip) &&
+                Math.Abs(from.Shove) < .01 && Math.Abs(to.Shove) < .01 && Math.Abs(from.Spin) < .01 && Math.Abs(to.Spin) < .01;
+        }
+    }
+}
