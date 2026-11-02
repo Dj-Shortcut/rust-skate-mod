@@ -1,9 +1,9 @@
 {
   "format": "skate-rig-only-review-media/1",
   "trick": "Fakie BS Pop Shove-it",
-  "sourceCodeRevision": "1a74a0c990075c6c774d8c79564fee20c2be79c7",
-  "runtimeRouteRevision": "1a74a0c990075c6c774d8c79564fee20c2be79c7",
-  "sourcePackSha256": "cff06b12c67212700643b6500a49808f7f3ff78e225fa267df993853e0f3a54b",
+  "sourceCodeRevision": "3b9046c1b67df534c0c671cdcd30bdc84a520568",
+  "runtimeRouteRevision": "3b9046c1b67df534c0c671cdcd30bdc84a520568",
+  "sourcePackSha256": "a8991e9b06671ca7d1ff18f2875ac68516538183fe1e1ef02d120ff9d024e16a",
   "rawReviewed": false,
   "offlineReviewed": false,
   "nativeGame": false,
@@ -18,7 +18,7 @@
     "radius": 4.5,
     "scope": "Estimated fixed viewing basis only, not camera-calibrated3D or a body correction"
   },
-  "sourceLimit": "84/84 actor detections do not certify3D depth/contacts. Camera, axes, root/feet/knees/gaze and bounded Pop/Catch correction explicitly authored.",
+  "sourceLimit": "Own84/84 actor selections do not prove3D. Estimated camera, axes/depth/root/shoes/contacts/gaze are authored. Actual source954\u2013957 genuinely raises original Right/canonical Left arm; QR overlay hides the opposite original Left/canonical Right, reconstructed only953.1\u2013957.5 into bent side balance. Real raised Left remains exact.",
   "replay": {
     "status": "passed-controlled-browser",
     "speeds": [
@@ -100,7 +100,8 @@
     "focusedSourceSideViews": 24,
     "focusedFeetCloseViews": 12,
     "consoleRuntimeErrors": 0,
-    "scope": "Actual decoded reference alongside exact exported managed-route original rig. Native Rust and Claude offline verdict remain pending."
+    "initialFeetReadinessRetries": 1,
+    "scope": "Current a899 source/3b904 frozen route; actual decoded reference beside exact managed-route rig. Claude offline and native Shadow remain pending."
   },
   "managedRoute": {
     "cases": 4,
@@ -121,8 +122,8 @@
       "id": "fakie-bs-pop-shove-it-source-keyed-v1",
       "stance": "goofy",
       "profile": "low",
-      "sha256": "3935869e870e75f9144b73d90481fde3a8c964e7853880a49b532a4126e255f7",
-      "inputSha256": "167d414298213b50606680b1166143174f9a63e5408d5c14be1d62d499ed4ee9",
+      "sha256": "07bad512ae643213c4b33f01fb56328439b1ff57593c91cb75cd0a2511927a6d",
+      "inputSha256": "fb3592a948e738ad344b2f6ec8ef91c1152e3ca7e73af0e4facd021345399214",
       "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
       "maximumJointErrorM": 5.748583141179135e-06,
       "physicalPreview": {
@@ -167,10 +168,10 @@
       "id": "fakie-bs-pop-shove-it-source-keyed-v1",
       "stance": "goofy",
       "profile": "normal",
-      "sha256": "08aa022aff16d8e4e4fd24679aa792e5a20d6b83c537ec62b21b921db9d7e532",
-      "inputSha256": "6ce4fff60d4672b91189553bf7fef522de87f95ea930a8abd239adfe095e51fb",
+      "sha256": "4c59822d13508f25057ea1c27b01bee29cb183e1f255ae08a044f62fdc481a07",
+      "inputSha256": "237b0211b401f0fc51297d8fb7e2d227241689d55f9a0824cfcab59792f3287c",
       "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
-      "maximumJointErrorM": 7.2054818800640876e-06,
+      "maximumJointErrorM": 6.2233402350020114e-06,
       "physicalPreview": {
         "profile": "normal",
         "requestedStance": "goofy",
@@ -213,8 +214,8 @@
       "id": "fakie-bs-pop-shove-it-source-keyed-v1",
       "stance": "regular",
       "profile": "low",
-      "sha256": "f37a029dc034beabd68c0dce8be1bf0b6cbc2bc8025a408ac42881285cd10006",
-      "inputSha256": "c7c7484b2a3a32422e6aa0b3f23eac2e465f2ec56ae32489fb4881c3e219f922",
+      "sha256": "0ddd44eff8f4443075cd36ec698dde4c1d886de386f68e80b0f4c0998252ea47",
+      "inputSha256": "f52996d338ecf636ec89184dc961155594cafa13342f6a5489552d13b145f1fc",
       "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
       "maximumJointErrorM": 5.937380018956219e-06,
       "physicalPreview": {
@@ -259,10 +260,10 @@
       "id": "fakie-bs-pop-shove-it-source-keyed-v1",
       "stance": "regular",
       "profile": "normal",
-      "sha256": "4370b2b87a5c383d1996bfa2a4931cef44bad1c7b3bcba7a1b0719bb2f75aa5e",
-      "inputSha256": "6e76290d071d35eb073b5ca3930122f7b5e2557e8d28d25aeca5a90b8bd4073c",
+      "sha256": "24dde655196fdca655108c52d529798111023df2c49ac65ffc7428f479b5626f",
+      "inputSha256": "d1c1eeeced75189cc6f6d31e9cf3cc501174038ce56baf3f46fb8eadd9bb9270",
       "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
-      "maximumJointErrorM": 9.410319255504184e-06,
+      "maximumJointErrorM": 6.348528635857565e-06,
       "physicalPreview": {
         "profile": "normal",
         "requestedStance": "regular",
@@ -305,35 +306,35 @@
   "files": [
     {
       "file": "low-goofy-contacts.jpg",
-      "sha256": "6e13cc38f4049626cab3fbd85d775a7cec6d52c44945c0277b0168c87e3ee759"
+      "sha256": "e3d18891ad76472e96256f7bc9f26a1e15d276eaf35605da8f7f67c616b697d6"
     },
     {
       "file": "low-goofy-phases.jpg",
-      "sha256": "121bb8b9330570b4b401d219849cc32720b034fd39d2170481d80208f3a65c73"
+      "sha256": "9d1485c33bf0d475c6ecbc145b0a2a0521b71a525e4e8ab292660a4fa24ead25"
     },
     {
       "file": "low-regular-contacts.jpg",
-      "sha256": "5af06feb220ac9153386b0406e391354d799b101030921d187fa72c8596792fa"
+      "sha256": "7ce62a6063e3f7ac3bc97a1e376f8fe9397ffc9102b96503c04b2acb08a920f3"
     },
     {
       "file": "low-regular-phases.jpg",
-      "sha256": "e69cadd1e890ddf08c053e9839050092adfb0826243c02700e44196fb60571d1"
+      "sha256": "55991b0181b978aae6e29502dc50b8542670222ed70eace5950706b2f36e3efd"
     },
     {
       "file": "normal-goofy-contacts.jpg",
-      "sha256": "e3f3e63fe863416b3f26de9fc6a33328f71c99caca5774a347263ac9198f4427"
+      "sha256": "406708427e780337c4de1d683fd981bc086b0b90bdc9a603035d807c88d79685"
     },
     {
       "file": "normal-goofy-phases.jpg",
-      "sha256": "c4170ebc391db10ed00ef72006919d57535791c77ef2ae6db09c717267af3b0f"
+      "sha256": "c862daab54ddc21e499f59a64f527f9f98fe38d473344097a98c430a1276d7c8"
     },
     {
       "file": "normal-regular-contacts.jpg",
-      "sha256": "98cc34625b968c005030d0d7b5c3f486aa9fcd9199cf76094d224219dfe6f830"
+      "sha256": "2f02912a1b12fce01c4cbd722b0e4c7dbb5673a56f817dd0cdf934eb3cbee984"
     },
     {
       "file": "normal-regular-phases.jpg",
-      "sha256": "98fbd0b82a4c32299034a95f852c65f2d2e30e877fe4001901a2ef3cdb04e871"
+      "sha256": "645cfad955fa01187abd72f88ed72ef1216f0fae5f9f420302c906e62504a9d9"
     }
   ],
   "sourceVideoSha256": "220a8f31da226010bb44afa81882f684744ab2071458279eb937cf68b95fee48"
