@@ -8,6 +8,39 @@
 # sounds\, 18 WAV files that are never committed) goes in when it is complete; an incomplete
 # one refuses the pack, since the plugin plays nothing then; $psounds = 0 packs without sounds.
 $ErrorActionPreference = 'Stop'
+function Get-SkateSoundCompanions([string]$Directory, [string[]]$Names) {
+  # Optional private provenance travels only with the exact selected output bytes.
+  # The provider-original source.sha256 is deliberately not an output digest.
+  $parent = ([IO.DirectoryInfo]$Directory).Parent
+  foreach ($folder in (@($Directory, $parent.FullName) | Select-Object -Unique)) {
+    if (-not $folder) { continue }
+    $manifestPath = Join-Path $folder 'manifest.json'; $licensePath = Join-Path $folder 'LICENSE.txt'
+    if (-not (Test-Path -LiteralPath $manifestPath -PathType Leaf) -or
+        -not (Test-Path -LiteralPath $licensePath -PathType Leaf)) { continue }
+    try { $metadata = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json }
+    catch {
+      if ($folder -eq $Directory) { throw 'The local sound provenance manifest is unreadable; the existing pack was left unchanged.' }
+      continue
+    }
+    $entries = @($metadata.files)
+    # An unrelated parent manifest (or an older format) is not sound provenance.
+    if (-not @($entries | Where-Object { $Names -ccontains ([string]$_.name) }).Count) { continue }
+    if ($entries.Count -ne $Names.Count -or (Get-Item -LiteralPath $licensePath).Length -le 0) {
+      throw 'The sound provenance does not describe the selected eighteen WAVs; the existing pack was left unchanged.'
+    }
+    foreach ($name in $Names) {
+      $entry = @($entries | Where-Object { $_.name -ceq $name })
+      if ($entry.Count -ne 1) { throw 'The sound provenance filenames do not match the selected WAVs; the existing pack was left unchanged.' }
+      $expected = [string]$entry[0].metrics.sha256
+      if (-not $expected) { $expected = [string]$entry[0].sha256 }
+      if ($expected -notmatch '\A[0-9a-fA-F]{64}\z' -or
+          (Get-FileHash -LiteralPath (Join-Path $Directory $name) -Algorithm SHA256).Hash -ne $expected) {
+        throw 'The sound provenance hashes do not match the selected WAVs; the existing pack was left unchanged.'
+      }
+    }
+    return @($manifestPath, $licensePath)
+  }
+}
 $dl = "$HOME\Downloads"; $probe = "$dl\claude-loader-probe"; $L = "$probe\launcher"
 $rust = 'C:\Program Files (x86)\Steam\steamapps\common\Rust'
 $acf = 'C:\Program Files (x86)\Steam\steamapps\appmanifest_252490.acf'
@@ -56,6 +89,9 @@ if ($needsDiagnostics) {
     $soundSource = [pscustomobject]@{ Directory = "$probe\sounds"; Files = $names; Configured = $false }; $sounds = $true
   }
 }
+# Validate associated optional metadata before deleting a previous stage or ZIP.
+$soundCompanions = @()
+if ($sounds) { $soundCompanions = @(Get-SkateSoundCompanions $soundSource.Directory $soundSource.Files) }
 if ($null -ne $steamRust) {
   if (-not $steamRust.Found) { 'ABORT: Rust was not found in the Steam libraries used by this launcher'; return }
   $rust = $steamRust.Rust; $acf = $steamRust.Acf
@@ -99,6 +135,7 @@ if (Test-Path -LiteralPath "$L\candidate.txt" -PathType Leaf) { Copy-Item -Liter
 if ($sounds) {
   New-Item -ItemType Directory -Force "$to\sounds" | Out-Null
   foreach ($file in $soundSource.Files) { Copy-Item -LiteralPath (Join-Path $soundSource.Directory $file) -Destination "$to\sounds" }
+  foreach ($file in $soundCompanions) { Copy-Item -LiteralPath $file -Destination "$to\sounds" }
 }
 $server = ''
 if (($null -eq $pserver -or $pserver) -and (Test-Path "$probe\server.txt")) { Copy-Item "$probe\server.txt" "$to\server.txt"; $server = (gc "$probe\server.txt" -First 1).Trim() }
