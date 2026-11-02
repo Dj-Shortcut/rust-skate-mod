@@ -1,6 +1,6 @@
 # Switch 360 Flip — own BATB12 reconstruction
 
-Source present and executable; **the prior1fdf Catch/Land preview was held for stiffness, and this source correction is not yet visually reviewed, offline approved or tested in game**. The raw pack keeps `reviewed=false`. Root owns the normal-route integration and final PR; Claude owns the library status.
+Source present and executable; **the prior1fdf Catch/Land preview was held for stiffness, and Root has sampled this correction on the original mesh at1×/¼× and phase/contact/landing views; Claude offline approval and game testing remain open**. The raw pack keeps `reviewed=false`. Root owns the normal-route integration and final PR; Claude owns the library status.
 
 ## Source and anatomy
 
