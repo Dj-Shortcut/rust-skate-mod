@@ -41,6 +41,12 @@ production client bridge and shared contact sources with controlled engine/inter
 reads. CI runs without private game files; actual native mesh acquisition, capture
 application and visual gameplay acceptance remain separate.
 
+The same 4 November plan extends `skate_park_build_items` and
+`skate_park_gesture_selection` with `SkateBuildRouteScenarios.csproj`: actual
+client inventory, selection, cancellation and Rust/Skate mode routes, with
+controlled input, Planner/cursor and transport boundaries. CI needs no game
+files. Native menu rendering, placement and payment remain separate acceptance.
+
 The owner approved `skate_transition_pumping`, `skate_drop_in_and_launch` and `skate_surface_landing` by name on 11 October 2026 for [Task 5](https://github.com/Dj-Shortcut/rust-skate-mod/issues/337#issuecomment-6106747983). They execute the actual shared C# library. Native adapter integration, contact sensing and ride feel remain separate validation.
 
 The owner approved `skate_server_movement_policy` by name on 12 October 2026 in the continuation chat for [the owner regression report](https://github.com/Dj-Shortcut/rust-skate-mod/issues/337#issuecomment-6117276716). It executes actual compiled plugin helpers without Rust/Oxide, client or Shadow; native batch/permission flags, patch execution and movement acceptance remain separate validation.
@@ -68,7 +74,7 @@ The owner approved `skate_trick_grind_names` by name on 12 October 2026 in the c
 Every scenario is a C#, Python or PowerShell runner under [skate/](skate/README.md);
 that README has the build and run commands. Most C# scenarios need the .NET 8 SDK
 and genuine Rust managed references. CI runs the game-independent foot-acquisition,
-Steam-discovery and source-installation scenarios.
+build-route, Steam-discovery and source-installation scenarios.
 
 The owner explicitly requested focused regressions for PR #621 on 30 October 2026.
 `skate_steam_discovery` (`skate/SkateSteamDiscoveryScenario.ps1`) executes the

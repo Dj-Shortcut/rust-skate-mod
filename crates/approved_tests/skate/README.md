@@ -24,6 +24,28 @@ controlled boundary, not a reconstructed Rust skin. These checks do not establis
 native API behavior, successful capture application, visual foot contact or riding
 feel; those require the real client.
 
+## Client build routes
+
+The owner's 4 November automatic-test plan extends the approved
+`skate_park_build_items` and `skate_park_gesture_selection` scenarios with the
+actual `SkatePieces.cs`, `SkateHeld.cs` and shared park/item sources.
+
+`SkateBuildRouteScenarios.csproj` checks all twelve identities in every belt
+slot, keyboard/D-pad selection and placement requests, cancellation before a
+simultaneous place, matching/duplicate/stale log receipts, payment uncertainty,
+and Rust/Skate mode handback. Server-observed inventory can supply a preview
+but cannot arm a paid builder. Input/focus, Planner/cursor calls and transport
+are controlled; replies enter the real registered log callback.
+
+```sh
+dotnet run --project crates/approved_tests/skate/SkateBuildRouteScenarios.csproj --configuration Release
+```
+
+This .NET 8 source runner needs no proprietary DLLs or NuGet packages and runs
+in CI. Outputs stay in ignored `context/`. Raycasts deliberately return no hit;
+analog-sector calls refuse. Rendered menus, native inventory movement, actual
+placement, server payment/refund and gameplay remain separate acceptance.
+
 ## Server source installation
 
 The owner approved `skate_server_plugin_install` by name on 11 October 2026.
