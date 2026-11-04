@@ -19,6 +19,18 @@ env:
   CARGO_INCREMENTAL: 0
 
 jobs:
+  skate-capture-feet:
+    name: Skate foot acquisition regressions
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Approved production-source foot acquisition scenario
+        run: dotnet run --project crates/approved_tests/skate/SkateCaptureFootScenarios.csproj
+
   skate-steam-discovery:
     name: Steam discovery (Windows PowerShell 5.1 and PowerShell 7)
     runs-on: windows-latest

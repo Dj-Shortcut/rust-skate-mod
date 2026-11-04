@@ -33,6 +33,13 @@ workspace.
 | `skate_rider_secondary_motion` | planted ankles and toes, exact limb lengths, bounded secondary pose motion, deterministic steps and atomic invalid-input rejection |
 | `skate_server_plugin_install` | actual source installation, replacement/backup, guarded refusal and cleanup after real Linux file-operation failures |
 | `skate_trick_grind_names` | appended grind vocabulary, cached directional names, scoring transitions, retained stance, Darkslide half-flip catch/carry and atomic invalid-state refusal |
+| `skate_capture_foot_acquisition` | production foot acquisition, independent first/third-person and skin epochs, bounded retries/snapshots, first refusal retained, reset/recovery and strict invalid-geometry rejection |
+
+The owner requested automatic capture/foot-error regressions and authorized the
+plan's execution on 4 November 2026. `skate_capture_foot_acquisition` compiles the
+production client bridge and shared contact sources with controlled engine/interop
+reads. CI runs without private game files; actual native mesh acquisition, capture
+application and visual gameplay acceptance remain separate.
 
 The owner approved `skate_transition_pumping`, `skate_drop_in_and_launch` and `skate_surface_landing` by name on 11 October 2026 for [Task 5](https://github.com/Dj-Shortcut/rust-skate-mod/issues/337#issuecomment-6106747983). They execute the actual shared C# library. Native adapter integration, contact sensing and ride feel remain separate validation.
 
@@ -58,7 +65,10 @@ The owner approved `skate_trick_grind_names` by name on 12 October 2026 in the c
 
 ## Running
 
-Every scenario is a C# or Python runner under [skate/](skate/README.md); that README has the build and run commands. They need the .NET 8 SDK and genuine Rust managed references, so CI runs only `skate_server_plugin_install`.
+Every scenario is a C#, Python or PowerShell runner under [skate/](skate/README.md);
+that README has the build and run commands. Most C# scenarios need the .NET 8 SDK
+and genuine Rust managed references. CI runs the game-independent foot-acquisition,
+Steam-discovery and source-installation scenarios.
 
 The owner explicitly requested focused regressions for PR #621 on 30 October 2026.
 `skate_steam_discovery` (`skate/SkateSteamDiscoveryScenario.ps1`) executes the

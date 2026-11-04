@@ -1,5 +1,29 @@
 # Approved skate scenarios
 
+## Capture foot acquisition
+
+The owner approved automatic capture/foot-error regressions in the plan executed
+on 4 November 2026. `skate_capture_foot_acquisition` directly compiles the current
+`SkateFootContacts.cs` and shared sources, with controlled Unity mesh/transform,
+clock and interop-array reads. The test assembly never enters the client plugin.
+
+It checks healthy calibration/cache reuse, failure isolation in both view
+directions, unchanged-epoch retry limits, replacement skins, per-view snapshot
+limits, original refusal preservation, ride reset, eligibility and atomic refusal
+after a geometry-read exception or missing board. Invalid unreadable, oversized,
+nonfinite, shin-blended, cross-foot, morphed, unnormalized, malformed-index and
+nonuniform geometry remains rejected.
+
+```sh
+dotnet run --project crates/approved_tests/skate/SkateCaptureFootScenarios.csproj
+```
+
+The .NET 8 runner needs no game DLLs or NuGet packages, and CI runs it on every PR.
+Build outputs stay in ignored `context/`. The small identity-rotation mesh is a
+controlled boundary, not a reconstructed Rust skin. These checks do not establish
+native API behavior, successful capture application, visual foot contact or riding
+feel; those require the real client.
+
 ## Server source installation
 
 The owner approved `skate_server_plugin_install` by name on 11 October 2026.
