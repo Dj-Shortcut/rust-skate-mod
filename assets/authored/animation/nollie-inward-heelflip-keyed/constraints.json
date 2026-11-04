@@ -1,0 +1,873 @@
+{
+  "format": "skate-own-source-nollie-inward-heelflip-controls/1",
+  "id": "nollie-inward-heelflip-source-keyed-v1",
+  "movementKind": "nollie-inward-heelflip",
+  "signature": {
+    "pop": "Nollie",
+    "switch": false,
+    "tailLeads": false,
+    "flip": -360,
+    "shove": -180,
+    "spin": 0,
+    "body": 0
+  },
+  "firstSourceFrame": 4770,
+  "lastSourceFrame": 4870,
+  "sourceFps": 29.97002997002997,
+  "sampleHz": 180,
+  "sourceBodySha256": "536f260561b65f0f6591d32a7e9c57b5a58b29db0ab9cfa5c5db2ad37f0afe8e",
+  "geometryReference": {
+    "path": "assets/authored/animation/treflip-keyed/constraints.json",
+    "geometryDataSha256": "f98f9a4803e215f3bb9b477cb1bb1ba6b4bcc3cd2953c89350e4f8f7856ca9d6",
+    "scope": "Original shoe/deck/support geometry fingerprint only; no Tre motion/body/path read."
+  },
+  "surfaceReference": {
+    "path": "assets/authored/animation/treflip-keyed/own-board-surface.json",
+    "sha256": "8873121f728af49a9af90c2ee4ba723b7f56259d60913155f578d3a88e976acd"
+  },
+  "popFrame": 4811,
+  "noseStrikeFrame": 4815,
+  "noseReleaseFrame": 4816.5,
+  "pressEndFrame": 4820.2,
+  "firstCatchFrame": 4827.6,
+  "bothCatchFrame": 4829,
+  "landFrame": 4831,
+  "recoveryFrame": 4855,
+  "soleGap": 0.005,
+  "catchBlendFrames": 2.0,
+  "sourceRootMotion": {
+    "popFrame": 4811,
+    "landFrame": 4831,
+    "referenceFlight": 0.64,
+    "gravity": 8.0,
+    "deckOriginGroundDatum": 0.092,
+    "normalization": "Own VIDEO body is hip-centered. Independent authored root/free shoes exclude the upright reference carrier once; native physics owns flight/landing, not a source added jump."
+  },
+  "boardYaw": [
+    [
+      4770,
+      0
+    ],
+    [
+      4815,
+      0
+    ],
+    [
+      4816.5,
+      8
+    ],
+    [
+      4818,
+      35
+    ],
+    [
+      4820,
+      85
+    ],
+    [
+      4822,
+      135
+    ],
+    [
+      4825,
+      175
+    ],
+    [
+      4827.6,
+      180
+    ],
+    [
+      4870,
+      180
+    ]
+  ],
+  "boardPitch": [
+    [
+      4770,
+      0
+    ],
+    [
+      4811,
+      0
+    ],
+    [
+      4813,
+      0
+    ],
+    [
+      4815,
+      -40
+    ],
+    [
+      4816.5,
+      -52
+    ],
+    [
+      4818,
+      -62
+    ],
+    [
+      4820,
+      -44
+    ],
+    [
+      4822,
+      -18
+    ],
+    [
+      4824,
+      -4
+    ],
+    [
+      4826,
+      0
+    ],
+    [
+      4870,
+      0
+    ]
+  ],
+  "boardRoll": [
+    [
+      4770,
+      0
+    ],
+    [
+      4815.8,
+      0
+    ],
+    [
+      4816.8,
+      -30
+    ],
+    [
+      4818.2,
+      -95
+    ],
+    [
+      4820.5,
+      -200
+    ],
+    [
+      4823,
+      -300
+    ],
+    [
+      4826,
+      -356
+    ],
+    [
+      4827.6,
+      -360
+    ],
+    [
+      4870,
+      -360
+    ]
+  ],
+  "rearHeel": {
+    "foot": "Right",
+    "role": "Own rear anatomical foot after the single filmedGoofy\u2192canonicalRegular reflection; HEEL corner, not the instep or flat sole.",
+    "soleReleaseFrame": 4814.6,
+    "fullGuideFrame": 4816.2,
+    "releaseFrame": 4818.9,
+    "shoePoint": [
+      0,
+      -0.075,
+      -0.07
+    ],
+    "footAngles": [
+      [
+        4770,
+        75,
+        -6,
+        12
+      ],
+      [
+        4814.6,
+        75,
+        -6,
+        12
+      ],
+      [
+        4816.2,
+        75,
+        -6,
+        23
+      ],
+      [
+        4818.9,
+        75,
+        -4,
+        28
+      ],
+      [
+        4870,
+        75,
+        -4,
+        28
+      ]
+    ],
+    "deckPath": [
+      [
+        4770,
+        0.035,
+        0,
+        -0.16
+      ],
+      [
+        4814.6,
+        0.035,
+        0,
+        -0.18
+      ],
+      [
+        4816.2,
+        0.07,
+        0,
+        -0.27
+      ],
+      [
+        4818.9,
+        0.095,
+        0,
+        -0.345
+      ],
+      [
+        4870,
+        0.095,
+        0,
+        -0.345
+      ]
+    ],
+    "certainty": "Original heel point/shape reused; own trajectory/toes-up contact and depth authored from the rear heel exit. Missing4817/4818 and overlapping4819 shoes prevent calibrated heel-patch measurement."
+  },
+  "feet": {
+    "Left": {
+      "load": [
+        0.025,
+        0.345,
+        80
+      ],
+      "catch": [
+        -0.025,
+        -0.24,
+        -100
+      ],
+      "freeForward": [
+        [
+          4770,
+          0.984808,
+          0,
+          0.173648
+        ],
+        [
+          4870,
+          0.984808,
+          0,
+          0.173648
+        ]
+      ],
+      "free": [
+        [
+          4770,
+          -0.02,
+          0.19,
+          0.23
+        ],
+        [
+          4816.5,
+          -0.02,
+          0.2,
+          0.23
+        ],
+        [
+          4820.2,
+          -0.03,
+          0.21,
+          0.23
+        ],
+        [
+          4823,
+          -0.04,
+          0.2,
+          0.2
+        ],
+        [
+          4825,
+          -0.03,
+          0.18,
+          0.22
+        ],
+        [
+          4827.6,
+          -0.025,
+          0.17,
+          0.24
+        ],
+        [
+          4870,
+          -0.025,
+          0.17,
+          0.24
+        ]
+      ]
+    },
+    "Right": {
+      "load": [
+        -0.01,
+        -0.17,
+        72
+      ],
+      "catch": [
+        0.025,
+        0.24,
+        -108
+      ],
+      "freeForward": [
+        [
+          4770,
+          0.951057,
+          0,
+          0.309017
+        ],
+        [
+          4870,
+          0.951057,
+          0,
+          0.309017
+        ]
+      ],
+      "free": [
+        [
+          4770,
+          0.03,
+          0.19,
+          -0.19
+        ],
+        [
+          4818.9,
+          0.12,
+          0.23,
+          -0.17
+        ],
+        [
+          4820.2,
+          0.14,
+          0.24,
+          -0.13
+        ],
+        [
+          4823,
+          0.09,
+          0.21,
+          -0.18
+        ],
+        [
+          4825,
+          0.06,
+          0.19,
+          -0.22
+        ],
+        [
+          4829,
+          0.025,
+          0.17,
+          -0.24
+        ],
+        [
+          4870,
+          0.025,
+          0.17,
+          -0.24
+        ]
+      ]
+    }
+  },
+  "pelvisCarrierLocal": [
+    [
+      4770,
+      0,
+      0.94,
+      0
+    ],
+    [
+      4795,
+      0,
+      0.74,
+      0.02
+    ],
+    [
+      4807,
+      0,
+      0.55,
+      0.03
+    ],
+    [
+      4809,
+      0,
+      0.53,
+      0.04
+    ],
+    [
+      4811,
+      0,
+      0.55,
+      0.045
+    ],
+    [
+      4813,
+      0,
+      0.67,
+      0.06
+    ],
+    [
+      4815,
+      0,
+      0.82,
+      0.07
+    ],
+    [
+      4816.5,
+      0,
+      0.81,
+      0.07
+    ],
+    [
+      4820.2,
+      0,
+      0.71,
+      0.025
+    ],
+    [
+      4823,
+      0,
+      0.65,
+      0
+    ],
+    [
+      4827.6,
+      0,
+      0.64,
+      0
+    ],
+    [
+      4829,
+      0,
+      0.62,
+      0
+    ],
+    [
+      4831,
+      0,
+      0.61,
+      0
+    ],
+    [
+      4835,
+      0,
+      0.64,
+      0
+    ],
+    [
+      4841,
+      0,
+      0.77,
+      0
+    ],
+    [
+      4855,
+      0,
+      0.89,
+      0
+    ],
+    [
+      4870,
+      0,
+      0.94,
+      0
+    ]
+  ],
+  "reachShare": {
+    "press": 0.91,
+    "free": 0.975
+  },
+  "torsoFold": [
+    [
+      4770,
+      18
+    ],
+    [
+      4795,
+      44
+    ],
+    [
+      4809,
+      56
+    ],
+    [
+      4811,
+      53
+    ],
+    [
+      4813,
+      40
+    ],
+    [
+      4815,
+      25
+    ],
+    [
+      4818.9,
+      28
+    ],
+    [
+      4823,
+      44
+    ],
+    [
+      4827.6,
+      46
+    ],
+    [
+      4831,
+      48
+    ],
+    [
+      4835,
+      44
+    ],
+    [
+      4841,
+      32
+    ],
+    [
+      4855,
+      20
+    ],
+    [
+      4870,
+      17
+    ]
+  ],
+  "armReconstruction": {
+    "Left": {
+      "weights": [
+        [
+          4770,
+          0
+        ],
+        [
+          4807,
+          0
+        ],
+        [
+          4811,
+          0.5
+        ],
+        [
+          4813,
+          1
+        ],
+        [
+          4829,
+          1
+        ],
+        [
+          4835,
+          0.5
+        ],
+        [
+          4841,
+          0
+        ],
+        [
+          4870,
+          0
+        ]
+      ],
+      "upper": [
+        [
+          4770,
+          0.18,
+          -0.82,
+          0.53
+        ],
+        [
+          4813,
+          0.2,
+          -0.55,
+          0.81
+        ],
+        [
+          4818.9,
+          0.24,
+          -0.55,
+          0.8
+        ],
+        [
+          4823,
+          0.38,
+          -0.6,
+          0.7
+        ],
+        [
+          4827.6,
+          0.48,
+          -0.79,
+          0.38
+        ],
+        [
+          4831,
+          0.5,
+          -0.78,
+          0.38
+        ],
+        [
+          4870,
+          0.2,
+          -0.88,
+          0.43
+        ]
+      ],
+      "fore": [
+        [
+          4770,
+          0.65,
+          -0.55,
+          0.52
+        ],
+        [
+          4813,
+          0.83,
+          0.08,
+          0.55
+        ],
+        [
+          4818.9,
+          0.82,
+          0.12,
+          0.56
+        ],
+        [
+          4823,
+          0.84,
+          -0.02,
+          0.54
+        ],
+        [
+          4827.6,
+          0.84,
+          -0.42,
+          0.34
+        ],
+        [
+          4831,
+          0.83,
+          -0.45,
+          0.32
+        ],
+        [
+          4870,
+          0.55,
+          -0.77,
+          0.32
+        ]
+      ],
+      "provenance": "Own source-timed authored bent asymmetric forward/outward balance at/below shoulders under owner noV/noT rule; high source arms/uncertain wrists are not reproduced as measured motion."
+    },
+    "Right": {
+      "weights": [
+        [
+          4770,
+          0
+        ],
+        [
+          4807,
+          0
+        ],
+        [
+          4811,
+          0.5
+        ],
+        [
+          4813,
+          1
+        ],
+        [
+          4829,
+          1
+        ],
+        [
+          4835,
+          0.5
+        ],
+        [
+          4841,
+          0
+        ],
+        [
+          4870,
+          0
+        ]
+      ],
+      "upper": [
+        [
+          4770,
+          0.18,
+          -0.82,
+          -0.53
+        ],
+        [
+          4813,
+          0.27,
+          -0.48,
+          -0.84
+        ],
+        [
+          4818.9,
+          0.24,
+          -0.55,
+          -0.8
+        ],
+        [
+          4823,
+          0.38,
+          -0.6,
+          -0.7
+        ],
+        [
+          4827.6,
+          0.48,
+          -0.79,
+          -0.38
+        ],
+        [
+          4831,
+          0.5,
+          -0.78,
+          -0.38
+        ],
+        [
+          4870,
+          0.2,
+          -0.88,
+          -0.43
+        ]
+      ],
+      "fore": [
+        [
+          4770,
+          0.65,
+          -0.55,
+          -0.52
+        ],
+        [
+          4813,
+          0.8,
+          0.18,
+          -0.57
+        ],
+        [
+          4818.9,
+          0.82,
+          0.12,
+          -0.56
+        ],
+        [
+          4823,
+          0.84,
+          -0.02,
+          -0.54
+        ],
+        [
+          4827.6,
+          0.84,
+          -0.42,
+          -0.34
+        ],
+        [
+          4831,
+          0.83,
+          -0.45,
+          -0.32
+        ],
+        [
+          4870,
+          0.55,
+          -0.77,
+          -0.32
+        ]
+      ],
+      "provenance": "Own source-timed authored bent asymmetric forward/outward balance at/below shoulders under owner noV/noT rule; high source arms/uncertain wrists are not reproduced as measured motion."
+    }
+  },
+  "events": [
+    {
+      "frame": 4770,
+      "phase": "load",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 4811,
+      "phase": "pop",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 4814.6,
+      "phase": "pop",
+      "contacts": [
+        "LeftFoot"
+      ]
+    },
+    {
+      "frame": 4816.5,
+      "phase": "air",
+      "contacts": []
+    },
+    {
+      "frame": 4820.2,
+      "phase": "air",
+      "contacts": []
+    },
+    {
+      "frame": 4827.6,
+      "phase": "catch",
+      "contacts": [
+        "LeftFoot"
+      ]
+    },
+    {
+      "frame": 4829,
+      "phase": "catch",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 4831,
+      "phase": "land",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    },
+    {
+      "frame": 4855,
+      "phase": "recovery",
+      "contacts": [
+        "LeftFoot",
+        "RightFoot"
+      ]
+    }
+  ],
+  "provenance": "Own Rodriguez Nollie Inward Heel4770\u20134870,99/101 strict VIDEO selections. One filmedGoofy\u2192canonicalRegular reflection. Own nose press/rear HEEL guide, full opposite heel roll/BS board halfturn, no body180, genuine upright recovery. Only original shoe/deck/fixed-chain/interpolation math is reused; no other trick body or timed path.",
+  "uncertainty": "Monocular camera/depth/body windup, heel patch/3D board/root/contact paths and balanced arm/gaze priors are authored; raw4817/4818 remain missing and explicit own-neighbour interpolation is labelled. Crossed4819 legs do not trigger identity swaps. Actual native/carrier integration, original-mesh visible gate, Claude offline judgement and Shadow remain pending."
+}
