@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using Shortcut.RustMod;
 using UnityEngine;
+using UnityEngine.Rendering;
+using Il2CppInterop.Runtime.InteropTypes.Arrays;
 
 // Main-thread bridge only: measure the already-written visible native skin.
 // It never writes bones, renderers or gameplay state and never guesses a sole offset.
 public static class SkateFootContacts
 {
     private const int MaximumRenderers = 64, MaximumMeshVertices = 262144, MaximumIndices = 1572864, MaximumBones = 1024;
+    private const int MaximumSubmeshes = 256, MaximumVertexStride = 256, MaximumReadbackBytes = 32 * 1024 * 1024;
     private const double CheckSeconds = 1, PoseTolerance = .00001, PositionTolerance = .0001, StableTolerance = .0001;
     private const int MaximumFailures = 3, MaximumSnapshots = 4;
     private static readonly View first = new View(), third = new View();
@@ -288,7 +291,7 @@ public static class SkateFootContacts
         var read = new Read(); Mix(read, set.Length);
         Mix(read, lf.Pointer.ToInt64()); Mix(read, lt.Pointer.ToInt64()); Mix(read, rf.Pointer.ToInt64()); Mix(read, rt.Pointer.ToInt64());
         left.Bone(read, left.Foot); left.Bone(read, left.Toe); right.Bone(read, right.Foot); right.Bone(read, right.Toe);
-        int totalVertices = 0, totalIndices = 0;
+        int totalVertices = 0, totalIndices = 0, readbackBytes = 0;
         for (int n = 0; n < set.Length; n++)
         {
             var renderer = set[n];
@@ -305,13 +308,16 @@ public static class SkateFootContacts
             { var bone = bones[i]; Mix(read, bone == null ? 0 : bone.Pointer.ToInt64()); if (bone == lf || bone == lt || bone == rf || bone == rt) candidate = true; }
             if (!candidate) continue;
             int count = mesh.vertexCount;
-            if (count < 3 || count > MaximumMeshVertices - totalVertices || !mesh.isReadable)
-                throw new Unsupported("Foot candidate mesh is unreadable or exceeds its vertex bound.");
+            if (count < 3 || count > MaximumMeshVertices - totalVertices)
+                throw new Unsupported("Foot candidate mesh exceeds its vertex bound.");
+            bool readable = mesh.isReadable;
             totalVertices += count; Mix(read, count);
             var layout = mesh.skinWeightBufferLayout;
             if (layout != SkinWeights.OneBone && layout != SkinWeights.TwoBones && layout != SkinWeights.FourBones)
                 throw new Unsupported("Foot candidate requires unsupported bone weight layout.");
-            Mix(read, (int)layout); var weights = mesh.boneWeights;
+            Mix(read, (int)layout); Il2CppStructArray<BoneWeight> weights;
+            try { weights = mesh.boneWeights; }
+            catch (Exception e) { throw new Unsupported("Source skin weights unavailable: " + e.GetType().Name); }
             if (weights == null || weights.Length != count) throw new Unsupported("Foot weight count differs from vertex count.");
             var data = new MeshData { Renderer = renderer, Mesh = mesh, Count = count, Seeds = new byte[count], Rigid = new byte[count] };
             for (int i = 0; i < count; i++)
@@ -325,7 +331,7 @@ public static class SkateFootContacts
                 data.Seeds[i] = (byte)((l > 0 ? 1 : 0) | (r > 0 ? 2 : 0));
                 data.Rigid[i] = l > 0 && r == 0 && other == 0 ? (byte)1 : r > 0 && l == 0 && other == 0 ? (byte)2 : (byte)0;
             }
-            var indices = mesh.triangles;
+            var indices = readable ? mesh.triangles : SourceIndices(mesh, count, MaximumIndices - totalIndices, ref readbackBytes);
             if (indices == null || indices.Length % 3 != 0 || indices.Length > MaximumIndices - totalIndices)
                 throw new Unsupported("Foot candidate indices exceed their bound.");
             totalIndices += indices.Length; Mix(read, indices.Length); data.Indices = new int[indices.Length];
@@ -339,7 +345,9 @@ public static class SkateFootContacts
             if (!data.Relevant) continue;
             if (mesh.blendShapeCount != 0) throw new Unsupported("Relevant foot morph geometry is unsupported.");
             Mix(read, (int)renderer.quality);
-            var bind = mesh.bindposes;
+            Il2CppStructArray<Matrix4x4> bind;
+            try { bind = mesh.bindposes; }
+            catch (Exception e) { throw new Unsupported("Source bind poses unavailable: " + e.GetType().Name); }
             if (bind == null || bind.Length != bones.Length) throw new Unsupported("Foot bind poses differ from the bone mapping.");
             for (int i = 0; i < bind.Length; i++)
                 for (int row = 0; row < 4; row++) for (int col = 0; col < 4; col++)
@@ -349,7 +357,7 @@ public static class SkateFootContacts
                     Mix(read, value.GetHashCode());
                 }
             Scale(read, renderer.transform.localToWorldMatrix);
-            var source = mesh.vertices;
+            var source = readable ? mesh.vertices : SourceVertices(mesh, count, ref readbackBytes);
             if (source == null || source.Length != count) throw new Unsupported("Source skin vertex count changed.");
             Bounds bounds = mesh.bounds; Vector3 min = bounds.min, max = bounds.max;
             if (!Finite(min) || !Finite(max)) throw new Unsupported("Foot mesh bounds are not finite.");
@@ -366,6 +374,109 @@ public static class SkateFootContacts
         if (read.Meshes.Count == 0) throw new Unsupported("Visible skin has no actual foot geometry.");
         return read;
     }
+    // Source REST geometry remains the cache identity. Bake() below is the only
+    // posed sample; an unreadable source never borrows that posed data for its key.
+    private static Il2CppStructArray<Vector3> SourceVertices(Mesh mesh, int count, ref int readbackBytes)
+    {
+        GraphicsBuffer buffer = null;
+        try
+        {
+            var attributes = mesh.GetVertexAttributes();
+            if (attributes == null || attributes.Length == 0 || attributes.Length > 16)
+                throw new Unsupported("unreadable source position descriptors exceed their bound.");
+            int stream = -1;
+            for (int i = 0; i < attributes.Length; i++)
+            {
+                var attribute = attributes[i];
+                if (attribute.attribute != VertexAttribute.Position) continue;
+                if (stream >= 0 || attribute.format != VertexAttributeFormat.Float32 || attribute.dimension != 3 ||
+                    attribute.stream < 0 || attribute.stream >= 4)
+                    throw new Unsupported("unreadable source position layout is unsupported.");
+                stream = attribute.stream;
+            }
+            if (stream < 0 || mesh.GetVertexAttributeStream(VertexAttribute.Position) != stream)
+                throw new Unsupported("unreadable source position stream is unavailable.");
+            int offset = mesh.GetVertexAttributeOffset(VertexAttribute.Position), stride = mesh.GetVertexBufferStride(stream);
+            if (!BitConverter.IsLittleEndian || stride < 12 || stride > MaximumVertexStride || stride % 4 != 0 ||
+                offset < 0 || offset % 4 != 0 || offset > stride - 12 || (long)count * stride > MaximumReadbackBytes)
+                throw new Unsupported("unreadable source position byte layout exceeds its bound.");
+            buffer = mesh.GetVertexBuffer(stream);
+            if (buffer == null || buffer.count != count || buffer.stride != stride)
+                throw new Unsupported("unreadable source vertex buffer differs from its declared layout.");
+            ReserveReadback(ref readbackBytes, (long)count * stride);
+            var bytes = new Il2CppStructArray<byte>((long)count * stride);
+            buffer.GetData(bytes.Cast<Il2CppSystem.Array>(), 0, 0, bytes.Length);
+            var result = new Il2CppStructArray<Vector3>(count);
+            for (int i = 0; i < count; i++)
+            {
+                int at = i * stride + offset;
+                result[i] = new Vector3(SourceFloat(bytes, at), SourceFloat(bytes, at + 4), SourceFloat(bytes, at + 8));
+            }
+            return result;
+        }
+        catch (Unsupported) { throw; }
+        catch (Exception e) { throw new Unsupported("unreadable source position readback failed: " + e.GetType().Name); }
+        finally { if (buffer != null) buffer.Dispose(); }
+    }
+    private static Il2CppStructArray<int> SourceIndices(Mesh mesh, int vertices, int remaining, ref int readbackBytes)
+    {
+        GraphicsBuffer buffer = null;
+        try
+        {
+            var format = mesh.indexFormat;
+            int stride = format == IndexFormat.UInt16 ? 2 : format == IndexFormat.UInt32 ? 4 : 0;
+            int submeshes = mesh.subMeshCount;
+            if (stride == 0 || submeshes <= 0 || submeshes > MaximumSubmeshes)
+                throw new Unsupported("unreadable source index format or submesh count is unsupported.");
+            var starts = new int[submeshes]; var counts = new int[submeshes]; var bases = new int[submeshes];
+            int total = 0; long end = 0;
+            for (int i = 0; i < submeshes; i++)
+            {
+                var sub = mesh.GetSubMesh(i);
+                if (sub.topology != MeshTopology.Triangles || sub.indexStart < 0 || sub.indexCount < 0 ||
+                    sub.indexCount % 3 != 0 || sub.indexCount > remaining - total)
+                    throw new Unsupported("unreadable source submesh topology exceeds its bound.");
+                starts[i] = sub.indexStart; counts[i] = sub.indexCount; bases[i] = sub.baseVertex;
+                total += counts[i]; end = Math.Max(end, (long)starts[i] + counts[i]);
+            }
+            buffer = mesh.GetIndexBuffer();
+            if (buffer == null || buffer.stride != stride || buffer.count <= 0 || buffer.count > MaximumIndices ||
+                end > buffer.count || (long)buffer.count * stride > MaximumReadbackBytes)
+                throw new Unsupported("unreadable source index buffer exceeds its byte bound.");
+            ReserveReadback(ref readbackBytes, (long)buffer.count * stride);
+            var bytes = new Il2CppStructArray<byte>((long)buffer.count * stride);
+            buffer.GetData(bytes.Cast<Il2CppSystem.Array>(), 0, 0, bytes.Length);
+            var result = new Il2CppStructArray<int>(total); int output = 0;
+            for (int i = 0; i < submeshes; i++) for (int j = 0; j < counts[i]; j++)
+            {
+                int at = (starts[i] + j) * stride;
+                uint index = (uint)(bytes[at] | bytes[at + 1] << 8);
+                if (stride == 4) index |= (uint)bytes[at + 2] << 16 | (uint)bytes[at + 3] << 24;
+                long adjusted = (long)index + bases[i];
+                if (adjusted < 0 || adjusted >= vertices)
+                    throw new Unsupported("unreadable source base vertex produces an invalid triangle index.");
+                result[output++] = (int)adjusted;
+            }
+            return result;
+        }
+        catch (Unsupported) { throw; }
+        catch (Exception e) { throw new Unsupported("unreadable source index readback failed: " + e.GetType().Name); }
+        finally { if (buffer != null) buffer.Dispose(); }
+    }
+    private static void ReserveReadback(ref int used, long bytes)
+    {
+        if (bytes <= 0 || bytes > MaximumReadbackBytes - used)
+            throw new Unsupported("unreadable source aggregate readback exceeds its byte bound.");
+        used += (int)bytes;
+    }
+    [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Explicit)]
+    private struct FloatBits
+    {
+        [System.Runtime.InteropServices.FieldOffset(0)] internal uint Bits;
+        [System.Runtime.InteropServices.FieldOffset(0)] internal float Value;
+    }
+    private static float SourceFloat(Il2CppStructArray<byte> bytes, int at)
+    { return new FloatBits { Bits = (uint)bytes[at] | (uint)bytes[at + 1] << 8 | (uint)bytes[at + 2] << 16 | (uint)bytes[at + 3] << 24 }.Value; }
     private static void Weight(Read read, int index, float weight,
         Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Transform> bones,
         Transform lf, Transform lt, Transform rf, Transform rt, ref double sum, ref double left, ref double right, ref double other)
