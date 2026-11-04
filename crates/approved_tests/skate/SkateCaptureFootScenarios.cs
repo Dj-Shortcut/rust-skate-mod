@@ -36,6 +36,20 @@ public static class SkateCaptureFootScenarios
             };
         }
 
+        internal Transform WeightedLeg(bool opposite = false, bool common = false)
+        {
+            var root = new Transform(); var leftAnkle = new Transform { parent = root }; var rightAnkle = new Transform { parent = root };
+            LeftFoot.parent = leftAnkle; RightFoot.parent = rightAnkle; Renderer.transform.parent = root;
+            Transform weighted = common ? root : opposite ? rightAnkle : leftAnkle;
+            Renderer.bones = new Il2CppReferenceArray<Transform>(new[] { LeftFoot, LeftToe, RightFoot, RightToe, weighted });
+            // Keep the complete incident triangle: one ankle-only corner, one
+            // smooth ankle/foot blend and one Foot corner. No synthetic sole.
+            Renderer.Mesh.SourceWeights[0] = new BoneWeight { boneIndex0 = 4, weight0 = 1 };
+            Renderer.Mesh.SourceWeights[1] = new BoneWeight { boneIndex0 = 0, weight0 = .75f, boneIndex1 = 4, weight1 = .25f };
+            Renderer.BakeOffsets = new[] { .025f };
+            return root;
+        }
+
         internal void Gpu(bool wideIndices = false)
         {
             var mesh = Renderer.Mesh; mesh.isReadable = false;
@@ -187,6 +201,54 @@ public static class SkateCaptureFootScenarios
         });
     }
 
+    private static void WeightedSources()
+    {
+        foreach (bool unreadable in new[] { false, true })
+        Scenario("measured single-side ankle/foot blend " + (unreadable ? "GPU source" : "CPU source"), () =>
+        {
+            var model = new Model(); Transform root = model.WeightedLeg();
+            if (unreadable) model.Gpu();
+            SkateFootContacts.UseView(false, 101); model.Tick(); model.Tick();
+            Require(SkateFootContacts.Ready && model.Renderer.Bakes == 2, "Valid weighted leg did not calibrate");
+            var profile = SkateFootContacts.LeftFitter.Profile;
+            Require(profile.VertexCount == 3 && profile.TriangleCount == 1, "Ankle corner was cut out of the drawn triangle");
+            Require(Math.Abs(profile.Vertex(0).Z - .025) < .000001, "Contact profile did not use measured posed geometry");
+            object fit = SkateFootContacts.LeftFitter;
+            root.localPosition = new Vector3(1024, 0, 2048); model.Tick();
+            Require(model.Renderer.Bakes == 2 && ReferenceEquals(fit, SkateFootContacts.LeftFitter), "World travel invalidated the local weighted cache");
+            // Controlled world-basis getter intentionally stays fixed: this must
+            // detect the additional relative skin dependency, not a Foot matrix.
+            model.LeftFoot.localRotation = new Quaternion { y = (float)Math.Sin(.1), w = (float)Math.Cos(.1) };
+            model.Tick();
+            Require(SkateFootContacts.Ready && model.Renderer.Bakes == 3 && !ReferenceEquals(fit, SkateFootContacts.LeftFitter),
+                "Changed weighted local chain reused a stale contact profile");
+            Require(model.Renderer.Mesh.BufferAcquires == model.Renderer.Mesh.BufferDisposals, "Weighted source leaked GPU wrappers");
+        });
+        Scenario("opposite-leg ankle blend remains cross-foot refusal", () =>
+        {
+            var model = new Model(); model.WeightedLeg(true); SkateFootContacts.UseView(false, 102); model.Tick();
+            Unavailable("Opposite leg was accepted as left sole geometry");
+            Require(model.Renderer.Bakes == 0, "Cross-foot source reached a posed bake");
+        });
+        Scenario("shared pelvis cannot own a foot patch", () =>
+        {
+            var model = new Model(); model.WeightedLeg(false, true); SkateFootContacts.UseView(false, 103); model.Tick();
+            Unavailable("Shared body influence was accepted as foot ownership");
+        });
+        Scenario("unproved leg hierarchy cannot grant ancestor ownership", () =>
+        {
+            var model = new Model(); model.WeightedLeg(); model.RightFoot.parent = null;
+            SkateFootContacts.UseView(false, 105); model.Tick(); Unavailable("Disconnected hierarchy claimed an entire model root");
+        });
+        Scenario("weighted local scale guard remains strict", () =>
+        {
+            var model = new Model(); model.WeightedLeg();
+            var helper = new Transform { parent = model.LeftFoot.parent, localScale = new Vector3(2, 1, 1) };
+            model.Renderer.bones = new Il2CppReferenceArray<Transform>(new[] { model.LeftFoot, model.LeftToe, model.RightFoot, model.RightToe, helper });
+            SkateFootContacts.UseView(false, 104); model.Tick(); Unavailable("Nonuniform weighted geometry was accepted");
+        });
+    }
+
     private static void GpuRefusal(string name, Action<Mesh> change, bool wideIndices = false)
     {
         Scenario("unreadable source refusal: " + name, () =>
@@ -320,13 +382,13 @@ public static class SkateCaptureFootScenarios
         InvalidGeometry("unsupported unreadable", model => model.UnsupportedGpu());
         InvalidGeometry("oversized", model => model.Renderer.Mesh.DeclaredCount = 262145);
         InvalidGeometry("nonfinite vertex", model => model.Renderer.Mesh.SourceVertices[0].x = float.NaN);
-        InvalidGeometry("shin blend", model => model.Renderer.Mesh.SourceWeights[0] = new BoneWeight { boneIndex0 = 4, weight0 = .1f, boneIndex1 = 0, weight1 = .9f });
+        InvalidGeometry("unowned bone blend", model => model.Renderer.Mesh.SourceWeights[0] = new BoneWeight { boneIndex0 = 4, weight0 = .1f, boneIndex1 = 0, weight1 = .9f });
         InvalidGeometry("cross-foot influence", model => model.Renderer.Mesh.SourceWeights[0] = new BoneWeight { boneIndex0 = 2, weight0 = 1 });
         InvalidGeometry("foot morph", model => model.Renderer.Mesh.blendShapeCount = 1);
         InvalidGeometry("unnormalized weights", model => model.Renderer.Mesh.SourceWeights[0] = new BoneWeight { boneIndex0 = 0, weight0 = .5f });
         InvalidGeometry("invalid index", model => model.Renderer.Mesh.SourceTriangles[0] = 6);
         InvalidGeometry("nonuniform scale", model => model.Renderer.transform.localScale = new Vector3(2, 1, 1));
-        GpuSources();
+        GpuSources(); WeightedSources();
         Console.WriteLine("skate_capture_foot_acquisition: " + passed + " passed, " + failed + " failed");
         return failed == 0 ? 0 : 1;
     }

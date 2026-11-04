@@ -15,8 +15,14 @@ calibrate from bounded Float32 position-buffer bytes and UInt16/UInt32 indices,
 including submesh order/base vertices. Tests cover unsupported/truncated layouts,
 read exceptions, wrapper disposal and cache invalidation from source-rest bytes.
 Source weights/bind poses must still be available; the existing posed bake remains
-the measured geometry. Unsupported unreadable, oversized,
-nonfinite, shin-blended, cross-foot, morphed, unnormalized, malformed-index and
+the measured geometry. Same-side ankle/foot blends keep every incident triangle
+corner and the native baked positions. Their complete nonzero influence set must
+stay in that Foot's exclusive leg hierarchy; opposite-leg, shared-body and unknown
+influences remain rejected. Extra weighted local chains participate in cache
+invalidation, without treating world travel as a changed sole. Tests cover both
+CPU/GPU sources, complete measured corners, local-pose invalidation and ownership
+refusals. Unsupported unreadable, oversized,
+nonfinite, foreign-branch, cross-foot, morphed, unnormalized, malformed-index and
 nonuniform geometry remains rejected.
 
 ```sh
