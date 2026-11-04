@@ -2,14 +2,18 @@ using System;
 
 // This assembly replaces only engine/interop reads for the approved scenario.
 // Identity-rotation transforms describe the controlled mesh, not a native avatar.
+namespace Il2CppSystem { public abstract class Array { } }
+
 namespace Il2CppInterop.Runtime.InteropTypes.Arrays
 {
-    public sealed class Il2CppStructArray<T>
+    public sealed class Il2CppStructArray<T> : Il2CppSystem.Array
     {
         private readonly T[] values;
         public Il2CppStructArray(T[] source) { values = source; }
+        public Il2CppStructArray(long length) { values = new T[checked((int)length)]; }
+        public U Cast<U>() where U : class { return this as U; }
         public int Length { get { return values.Length; } }
-        public T this[int index] { get { return values[index]; } }
+        public T this[int index] { get { return values[index]; } set { values[index] = value; } }
     }
 
     public sealed class Il2CppReferenceArray<T>
@@ -88,10 +92,61 @@ namespace UnityEngine
         public float weight0, weight1, weight2, weight3;
     }
     public enum SkinWeights { OneBone = 1, TwoBones = 2, FourBones = 4 }
+    public enum MeshTopology { Triangles = 0, Lines = 3 }
+
+    // Each Get*Buffer call lends a fresh wrapper over controlled source REST bytes.
+    public sealed class GraphicsBuffer : IDisposable
+    {
+        private readonly Mesh owner;
+        private readonly bool vertex;
+        private bool disposed;
+        public int count { get; }
+        public int stride { get; }
+        internal GraphicsBuffer(Mesh owner, bool vertex)
+        {
+            this.owner = owner; this.vertex = vertex; owner.BufferAcquires++;
+            stride = vertex ? owner.VertexBufferStride : owner.IndexBufferStride;
+            count = vertex ? owner.VertexBufferCount : owner.IndexBufferCount;
+        }
+        public void GetData(Il2CppSystem.Array destination, int managedStart, int bufferStart, int length)
+        {
+            if (disposed) throw new ObjectDisposedException("controlled buffer");
+            if (vertex) owner.VertexReads++; else owner.IndexReads++;
+            var failure = vertex ? owner.VertexReadFailure : owner.IndexReadFailure;
+            if (failure != null) throw failure;
+            var bytes = vertex ? owner.VertexBytes : owner.IndexBytes;
+            var output = destination as Il2CppStructArray<byte>;
+            if (output == null || managedStart != 0 || bufferStart != 0 || length != output.Length || bytes == null || bytes.Length < length)
+                throw new InvalidOperationException("Controlled truncated or unsupported readback");
+            for (int i = 0; i < length; i++) output[i] = bytes[i];
+        }
+        public void Dispose()
+        {
+            if (disposed) throw new InvalidOperationException("Buffer disposed twice");
+            disposed = true; owner.BufferDisposals++;
+        }
+    }
 
     public sealed class Mesh : Object
     {
         public Vector3[] SourceVertices;
+        public Rendering.VertexAttributeDescriptor[] Attributes;
+        public Rendering.SubMeshDescriptor[] Submeshes;
+        public Rendering.IndexFormat indexFormat;
+        public int PositionStream = 1, PositionOffset = 4, PositionStride = 20;
+        public int VertexBufferStride = 20, VertexBufferCount, IndexBufferStride = 2, IndexBufferCount;
+        public byte[] VertexBytes, IndexBytes;
+        public int BufferAcquires, BufferDisposals, VertexReads, IndexReads;
+        public Exception VertexReadFailure, IndexReadFailure, WeightReadFailure, BindReadFailure;
+        public int subMeshCount { get { return Submeshes == null ? 0 : Submeshes.Length; } }
+        public Il2CppStructArray<Rendering.VertexAttributeDescriptor> GetVertexAttributes()
+        { return Attributes == null ? null : new Il2CppStructArray<Rendering.VertexAttributeDescriptor>(Attributes); }
+        public int GetVertexAttributeOffset(Rendering.VertexAttribute attribute) { return PositionOffset; }
+        public int GetVertexAttributeStream(Rendering.VertexAttribute attribute) { return PositionStream; }
+        public int GetVertexBufferStride(int stream) { return PositionStride; }
+        public Rendering.SubMeshDescriptor GetSubMesh(int index) { return Submeshes[index]; }
+        public GraphicsBuffer GetVertexBuffer(int stream) { return new GraphicsBuffer(this, true); }
+        public GraphicsBuffer GetIndexBuffer() { return new GraphicsBuffer(this, false); }
         public int[] SourceTriangles;
         public BoneWeight[] SourceWeights;
         public Matrix4x4[] SourceBindposes;
@@ -100,10 +155,10 @@ namespace UnityEngine
         public SkinWeights skinWeightBufferLayout = SkinWeights.FourBones;
         public Bounds bounds = new Bounds { min = new Vector3(-1, -1, -1), max = new Vector3(1, 1, 1) };
         public int vertexCount { get { return DeclaredCount < 0 ? SourceVertices.Length : DeclaredCount; } }
-        public Il2CppStructArray<Vector3> vertices { get { return SourceVertices == null ? null : new Il2CppStructArray<Vector3>(SourceVertices); } }
-        public Il2CppStructArray<int> triangles { get { return SourceTriangles == null ? null : new Il2CppStructArray<int>(SourceTriangles); } }
-        public Il2CppStructArray<BoneWeight> boneWeights { get { return SourceWeights == null ? null : new Il2CppStructArray<BoneWeight>(SourceWeights); } }
-        public Il2CppStructArray<Matrix4x4> bindposes { get { return SourceBindposes == null ? null : new Il2CppStructArray<Matrix4x4>(SourceBindposes); } }
+        public Il2CppStructArray<Vector3> vertices { get { if (!isReadable) throw new NotSupportedException("Unreadable source CPU vertices"); return SourceVertices == null ? null : new Il2CppStructArray<Vector3>(SourceVertices); } }
+        public Il2CppStructArray<int> triangles { get { if (!isReadable) throw new NotSupportedException("Unreadable source CPU triangles"); return SourceTriangles == null ? null : new Il2CppStructArray<int>(SourceTriangles); } }
+        public Il2CppStructArray<BoneWeight> boneWeights { get { if (WeightReadFailure != null) throw WeightReadFailure; return SourceWeights == null ? null : new Il2CppStructArray<BoneWeight>(SourceWeights); } }
+        public Il2CppStructArray<Matrix4x4> bindposes { get { if (BindReadFailure != null) throw BindReadFailure; return SourceBindposes == null ? null : new Il2CppStructArray<Matrix4x4>(SourceBindposes); } }
     }
 
     public sealed class SkinnedMeshRenderer : Object
@@ -130,4 +185,15 @@ namespace UnityEngine
     }
 
     public static class Time { public static float realtimeSinceStartup; }
+}
+
+namespace UnityEngine.Rendering
+{
+    public enum VertexAttribute { Position = 0, Normal = 1 }
+    public enum VertexAttributeFormat { Float32 = 0, Float16 = 1 }
+    public enum IndexFormat { UInt16 = 0, UInt32 = 1 }
+    public struct VertexAttributeDescriptor
+    { public VertexAttribute attribute; public VertexAttributeFormat format; public int dimension, stream; }
+    public struct SubMeshDescriptor
+    { public int indexStart, indexCount, baseVertex; public UnityEngine.MeshTopology topology; }
 }

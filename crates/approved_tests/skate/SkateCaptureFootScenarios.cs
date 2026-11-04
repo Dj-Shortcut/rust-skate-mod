@@ -2,6 +2,7 @@ using System;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Shortcut.RustMod;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public static class SkateCaptureFootScenarios
 {
@@ -35,6 +36,39 @@ public static class SkateCaptureFootScenarios
             };
         }
 
+        internal void Gpu(bool wideIndices = false)
+        {
+            var mesh = Renderer.Mesh; mesh.isReadable = false;
+            mesh.Attributes = new[] { new VertexAttributeDescriptor { attribute = VertexAttribute.Position,
+                format = VertexAttributeFormat.Float32, dimension = 3, stream = 1 } };
+            mesh.VertexBufferCount = mesh.SourceVertices.Length;
+            mesh.VertexBytes = new byte[mesh.VertexBufferCount * 20];
+            for (int i = 0; i < mesh.SourceVertices.Length; i++)
+            {
+                Vector3 p = mesh.SourceVertices[i]; int at = i * 20 + 4;
+                BitConverter.GetBytes(p.x).CopyTo(mesh.VertexBytes, at);
+                BitConverter.GetBytes(p.y).CopyTo(mesh.VertexBytes, at + 4);
+                BitConverter.GetBytes(p.z).CopyTo(mesh.VertexBytes, at + 8);
+            }
+            mesh.indexFormat = wideIndices ? IndexFormat.UInt32 : IndexFormat.UInt16;
+            mesh.IndexBufferStride = wideIndices ? 4 : 2; mesh.IndexBufferCount = 6;
+            mesh.IndexBytes = new byte[6 * mesh.IndexBufferStride];
+            for (int i = 0; i < 6; i++)
+            {
+                byte[] bytes = wideIndices ? BitConverter.GetBytes((uint)i) : BitConverter.GetBytes((ushort)i);
+                bytes.CopyTo(mesh.IndexBytes, i * mesh.IndexBufferStride);
+            }
+            // Source triangles concatenate SUBMESH order after baseVertex, not raw-buffer order.
+            mesh.Submeshes = new[] {
+                new SubMeshDescriptor { topology = MeshTopology.Triangles, indexStart = 3, indexCount = 3, baseVertex = -3 },
+                new SubMeshDescriptor { topology = MeshTopology.Triangles, indexStart = 0, indexCount = 3, baseVertex = 3 } };
+        }
+        internal void UnsupportedGpu()
+        {
+            Gpu(); var descriptor = Renderer.Mesh.Attributes[0]; descriptor.format = VertexAttributeFormat.Float16;
+            Renderer.Mesh.Attributes[0] = descriptor;
+        }
+
         internal void Observe(bool eligible = true)
         {
             SkateFootContacts.ObserveAfterApply(new[] { Renderer }, LeftFoot, LeftToe, RightFoot, RightToe,
@@ -64,7 +98,7 @@ public static class SkateCaptureFootScenarios
 
     private static void Exhaust(Model model)
     {
-        model.Renderer.Mesh.isReadable = false;
+        model.UnsupportedGpu();
         for (int n = 0; n < 4; n++) model.Tick();
         Unavailable("Unreadable mesh was accepted");
         Require(model.Renderer.SharedReads == 3 && SkateFootContacts.Status.Contains("budget exhausted"), "Acquisition was not bounded");
@@ -74,7 +108,7 @@ public static class SkateCaptureFootScenarios
     {
         var broken = new Model();
         SkateFootContacts.UseView(firstIsThird, 11);
-        broken.Renderer.Mesh.isReadable = false;
+        broken.UnsupportedGpu();
         broken.Tick();
         int reads = broken.Renderer.SharedReads;
         broken.Observe();
@@ -153,6 +187,85 @@ public static class SkateCaptureFootScenarios
         });
     }
 
+    private static void GpuRefusal(string name, Action<Mesh> change, bool wideIndices = false)
+    {
+        Scenario("unreadable source refusal: " + name, () =>
+        {
+            var model = new Model(); model.Gpu(wideIndices); change(model.Renderer.Mesh);
+            SkateFootContacts.UseView(false, 91); model.Tick();
+            Unavailable("Unsupported source readback was accepted");
+            Require(model.Renderer.Bakes == 0, "Rejected source reached the posed bake");
+            Require(model.Renderer.Mesh.BufferAcquires == model.Renderer.Mesh.BufferDisposals, "Borrowed GPU wrapper leaked");
+        });
+    }
+    private static void GpuSources()
+    {
+        foreach (bool wide in new[] { false, true })
+        Scenario("unreadable Float32 rest stream and " + (wide ? "UInt32" : "UInt16") + " submesh order", () =>
+        {
+            var model = new Model(); model.Gpu(wide); SkateFootContacts.UseView(false, 90);
+            model.Tick(); model.Tick();
+            Require(SkateFootContacts.Ready && model.Renderer.Bakes == 2, "Supported unreadable source did not calibrate");
+            var mesh = model.Renderer.Mesh; object old = SkateFootContacts.LeftFitter;
+            model.Tick();
+            Require(model.Renderer.Bakes == 2 && ReferenceEquals(old, SkateFootContacts.LeftFitter), "Stable unreadable source was rebaked");
+            Require(mesh.VertexReads == 3 && mesh.IndexReads == 3 && mesh.BufferDisposals == 6, "Source buffers were not read and disposed each check");
+            BitConverter.GetBytes(mesh.SourceVertices[0].x + .001f).CopyTo(mesh.VertexBytes, 4);
+            model.Tick();
+            Require(SkateFootContacts.Ready && model.Renderer.Bakes == 3 && !ReferenceEquals(old, SkateFootContacts.LeftFitter),
+                "Rest-byte change reused a key built from posed or stale vertices");
+            Require(mesh.BufferAcquires == mesh.BufferDisposals, "Successful source readback leaked wrappers");
+        });
+        Scenario("unreadable aggregate byte budget precedes oversized readback", () =>
+        {
+            var model = new Model(); var renderers = new SkinnedMeshRenderer[6];
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                var part = i == 0 ? model : new Model(); part.Gpu(true);
+                var mesh = part.Renderer.Mesh; var bytes = new byte[1572864 * 4];
+                mesh.IndexBytes.CopyTo(bytes, 0); mesh.IndexBytes = bytes; mesh.IndexBufferCount = 1572864;
+                part.Renderer.bones = model.Renderer.bones; renderers[i] = part.Renderer;
+            }
+            SkateFootContacts.UseView(false, 92);
+            SkateFootContacts.ObserveAfterApply(renderers, model.LeftFoot, model.LeftToe, model.RightFoot, model.RightToe,
+                Vector3.up, Vector3.up, true);
+            Unavailable("Aggregate GPU readback budget was ignored");
+            Require(SkateFootContacts.Status.Contains("aggregate readback"), "Wrong aggregate refusal");
+            Require(renderers[5].Mesh.IndexReads == 0, "Over-budget readback was executed");
+            foreach (var renderer in renderers)
+                Require(renderer.Bakes == 0 && renderer.Mesh.BufferAcquires == renderer.Mesh.BufferDisposals, "Rejected aggregate leaked a buffer or baked");
+        });
+        GpuRefusal("missing position", m => m.Attributes = new VertexAttributeDescriptor[0]);
+        GpuRefusal("duplicate position", m => m.Attributes = new[] { m.Attributes[0], m.Attributes[0] });
+        GpuRefusal("compressed position", m => m.Attributes[0].format = VertexAttributeFormat.Float16);
+        GpuRefusal("position dimension", m => m.Attributes[0].dimension = 2);
+        GpuRefusal("position stream", m => m.Attributes[0].stream = 4);
+        GpuRefusal("position stream mismatch", m => m.PositionStream = 2);
+        GpuRefusal("negative offset", m => m.PositionOffset = -4);
+        GpuRefusal("offset beyond record", m => m.PositionOffset = 12);
+        GpuRefusal("oversized stride", m => m.PositionStride = 512);
+        GpuRefusal("vertex stride mismatch", m => m.VertexBufferStride = 24);
+        GpuRefusal("vertex count mismatch", m => m.VertexBufferCount++);
+        GpuRefusal("truncated vertices", m => m.VertexBytes = new byte[12]);
+        GpuRefusal("unsupported index format", m => m.indexFormat = (IndexFormat)99);
+        GpuRefusal("too many submeshes", m => m.Submeshes = new SubMeshDescriptor[257]);
+        GpuRefusal("line topology", m => m.Submeshes[0].topology = MeshTopology.Lines);
+        GpuRefusal("negative submesh start", m => m.Submeshes[0].indexStart = -1);
+        GpuRefusal("partial triangle", m => m.Submeshes[0].indexCount = 4);
+        GpuRefusal("index range overflow", m => m.Submeshes[0].indexStart = int.MaxValue);
+        GpuRefusal("aggregate index bound", m => m.Submeshes[0].indexCount = 1572867);
+        GpuRefusal("base vertex outside source", m => m.Submeshes[0].baseVertex = int.MaxValue);
+        GpuRefusal("UInt32 unsigned overflow", m => BitConverter.GetBytes(uint.MaxValue).CopyTo(m.IndexBytes, 12), true);
+        GpuRefusal("truncated indices", m => m.IndexBytes = new byte[2]);
+        GpuRefusal("index stride mismatch", m => m.IndexBufferStride = 4);
+        GpuRefusal("index buffer bound", m => m.IndexBufferCount = int.MaxValue);
+        GpuRefusal("position read exception", m => m.VertexReadFailure = new NotSupportedException("controlled GPU read"));
+        GpuRefusal("index read exception", m => m.IndexReadFailure = new NotSupportedException("controlled GPU read"));
+        GpuRefusal("nonfinite rest vertex", m => BitConverter.GetBytes(float.NaN).CopyTo(m.VertexBytes, 4));
+        GpuRefusal("source weights unavailable", m => m.WeightReadFailure = new NotSupportedException("controlled weights"));
+        GpuRefusal("source bind poses unavailable", m => m.BindReadFailure = new NotSupportedException("controlled bind poses"));
+    }
+
     public static int Main()
     {
         Console.WriteLine("Production SkateFootContacts + shared sources; controlled Unity/interop boundary. No native avatar or gameplay test.");
@@ -170,7 +283,7 @@ public static class SkateCaptureFootScenarios
         Scenario("terminal failure retains the first diagnostic", () =>
         {
             var model = new Model(); SkateFootContacts.UseView(false, 12);
-            model.Renderer.Mesh.isReadable = false; model.Tick();
+            model.UnsupportedGpu(); model.Tick();
             model.Renderer.Mesh.isReadable = true;
             model.Renderer.Mesh.skinWeightBufferLayout = (SkinWeights)99;
             for (int n = 0; n < 3; n++) model.Tick();
@@ -204,7 +317,7 @@ public static class SkateCaptureFootScenarios
             SkateFootContacts.SetBoard(SkateBoardMesh.CreateDetailed(), 0); model.Tick(); model.Tick();
             Require(SkateFootContacts.Ready, "Valid replacement board did not recover");
         });
-        InvalidGeometry("unreadable", model => model.Renderer.Mesh.isReadable = false);
+        InvalidGeometry("unsupported unreadable", model => model.UnsupportedGpu());
         InvalidGeometry("oversized", model => model.Renderer.Mesh.DeclaredCount = 262145);
         InvalidGeometry("nonfinite vertex", model => model.Renderer.Mesh.SourceVertices[0].x = float.NaN);
         InvalidGeometry("shin blend", model => model.Renderer.Mesh.SourceWeights[0] = new BoneWeight { boneIndex0 = 4, weight0 = .1f, boneIndex1 = 0, weight1 = .9f });
@@ -213,6 +326,7 @@ public static class SkateCaptureFootScenarios
         InvalidGeometry("unnormalized weights", model => model.Renderer.Mesh.SourceWeights[0] = new BoneWeight { boneIndex0 = 0, weight0 = .5f });
         InvalidGeometry("invalid index", model => model.Renderer.Mesh.SourceTriangles[0] = 6);
         InvalidGeometry("nonuniform scale", model => model.Renderer.transform.localScale = new Vector3(2, 1, 1));
+        GpuSources();
         Console.WriteLine("skate_capture_foot_acquisition: " + passed + " passed, " + failed + " failed");
         return failed == 0 ? 0 : 1;
     }

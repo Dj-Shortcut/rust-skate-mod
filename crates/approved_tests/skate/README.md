@@ -10,7 +10,12 @@ clock and interop-array reads. The test assembly never enters the client plugin.
 It checks healthy calibration/cache reuse, failure isolation in both view
 directions, unchanged-epoch retry limits, replacement skins, per-view snapshot
 limits, original refusal preservation, ride reset, eligibility and atomic refusal
-after a geometry-read exception or missing board. Invalid unreadable, oversized,
+after a geometry-read exception or missing board. An unreadable CPU source can
+calibrate from bounded Float32 position-buffer bytes and UInt16/UInt32 indices,
+including submesh order/base vertices. Tests cover unsupported/truncated layouts,
+read exceptions, wrapper disposal and cache invalidation from source-rest bytes.
+Source weights/bind poses must still be available; the existing posed bake remains
+the measured geometry. Unsupported unreadable, oversized,
 nonfinite, shin-blended, cross-foot, morphed, unnormalized, malformed-index and
 nonuniform geometry remains rejected.
 
