@@ -1,0 +1,244 @@
+{
+  "format": "original-authored-fakie-inward-heelflip-constraints/1",
+  "id": "fakie-inward-heelflip-authored-v1",
+  "movementKind": "fakie-inward-heelflip",
+  "sourceBodySha256": "a08fe4409f99b8eddd4120eeb0439dce27d77115fa470f1e0ccecb14cd7c9e08",
+  "sampleHz": 180,
+  "signature": {
+    "pop": "Ollie",
+    "switch": true,
+    "tailLeads": true,
+    "flip": -360,
+    "shove": -180,
+    "spin": 0
+  },
+  "references": {
+    "fakieHeelControls": {
+      "path": "assets/authored/animation/fakie-heelflip-keyed/constraints.json",
+      "sha256": "f3aebbbffafe84173cf6b82b768892128700afb243e4b7fbf38c14c6f93a16fb"
+    },
+    "fakieHeelBody": {
+      "path": "assets/authored/animation/fakie-heelflip-keyed/shared-fakie-body.json",
+      "sha256": "eaa4726241d0649e27c9499473494ceb6a093153273924ccd9f2932541c156b0"
+    },
+    "fakieHeelHelper": {
+      "path": "scripts/author_skate_fakie_heelflip.py",
+      "sha256": "7b29c2862808924fe0c63ad2056fc9357f25276fa5224167b75bb2554263d0a5"
+    },
+    "normalInwardControls": {
+      "path": "assets/authored/animation/inward-heelflip-derived/constraints.json",
+      "sha256": "dd7896cc7091fbb6fb282adabc97bea3ea9a95f823ac782d9b8d4c0d0bd9a7e8"
+    },
+    "normalInwardHelper": {
+      "path": "scripts/author_skate_inward_heelflip.py",
+      "sha256": "9a8335a3720116f7efd0b903b719aa339624efd91baf178bc5c8215a63b814be"
+    }
+  },
+  "pressEndFrame": 2720.0,
+  "catchStartFrame": 2727.5,
+  "catchFrame": 2730,
+  "boardYaw": [
+    [
+      2707,
+      0
+    ],
+    [
+      2714,
+      0
+    ],
+    [
+      2717.9,
+      24
+    ],
+    [
+      2721.2,
+      75
+    ],
+    [
+      2726,
+      145
+    ],
+    [
+      2728.4,
+      176
+    ],
+    [
+      2730,
+      180
+    ],
+    [
+      2772,
+      180
+    ]
+  ],
+  "freeAnkleOffsetKeys": {
+    "Left": [
+      [
+        2707,
+        0
+      ],
+      [
+        2717.6,
+        0
+      ],
+      [
+        2720,
+        -0.06
+      ],
+      [
+        2724,
+        -0.09
+      ],
+      [
+        2727.5,
+        -0.055
+      ],
+      [
+        2730,
+        0
+      ],
+      [
+        2772,
+        0
+      ]
+    ],
+    "Right": [
+      [
+        2707,
+        0
+      ],
+      [
+        2717.9,
+        0
+      ],
+      [
+        2720,
+        -0.035
+      ],
+      [
+        2724,
+        -0.055
+      ],
+      [
+        2727.5,
+        -0.025
+      ],
+      [
+        2730,
+        0
+      ],
+      [
+        2772,
+        0
+      ]
+    ]
+  },
+  "pelvisOffsetKeys": [
+    [
+      2707,
+      0
+    ],
+    [
+      2714,
+      0
+    ],
+    [
+      2716.6,
+      -0.04
+    ],
+    [
+      2718.2,
+      -0.08
+    ],
+    [
+      2720,
+      -0.09
+    ],
+    [
+      2722,
+      -0.03
+    ],
+    [
+      2726,
+      -0.025
+    ],
+    [
+      2730,
+      -0.05
+    ],
+    [
+      2733,
+      -0.05
+    ],
+    [
+      2735,
+      -0.05
+    ],
+    [
+      2741,
+      -0.025
+    ],
+    [
+      2758,
+      -0.025
+    ],
+    [
+      2772,
+      -0.025
+    ]
+  ],
+  "authoredBalance": {
+    "window": [
+      2714,
+      2717.4,
+      2733,
+      2743
+    ],
+    "Left": {
+      "upper": [
+        0.2,
+        0.28,
+        0.93
+      ],
+      "fore": [
+        0.75,
+        -0.6,
+        0.12
+      ]
+    },
+    "Right": {
+      "upper": [
+        -0.05,
+        -0.16,
+        -0.97
+      ],
+      "fore": [
+        0.8,
+        -0.4,
+        -0.08
+      ]
+    }
+  },
+  "anatomicalRoles": {
+    "canonicalStance": "regular",
+    "nose": "+Z",
+    "travel": "-Z from actual established Fakie route",
+    "popFoot": "Right, leading tail beyond bolts at -Z",
+    "heelFlickFoot": "Left, heel at toe-side nose corner",
+    "bodySpin": 0,
+    "catch": "same anatomical world sides after board-only BS180; both local positions and toe headings transformed by final deck R-transpose"
+  },
+  "provenance": "Explicit owner/issue736-authorized authored Fakie Inward derivative. Reuse reviewed Fakie Heelflip body/heel mechanism and normal Inward BS180 pressure/free/catch mechanics; original heel/tail release, full board winding, lower-body clearance, asymmetric bent balance arms and soft-knee recovery are reconstructed. The footage remains a shared Fakie Kickflip body reference, not a filmed Fakie Inward capture. Raw reviewed=false.",
+  "uncertainty": "No independently verified pure Fakie Inward take. Source camera depth, hidden limbs, heel patch, scoop winding, pelvis/ankle heights, timing and new combined catch are authored choices. The original8r83 lead is still unconfirmed. Physical Regular/Goofy require actual original-rig visual review; no native/gameplay approval.",
+  "sourceScan": {
+    "issue": 736,
+    "cachedThreeGames": "No pure Fakie Inward slot in the previously indexed three matched games; annotation table is only an index.",
+    "additionalVideo": "8r83UjKi-L0",
+    "boundedWindowNominalSeconds": [
+      140,
+      166
+    ],
+    "additionalTakeConfirmed": false,
+    "notes": "Existing partial-cache140\u2013166s re-audited on4Nov: five landed gray-shirt attempts visible, but no pure Fakie Inward was certified. Local PTS exact, full-master offset140s nominal. Prior190\u2013245s rejection was not reopened. This is not an absence claim for the whole game or video."
+  }
+}
