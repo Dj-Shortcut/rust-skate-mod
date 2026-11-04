@@ -57,7 +57,7 @@ public static class SkateFootContacts
         internal Mesh Mesh;
         internal int Count;
         internal int[] Indices, MapLeft, MapRight;
-        internal byte[] Seeds, Rigid;
+        internal byte[] Seeds, Owners;
         internal bool Relevant;
     }
     private sealed class Read
@@ -102,6 +102,39 @@ public static class SkateFootContacts
                 result.values[r * 4 + c] = value;
             }
             return result;
+        }
+        private static Affine Inverse(Affine a)
+        {
+            double det = a.At(0, 0) * (a.At(1, 1) * a.At(2, 2) - a.At(1, 2) * a.At(2, 1)) -
+                a.At(0, 1) * (a.At(1, 0) * a.At(2, 2) - a.At(1, 2) * a.At(2, 0)) +
+                a.At(0, 2) * (a.At(1, 0) * a.At(2, 1) - a.At(1, 1) * a.At(2, 0));
+            if (!Finite(det) || Math.Abs(det) < 1e-12) throw new Unsupported("Weighted foot local chain is singular.");
+            var result = new Affine(false);
+            for (int row = 0; row < 3; row++) for (int col = 0; col < 3; col++)
+            {
+                int r1 = (col + 1) % 3, r2 = (col + 2) % 3, c1 = (row + 1) % 3, c2 = (row + 2) % 3;
+                result.values[row * 4 + col] = (a.At(r1, c1) * a.At(r2, c2) - a.At(r1, c2) * a.At(r2, c1)) / det;
+            }
+            for (int row = 0; row < 3; row++)
+                result.values[row * 4 + 3] = -(result.At(row, 0) * a.At(0, 3) + result.At(row, 1) * a.At(1, 3) + result.At(row, 2) * a.At(2, 3));
+            return result;
+        }
+        private static Affine ToAncestor(Transform bone, Transform ancestor)
+        {
+            var result = new Affine(true); int depth = 0;
+            while (bone != ancestor)
+            {
+                if (bone == null || depth++ >= 32) throw new Unsupported("Weighted foot local chain exceeds its bound.");
+                result = Multiply(Local(bone), result); bone = bone.parent;
+            }
+            return result;
+        }
+        internal static Affine Relative(Transform foot, Transform bone)
+        {
+            Transform common = foot;
+            for (int depth = 0; common != null && depth < 32; depth++, common = common.parent)
+                if (Within(bone, common)) return Multiply(Inverse(ToAncestor(foot, common)), ToAncestor(bone, common));
+            throw new Unsupported("Weighted foot has no bounded common ancestor.");
         }
         internal static Affine ToeInFoot(Transform foot, Transform toe)
         {
@@ -183,10 +216,10 @@ public static class SkateFootContacts
         private int Vertex(MeshData mesh, int index, byte side, Matrix4x4 matrix,
             Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppStructArray<Vector3> vertices, SoleFrame frame)
         {
-            // Include the entire incident triangle. A neighbouring shin or other
-            // moving influence cannot silently be cut off and called a rigid shoe.
-            if (mesh.Rigid[index] != side)
-                throw new Unsupported("Foot patch has non-rigid or cross-foot influences.");
+            // Keep every drawn triangle corner, including measured ankle blends.
+            // Its influences must all belong to this foot's exclusive leg branch.
+            if (mesh.Owners[index] != side)
+                throw new Unsupported("Foot patch has outside-leg or cross-foot influences.");
             int[] map = side == 1 ? mesh.MapLeft : mesh.MapRight;
             if (map[index] != 0) return map[index] - 1;
             int count = Points.Count / 3;
@@ -307,6 +340,11 @@ public static class SkateFootContacts
             for (int i = 0; i < bones.Length; i++)
             { var bone = bones[i]; Mix(read, bone == null ? 0 : bone.Pointer.ToInt64()); if (bone == lf || bone == lt || bone == rf || bone == rt) candidate = true; }
             if (!candidate) continue;
+            Transform leftRoot = LegRoot(lf, rf), rightRoot = LegRoot(rf, lf);
+            if (Within(rf, leftRoot) || Within(lf, rightRoot)) throw new Unsupported("Foot ownership branches overlap.");
+            var owners = new byte[bones.Length];
+            for (int i = 0; i < bones.Length; i++)
+                owners[i] = (byte)((Within(bones[i], leftRoot) ? 1 : 0) | (Within(bones[i], rightRoot) ? 2 : 0));
             int count = mesh.vertexCount;
             if (count < 3 || count > MaximumMeshVertices - totalVertices)
                 throw new Unsupported("Foot candidate mesh exceeds its vertex bound.");
@@ -319,17 +357,17 @@ public static class SkateFootContacts
             try { weights = mesh.boneWeights; }
             catch (Exception e) { throw new Unsupported("Source skin weights unavailable: " + e.GetType().Name); }
             if (weights == null || weights.Length != count) throw new Unsupported("Foot weight count differs from vertex count.");
-            var data = new MeshData { Renderer = renderer, Mesh = mesh, Count = count, Seeds = new byte[count], Rigid = new byte[count] };
+            var data = new MeshData { Renderer = renderer, Mesh = mesh, Count = count, Seeds = new byte[count], Owners = new byte[count] };
             for (int i = 0; i < count; i++)
             {
-                var w = weights[i]; double sum = 0, l = 0, r = 0, other = 0;
-                Weight(read, w.boneIndex0, w.weight0, bones, lf, lt, rf, rt, ref sum, ref l, ref r, ref other);
-                Weight(read, w.boneIndex1, w.weight1, bones, lf, lt, rf, rt, ref sum, ref l, ref r, ref other);
-                Weight(read, w.boneIndex2, w.weight2, bones, lf, lt, rf, rt, ref sum, ref l, ref r, ref other);
-                Weight(read, w.boneIndex3, w.weight3, bones, lf, lt, rf, rt, ref sum, ref l, ref r, ref other);
+                var w = weights[i]; double sum = 0, l = 0, r = 0; byte ownership = 0;
+                Weight(read, w.boneIndex0, w.weight0, bones, owners, lf, lt, rf, rt, ref sum, ref l, ref r, ref ownership);
+                Weight(read, w.boneIndex1, w.weight1, bones, owners, lf, lt, rf, rt, ref sum, ref l, ref r, ref ownership);
+                Weight(read, w.boneIndex2, w.weight2, bones, owners, lf, lt, rf, rt, ref sum, ref l, ref r, ref ownership);
+                Weight(read, w.boneIndex3, w.weight3, bones, owners, lf, lt, rf, rt, ref sum, ref l, ref r, ref ownership);
                 if (Math.Abs(sum - 1) > .0001) throw new Unsupported("Skin weights are not normalized.");
                 data.Seeds[i] = (byte)((l > 0 ? 1 : 0) | (r > 0 ? 2 : 0));
-                data.Rigid[i] = l > 0 && r == 0 && other == 0 ? (byte)1 : r > 0 && l == 0 && other == 0 ? (byte)2 : (byte)0;
+                data.Owners[i] = ownership == 1 || ownership == 2 ? ownership : (byte)0;
             }
             var indices = readable ? mesh.triangles : SourceIndices(mesh, count, MaximumIndices - totalIndices, ref readbackBytes);
             if (indices == null || indices.Length % 3 != 0 || indices.Length > MaximumIndices - totalIndices)
@@ -339,6 +377,14 @@ public static class SkateFootContacts
             {
                 int index = indices[i]; if (index < 0 || index >= count) throw new Unsupported("Skin triangle has an invalid vertex index.");
                 data.Indices[i] = index; Mix(read, index); if (data.Seeds[index] != 0) data.Relevant = true;
+            }
+            var leftBones = new bool[bones.Length]; var rightBones = new bool[bones.Length];
+            for (int i = 0; i < data.Indices.Length; i += 3)
+            {
+                int a = data.Indices[i], b = data.Indices[i + 1], c = data.Indices[i + 2];
+                int seeds = data.Seeds[a] | data.Seeds[b] | data.Seeds[c];
+                if ((seeds & 1) != 0) Contributors(data, weights, a, b, c, 1, leftBones);
+                if ((seeds & 2) != 0) Contributors(data, weights, a, b, c, 2, rightBones);
             }
             // A morph mesh with no actual drawn foot weights is harmless. Do not
             // call the stubbed GetBlendShapeWeight/GetBonesPerVertex methods.
@@ -357,6 +403,15 @@ public static class SkateFootContacts
                     Mix(read, value.GetHashCode());
                 }
             Scale(read, renderer.transform.localToWorldMatrix);
+            for (int i = 0; i < bones.Length; i++)
+            {
+                // Additional weighted bones are relative to Foot through exact local
+                // chains, so global travel cannot masquerade as changed sole shape.
+                if (leftBones[i] && bones[i] != lf && bones[i] != lt)
+                    left.Bone(read, Affine.Multiply(left.Foot, Affine.Relative(lf, bones[i])));
+                if (rightBones[i] && bones[i] != rf && bones[i] != rt)
+                    right.Bone(read, Affine.Multiply(right.Foot, Affine.Relative(rf, bones[i])));
+            }
             var source = readable ? mesh.vertices : SourceVertices(mesh, count, ref readbackBytes);
             if (source == null || source.Length != count) throw new Unsupported("Source skin vertex count changed.");
             Bounds bounds = mesh.bounds; Vector3 min = bounds.min, max = bounds.max;
@@ -477,16 +532,51 @@ public static class SkateFootContacts
     }
     private static float SourceFloat(Il2CppStructArray<byte> bytes, int at)
     { return new FloatBits { Bits = (uint)bytes[at] | (uint)bytes[at + 1] << 8 | (uint)bytes[at + 2] << 16 | (uint)bytes[at + 3] << 24 }.Value; }
+    private static bool Within(Transform bone, Transform root)
+    {
+        if (root == null) return false;
+        for (int depth = 0; bone != null && depth < 32; depth++, bone = bone.parent)
+            if (bone == root) return true;
+        return false;
+    }
+    private static Transform LegRoot(Transform foot, Transform otherFoot)
+    {
+        Transform root = foot, next = foot.parent;
+        for (int depth = 0; depth < 32; depth++)
+        {
+            // Without a proved shared hierarchy, only Foot descendants have
+            // ownership; never label an unrelated renderer/model root as a leg.
+            if (next == null) return foot;
+            if (Within(otherFoot, next)) return root;
+            root = next; next = next.parent;
+        }
+        throw new Unsupported("Foot ownership ancestor chain exceeds its bound.");
+    }
+    private static void Contributors(MeshData data, Il2CppStructArray<BoneWeight> weights, int a, int b, int c, byte side, bool[] used)
+    {
+        Contributor(data, weights, a, side, used); Contributor(data, weights, b, side, used); Contributor(data, weights, c, side, used);
+    }
+    private static void Contributor(MeshData data, Il2CppStructArray<BoneWeight> weights, int vertex, byte side, bool[] used)
+    {
+        if (data.Owners[vertex] != side) throw new Unsupported("Foot patch has outside-leg or cross-foot influences.");
+        var w = weights[vertex];
+        if (w.weight0 > 0) used[w.boneIndex0] = true;
+        if (w.weight1 > 0) used[w.boneIndex1] = true;
+        if (w.weight2 > 0) used[w.boneIndex2] = true;
+        if (w.weight3 > 0) used[w.boneIndex3] = true;
+    }
     private static void Weight(Read read, int index, float weight,
         Il2CppInterop.Runtime.InteropTypes.Arrays.Il2CppReferenceArray<Transform> bones,
-        Transform lf, Transform lt, Transform rf, Transform rt, ref double sum, ref double left, ref double right, ref double other)
+        byte[] owners, Transform lf, Transform lt, Transform rf, Transform rt,
+        ref double sum, ref double left, ref double right, ref byte ownership)
     {
         if (!Finite(weight) || weight < 0 || weight > 1) throw new Unsupported("Skin weight is invalid.");
         Mix(read, index); Mix(read, weight.GetHashCode()); sum += weight;
         if (weight == 0) return;
         if (index < 0 || index >= bones.Length || bones[index] == null) throw new Unsupported("Skin weight has an invalid bone index.");
-        var bone = bones[index];
-        if (bone == lf || bone == lt) left += weight; else if (bone == rf || bone == rt) right += weight; else other += weight;
+        var bone = bones[index]; byte owner = owners[index];
+        ownership |= owner == 1 || owner == 2 ? owner : (byte)4;
+        if (bone == lf || bone == lt) left += weight; else if (bone == rf || bone == rt) right += weight;
     }
     private static void Bake(Read read, SoleFrame left, SoleFrame right, out Patch lp, out Patch rp)
     {
