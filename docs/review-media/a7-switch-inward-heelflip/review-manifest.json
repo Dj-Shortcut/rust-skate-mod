@@ -1,0 +1,369 @@
+{
+  "format": "switch-inward-own-source-rig-review/1",
+  "sourceCodeRevision": "90a5eb5857144989b8d33af78c6877179fa725bd",
+  "sourcePackSha256": "79e67345f562c36b68a1882f6d047345026dded5f47a32f3678fc752194f3d23",
+  "sourceReviewed": false,
+  "nativeGame": false,
+  "viewer": "http://127.0.0.1:59728/?cropOrigin=3",
+  "sourceUrl": "https://www.youtube.com/watch?v=PqJZcwTY1QE&t=553",
+  "sourcePhysical": "Original physicalRegular: Left frontHEEL/Righttail, zero reflection. OppositeGoofy labelled mirror. Actual GLB foot-bone audit determines physical labels, not native enum.",
+  "genuineSourceWindow": [
+    16575,
+    16660
+  ],
+  "sourceVideoHoldLimitFrame": 16660,
+  "ownRecoveryReferenceFrame": 16657,
+  "sourceBodySha256": "d7796a0409a83451ab825b93777bfd9c2201d5bdd0d7da93a1b5246228c727b9",
+  "sourceConstraintsSha256": "ae5b9b528b978790d83592878a5fab352b1029f1c5da9919521665cdf4ff0b89",
+  "sourceBakerSha256": "fd4a58dd99ebd595b41d8d7c3fcac1c65fb1caaf62d26312f712d90faae0ddb8",
+  "authoredUncertainty": "Single moving fisheye camera cannot measure exact heel contact, depth, tail strike or full board3D. AnatomicalRegular Leftheel/Righttail is independently audited on source chains, not inferred from switch label/biography. VIDEO missing16596/16620/16621 and whole-side-reversed16609\u201316613 are not treated as measurements. Lower chains16622\u201316628 and occluded Left wrist are reconstructed. Exact global sourcePTS=frame*1001/timebase30000 and full source hash are authoritative.",
+  "boardWinding": "Canonical full\u2212360heelroll/+180yaw, unspun body; native signatureflip\u2212360/shove\u2212180/switchtrue/tailLeadsfalse.",
+  "media": "Eight phase/contact sheets plus four bounded landing strips, original skin/13-part shaped board; no footage, detector arrays, private paths or game DLLs.",
+  "stillLighting": "Actor-relative studio lights on all current images. Estimated source-facing moving-camera yaw affects view only.",
+  "models": [
+    {
+      "profile": "low",
+      "requestedEnumStance": "goofy",
+      "physicalPreview": {
+        "physicalPreviewStance": "regular",
+        "leadFoot": "Left",
+        "leadDistance": 0.36576573102120413,
+        "toeSideDot": -0.8332845264330299,
+        "glbDeckForwardDot": 1.0
+      },
+      "glbSha256": "5a81b27563e11762a5ebcf4feb966a099dce03e7b1cf9d020b26c40eba74c285",
+      "inputSha256": "5cd96503adec901aecbf746559f72cac8e2b9adb8b09341bc5178404c4ff8498",
+      "renderedRuntimeRevision": "2650bd14fd8db2431d105a0c595a6326af76b1f1",
+      "actualManagedReplayRevision": "2650bd14fd8db2431d105a0c595a6326af76b1f1",
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+    },
+    {
+      "profile": "normal",
+      "requestedEnumStance": "goofy",
+      "physicalPreview": {
+        "physicalPreviewStance": "regular",
+        "leadFoot": "Left",
+        "leadDistance": 0.36576375114539594,
+        "toeSideDot": -0.833285705614189,
+        "glbDeckForwardDot": 1.0
+      },
+      "glbSha256": "15c7e0372e4bcf028675c4f503c24c897e75264f1a34ade29f423307729d7548",
+      "inputSha256": "5f7795c696b350490f47f9db39a871b8fe8a1f4b942fba40b5ebe46631d011e4",
+      "renderedRuntimeRevision": "2650bd14fd8db2431d105a0c595a6326af76b1f1",
+      "actualManagedReplayRevision": "2650bd14fd8db2431d105a0c595a6326af76b1f1",
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+    },
+    {
+      "profile": "low",
+      "requestedEnumStance": "regular",
+      "physicalPreview": {
+        "physicalPreviewStance": "goofy",
+        "leadFoot": "Right",
+        "leadDistance": -0.3657829780400279,
+        "toeSideDot": 0.8332844191057946,
+        "glbDeckForwardDot": 1.0
+      },
+      "glbSha256": "3ba6d67a4933f5391438b0bd5dc8cddf1fbf8e2c4cad62e14afe20fd2b5ca59c",
+      "inputSha256": "9815cf4e5a157cbbfba5efb5822e98e50c64c0e566e66992555a6433a32fbe6b",
+      "renderedRuntimeRevision": "2650bd14fd8db2431d105a0c595a6326af76b1f1",
+      "actualManagedReplayRevision": "2650bd14fd8db2431d105a0c595a6326af76b1f1",
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+    },
+    {
+      "profile": "normal",
+      "requestedEnumStance": "regular",
+      "physicalPreview": {
+        "physicalPreviewStance": "goofy",
+        "leadFoot": "Right",
+        "leadDistance": -0.3657812269299243,
+        "toeSideDot": 0.8332846798258212,
+        "glbDeckForwardDot": 1.0
+      },
+      "glbSha256": "1ac5483b63f535d3f4f8679dc51da451d86e57143c7420252587b486f49c6613",
+      "inputSha256": "6883a81f4d81b61546762ac781c0281a37f56a80fc7c06475858f06fabff1194",
+      "renderedRuntimeRevision": "2650bd14fd8db2431d105a0c595a6326af76b1f1",
+      "actualManagedReplayRevision": "2650bd14fd8db2431d105a0c595a6326af76b1f1",
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+    }
+  ],
+  "managedReplay": {
+    "scope": "Four actual current controlled Pad/full32Hz Step/Land/scorer +60Hz body; normal36/36, low34/34 activeAir, Ground/captureoff4s. Complete physics/scoring traces exactold10c. Only25normal/13low head rows differ; all non-head pose/board/contact fields exact.",
+    "sourceFreezeReceiptSha256": "20108fd39d15906cf5adbc9360ab4ccb1ff1fa1f97cdab06f4f7b0a950ac415b",
+    "physicsIdentityReceiptSha256": "976f2cfbff906c0ab27cceae8723a16fc2d3f2746173a03d7e13005e9b657163",
+    "mediaInputReceiptSha256": "30f65e3c798fdb776e3d23b89ce38c043f95a078b48c38b7de076a283dedbd1e",
+    "bindingLimit": "Managed controlled flatground, not PhysX/native. Current source743pipe helpers retained; pipe ownership binding false here."
+  },
+  "replay": {
+    "status": "Four-route actual phase inspection passed; full continuous motion review incomplete",
+    "observations": "Root inspected actual Load/Air/Catch/Land beside changing original source in all four normal/low physical Regular/Goofy routes, plus all four public phase sheets. The source is a landed heelroll with board-only180; rig crouches/takes off, board remains near the feet, catch/landing knees are bent, without visible head-through-chest or overhead arm. Complete continuous1x/quarter motion review is not claimed: background throttling/looping made observation incomplete.",
+    "reviewedPhases": [
+      "Load",
+      "Air",
+      "Catch",
+      "Land"
+    ],
+    "routes": [
+      "normal physical Regular",
+      "normal physical Goofy",
+      "low physical Regular",
+      "low physical Goofy"
+    ],
+    "continuous1xQuarterReviewed": false,
+    "claudeOfflineReviewed": false
+  },
+  "status": "Source and runtime route present with original-rig phase review media; Claude offline verdict and native acceptance pending.",
+  "files": [
+    {
+      "file": "switch-inward-heelflip-low-physical-regular.jpg",
+      "type": "phases",
+      "profile": "low",
+      "physicalStance": "regular",
+      "requestedEnumStance": "goofy",
+      "sourceRole": "DIRECT original physicalRegular",
+      "sha256": "7ba88a3fafd2a3d3c2e482f547e1d3350a76ad62de5057e6037e8b0e6a6ad5bb",
+      "glbSha256": "5a81b27563e11762a5ebcf4feb966a099dce03e7b1cf9d020b26c40eba74c285",
+      "inputSha256": "5cd96503adec901aecbf746559f72cac8e2b9adb8b09341bc5178404c4ff8498",
+      "phaseMoments": {
+        "Pop": 0.8833333333333333,
+        "Rise": 0.9333333333333333,
+        "Guide": 1.0333333333333334,
+        "Heel": 1.05,
+        "Instep": 1.05,
+        "Strike": 1.05,
+        "FreeAir": 1.1166666666666667,
+        "Air": 1.2166666666666666,
+        "FirstCatch": 1.3666666666666667,
+        "Catch": 1.3833333333333333,
+        "Land": 1.45,
+        "GenuineEnd": 2.3666666666666667,
+        "Rollaway": 2.05,
+        "Absorb": 1.5166666666666666,
+        "Recover": 1.9166666666666667,
+        "Load": 0.8166666666666667,
+        "End": 4,
+        "Flick": 1.05,
+        "TailStrike": 1.05
+      },
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+    },
+    {
+      "file": "switch-inward-heelflip-low-physical-regular-contacts.jpg",
+      "type": "contacts",
+      "profile": "low",
+      "physicalStance": "regular",
+      "requestedEnumStance": "goofy",
+      "sha256": "7ca515c3f55b50a38952bb267288c5129eb161a4932bf8d572c681ef34f18aa7",
+      "glbSha256": "5a81b27563e11762a5ebcf4feb966a099dce03e7b1cf9d020b26c40eba74c285"
+    },
+    {
+      "file": "switch-inward-heelflip-low-physical-regular-landing.jpg",
+      "type": "landing-sequence",
+      "profile": "low",
+      "physicalStance": "regular",
+      "requestedEnumStance": "goofy",
+      "sha256": "a2172bf14dad4a71f8ed49b21bfa78c827e55e4450c958c26dcc285d99d04134",
+      "glbSha256": "5a81b27563e11762a5ebcf4feb966a099dce03e7b1cf9d020b26c40eba74c285",
+      "moments": [
+        1.3875,
+        1.4375,
+        1.4875,
+        1.5375,
+        1.5875,
+        1.6875,
+        1.8375
+      ]
+    },
+    {
+      "file": "switch-inward-heelflip-normal-physical-regular.jpg",
+      "type": "phases",
+      "profile": "normal",
+      "physicalStance": "regular",
+      "requestedEnumStance": "goofy",
+      "sourceRole": "DIRECT original physicalRegular",
+      "sha256": "bdebd5d8d9a53cef27d5008f787f969f4f49a5878aa1301b5f8c22dc4189d1fe",
+      "glbSha256": "15c7e0372e4bcf028675c4f503c24c897e75264f1a34ade29f423307729d7548",
+      "inputSha256": "5f7795c696b350490f47f9db39a871b8fe8a1f4b942fba40b5ebe46631d011e4",
+      "phaseMoments": {
+        "Pop": 0.8833333333333333,
+        "Rise": 0.9333333333333333,
+        "Guide": 1.05,
+        "Heel": 1.0666666666666667,
+        "Instep": 1.0666666666666667,
+        "Strike": 1.0666666666666667,
+        "FreeAir": 1.1333333333333333,
+        "Air": 1.25,
+        "FirstCatch": 1.4,
+        "Catch": 1.4333333333333333,
+        "Land": 1.4833333333333334,
+        "GenuineEnd": 2.466666666666667,
+        "Rollaway": 2.1333333333333333,
+        "Absorb": 1.5666666666666667,
+        "Recover": 1.9833333333333334,
+        "Load": 0.8,
+        "End": 4,
+        "Flick": 1.0666666666666667,
+        "TailStrike": 1.0666666666666667
+      },
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+    },
+    {
+      "file": "switch-inward-heelflip-normal-physical-regular-contacts.jpg",
+      "type": "contacts",
+      "profile": "normal",
+      "physicalStance": "regular",
+      "requestedEnumStance": "goofy",
+      "sha256": "f6a6d14bac9690ac2d7572daa8a45ebdcdb231586ebba80ca56477d86c1bcc4a",
+      "glbSha256": "15c7e0372e4bcf028675c4f503c24c897e75264f1a34ade29f423307729d7548"
+    },
+    {
+      "file": "switch-inward-heelflip-normal-physical-regular-landing.jpg",
+      "type": "landing-sequence",
+      "profile": "normal",
+      "physicalStance": "regular",
+      "requestedEnumStance": "goofy",
+      "sha256": "284937aa9cf0f3be8d865afa8f4c34d86debf117092d1c41539d94e76d4bef91",
+      "glbSha256": "15c7e0372e4bcf028675c4f503c24c897e75264f1a34ade29f423307729d7548",
+      "moments": [
+        1.41875,
+        1.46875,
+        1.51875,
+        1.56875,
+        1.61875,
+        1.71875,
+        1.86875
+      ]
+    },
+    {
+      "file": "switch-inward-heelflip-low-physical-goofy.jpg",
+      "type": "phases",
+      "profile": "low",
+      "physicalStance": "goofy",
+      "requestedEnumStance": "regular",
+      "sourceRole": "MIRROR physicalGoofy / reference pixels original",
+      "sha256": "38408e59ba08be9125bf88c685c5f8c9e1cb3a9258d5f8843f4a90b5015b0dfb",
+      "glbSha256": "3ba6d67a4933f5391438b0bd5dc8cddf1fbf8e2c4cad62e14afe20fd2b5ca59c",
+      "inputSha256": "9815cf4e5a157cbbfba5efb5822e98e50c64c0e566e66992555a6433a32fbe6b",
+      "phaseMoments": {
+        "Pop": 0.8833333333333333,
+        "Rise": 0.9333333333333333,
+        "Guide": 1.0333333333333334,
+        "Heel": 1.05,
+        "Instep": 1.05,
+        "Strike": 1.05,
+        "FreeAir": 1.1166666666666667,
+        "Air": 1.2166666666666666,
+        "FirstCatch": 1.3666666666666667,
+        "Catch": 1.3833333333333333,
+        "Land": 1.45,
+        "GenuineEnd": 2.3666666666666667,
+        "Rollaway": 2.05,
+        "Absorb": 1.5166666666666666,
+        "Recover": 1.9166666666666667,
+        "Load": 0.8166666666666667,
+        "End": 4,
+        "Flick": 1.05,
+        "TailStrike": 1.05
+      },
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+    },
+    {
+      "file": "switch-inward-heelflip-low-physical-goofy-contacts.jpg",
+      "type": "contacts",
+      "profile": "low",
+      "physicalStance": "goofy",
+      "requestedEnumStance": "regular",
+      "sha256": "17b35ca85a2b86d6de336db2040aaf0f54ac9c0b633c5892ef22969db9604fb5",
+      "glbSha256": "3ba6d67a4933f5391438b0bd5dc8cddf1fbf8e2c4cad62e14afe20fd2b5ca59c"
+    },
+    {
+      "file": "switch-inward-heelflip-low-physical-goofy-landing.jpg",
+      "type": "landing-sequence",
+      "profile": "low",
+      "physicalStance": "goofy",
+      "requestedEnumStance": "regular",
+      "sha256": "b23008171e81eacab6bdecde30e1a4bed2504c0d6f6210abe86c3cd0b04aa850",
+      "glbSha256": "3ba6d67a4933f5391438b0bd5dc8cddf1fbf8e2c4cad62e14afe20fd2b5ca59c",
+      "moments": [
+        1.3875,
+        1.4375,
+        1.4875,
+        1.5375,
+        1.5875,
+        1.6875,
+        1.8375
+      ]
+    },
+    {
+      "file": "switch-inward-heelflip-normal-physical-goofy.jpg",
+      "type": "phases",
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "requestedEnumStance": "regular",
+      "sourceRole": "MIRROR physicalGoofy / reference pixels original",
+      "sha256": "fa29448b095c1e31b48ec0e9e42094bef09d9c5cef799a8c93ee6c814d8cdcb4",
+      "glbSha256": "1ac5483b63f535d3f4f8679dc51da451d86e57143c7420252587b486f49c6613",
+      "inputSha256": "6883a81f4d81b61546762ac781c0281a37f56a80fc7c06475858f06fabff1194",
+      "phaseMoments": {
+        "Pop": 0.8833333333333333,
+        "Rise": 0.9333333333333333,
+        "Guide": 1.05,
+        "Heel": 1.0666666666666667,
+        "Instep": 1.0666666666666667,
+        "Strike": 1.0666666666666667,
+        "FreeAir": 1.1333333333333333,
+        "Air": 1.25,
+        "FirstCatch": 1.4,
+        "Catch": 1.4333333333333333,
+        "Land": 1.4833333333333334,
+        "GenuineEnd": 2.466666666666667,
+        "Rollaway": 2.1333333333333333,
+        "Absorb": 1.5666666666666667,
+        "Recover": 1.9833333333333334,
+        "Load": 0.8,
+        "End": 4,
+        "Flick": 1.0666666666666667,
+        "TailStrike": 1.0666666666666667
+      },
+      "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+    },
+    {
+      "file": "switch-inward-heelflip-normal-physical-goofy-contacts.jpg",
+      "type": "contacts",
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "requestedEnumStance": "regular",
+      "sha256": "4bc05ecebc47a47df29ea8e36630f9418e566f2218fdebe186fbbf11eba5dd13",
+      "glbSha256": "1ac5483b63f535d3f4f8679dc51da451d86e57143c7420252587b486f49c6613"
+    },
+    {
+      "file": "switch-inward-heelflip-normal-physical-goofy-landing.jpg",
+      "type": "landing-sequence",
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "requestedEnumStance": "regular",
+      "sha256": "310eaa67528a28f031e1f3bb81cc788404c113fefc619510dadad40e3cd5636a",
+      "glbSha256": "1ac5483b63f535d3f4f8679dc51da451d86e57143c7420252587b486f49c6613",
+      "moments": [
+        1.41875,
+        1.46875,
+        1.51875,
+        1.56875,
+        1.61875,
+        1.71875,
+        1.86875
+      ]
+    }
+  ],
+  "renderSourceRevision": "2650bd14fd8db2431d105a0c595a6326af76b1f1",
+  "sourceIntegration": {
+    "revision": "90a5eb5857144989b8d33af78c6877179fa725bd",
+    "baseRevision": "a1d24c4c403c30993a3758f256cf7ebb38532a87",
+    "renderReuse": "Original rendered/managed revision remains2650bd14. Rebase preserves the source data, all three family adapters and every shared pose source byte-exact. The only included C# change is the independent native-foot acquisition fix from751; no native render equivalence is claimed.",
+    "currentCompile": "All81 pinned source files compile successfully against actual Shadow191 game/Unity +5 runtime/Bep +160 framework references; compile only, no native run.",
+    "viewerPlayback": "Four-route actual phase inspection passed; complete continuous1x/quarter motion review incomplete. Claude offline verdict pending.",
+    "nativeAcceptance": false,
+    "compileSourceRevision": "90a5eb5857144989b8d33af78c6877179fa725bd",
+    "compileReceiptSha256": "a6e07bdc4427e9b9fac1f994bcc9d9d5bda2ab92d81ba03e65f8133966d55bee",
+    "compiledDllSha256": "08da343835a9510bfe3f24777a63ab9b4e88ccd8c9504c48002450587f0a6650"
+  }
+}
