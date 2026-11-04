@@ -249,6 +249,51 @@ public static class SkateCaptureFootScenarios
         });
     }
 
+    private static void GeometryConfirmation()
+    {
+        foreach (bool unreadable in new[] { false, true })
+        Scenario("stable measured geometry across weighted pose signatures " + (unreadable ? "GPU source" : "CPU source"), () =>
+        {
+            var model = new Model(); model.WeightedLeg(); if (unreadable) model.Gpu();
+            SkateFootContacts.UseView(false, 111); model.Tick();
+            model.LeftFoot.localRotation = new Quaternion { y = (float)Math.Sin(.1), w = (float)Math.Cos(.1) };
+            model.Tick();
+            Require(SkateFootContacts.Ready && model.Renderer.Bakes == 2 && !SkateFootContacts.Status.Contains("pending"),
+                "Identical measured geometry could not confirm after a pose-signature change");
+            object fit = SkateFootContacts.LeftFitter; model.Tick();
+            Require(model.Renderer.Bakes == 2 && ReferenceEquals(fit, SkateFootContacts.LeftFitter), "Confirmed current pose was not cached");
+            for (int n = 2; n <= 4; n++)
+            {
+                model.LeftFoot.localRotation = new Quaternion { y = (float)Math.Sin(n * .1), w = (float)Math.Cos(n * .1) };
+                model.Tick();
+            }
+            Unavailable("Pose changes exceeded the fixed calibration snapshot cap");
+            Require(model.Renderer.Bakes == 4 && SkateFootContacts.Status.Contains("snapshot budget exhausted"), "Pose changes received extra snapshots");
+        });
+        Scenario("changed source cannot reuse an old geometry confirmation", () =>
+        {
+            var model = new Model(); model.WeightedLeg(); SkateFootContacts.UseView(false, 112); model.Tick();
+            model.Renderer.Mesh.SourceWeights[1] = new BoneWeight { boneIndex0 = 0, weight0 = .5f, boneIndex1 = 4, weight1 = .5f };
+            model.Tick();
+            Require(SkateFootContacts.Ready && SkateFootContacts.Status.Contains("pending"), "A new source key inherited the old confirmation");
+            model.Tick();
+            Require(model.Renderer.Bakes == 3 && !SkateFootContacts.Status.Contains("pending"), "New source failed its own measured confirmation");
+        });
+        Scenario("changing measured geometry still exhausts four snapshots", () =>
+        {
+            var model = new Model(); model.WeightedLeg(); model.Renderer.BakeOffsets = new[] { 0f, .001f, .002f, .003f };
+            SkateFootContacts.UseView(false, 113);
+            for (int n = 0; n < 4; n++)
+            {
+                model.LeftFoot.localRotation = new Quaternion { y = (float)Math.Sin(n * .1), w = (float)Math.Cos(n * .1) };
+                model.Tick();
+            }
+            Unavailable("Genuinely moving weighted geometry was marked stable");
+            Require(model.Renderer.Bakes == 4 && SkateFootContacts.Status.Contains("did not stabilize"), "Geometry stability or snapshot bound weakened");
+            model.Tick(); Require(model.Renderer.Bakes == 4, "Unstable geometry got a fifth snapshot");
+        });
+    }
+
     private static void GpuRefusal(string name, Action<Mesh> change, bool wideIndices = false)
     {
         Scenario("unreadable source refusal: " + name, () =>
@@ -388,7 +433,7 @@ public static class SkateCaptureFootScenarios
         InvalidGeometry("unnormalized weights", model => model.Renderer.Mesh.SourceWeights[0] = new BoneWeight { boneIndex0 = 0, weight0 = .5f });
         InvalidGeometry("invalid index", model => model.Renderer.Mesh.SourceTriangles[0] = 6);
         InvalidGeometry("nonuniform scale", model => model.Renderer.transform.localScale = new Vector3(2, 1, 1));
-        GpuSources(); WeightedSources();
+        GpuSources(); WeightedSources(); GeometryConfirmation();
         Console.WriteLine("skate_capture_foot_acquisition: " + passed + " passed, " + failed + " failed");
         return failed == 0 ? 0 : 1;
     }
