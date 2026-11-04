@@ -19,6 +19,18 @@ env:
   CARGO_INCREMENTAL: 0
 
 jobs:
+  skate-build-routes:
+    name: Skate build-menu route regressions
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Approved production-source inventory and build routes
+        run: dotnet run --project crates/approved_tests/skate/SkateBuildRouteScenarios.csproj --configuration Release
+
   skate-capture-feet:
     name: Skate foot acquisition regressions
     runs-on: ubuntu-latest
