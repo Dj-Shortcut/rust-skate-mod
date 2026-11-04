@@ -1,0 +1,523 @@
+{
+  "format": "a7-nollie-inward-review/1",
+  "id": "nollie-inward-heelflip-source-keyed-v1",
+  "sourceCommit": "a69893a5b0b25f0d6a99ac4e159ee98fa0f05794",
+  "runtimeBase": "610b69eb986cba2688308f7b1ba442c5c411ebb0",
+  "sourcePackSha256": "8f835c405dda176bbb72e98263d34eceec7b900cf49f516abbec8f244257e88c",
+  "sourceVideoSha256": "531eb85fd1d292c229836f6eedc4adec422aaf6dd644040c49c7480b2beadad7",
+  "sourceReviewed": false,
+  "sourceFrames": [
+    4770,
+    4870
+  ],
+  "sourceShotFrames": [
+    4759,
+    4881
+  ],
+  "filmedStance": "goofy",
+  "directPhysicalPreview": "goofy",
+  "mirrorPhysicalPreview": "regular",
+  "detectorMissingFrames": [
+    4817,
+    4818
+  ],
+  "occludedAnkleHeelFrames": [
+    4817,
+    4818,
+    4819,
+    4820,
+    4821
+  ],
+  "sourceFiles": {
+    "scripts/author_skate_nollie_inward_heelflip.py": "6876f85c83d3cd3ed42d34417d26032034a07d1e4b1fc7d59d5e528f83eb109b",
+    "assets/authored/animation/nollie-inward-heelflip-keyed/captured-body.json": "536f260561b65f0f6591d32a7e9c57b5a58b29db0ab9cfa5c5db2ad37f0afe8e",
+    "assets/authored/animation/nollie-inward-heelflip-keyed/constraints.json": "5250cfa94ff19498635b394fb50cdc457ac95c437b1c33c19ab00255aaaba185"
+  },
+  "sourceMotionChanged": false,
+  "privateFamilyAdapters": {
+    "base": "610b69eb986cba2688308f7b1ba442c5c411ebb0",
+    "scope": "Private three-file preview only. Root owns integrated shared edits. Complete current-main copies preserve existing entries.",
+    "files": [
+      {
+        "path": "mods/rust/shared/SkateCaptureKeyedPlayback.cs",
+        "before": "6eda8310b91f3076b85130e2a55de47d6b3df40ba37cc50353f5bae00eb445b7",
+        "after": "f5aa454d761b4a62965f8cbd7ddff36f3136a837e45aa1cca56fab84ef85487f"
+      },
+      {
+        "path": "mods/rust/shared/SkateCaptureVariants.cs",
+        "before": "20916cdcc44cd57c3d47b83120db388e9c1c68b013e907e28f1442cd00ffdb6b",
+        "after": "f6ef3f2187a5e44064a00d840c0f7ed42fb99a57120e5601d504b037616bdf17"
+      },
+      {
+        "path": "mods/rust/client/src/SkateCapturedTricks.cs",
+        "before": "4eca17348b9d891e9c8aafd1861a6c68eaa7f367351c45ef19e1936f2d381842",
+        "after": "a815ebdc3418d82a3c67eac43c7cb40f6d90c3ee272dc647c0515ab51e6d37c1"
+      }
+    ]
+  },
+  "skinSha256": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9",
+  "boardParts": 13,
+  "limbLengths": "fixed",
+  "scope": "Actual product Pad/full32Hz Step/Land/scoring to60Hz capture/body, with controlled native geometry/foot acquisition and proposed private family copies. No Rust/Shadow runtime admission.",
+  "phaseInspection": "All4 phase/contact/recovery sequences inspected. Catch/Land bent; Rollaway/End soft knees. No source-pelvis correction needed.",
+  "continuousFourCaseReview": "pending",
+  "claudeOfflineVerdict": "pending",
+  "nativeShadow": "pending",
+  "cases": [
+    {
+      "profile": "low",
+      "requestedEnumStance": "goofy",
+      "physicalStance": "regular",
+      "sourceRelation": "mirror",
+      "actualPadPops": 1,
+      "heldContinuation": 0,
+      "bodySpin": 0,
+      "scoredNames": [
+        "Combo",
+        "Nollie Inward Heelflip"
+      ],
+      "capturedAir": 34,
+      "totalAir": 34,
+      "observedFlightSeconds": 0.5625,
+      "ordinaryGroundCaptureOffAt4s": true,
+      "traceSha256": "52ba382683e756a8e403d5d5fa0e707758f0140f8654b4381603939b0f6baf0b",
+      "bodySha256": "6f10b8940ea81167bf4952ceb0f91d989f764efac96319a58078c77abb643654",
+      "inputSha256": "a3fc5a77e6fad06f96477b522af53c875e882c7bd9e69d4ec862ad6120437165",
+      "glbSha256": "86b0c12402808b565b0c421665badc37e7e1d6258abaaebb8d47e08824ff1e33",
+      "phaseMoments": {
+        "Load": 0.7833333333333333,
+        "Pop": 0.8833333333333333,
+        "Heel": 1.05,
+        "Air": 1.2166666666666666,
+        "Catch": 1.3833333333333333,
+        "Land": 1.45,
+        "Rollaway": 2.1166666666666667,
+        "End": 4
+      },
+      "reviewPhaseAnnotations": {
+        "Heel": {
+          "requestedOriginalFrame": 4817.2,
+          "actualOriginalFrame": 4817.250008115812,
+          "t": 1.05,
+          "note": "Review selection during toe-up rear-heel guidance, before authored release4818.9. The motion/GLB is unchanged; ankles/heel are occluded in original4817\u20134821."
+        }
+      }
+    },
+    {
+      "profile": "normal",
+      "requestedEnumStance": "goofy",
+      "physicalStance": "regular",
+      "sourceRelation": "mirror",
+      "actualPadPops": 1,
+      "heldContinuation": 0,
+      "bodySpin": 0,
+      "scoredNames": [
+        "Combo",
+        "Nollie Inward Heelflip"
+      ],
+      "capturedAir": 36,
+      "totalAir": 36,
+      "observedFlightSeconds": 0.59375,
+      "ordinaryGroundCaptureOffAt4s": true,
+      "traceSha256": "b39a2bf1700e8f053e7c9bff3aeb260740f5feca763b4f9a2143b8587499ac1c",
+      "bodySha256": "37eccd61fa713f89e620aca039234ddbae23e21cabf56b177baf8886d0beb3a7",
+      "inputSha256": "08b4e064987f5ac341e5d80bfe98636825b37bcc82b2fd703229456a8457cd94",
+      "glbSha256": "ad1a1afc8b7a127fb9bd4b411e0a2f6314de7a5e1e7ae9b02a44507dc037b13a",
+      "phaseMoments": {
+        "Load": 0.7833333333333333,
+        "Pop": 0.8833333333333333,
+        "Heel": 1.0666666666666667,
+        "Air": 1.2333333333333334,
+        "Catch": 1.4166666666666667,
+        "Land": 1.4833333333333334,
+        "Rollaway": 2.2,
+        "End": 4
+      },
+      "reviewPhaseAnnotations": {
+        "Heel": {
+          "requestedOriginalFrame": 4817.2,
+          "actualOriginalFrame": 4817.388886515741,
+          "t": 1.0666666666666667,
+          "note": "Review selection during toe-up rear-heel guidance, before authored release4818.9. The motion/GLB is unchanged; ankles/heel are occluded in original4817\u20134821."
+        }
+      }
+    },
+    {
+      "profile": "low",
+      "requestedEnumStance": "regular",
+      "physicalStance": "goofy",
+      "sourceRelation": "direct",
+      "actualPadPops": 1,
+      "heldContinuation": 0,
+      "bodySpin": 0,
+      "scoredNames": [
+        "Combo",
+        "Nollie Inward Heelflip"
+      ],
+      "capturedAir": 34,
+      "totalAir": 34,
+      "observedFlightSeconds": 0.5625,
+      "ordinaryGroundCaptureOffAt4s": true,
+      "traceSha256": "38ed14ede709a5a535e395f875fae397ceef53a22350e1d61b9ef73ee8005c8f",
+      "bodySha256": "1b968f9e09b9ae02913d7c1640e69cd1737c56074a0ba19b3120ce46a0802bd0",
+      "inputSha256": "b958299b8d2fa98f0fe1ee8a31013cab523a49b937ebb09bfa7ed7529f136904",
+      "glbSha256": "32f98c80f0659cc422aa857a1bc89860793e301177ceb09372e1af32c844df2f",
+      "phaseMoments": {
+        "Load": 0.7833333333333333,
+        "Pop": 0.8833333333333333,
+        "Heel": 1.05,
+        "Air": 1.2166666666666666,
+        "Catch": 1.3833333333333333,
+        "Land": 1.45,
+        "Rollaway": 2.1166666666666667,
+        "End": 4
+      },
+      "reviewPhaseAnnotations": {
+        "Heel": {
+          "requestedOriginalFrame": 4817.2,
+          "actualOriginalFrame": 4817.250008115812,
+          "t": 1.05,
+          "note": "Review selection during toe-up rear-heel guidance, before authored release4818.9. The motion/GLB is unchanged; ankles/heel are occluded in original4817\u20134821."
+        }
+      }
+    },
+    {
+      "profile": "normal",
+      "requestedEnumStance": "regular",
+      "physicalStance": "goofy",
+      "sourceRelation": "direct",
+      "actualPadPops": 1,
+      "heldContinuation": 0,
+      "bodySpin": 0,
+      "scoredNames": [
+        "Combo",
+        "Nollie Inward Heelflip"
+      ],
+      "capturedAir": 36,
+      "totalAir": 36,
+      "observedFlightSeconds": 0.59375,
+      "ordinaryGroundCaptureOffAt4s": true,
+      "traceSha256": "923d16ceec8500f3ad99df1cf7e1719da75a845bab3a9759e894d59fdd534480",
+      "bodySha256": "b120e226e9ef7a4f25de23c4292b53a2082eb557cec5fdb5bbabe8aace4fd27e",
+      "inputSha256": "5165536e694bc38d74203e34ce85dd90de0516dc9ddfb6ccb477373a50d7a691",
+      "glbSha256": "d3fb942a68b1f1fdd47db8f617fbaac81c91a353049f170cd597a3d97a2db8ee",
+      "phaseMoments": {
+        "Load": 0.7833333333333333,
+        "Pop": 0.8833333333333333,
+        "Heel": 1.0666666666666667,
+        "Air": 1.2333333333333334,
+        "Catch": 1.4166666666666667,
+        "Land": 1.4833333333333334,
+        "Rollaway": 2.2,
+        "End": 4
+      },
+      "reviewPhaseAnnotations": {
+        "Heel": {
+          "requestedOriginalFrame": 4817.2,
+          "actualOriginalFrame": 4817.388886515741,
+          "t": 1.0666666666666667,
+          "note": "Review selection during toe-up rear-heel guidance, before authored release4818.9. The motion/GLB is unchanged; ankles/heel are occluded in original4817\u20134821."
+        }
+      }
+    }
+  ],
+  "sheets": [
+    {
+      "file": "docs/review-media/a7-nollie-inward-heelflip/physical-regular-low-phases.jpg",
+      "sha256": "b6d4bd1f8aad80743cf0a1f0f9eadddacabc26113f657c3e8bc186f9e0f45459",
+      "profile": "low",
+      "physicalStance": "regular",
+      "requestedStance": "goofy",
+      "glbSha256": "86b0c12402808b565b0c421665badc37e7e1d6258abaaebb8d47e08824ff1e33",
+      "frames": [
+        "Load",
+        "Pop",
+        "Heel",
+        "Air",
+        "Catch",
+        "Land",
+        "Rollaway",
+        "End"
+      ]
+    },
+    {
+      "file": "docs/review-media/a7-nollie-inward-heelflip/physical-regular-low-contacts.jpg",
+      "sha256": "412b6a6c22783c74d7cebe5acf0406983fcb2742aed763735d7517bdbd94c5a2",
+      "profile": "low",
+      "physicalStance": "regular",
+      "requestedStance": "goofy",
+      "glbSha256": "86b0c12402808b565b0c421665badc37e7e1d6258abaaebb8d47e08824ff1e33",
+      "frames": [
+        "HeelFeet",
+        "AirFeet",
+        "CatchFeet",
+        "LandFeet"
+      ]
+    },
+    {
+      "file": "docs/review-media/a7-nollie-inward-heelflip/physical-regular-low-recovery.jpg",
+      "sha256": "623a557b02db179b41ff9c2844cc15a434f25eba095c528de448630763bd1b97",
+      "profile": "low",
+      "physicalStance": "regular",
+      "requestedStance": "goofy",
+      "glbSha256": "86b0c12402808b565b0c421665badc37e7e1d6258abaaebb8d47e08824ff1e33",
+      "frames": [
+        "Land",
+        "Rollaway",
+        "End"
+      ]
+    },
+    {
+      "file": "docs/review-media/a7-nollie-inward-heelflip/physical-regular-normal-phases.jpg",
+      "sha256": "5fdcefe9a85eb407f6ddd7c9cd5b8b49322e89b3c4cb6248dbb027981f872b73",
+      "profile": "normal",
+      "physicalStance": "regular",
+      "requestedStance": "goofy",
+      "glbSha256": "ad1a1afc8b7a127fb9bd4b411e0a2f6314de7a5e1e7ae9b02a44507dc037b13a",
+      "frames": [
+        "Load",
+        "Pop",
+        "Heel",
+        "Air",
+        "Catch",
+        "Land",
+        "Rollaway",
+        "End"
+      ]
+    },
+    {
+      "file": "docs/review-media/a7-nollie-inward-heelflip/physical-regular-normal-contacts.jpg",
+      "sha256": "e7dcb5c368594fc4900015d3a249f93801ae1cc3f652882a1d6a020ac66d43a1",
+      "profile": "normal",
+      "physicalStance": "regular",
+      "requestedStance": "goofy",
+      "glbSha256": "ad1a1afc8b7a127fb9bd4b411e0a2f6314de7a5e1e7ae9b02a44507dc037b13a",
+      "frames": [
+        "HeelFeet",
+        "AirFeet",
+        "CatchFeet",
+        "LandFeet"
+      ]
+    },
+    {
+      "file": "docs/review-media/a7-nollie-inward-heelflip/physical-regular-normal-recovery.jpg",
+      "sha256": "2a5643cdf43e9fe3aede2b6e08e03a28edddee12e06c24c711f306eed09a5f46",
+      "profile": "normal",
+      "physicalStance": "regular",
+      "requestedStance": "goofy",
+      "glbSha256": "ad1a1afc8b7a127fb9bd4b411e0a2f6314de7a5e1e7ae9b02a44507dc037b13a",
+      "frames": [
+        "Land",
+        "Rollaway",
+        "End"
+      ]
+    },
+    {
+      "file": "docs/review-media/a7-nollie-inward-heelflip/physical-goofy-low-phases.jpg",
+      "sha256": "0589fdcc394b89294224ada25587afa62d040464607e734b8d6a715f2d05b737",
+      "profile": "low",
+      "physicalStance": "goofy",
+      "requestedStance": "regular",
+      "glbSha256": "32f98c80f0659cc422aa857a1bc89860793e301177ceb09372e1af32c844df2f",
+      "frames": [
+        "Load",
+        "Pop",
+        "Heel",
+        "Air",
+        "Catch",
+        "Land",
+        "Rollaway",
+        "End"
+      ]
+    },
+    {
+      "file": "docs/review-media/a7-nollie-inward-heelflip/physical-goofy-low-contacts.jpg",
+      "sha256": "962512b5cc6017cc1a3d17c547805176fb19a502b5fc5b7d14984e459d4008bf",
+      "profile": "low",
+      "physicalStance": "goofy",
+      "requestedStance": "regular",
+      "glbSha256": "32f98c80f0659cc422aa857a1bc89860793e301177ceb09372e1af32c844df2f",
+      "frames": [
+        "HeelFeet",
+        "AirFeet",
+        "CatchFeet",
+        "LandFeet"
+      ]
+    },
+    {
+      "file": "docs/review-media/a7-nollie-inward-heelflip/physical-goofy-low-recovery.jpg",
+      "sha256": "611e7bc92f54fe61f4522708ae63795b6ec18b2f87ab6901c3ce9d41f2659d2b",
+      "profile": "low",
+      "physicalStance": "goofy",
+      "requestedStance": "regular",
+      "glbSha256": "32f98c80f0659cc422aa857a1bc89860793e301177ceb09372e1af32c844df2f",
+      "frames": [
+        "Land",
+        "Rollaway",
+        "End"
+      ]
+    },
+    {
+      "file": "docs/review-media/a7-nollie-inward-heelflip/physical-goofy-normal-phases.jpg",
+      "sha256": "f5ba86019fda8efdc9b5eba63952b2ab8b5f71c7a150fdbf4c407cc1d5ef76d1",
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "requestedStance": "regular",
+      "glbSha256": "d3fb942a68b1f1fdd47db8f617fbaac81c91a353049f170cd597a3d97a2db8ee",
+      "frames": [
+        "Load",
+        "Pop",
+        "Heel",
+        "Air",
+        "Catch",
+        "Land",
+        "Rollaway",
+        "End"
+      ]
+    },
+    {
+      "file": "docs/review-media/a7-nollie-inward-heelflip/physical-goofy-normal-contacts.jpg",
+      "sha256": "aae21980e0d72eda58f418d4b85c0f153f5c36a8f08ae9b2c8e664f6781b5134",
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "requestedStance": "regular",
+      "glbSha256": "d3fb942a68b1f1fdd47db8f617fbaac81c91a353049f170cd597a3d97a2db8ee",
+      "frames": [
+        "HeelFeet",
+        "AirFeet",
+        "CatchFeet",
+        "LandFeet"
+      ]
+    },
+    {
+      "file": "docs/review-media/a7-nollie-inward-heelflip/physical-goofy-normal-recovery.jpg",
+      "sha256": "d2cd5220598c045f87f5aea70b1b7776eb2d8da2071a775cddc5a423b187dda1",
+      "profile": "normal",
+      "physicalStance": "goofy",
+      "requestedStance": "regular",
+      "glbSha256": "d3fb942a68b1f1fdd47db8f617fbaac81c91a353049f170cd597a3d97a2db8ee",
+      "frames": [
+        "Land",
+        "Rollaway",
+        "End"
+      ]
+    }
+  ],
+  "sameExporterOrdinaryGroundBaseline": {
+    "format": "same-exporter-ordinary-ground-stance-check/1",
+    "runtimeBase": "610b69eb986cba2688308f7b1ba442c5c411ebb0",
+    "result": "The reversal is already present in unchanged ordinary Ground at0s with no capture, and stays the same at candidate pre-pop. It is a frozen route/rig review convention, not introduced by this candidate or relabelling. This bounds offline proxy labels only; native anatomical stance semantics remain unverified.",
+    "cases": [
+      {
+        "requestedEnum": "goofy",
+        "profile": "low",
+        "label": "ordinaryGround0",
+        "t": 0,
+        "physicalMode": "Ground",
+        "captureActive": false,
+        "physicalStance": "regular",
+        "leftMinusRightAlongInitialNose": 0.42000497467168196,
+        "actualGLBBoardForwardDotRecordedInitialNose": 1.0,
+        "sameOriginalSkin": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+      },
+      {
+        "requestedEnum": "goofy",
+        "profile": "low",
+        "label": "lastGroundBeforePop",
+        "t": 0.8666666666666667,
+        "physicalMode": "Ground",
+        "captureActive": false,
+        "physicalStance": "regular",
+        "leftMinusRightAlongInitialNose": 0.36576590511901275,
+        "actualGLBBoardForwardDotRecordedInitialNose": 1.0,
+        "sameOriginalSkin": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+      },
+      {
+        "requestedEnum": "goofy",
+        "profile": "normal",
+        "label": "ordinaryGround0",
+        "t": 0,
+        "physicalMode": "Ground",
+        "captureActive": false,
+        "physicalStance": "regular",
+        "leftMinusRightAlongInitialNose": 0.42000497467168196,
+        "actualGLBBoardForwardDotRecordedInitialNose": 1.0,
+        "sameOriginalSkin": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+      },
+      {
+        "requestedEnum": "goofy",
+        "profile": "normal",
+        "label": "lastGroundBeforePop",
+        "t": 0.8666666666666667,
+        "physicalMode": "Ground",
+        "captureActive": false,
+        "physicalStance": "regular",
+        "leftMinusRightAlongInitialNose": 0.3657656913435372,
+        "actualGLBBoardForwardDotRecordedInitialNose": 1.0,
+        "sameOriginalSkin": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+      },
+      {
+        "requestedEnum": "regular",
+        "profile": "low",
+        "label": "ordinaryGround0",
+        "t": 0,
+        "physicalMode": "Ground",
+        "captureActive": false,
+        "physicalStance": "goofy",
+        "leftMinusRightAlongInitialNose": -0.42000491512902816,
+        "actualGLBBoardForwardDotRecordedInitialNose": 1.0,
+        "sameOriginalSkin": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+      },
+      {
+        "requestedEnum": "regular",
+        "profile": "low",
+        "label": "lastGroundBeforePop",
+        "t": 0.8666666666666667,
+        "physicalMode": "Ground",
+        "captureActive": false,
+        "physicalStance": "goofy",
+        "leftMinusRightAlongInitialNose": -0.3657821838726836,
+        "actualGLBBoardForwardDotRecordedInitialNose": 1.0,
+        "sameOriginalSkin": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+      },
+      {
+        "requestedEnum": "regular",
+        "profile": "normal",
+        "label": "ordinaryGround0",
+        "t": 0,
+        "physicalMode": "Ground",
+        "captureActive": false,
+        "physicalStance": "goofy",
+        "leftMinusRightAlongInitialNose": -0.42000491512902816,
+        "actualGLBBoardForwardDotRecordedInitialNose": 1.0,
+        "sameOriginalSkin": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+      },
+      {
+        "requestedEnum": "regular",
+        "profile": "normal",
+        "label": "lastGroundBeforePop",
+        "t": 0.8666666666666667,
+        "physicalMode": "Ground",
+        "captureActive": false,
+        "physicalStance": "goofy",
+        "leftMinusRightAlongInitialNose": -0.365780812557575,
+        "actualGLBBoardForwardDotRecordedInitialNose": 1.0,
+        "sameOriginalSkin": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
+      }
+    ]
+  },
+  "integratedReplay": {
+    "sourceSnapshot": "687308ef7b069f5d8c6e0d3e4bd58250fba45244",
+    "base": "0a33d3a80573fafc4e3518791940b92bb788c85a",
+    "actualProductFiles": true,
+    "allFourTraceAndBodyOutputsMatchMedia": true,
+    "existingCatalogRowsPreserved": 46,
+    "appendedCatalogRow": 47,
+    "sdkCompile": {
+      "sourceCount": 81,
+      "hashCheckedReferenceCount": 356,
+      "languageVersion": "7.3"
+    },
+    "nativeRuntimeAccepted": false
+  }
+}
