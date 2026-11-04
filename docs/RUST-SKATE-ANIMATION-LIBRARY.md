@@ -117,7 +117,7 @@ names the state and, where there is one, the clip on `main`: **native accepted**
 authored controls on `main`, `reviewed=false`, not yet viewed as a whole), **kind
 only** (registry signature without a source route), **open PR** (draft, not on
 `main`), or **none**. Source video ids are the Berrics references the authoring
-docs name; the footage itself stays private. State as of `main` after #724; the gate's 1 and 2 November stills reviews are below the table.
+docs name; the footage itself stays private. State as of `main` after #747; the gate's 1 and 2 November stills reviews are below the table.
 
 | Source family | Normal | Fakie | Nollie | Switch |
 | --- | --- | --- | --- | --- |
@@ -128,7 +128,7 @@ docs name; the footage itself stays private. State as of `main` after #724; the 
 | FS pop shove-it | `fs-pop-shove-it-source-keyed-v1` (`fs-pop-shove-keyed/`, #675, Kroetkov `YcmPDIj2BFo` 130.3–133.2 s, filmed goofy), **offline reviewed** 1 Nov (air frame 216 shows the deck end-on and steeply pitched; confirm against the source frame); FS 360: `fs-360-shove-it-source-keyed-v1` (`fs360-shove-keyed/`, #653 with the pop extension of #676, an authored derivation from the FS 180 reconstruction, no filmed FS 360 take), **offline reviewed** 1 Nov (mid-air carrier tilt shows the wheels from behind; confirm it stays under the scoop's 40°) | **offline reviewed** 2 Nov after #730: own-source Fakie FS Pop Shove-it (#724, `docs/review-media/a5-fakie-fs-pop-shove/`) | **offline reviewed** 2 Nov after #727: own-source Nollie FS Pop Shove-it (#722, `docs/review-media/a5-nollie-fs-pop-shove/`) | **offline reviewed** 2 Nov after #728: own-source Switch FS Pop Shove-it (#723, `docs/review-media/a5-switch-fs-pop-shove/`) |
 | 360 flip | source present: `360-flip-source-keyed-v1` (`treflip-keyed/`, `_oRoo1x1uzM` ~253 s, filmed goofy); Varial Kickflip: `varial-kickflip-derived-tre-v1` (`varial-kickflip-derived/`, #640 with the compact authored upper body of #678, a Tre derivation, no filmed take), **offline reviewed** 1 Nov after #678 (no arch, bent asymmetric arms through the catch, feet close to the deck; the normal/regular air deck gap is still the largest of the family) | **offline reviewed** 2 Nov after #742: own-source Fakie 360 Flip (#740, catch and landing repaired in #742, `docs/review-media/a7-fakie-360-flip/`) | **offline reviewed**: `nollie-360-flip-source-keyed-v1` (`nollie360-keyed/`, `PqJZcwTY1QE` t=153) | **offline reviewed** 2 Nov: own-source Switch 360 Flip (#745, `docs/review-media/a7-switch-360-flip/`) |
 | Hardflip | source present: `hardflip-source-keyed-v1` (`hardflip-keyed/`, `_oRoo1x1uzM` t=192) | **offline reviewed** 2 Nov: own-source Fakie Hardflip (#735, `docs/review-media/a6-fakie-hardflip/`) | **offline reviewed** 2 Nov: own-source Nollie Hardflip (#733, `docs/review-media/a6-nollie-hardflip/`) | **offline reviewed** 2 Nov after #738: Switch Hardflip (#734, `docs/review-media/a6-switch-hardflip-landing-repair/`) |
-| Inward heelflip | **offline reviewed** 1 Nov: authored Heel + BS 180 derivation (#687, `docs/review-media/a1-inward-heelflip-derived/`; no verified filmed take in the cached Berrics windows, #672), reversed-deck catch | none | none (a Nollie Inward Heelflip label near 158 s of `PqJZcwTY1QE`, unverified) | none (a Switch Inward Heelflip label near 556 s, unverified) |
+| Inward heelflip | **offline reviewed** 1 Nov: authored Heel + BS 180 derivation (#687, `docs/review-media/a1-inward-heelflip-derived/`; no verified filmed take in the cached Berrics windows, #672), reversed-deck catch | none; batch A7 (#736) in progress on Codex's isolated branch, no PR yet: the 190–245 s window of `8r83UjKi-L0` was rejected on 2 Nov (body half-turn, scoreboard mismatch), a window near 145–166 s of the same video is being checked | none; A7 in progress, no PR yet (a Nollie Inward Heelflip label near 158 s of `PqJZcwTY1QE`, unverified) | none; A7 in progress, no PR yet: Codex's candidate is the landed Rodriguez take `PqJZcwTY1QE` frames 16575–16685 (~553.1–556.7 s), actor/cut/heel audit before authoring |
 | BS 180 | **offline reviewed** 1 Nov after #697: own-source BS 180 (#693, `docs/review-media/a2-bs180/`) | **offline reviewed** 2 Nov after #710: own-source BS Halfcab (#704, `docs/review-media/a3-fakie-bs180/`) | combined only: `nollie-backside-180-heelflip` (`nollie-bs180-heelflip-air/`, `PqJZcwTY1QE` t=115), **offline reviewed**; not a standalone BS 180 reference | none |
 | FS 180 | **offline reviewed** 1 Nov: own-source FS 180 with one coupled rider-and-board half-turn (#692, `docs/review-media/2026-11-01-a2-fs180/`) | **offline reviewed** 1 Nov: own-source FS Halfcab (#702, `docs/review-media/a3-fakie-fs180/`) | none | none |
 
@@ -145,7 +145,14 @@ reference and is not counted; the Varial Kickflip is a reviewed derivative insid
 the 360-flip slot, as are the held Double Kickflip, BS 360 and FS 360 inside
 theirs), 5 source present (normal kickflip, heelflip, BS pop shove-it, 360 flip,
 hardflip), 7 without a source.
-Nothing is native accepted. Outside the 40 slots, the normal Impossible has its own
+Nothing is native accepted. The first Shadow test of the reviewed library (2 Nov,
+Codex's sealed 31-clip bundle on the frozen #743 source, reported in #584) still
+showed the previous procedural animations: the 31 approved variants preloaded,
+then capture fell back because foot-contact acquisition had used up its
+three-failure budget. #747 scopes that budget to each view/model epoch and keeps
+the first refusal readable; the acquisition failure itself is not yet explained,
+so the next Shadow session is the first that can show a captured trick natively.
+Outside the 40 slots, the normal Impossible has its own
 board-path adapter and controls (`impossible-keyed/`, `_oRoo1x1uzM`), source
 present. Batches 2 and 4–7 (riding, grabs, grinds, oldschool, transition) have
 procedural source and no capture record; their state is in the gate table at the
