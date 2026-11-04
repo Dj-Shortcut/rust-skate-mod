@@ -1,0 +1,802 @@
+{
+  "format": "authored-switch-inward-heelflip-controls/1",
+  "id": "switch-inward-heelflip-source-keyed-v1",
+  "movementKind": "switch-inward-heelflip",
+  "sourceBodySha256": "d7796a0409a83451ab825b93777bfd9c2201d5bdd0d7da93a1b5246228c727b9",
+  "geometrySha256": "806a59f06a0f28eb0a81550675e2cff391bf27b286f788690b65ed857794d4c5",
+  "geometryCodeSha256": {
+    "author_skate_ollie.py": "98ac9495fd5db440194e7f3438d9c4791f30b7fe4a65fcb4c8f6944a305945ac",
+    "author_skate_bs_pop_shove.py": "01f0a04414f76671f9c442e13a0b7f210d2c6b2eb1e67cf509cfa22a562745e5",
+    "author_skate_kickflip.py": "62c7e4ee82ba37bd3508989981a5e1c656d56f2c0378d2935389141946e42388",
+    "author_skate_treflip.py": "cb8b012ef99f7a98920c8e114948cfa7b2540b9567db7f40450da568bee91ac9",
+    "author_skate_kickflip_hybrid.py": "8991d4064933ce8a00c251bad070456c9f1cad31740f8f366fa179b9694cf377"
+  },
+  "sourceUrl": "https://www.youtube.com/watch?v=PqJZcwTY1QE&t=553",
+  "sourceAuthor": "The Berrics",
+  "sourceVideoSha256": "531eb85fd1d292c229836f6eedc4adec422aaf6dd644040c49c7480b2beadad7",
+  "sourceFps": 29.97002997002997,
+  "sourceOriginalRequestedOffsetSeconds": 0.0,
+  "sourceContainerFirstPts": 0,
+  "sourceTimeBase": [
+    1,
+    30000
+  ],
+  "sourcePtsStep": 1001,
+  "firstSourceFrame": 16575.0,
+  "lastSourceFrame": 16660.0,
+  "lastGenuineSourceFrame": 16660,
+  "filmedStance": "regular",
+  "canonicalStance": "regular",
+  "pop": 16604.0,
+  "frontRelease": 16609.2,
+  "heelContactFull": 16610.1,
+  "tailStrike": 16610.7,
+  "tailRelease": 16611.1,
+  "heelRelease": 16612.5,
+  "pressEnd": 16613.4,
+  "firstCatch": 16622.6,
+  "catch": 16623.5,
+  "land": 16625.2,
+  "recovery": 16658.0,
+  "reference": {
+    "gravity": 8.0,
+    "flightSeconds": 0.6,
+    "wheelClearance": 0.005
+  },
+  "yawKeys": [
+    [
+      16575,
+      0
+    ],
+    [
+      16604,
+      0
+    ],
+    [
+      16609,
+      0
+    ],
+    [
+      16610.7,
+      10
+    ],
+    [
+      16612.5,
+      32
+    ],
+    [
+      16615,
+      65
+    ],
+    [
+      16617,
+      100
+    ],
+    [
+      16619,
+      140
+    ],
+    [
+      16621,
+      172
+    ],
+    [
+      16622.6,
+      180
+    ],
+    [
+      16660,
+      180
+    ]
+  ],
+  "rollKeys": [
+    [
+      16575,
+      0
+    ],
+    [
+      16604,
+      0
+    ],
+    [
+      16609.2,
+      0
+    ],
+    [
+      16610.7,
+      -6
+    ],
+    [
+      16612.5,
+      -60
+    ],
+    [
+      16615,
+      -145
+    ],
+    [
+      16617,
+      -220
+    ],
+    [
+      16619,
+      -285
+    ],
+    [
+      16621,
+      -345
+    ],
+    [
+      16622.6,
+      -360
+    ],
+    [
+      16660,
+      -360
+    ]
+  ],
+  "pitchKeys": [
+    [
+      16575,
+      0
+    ],
+    [
+      16604,
+      0
+    ],
+    [
+      16609,
+      6
+    ],
+    [
+      16610.7,
+      34
+    ],
+    [
+      16612.5,
+      26
+    ],
+    [
+      16615,
+      18
+    ],
+    [
+      16617,
+      12
+    ],
+    [
+      16619,
+      8
+    ],
+    [
+      16621,
+      3
+    ],
+    [
+      16622.6,
+      0
+    ],
+    [
+      16660,
+      0
+    ]
+  ],
+  "setupFeet": {
+    "Left": {
+      "x": 0.028,
+      "z": 0.135,
+      "yaw": 90
+    },
+    "Right": {
+      "x": -0.055,
+      "z": -0.325,
+      "yaw": 85
+    }
+  },
+  "catchFeet": {
+    "Left": {
+      "x": 0.025,
+      "z": -0.235,
+      "yaw": -90
+    },
+    "Right": {
+      "x": 0.025,
+      "z": 0.24,
+      "yaw": -95
+    }
+  },
+  "heelShoeFeature": [
+    0.0,
+    -0.075,
+    -0.07
+  ],
+  "heelDeckKeys": [
+    [
+      16609.2,
+      0.055,
+      0.14,
+      90,
+      -10,
+      8
+    ],
+    [
+      16610.1,
+      0.075,
+      0.235,
+      88,
+      -12,
+      18
+    ],
+    [
+      16610.7,
+      0.085,
+      0.26,
+      85,
+      -16,
+      22
+    ],
+    [
+      16612.5,
+      0.108,
+      0.3,
+      82,
+      -18,
+      26
+    ]
+  ],
+  "freeFootYaw": {
+    "Left": 90,
+    "Right": 85
+  },
+  "releaseBlendFrames": {
+    "Left": 0.9,
+    "Right": 1.6
+  },
+  "catchBlendFrames": 1.5,
+  "frontFreeKeys": [
+    [
+      16612.5,
+      0.11,
+      0.25,
+      0.31
+    ],
+    [
+      16613.4,
+      0.12,
+      0.27,
+      0.32
+    ],
+    [
+      16615,
+      0.12,
+      0.28,
+      0.32
+    ],
+    [
+      16617,
+      0.09,
+      0.28,
+      0.31
+    ],
+    [
+      16619,
+      0.06,
+      0.26,
+      0.28
+    ],
+    [
+      16621,
+      0.035,
+      0.22,
+      0.25
+    ],
+    [
+      16622.6,
+      -0.025,
+      0.19,
+      0.235
+    ],
+    [
+      16660,
+      -0.025,
+      0.19,
+      0.235
+    ]
+  ],
+  "rearFreeKeys": [
+    [
+      16611.1,
+      -0.055,
+      0.12,
+      -0.325
+    ],
+    [
+      16613.4,
+      -0.05,
+      0.19,
+      -0.32
+    ],
+    [
+      16615,
+      -0.045,
+      0.24,
+      -0.3
+    ],
+    [
+      16617,
+      -0.035,
+      0.26,
+      -0.28
+    ],
+    [
+      16619,
+      -0.025,
+      0.25,
+      -0.26
+    ],
+    [
+      16621,
+      -0.025,
+      0.22,
+      -0.24
+    ],
+    [
+      16623.5,
+      -0.025,
+      0.19,
+      -0.24
+    ],
+    [
+      16660,
+      -0.025,
+      0.19,
+      -0.24
+    ]
+  ],
+  "pelvisWorldKeys": [
+    [
+      16575,
+      -0.04,
+      0.9,
+      0
+    ],
+    [
+      16590,
+      -0.065,
+      0.74,
+      0
+    ],
+    [
+      16598,
+      -0.08,
+      0.56,
+      0
+    ],
+    [
+      16602,
+      -0.085,
+      0.54,
+      0
+    ],
+    [
+      16604,
+      -0.075,
+      0.6,
+      0
+    ],
+    [
+      16606,
+      -0.055,
+      0.72,
+      0
+    ],
+    [
+      16609,
+      -0.045,
+      0.83,
+      0
+    ],
+    [
+      16610.7,
+      -0.05,
+      0.86,
+      0
+    ],
+    [
+      16613.4,
+      -0.06,
+      0.97,
+      0
+    ],
+    [
+      16617,
+      -0.07,
+      1.01,
+      0
+    ],
+    [
+      16619,
+      -0.075,
+      0.95,
+      0
+    ],
+    [
+      16622.6,
+      -0.075,
+      0.82,
+      0
+    ],
+    [
+      16623.5,
+      -0.075,
+      0.75,
+      0
+    ],
+    [
+      16625.2,
+      -0.08,
+      0.65,
+      0
+    ],
+    [
+      16628,
+      -0.085,
+      0.62,
+      0
+    ],
+    [
+      16634,
+      -0.07,
+      0.73,
+      0
+    ],
+    [
+      16643,
+      -0.055,
+      0.86,
+      0
+    ],
+    [
+      16657,
+      -0.04,
+      0.9,
+      0
+    ],
+    [
+      16660,
+      -0.04,
+      0.9,
+      0
+    ]
+  ],
+  "gazeKeys": [
+    [
+      16575,
+      0.5,
+      -0.2,
+      0.4
+    ],
+    [
+      16598,
+      0.55,
+      -0.6,
+      0.18
+    ],
+    [
+      16610.7,
+      0.55,
+      -0.7,
+      0.15
+    ],
+    [
+      16617,
+      0.5,
+      -0.7,
+      0.15
+    ],
+    [
+      16622.6,
+      0.45,
+      -0.58,
+      0.35
+    ],
+    [
+      16625.2,
+      0.4,
+      -0.5,
+      0.5
+    ],
+    [
+      16643,
+      0.3,
+      -0.2,
+      0.8
+    ],
+    [
+      16657,
+      0.2,
+      -0.12,
+      1
+    ],
+    [
+      16660,
+      0.2,
+      -0.12,
+      1
+    ]
+  ],
+  "recoveryWindow": [
+    16648.0,
+    16658.0
+  ],
+  "recoverySourceFrame": 16657.0,
+  "kneePlane": {
+    "forward": [
+      1.0,
+      0.0,
+      0.02
+    ],
+    "provenance": "Own toe-side bend estimate; hidden depth is authored."
+  },
+  "maximumReachShare": 0.998,
+  "minimumAirSoleClearance": 0.018,
+  "nativeSignature": {
+    "pop": "Ollie",
+    "switch": true,
+    "tailLeads": false,
+    "flip": -360,
+    "shove": -180,
+    "spin": 0,
+    "body": 0
+  },
+  "balanceWindows": [
+    {
+      "side": "Left",
+      "window": [
+        16602,
+        16608,
+        16660,
+        16662
+      ],
+      "upperKeys": [
+        [
+          16602,
+          0.2,
+          -0.65,
+          0.73
+        ],
+        [
+          16608,
+          0.22,
+          -0.58,
+          0.78
+        ],
+        [
+          16613,
+          0.25,
+          -0.6,
+          0.76
+        ],
+        [
+          16619,
+          0.4,
+          -0.65,
+          0.64
+        ],
+        [
+          16623.5,
+          0.35,
+          -0.72,
+          0.6
+        ],
+        [
+          16628,
+          0.35,
+          -0.77,
+          0.53
+        ],
+        [
+          16643,
+          0.15,
+          -0.93,
+          0.33
+        ],
+        [
+          16657,
+          0.1,
+          -0.95,
+          0.3
+        ],
+        [
+          16662,
+          0.1,
+          -0.95,
+          0.3
+        ]
+      ],
+      "foreKeys": [
+        [
+          16602,
+          0.9,
+          0.12,
+          -0.4
+        ],
+        [
+          16608,
+          0.9,
+          0.12,
+          -0.4
+        ],
+        [
+          16613,
+          0.9,
+          0.1,
+          -0.42
+        ],
+        [
+          16619,
+          0.88,
+          -0.15,
+          -0.43
+        ],
+        [
+          16623.5,
+          0.85,
+          -0.25,
+          -0.44
+        ],
+        [
+          16628,
+          0.8,
+          -0.4,
+          -0.43
+        ],
+        [
+          16643,
+          0.65,
+          -0.73,
+          -0.2
+        ],
+        [
+          16657,
+          0.65,
+          -0.75,
+          -0.1
+        ],
+        [
+          16662,
+          0.65,
+          -0.75,
+          -0.1
+        ]
+      ],
+      "provenance": "Own Left/front-heel arm: source high diagonal is deliberately reduced to bent asymmetric shoulder-height balance. Hidden catch/recovery forearm depth receives labelled reconstruction. Final relaxed direction is authored against own16657 upright; no chin tuck or foreign body."
+    },
+    {
+      "side": "Right",
+      "window": [
+        16602,
+        16608,
+        16660,
+        16662
+      ],
+      "upperKeys": [
+        [
+          16602,
+          0.22,
+          -0.7,
+          -0.68
+        ],
+        [
+          16608,
+          0.24,
+          -0.66,
+          -0.71
+        ],
+        [
+          16613,
+          0.27,
+          -0.72,
+          -0.64
+        ],
+        [
+          16619,
+          0.3,
+          -0.73,
+          -0.62
+        ],
+        [
+          16623.5,
+          0.34,
+          -0.8,
+          -0.49
+        ],
+        [
+          16628,
+          0.32,
+          -0.82,
+          -0.47
+        ],
+        [
+          16643,
+          0.16,
+          -0.93,
+          -0.33
+        ],
+        [
+          16657,
+          0.14,
+          -0.95,
+          -0.28
+        ],
+        [
+          16662,
+          0.14,
+          -0.95,
+          -0.28
+        ]
+      ],
+      "foreKeys": [
+        [
+          16602,
+          0.9,
+          0.12,
+          0.42
+        ],
+        [
+          16608,
+          0.9,
+          0.1,
+          0.43
+        ],
+        [
+          16613,
+          0.9,
+          0.06,
+          0.43
+        ],
+        [
+          16619,
+          0.88,
+          -0.12,
+          0.45
+        ],
+        [
+          16623.5,
+          0.82,
+          -0.3,
+          0.45
+        ],
+        [
+          16628,
+          0.78,
+          -0.45,
+          0.43
+        ],
+        [
+          16643,
+          0.6,
+          -0.78,
+          0.18
+        ],
+        [
+          16657,
+          0.58,
+          -0.8,
+          0.15
+        ],
+        [
+          16662,
+          0.58,
+          -0.8,
+          0.15
+        ]
+      ],
+      "provenance": "Own Right/tail arm: labelled bent low outward balance rather than the real overhead windup, then an own upright relaxed return. Only original generic rig math is reused; no captured motion from another trick."
+    }
+  ],
+  "provenance": "Own Rodriguez striped-shirt genuine Switch Inward Heelflip Pq16575\u201316660, physicalRegular LeftfrontHEEL/Righttail. Original16603\u201316627 shows opposite heel roll plus board-onlyBS180, no bodyhalfturn, flatland and ownupright16657 before celebration.83/86 same-actor VIDEO selections; three gaps and five complete side reversals explicitly reconstructed, leaving78ownbodyrows. Seven lower-chain collapses use own16619/16629 only. Zero reflection/anatomical swap. Generic original rig/shaped-deck/shoe math only, with a genuine heel point instead of sole/instep substitution. All world-pelvis keys exclude one reference rise, with bent catch/early touchdown absorption and anchored catch/recovery shoes. Arms/gaze/depth/contacts/winding are authored estimates; terminal hidden wrist depth is labelled, never measured. Stabilization16648\u201316658 uses genuine own16657, not a foreign pose or fabricated footage suffix.",
+  "uncertainty": "Single moving fisheye camera cannot measure exact heel contact, depth, tail strike or full board3D. AnatomicalRegular Leftheel/Righttail is independently audited on source chains, not inferred from switch label/biography. VIDEO missing16596/16620/16621 and whole-side-reversed16609\u201316613 are not treated as measurements. Lower chains16622\u201316628 and occluded Left wrist are reconstructed. Exact global sourcePTS=frame*1001/timebase30000 and full source hash are authoritative.",
+  "sourceRootMotion": "Own hip-relative VIDEO body omits source jump/translation; own camera-yaw estimate removes horizontal heading into initialnose+Z once, independent from switch travel. Zero reflection, no bodyspin; source board-360heelroll/+180yaw once. WORLD-pelvis and own board floor/air reference exclude reference carrier once; actual native carrier remains authoritative. Caught feet stay anchored while own16657 upperbody stabilizes.",
+  "phaseClockLimit": "Own visual timing estimates: first-risePop16604, Leftsole release16609.2/fullheel16610.1, tailstrike16610.7, Righttailsole release16611.1, heel release16612.5, laterfreeAir16613.4, firstLeftcatch16622.6/both16623.5, Land16625.2, ownuprightstabilization16648\u201316658, genuineend16660 before celebration. Original pixels remain unmirrored/private; actual native pop/Land/scoring lead."
+}
