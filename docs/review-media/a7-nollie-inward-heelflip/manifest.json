@@ -505,5 +505,19 @@
         "sameOriginalSkin": "6f847d18b6f9f8b0a66431861d4f6207b0a6893e1a891bdc58e1357cf93d08d9"
       }
     ]
+  },
+  "integratedReplay": {
+    "sourceSnapshot": "687308ef7b069f5d8c6e0d3e4bd58250fba45244",
+    "base": "0a33d3a80573fafc4e3518791940b92bb788c85a",
+    "actualProductFiles": true,
+    "allFourTraceAndBodyOutputsMatchMedia": true,
+    "existingCatalogRowsPreserved": 46,
+    "appendedCatalogRow": 47,
+    "sdkCompile": {
+      "sourceCount": 81,
+      "hashCheckedReferenceCount": 356,
+      "languageVersion": "7.3"
+    },
+    "nativeRuntimeAccepted": false
   }
 }

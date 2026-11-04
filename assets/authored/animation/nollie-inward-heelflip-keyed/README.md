@@ -51,6 +51,10 @@ Four controlled actual Pad/32 Hz Step/Land/scorer → 60 Hz body replays and
 now cover normal/low × physical Regular/Goofy. Bent Catch/Land and soft-knee
 Rollaway/End are visibly present, including inspection of the preserved source
 pelvis endpoint; no motion correction was needed. Native foot acquisition is
-controlled in this offline replay. Root's integration on merged main, full
-continuous four-case comparison, CI, Claude's independent offline verdict and
-native Shadow gameplay remain separate. No installed approved pack changed.
+controlled in this offline replay. The three family adapters are integrated at
+`687308ef7b069f5d8c6e0d3e4bd58250fba45244` on merged main `0a33d3a8`.
+All four actual integrated route traces and body outputs match the media's
+frozen preview byte for byte. All 81 client sources compile against 356
+hash-checked current Shadow SDK references using C# 7.3. Full continuous
+four-case comparison, CI, Claude's independent offline verdict and native
+Shadow gameplay remain separate. No installed approved pack changed.

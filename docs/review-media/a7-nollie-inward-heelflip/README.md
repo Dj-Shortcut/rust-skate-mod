@@ -24,6 +24,14 @@ Pad pop, have no held continuation or body spin, observe Land and return to
 ordinary Ground with capture off at 4 s. Native geometry and foot acquisition
 are controlled in this offline replay; Rust/Shadow runtime is unverified.
 
+The same family changes are now integrated at
+`687308ef7b069f5d8c6e0d3e4bd58250fba45244` on merged main `0a33d3a8`,
+preserving the 46 existing catalog rows before appending Nollie. Four reruns
+using the actual integrated product files produce byte-identical trace and
+body outputs, so these images still represent that controlled route. The full
+client also compiles against 356 hash-checked current Shadow SDK references
+(81 sources, C# 7.3); this does not replace a native run.
+
 Physical labels are checked from the animated GLB's anatomical foot bones
 against its initial deck nose. In this frozen proxy, requested enum Regular
 renders physical Goofy and requested enum Goofy renders physical Regular. This
@@ -45,4 +53,5 @@ The private viewer supplies original unmirrored film, 1×/¼× controls, source/
 clock, physical stance/profile selection and explicit selected GLB download.
 The full continuous comparison of all four cases remains pending. These images
 do not grant Claude's independent offline verdict, native acceptance or a
-library count. Root owns final integration and verification on merged main.
+library count. Root retains integration; Claude retains the independent offline
+verdict and library document.
