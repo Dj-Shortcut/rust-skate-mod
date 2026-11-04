@@ -53,10 +53,18 @@ python scripts/author_skate_fakie_inward_heelflip.py \
 Requires NumPy. JSON and SKMC are prepared before replacement; SKMC is replaced
 last, and the committed source folder cannot be an output target.
 
-Initial candidate:402 sampled frames with raw reviewed=false. Four controlled
-actual Pad/full32Hz Step/Land/scorer executions report **Fakie Inward Heelflip**;
-their60Hz presentation uses a private family-adapter preview against current
-main14f1. Normal cases select this ID on36/36 Air frames, low on34/34, in both
-requested stances; all end Ground/capture-off at4seconds. Controlled geometry
-and engine bindings are not native play. Original-skin/13-part-board visual
-inspection and Root's final shared-adapter integration remain pending.
+Initial candidate: 402 sampled frames with raw reviewed=false. Four controlled
+actual Pad/full 32 Hz Step/Land/scorer executions report **Fakie Inward Heelflip**;
+their 60 Hz presentation uses a private family-adapter preview against current
+main 14f1. Normal cases select this ID on 36/36 Air frames, low on 34/34, in both
+requested stances; all end Ground/capture-off at 4 seconds. Controlled geometry
+and engine bindings are not native play.
+
+[Twelve rig-only phase/contact/recovery sheets](../../../../docs/review-media/a7-fakie-inward-heelflip/)
+cover normal/low physical Regular/Goofy. The exported anatomical foot bones,
+not the requested binding name, determine those physical labels. Phase
+inspection sees the crouch, heel guide, board near the feet, bent catch/landing
+and return to an upright soft-knee stance. Four original-skin/13-part-board
+GLBs support 1×/¼× replay in the private viewer; complete continuous replay
+review, Root's final shared-adapter integration, Claude's offline verdict and
+native testing remain separate pending gates.
