@@ -46,6 +46,12 @@ a competing action uses the existing pose route. The Python approval tool and
 private-pair staging are described in the pipeline document. Source compilation,
 animation review and native Shadow gameplay remain separate verification gates.
 
+Foot calibration compares actual baked triangle geometry across weighted-pose
+changes only while the source skin identity stays unchanged. Changed poses still
+invalidate the fitters until a new measurement; changed sources reset confirmation.
+The existing geometry tolerance and four-snapshot cap remain. Native weighted-skin
+calibration stability still needs verification in the real client.
+
 This separate combined development candidate 0.18.64 also includes the 0.18.63 source for precise boarding-failure diagnostics, X/Back building-wheel
 confirmation, the authored menu icons and held-object restoration. The owner connected with
 0.18.62 and all 18 selected WAVs loaded, but boarding was refused by an unavailable Unity

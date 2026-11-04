@@ -281,11 +281,15 @@ public static class SkateFootContacts
                 throw new Unsupported("Foot and toe mappings must be distinct.");
             SoleFrame left = SoleFrame.Create(lf, lt, soleL), right = SoleFrame.Create(rf, rt, soleR);
             Read read = Inspect(visibleSet, lf, lt, rf, rt, left, right);
-            bool same = active.Pose != null && active.Key == read.Key && Near(active.Pose, read.Pose);
+            bool sameSource = active.Pose != null && active.Key == read.Key;
+            bool same = sameSource && Near(active.Pose, read.Pose);
             if (!same)
             {
                 active.Ready = active.Stable = false; active.Left = active.Right = null;
-                active.LeftPoints = active.RightPoints = null; active.LeftIndices = active.RightIndices = null;
+                // A pose change requires a new bake, but must not erase the measured
+                // comparison that can confirm it. A changed source starts over.
+                if (!sameSource)
+                { active.LeftPoints = active.RightPoints = null; active.LeftIndices = active.RightIndices = null; }
                 active.Key = read.Key; active.Pose = read.Pose.ToArray(); Bump();
             }
             active.Fresh = true;
