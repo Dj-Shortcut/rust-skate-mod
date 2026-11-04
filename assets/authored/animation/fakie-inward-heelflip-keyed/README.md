@@ -56,7 +56,8 @@ last, and the committed source folder cannot be an output target.
 Initial candidate: 402 sampled frames with raw reviewed=false. Four controlled
 actual Pad/full 32 Hz Step/Land/scorer executions report **Fakie Inward Heelflip**;
 their 60 Hz presentation uses a private family-adapter preview against current
-main 14f1. Normal cases select this ID on 36/36 Air frames, low on 34/34, in both
+main 14f1. The same family adapters are now integrated in this branch against
+main 610b. Normal cases select this ID on 36/36 Air frames, low on 34/34, in both
 requested stances; all end Ground/capture-off at 4 seconds. Controlled geometry
 and engine bindings are not native play.
 
@@ -65,6 +66,9 @@ cover normal/low physical Regular/Goofy. The exported anatomical foot bones,
 not the requested binding name, determine those physical labels. Phase
 inspection sees the crouch, heel guide, board near the feet, bent catch/landing
 and return to an upright soft-knee stance. Four original-skin/13-part-board
-GLBs support 1×/¼× replay in the private viewer; complete continuous replay
-review, Root's final shared-adapter integration, Claude's offline verdict and
-native testing remain separate pending gates.
+GLBs support 1×/¼× replay in the private viewer. The integrated client at
+`c0ecdb714caafa50dd7e143e518718ab7a7a570c` compiled all 81 sources against
+356 hash-checked current Shadow SDK references using C# 7.3. This checks the
+actual client source, but does not replay native skinning or install a pack.
+Complete continuous replay review, Claude's offline verdict and native testing
+remain separate pending gates.
