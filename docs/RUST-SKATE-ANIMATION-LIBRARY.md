@@ -10,7 +10,7 @@ selections are reference material, not a limit or a count of finished animations
 | --- | --- | --- |
 | 1 | Switch Heelflip, Nollie Heelflip, Fakie Kickflip, Nollie Backside 180 Heelflip, Nollie 360 Flip | Offline viewer review completed on 30 October at main `5cbbf2f7`: twenty full normal/low, Regular/Goofy replays on the frozen skin and thirteen-part board. Deep Ground preparation, pop/release, Air, catch, landing and roll-away were inspected beside the source, including slow motion. Original pack approval, native controller binding and Shadow remain open. |
 | 2 | Riding, steering, crouch, normal/mongo push, ollie/nollie, braking, powerslide, revert, kickturn, both manuals, landing and upright roll-away | Procedural source on `main`, visual review open: grounded low-speed axle kickturns with tail-foot and rear-axle loading before the lift (#647, #655), grounded reverts kept on the wheel plane (#638) and powerslide (speed-check) ground contact (#635) are source present with native acceptance open. A dedicated manual-revert action is still missing. |
-| 3 | All requested flip/shove families and stance/spin variants, composed from shared source families; separate references for exceptional foot/body actions | The registry contains 23 signatures: 16 base (the five batch-1 kinds, normal kickflip/heelflip/360 flip, BS/FS pop shove-it, Hardflip, Varial Kickflip, BS and FS 360 shove-it, nollie kickflip, switch kickflip) and 7 double/triple derivatives (the held normal Double Kickflip among them). Impossible has a separate board-path adapter. Source-keyed Nollie360 and BS Pop Shove-it replace older sources within their existing kinds. Code/source presence is not a finished-animation count; the remaining 40-reference coverage, per-trick review, exact pack approval and Shadow stay open. |
+| 3 | All requested flip/shove families and stance/spin variants, composed from shared source families; separate references for exceptional foot/body actions | The registry contains 46 signatures on `main` after #754: 39 base kinds (the five batch-1 kinds, the normal flat-ground families and the A2–A7 fakie/nollie/switch stance variants) and 7 double/triple derivatives (the held normal Double Kickflip among them). Impossible has a separate board-path adapter. Source-keyed Nollie360 and BS Pop Shove-it replace older sources within their existing kinds. Code/source presence is not a finished-animation count; the remaining 40-reference coverage, per-trick review, exact pack approval and Shadow stay open. |
 | 4 | All requested air grabs, tweaks and one-foot/no-foot variants | Existing grab catalogue and procedural presentation need hand/foot and motion review. Review airs above a halfpipe, including entry, hold, release, catch and landing. |
 | 5 | All grinds, slides and stalls, darkslide, both exit directions | Existing action/pose source remains separate from approved capture playback. Rail, ledge and coping contact must be verified. |
 | 6 | Ground grabs, coffin, boneless, beanplant, fastplant, no comply, caveman and hippie-jump variants | Existing source needs distinct per-action contact/motion review; shared generic poses do not count as individual finished animations. |
@@ -117,7 +117,7 @@ names the state and, where there is one, the clip on `main`: **native accepted**
 authored controls on `main`, `reviewed=false`, not yet viewed as a whole), **kind
 only** (registry signature without a source route), **open PR** (draft, not on
 `main`), or **none**. Source video ids are the Berrics references the authoring
-docs name; the footage itself stays private. State as of `main` after #747; the gate's 1 and 2 November stills reviews are below the table.
+docs name; the footage itself stays private. State as of `main` after #755; the gate's 1, 2 and 5 November stills reviews are below the table.
 
 | Source family | Normal | Fakie | Nollie | Switch |
 | --- | --- | --- | --- | --- |
@@ -128,30 +128,37 @@ docs name; the footage itself stays private. State as of `main` after #747; the 
 | FS pop shove-it | `fs-pop-shove-it-source-keyed-v1` (`fs-pop-shove-keyed/`, #675, Kroetkov `YcmPDIj2BFo` 130.3–133.2 s, filmed goofy), **offline reviewed** 1 Nov (air frame 216 shows the deck end-on and steeply pitched; confirm against the source frame); FS 360: `fs-360-shove-it-source-keyed-v1` (`fs360-shove-keyed/`, #653 with the pop extension of #676, an authored derivation from the FS 180 reconstruction, no filmed FS 360 take), **offline reviewed** 1 Nov (mid-air carrier tilt shows the wheels from behind; confirm it stays under the scoop's 40°) | **offline reviewed** 2 Nov after #730: own-source Fakie FS Pop Shove-it (#724, `docs/review-media/a5-fakie-fs-pop-shove/`) | **offline reviewed** 2 Nov after #727: own-source Nollie FS Pop Shove-it (#722, `docs/review-media/a5-nollie-fs-pop-shove/`) | **offline reviewed** 2 Nov after #728: own-source Switch FS Pop Shove-it (#723, `docs/review-media/a5-switch-fs-pop-shove/`) |
 | 360 flip | source present: `360-flip-source-keyed-v1` (`treflip-keyed/`, `_oRoo1x1uzM` ~253 s, filmed goofy); Varial Kickflip: `varial-kickflip-derived-tre-v1` (`varial-kickflip-derived/`, #640 with the compact authored upper body of #678, a Tre derivation, no filmed take), **offline reviewed** 1 Nov after #678 (no arch, bent asymmetric arms through the catch, feet close to the deck; the normal/regular air deck gap is still the largest of the family) | **offline reviewed** 2 Nov after #742: own-source Fakie 360 Flip (#740, catch and landing repaired in #742, `docs/review-media/a7-fakie-360-flip/`) | **offline reviewed**: `nollie-360-flip-source-keyed-v1` (`nollie360-keyed/`, `PqJZcwTY1QE` t=153) | **offline reviewed** 2 Nov: own-source Switch 360 Flip (#745, `docs/review-media/a7-switch-360-flip/`) |
 | Hardflip | source present: `hardflip-source-keyed-v1` (`hardflip-keyed/`, `_oRoo1x1uzM` t=192) | **offline reviewed** 2 Nov: own-source Fakie Hardflip (#735, `docs/review-media/a6-fakie-hardflip/`) | **offline reviewed** 2 Nov: own-source Nollie Hardflip (#733, `docs/review-media/a6-nollie-hardflip/`) | **offline reviewed** 2 Nov after #738: Switch Hardflip (#734, `docs/review-media/a6-switch-hardflip-landing-repair/`) |
-| Inward heelflip | **offline reviewed** 1 Nov: authored Heel + BS 180 derivation (#687, `docs/review-media/a1-inward-heelflip-derived/`; no verified filmed take in the cached Berrics windows, #672), reversed-deck catch | none; batch A7 (#736) in progress on Codex's isolated branch, no PR yet: the 190–245 s window of `8r83UjKi-L0` was rejected on 2 Nov (body half-turn, scoreboard mismatch), a window near 145–166 s of the same video is being checked | none; A7 in progress, no PR yet (a Nollie Inward Heelflip label near 158 s of `PqJZcwTY1QE`, unverified) | none; A7 in progress, no PR yet: Codex's candidate is the landed Rodriguez take `PqJZcwTY1QE` frames 16575–16685 (~553.1–556.7 s), actor/cut/heel audit before authoring |
+| Inward heelflip | **offline reviewed** 1 Nov: authored Heel + BS 180 derivation (#687, `docs/review-media/a1-inward-heelflip-derived/`; no verified filmed take in the cached Berrics windows, #672), reversed-deck catch | **offline reviewed** 5 Nov: `fakie-inward-heelflip-authored-v1` (`fakie-inward-heelflip-keyed/`, #754, `docs/review-media/a7-fakie-inward-heelflip/`), an authored derivation (reviewed Fakie Kickflip body + reviewed Inward heel/scoop mechanics, no filmed take; the 140–166 s lead in `8r83UjKi-L0` stayed unconfirmed in Codex's 4 Nov audit, the 190–245 s window was rejected on 2 Nov) | **open PR** #757: `nollie-inward-heelflip-source-keyed-v1` (`nollie-inward-heelflip-keyed/`, own Rodriguez take `PqJZcwTY1QE` frames 4770–4870, ~159 s, filmed goofy; detector gaps 4817/4818 and the heel contact reconstructed); gate held for a mid-flip sample, see the 5 Nov row below | **offline reviewed** 5 Nov: `switch-inward-heelflip-source-keyed-v1` (`switch-inward-heelflip-keyed/`, #752, Rodriguez `PqJZcwTY1QE` frames 16575–16660, ~553–555 s, filmed regular, `docs/review-media/a7-switch-inward-heelflip/`) |
 | BS 180 | **offline reviewed** 1 Nov after #697: own-source BS 180 (#693, `docs/review-media/a2-bs180/`) | **offline reviewed** 2 Nov after #710: own-source BS Halfcab (#704, `docs/review-media/a3-fakie-bs180/`) | combined only: `nollie-backside-180-heelflip` (`nollie-bs180-heelflip-air/`, `PqJZcwTY1QE` t=115), **offline reviewed**; not a standalone BS 180 reference | none |
 | FS 180 | **offline reviewed** 1 Nov: own-source FS 180 with one coupled rider-and-board half-turn (#692, `docs/review-media/2026-11-01-a2-fs180/`) | **offline reviewed** 1 Nov: own-source FS Halfcab (#702, `docs/review-media/a3-fakie-fs180/`) | none | none |
 
-Count on `main`: 28 slots offline reviewed (fakie kickflip, nollie heelflip,
+Count on `main`: 30 slots offline reviewed (fakie kickflip, nollie heelflip,
 switch heelflip, nollie 360 flip, normal FS pop shove-it, switch kickflip, nollie
 kickflip after #685, fakie heelflip from #686 and inward heelflip from #687 as
 authored derivations, normal ollie #690, normal FS 180 #692, normal BS 180 after #697, nollie #695,
 fakie ollie #699, switch ollie #701, FS halfcab #702, BS halfcab after #710,
 nollie BS pop shove-it #711 (levelled in #718), switch BS pop shove-it #712 and
 fakie BS pop shove-it #715, nollie FS pop shove-it after #727 and switch FS pop shove-it
-after #728 fakie FS pop shove-it after #730 nollie hardflip #733, fakie hardflip #735 and switch hardflip after #738, fakie 360 flip after #742, switch 360 flip #745; the
+after #728, fakie FS pop shove-it after #730, nollie hardflip #733, fakie hardflip #735 and switch hardflip after #738, fakie 360 flip after #742, switch 360 flip #745, switch inward heelflip #752 and fakie inward heelflip #754 as an authored derivation; the
 combined nollie BS 180 heelflip is reviewed but is not a standalone BS 180
 reference and is not counted; the Varial Kickflip is a reviewed derivative inside
 the 360-flip slot, as are the held Double Kickflip, BS 360 and FS 360 inside
 theirs), 5 source present (normal kickflip, heelflip, BS pop shove-it, 360 flip,
-hardflip), 7 without a source.
+hardflip), 1 open PR (nollie inward heelflip, #757), 4 without a source (nollie
+and switch BS 180, nollie and switch FS 180).
 Nothing is native accepted. The first Shadow test of the reviewed library (2 Nov,
 Codex's sealed 31-clip bundle on the frozen #743 source, reported in #584) still
 showed the previous procedural animations: the 31 approved variants preloaded,
 then capture fell back because foot-contact acquisition had used up its
 three-failure budget. #747 scopes that budget to each view/model epoch and keeps
-the first refusal readable; the acquisition failure itself is not yet explained,
-so the next Shadow session is the first that can show a captured trick natively.
+the first refusal readable. The 4 November Shadow run of #753's candidate
+(reported in #753) got further: Rust loaded and joined the server, both bounded
+logs reached "Foot contacts measured; calibration confirmation pending" and then
+refused with "measured geometry did not stabilize"; no capture was applied and
+no scored trick was observed (flaky remote input, external game close). #751 (GPU-buffer foot read) and #753 (same-side
+weighted foot measurement) are on `main`; #755 keeps the measured feet across a
+weighted pose change and is compiled against the Shadow SDK, not installed. The
+next Shadow session is still the first that can show a captured trick natively.
 Outside the 40 slots, the normal Impossible has its own
 board-path adapter and controls (`impossible-keyed/`, `_oRoo1x1uzM`), source
 present. Batches 2 and 4–7 (riding, grabs, grinds, oldschool, transition) have
@@ -209,6 +216,9 @@ here. Nothing below is native acceptance; raw packs stay `reviewed=false`.
 | Fakie 360 Flip, first gate (#740) | superseded by the #742 row below | Fakie Load and Pop, instep scoop with the deck turning and flipping below, arms bent and at or below shoulder height through Pop and Air, both feet over the bolts at Catch | Catch and Land, all four sheets: the rider stands upright with nearly straight legs and only a slight bend at touchdown, so the landing does not absorb; this is the same issue just fixed on the Switch Hardflip (#738). Lower the pelvis and bend both knees through Catch and Land. Improvement: in Air the feet hang well above the spinning deck; bring them a little closer before Catch |
 | Fakie 360 Flip (#740 + #742) | offline reviewed (batch A7, #736) | All four sheets: pelvis lowered and both knees bent through Catch and Land with a visible absorption trough, arms low and open below shoulder height, feet over the bolts; Air feet now sit closer to the spinning deck | Improvement for a later pass: Rollaway and End straighten to nearly locked knees; a slight soft knee would read more natural. The low/goofy Air still shows a small gap between shoes and deck |
 | Switch 360 Flip (#745) | offline reviewed (batch A7, #736) | Switch Load and Pop with the rider leaning over the nose, instep scoop with the deck turning below, arms low and bent through Air, pelvis lowered and knees bent through Catch and Land on all four sheets, feet over the bolts | Improvement for a later pass (same as Fakie 360 Flip): Rollaway and End straighten to nearly locked knees; keep a slight soft knee. Normal/regular Load leans the chest far forward over the front truck; a little more upright would match the other switch tricks |
+| Switch Inward Heelflip (#752) | offline reviewed 5 Nov (batch A7, #736) | Own Rodriguez take, physical regular with the goofy mirror: switch Load/Pop crouch, Right tail scoop with the Left heel guiding the toe-side nose corner, deck inverted directly under the feet at Air (1.25 s), bent-knee Catch on the turned bolts, bent touchdown with one absorption trough in the landing strips, soft knees through Rollaway/End; all four sheets | At Heel (1.067 s) the rider stands tall on nearly straight legs with the deck only ~25° nose-up and the tail wheel still on the ground: confirm against frames 16609–16611, otherwise a little more pitch and knee. Normal/regular Air keeps a visible shoe–deck gap |
+| Fakie Inward Heelflip (#754) | offline reviewed 5 Nov as an authored derivation (batch A7, #736) | Reviewed Fakie Kickflip body with authored Inward heel/scoop mechanics, no filmed take: fakie tail pop, heel exit over the toe-side nose corner, deck inverted mid-flip at Air, both feet over the bolts at Catch, pelvis low and knees bent through Land, soft-knee Rollaway/End; all four sheets | In Air the feet hang well above the deck in all four cases (largest in low/goofy): bring them closer before Catch, as on the 360 flips. Arms at Heel/Air are wide and high (inherited from the fakie kickflip body); shoulder height and bent would read calmer |
+| Nollie Inward Heelflip (#757), first gate | held, not yet reviewed (open PR) | Own Rodriguez take `PqJZcwTY1QE` 4770–4870, filmed goofy: nose pop with the front foot, compact Air with the feet near the deck, bent Catch and Land with an absorption trough, arms low, soft-knee Rollaway/End; code and provenance pass, regular/goofy mirror cleanly | All four Air panels (1.233 s ≈ frame 4823) show the deck level and grip-up while the keys put it at roll ≈ −310°/yaw ≈ 145°, and the rear-heel path ends on the same tail rail as the Nollie Hardflip's rear-instep path although the two roll opposite ways: one mid-flip sample per case (≈ 1.10–1.15 s) is needed before the cell can move. Press pitch −52…−62° with a tall, nearly locked standing leg at Heel (not blocking) |
 | Fakie Heelflip arm (#703) and FS 180 hand (#705) | improvements accepted | #703: the lead arm at Pop/Flick is now lower and forward. #705: the lead hand opens at Land | FS 180: at Catch the lead hand is still close to the chest; minor |
 | Nollie Kickflip, earlier gate (#679, #681) | superseded by the row above | Own Rodriguez take: genuine nose pop with the front foot, rear outer-instep flick, compact air with the deck inverted below | In both stances the lead arm stands straight above the head from Catch through Land, and the head is bowed into the chest from Pop to Land. Check source frames 5720–5742: if Rodriguez's arm is not overhead at landing this is the monocular depth artifact seen on the heelflip; either way the owner's 28 October rule applies (a believable head and arm win over an unreliable source) |
 | Switch Kickflip (#680, #681) | offline reviewed | Own Rodriguez take, physical regular body with switch signature: upright pop, compact air with the deck inverted under the feet, bent-knee catch, settled roll-away, both stances | None from the stills |
@@ -229,13 +239,16 @@ footage as a grab reference. Failed body detections are not motion data; explici
 reconstruction must not inflate confidence or evade actor/gap rejection.
 Occluded head authoring is opt-in and leaves its uncertainty in the JSON receipts.
 
-The normal capture registry covers 23 exact flat-ground signatures: 16 base
-families (the five batch-1 kinds, normal kickflip/heelflip/360 flip, BS/FS pop
-shove-it, Hardflip, the authored Varial Kickflip, the BS and FS 360 shove-its and
-the own-source nollie and switch kickflips) plus 7 separately reviewable
-double/triple derivatives, the held normal Double
-Kickflip among them (its keyed clip id differs from its movement kind, the one
-exemption the loader makes). Impossible uses its own board-path adapter and is
+The capture registry (`SkateCaptureVariants`) covers 46 exact flat-ground
+signatures on `main` after #754: 39 base kinds (the five batch-1 kinds, normal
+kickflip/heelflip/360 flip, BS/FS pop shove-it, Hardflip, the authored Varial
+Kickflip, the BS and FS 360 shove-its, the own-source nollie and switch
+kickflips, inward heelflip, and the A2–A7 ollie, FS/BS 180, pop shove-it,
+hardflip, 360 flip and inward heelflip stance variants) plus 7 separately
+reviewable double/triple derivatives, the held normal Double Kickflip among
+them (its keyed clip id differs from its movement kind, the one exemption the
+loader makes); #757 would append the 47th. New kinds are appended so existing
+indices never move. Impossible uses its own board-path adapter and is
 not a registry signature. The source-keyed Nollie360 candidate replaces its older source within
 the existing kind; it does not add another signature or approve the original
 pack. These are implemented selection paths, not a count of finished animations.
